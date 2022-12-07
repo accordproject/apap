@@ -1,0 +1,21 @@
+{
+  "name": "openapigen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gen": "concerto compile --model ./model/template.cto --target openapi --output .",
+    "build": "openapi -i openapi.json -o ./src",
+    "prebuild": "npm run gen",
+    "lint": "int-openapi openapi.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@accordproject/concerto-cli": "^3.0.1-20221207104407",
+    "@ibm-cloud/openapi-ruleset": "^0.44.3",
+    "ibm-openapi-validator": "^0.96.4",
+    "openapi-typescript-codegen": "^0.23.0"
+  }
+}

@@ -1,0 +1,58 @@
+@description("Accord Project Agreement Protocol")
+namespace org.accordproject.template@1.0.0
+
+import concerto.metamodel@0.4.0.{Property,ConceptDeclaration} from https://models.accordproject.org/concerto/metamodel@0.4.0.cto
+import org.accordproject.commonmark@0.5.0.Document from https://models.accordproject.org/markdown/commonmark@0.5.0.cto
+
+@description("Bytes and mime type for a logo")
+concept Logo {
+    o String base64
+    o String mimeType
+}
+
+@description("The text for a template")
+concept Text {
+    o Document templateMark
+}
+
+@description("The data model for a template")
+concept Model {
+    o ConceptDeclaration value
+}
+
+@description("A function for a template")
+concept Function identified by name {
+    o String name
+    o Property[] inputs
+    o Property[] outputs
+    o String code
+}
+
+@description("The functions for a template")
+concept Logic {
+    o Function[] functions
+}
+
+@resource
+@description("An Accord Project template")
+concept Template identified by name {
+    o String name
+    o String author
+    o String displayName optional
+    o String version
+    o String description optional
+    o String license
+    o String[] keywords optional
+    o Logo logo optional
+    o Model model
+    o Text text
+    o Logic logic optional
+}
+
+@resource
+@description("An Accord Project Agreement, an instance of a template")
+concept Agreement identified by agreementId {
+    o String agreementId
+    o String data
+    --> Template template
+}
