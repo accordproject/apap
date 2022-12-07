@@ -39,6 +39,6 @@ Notice the actual integration of an agreement server into a particular tool is n
 
 To simplify the implementation of agreement servers and clients, there are libraries or SDKs:
 
-Development tool SDKs each development tool typically provides a library for integrating language servers. For example, for JavaScript/TypeScript there is the agreement client npm module.
+Development tool SDKs each development tool typically provides a library for integrating language servers. For example, for JavaScript/TypeScript there is the [agreement client npm module](./src/).
 
 Language Server SDKs for the different implementation languages there is an SDK to implement a language server in a particular language. For example, to implement a language server using Node.js there is the agreement server npm module.
