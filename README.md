@@ -14,7 +14,7 @@ APAP is a win for both template providers and agreement tooling vendors!
 
 ## How it Works
 
-An agreement server runs as a separate process and agreement tools communicate with the server using the agreement protocol over JSON-RPC. Below is an example for how a tool and an agreement server communicate during a routine document generation session:
+An agreement server runs as a separate process and agreement tools communicate with the server using the agreement protocol over REST. Below is an example for how a tool and an agreement server communicate during a routine document generation session:
 
 ```mermaid
 sequenceDiagram
