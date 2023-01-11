@@ -8,26 +8,4 @@ Note: edits to this specification can be made via a pull request against [this m
 
 The protocol is defined via an [Open API document](./openapi.json), which specified the required API methods as well as their expected request and response data formats.
 
-### Resource Paths
-
-#### /templates
-
-GET, POST
-
-#### /templates/{name}
-
-GET, PUT, DELETE
-
-#### /agreements
-
-GET, POST
-
-#### /agreements/{agreementId}
-
-GET, PUT, DELETE
-
-### Data Models
-
-#### Template
-
-#### Agreement
+The Open API documentation has been generated in both [markdown format](./index.md), and as a [static HTML site](./_site/index.html).
