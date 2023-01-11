@@ -33,12 +33,10 @@ sequenceDiagram
 
 Not every agreement server can support all features defined by the protocol. APAP therefore provides ‘capabilities’. A capability groups a set of agreement features. An agreement tool and the agreement server announce their supported features using capabilities.
 
-Notice the actual integration of an agreement server into a particular tool is not defined by the agreement server protocol and is left to the tool implementors.
+Notice the actual integration of an agreement server into a particular tool is not defined by the agreement protocol and is left to the tool implementors.
 
 ## Libraries (SDKs) for APAP providers and consumers
 
 To simplify the implementation of agreement servers and clients, there are libraries or SDKs:
 
-Development tool SDKs each development tool typically provides a library for integrating language servers. For example, for JavaScript/TypeScript there is the [agreement client npm module](./src/).
-
-Language Server SDKs for the different implementation languages there is an SDK to implement a language server in a particular language. For example, to implement a language server using Node.js there is the agreement server npm module.
+Development tool SDKs each development tool typically provides a library for integrating agreement servers. For example, for JavaScript/TypeScript there is the [agreement client npm module](./src/).

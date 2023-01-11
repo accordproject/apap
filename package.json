@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "gen": "concerto compile --model ./model/protocol.cto --target openapi --output ./output",
     "merge": "node merge.js",
-    "build": "npm run merge && openapi -i openapi.json -o ./src",
+    "build-api-docs" : "widdershins openapi.json -o api.md",
+    "build": "npm run merge && npm run build-api-docs && openapi -i openapi.json -o ./src",
     "prebuild": "npm run gen",
     "lint": "int-openapi openapi.json"
   },
@@ -18,6 +19,7 @@
     "@ibm-cloud/openapi-ruleset": "^0.44.3",
     "ibm-openapi-validator": "^0.96.4",
     "openapi-typescript-codegen": "^0.23.0",
-    "swagger-combine": "^1.4.0"
+    "swagger-combine": "^1.4.0",
+    "widdershins": "^4.0.1"
   }
 }
