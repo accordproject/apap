@@ -1,0 +1,40 @@
+{
+  "paths": {
+    "/agreements/{agreementId}/convert/pdf": {
+      "summary": "Path used to convert an agreeement to PDF format.",
+      "description": "The REST endpoint/path used convert or render an `agreement` to PDF format.",
+      "post": {
+        "requestBody": {
+          "description": "PDF conversion options.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.PdfConversionOptions"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful response."
+          }
+        },
+        "operationId": "convertAgreementPdf",
+        "summary": "Convert agreement to PDF",
+        "description": "Converts an existing `agreement` to PDF."
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    }
+  }
+}

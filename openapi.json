@@ -7,15 +7,15 @@
   },
   "components": {
     "schemas": {
-      "org.accordproject.template@1.0.0.Logo": {
+      "org.accordproject.protocol@1.0.0.Logo": {
         "title": "Logo",
-        "description": "An instance of org.accordproject.template@1.0.0.Logo",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Logo",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.template@1.0.0.Logo",
-            "pattern": "^org\\.accordproject\\.template@1\\.0\\.0\\.Logo$",
+            "default": "org.accordproject.protocol@1.0.0.Logo",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Logo$",
             "description": "The class identifier for this type"
           },
           "base64": {
@@ -36,15 +36,15 @@
           ]
         }
       },
-      "org.accordproject.template@1.0.0.Text": {
+      "org.accordproject.protocol@1.0.0.Text": {
         "title": "Text",
-        "description": "An instance of org.accordproject.template@1.0.0.Text",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Text",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.template@1.0.0.Text",
-            "pattern": "^org\\.accordproject\\.template@1\\.0\\.0\\.Text$",
+            "default": "org.accordproject.protocol@1.0.0.Text",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Text$",
             "description": "The class identifier for this type"
           },
           "templateMark": {
@@ -61,15 +61,15 @@
           ]
         }
       },
-      "org.accordproject.template@1.0.0.Model": {
+      "org.accordproject.protocol@1.0.0.Model": {
         "title": "Model",
-        "description": "An instance of org.accordproject.template@1.0.0.Model",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Model",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.template@1.0.0.Model",
-            "pattern": "^org\\.accordproject\\.template@1\\.0\\.0\\.Model$",
+            "default": "org.accordproject.protocol@1.0.0.Model",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Model$",
             "description": "The class identifier for this type"
           },
           "value": {
@@ -86,15 +86,15 @@
           ]
         }
       },
-      "org.accordproject.template@1.0.0.Function": {
+      "org.accordproject.protocol@1.0.0.Function": {
         "title": "Function",
-        "description": "An instance of org.accordproject.template@1.0.0.Function",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Function",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.template@1.0.0.Function",
-            "pattern": "^org\\.accordproject\\.template@1\\.0\\.0\\.Function$",
+            "default": "org.accordproject.protocol@1.0.0.Function",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Function$",
             "description": "The class identifier for this type"
           },
           "name": {
@@ -107,11 +107,8 @@
               "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
             }
           },
-          "outputs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
-            }
+          "output": {
+            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
           },
           "code": {
             "type": "string"
@@ -121,7 +118,6 @@
           "$class",
           "name",
           "inputs",
-          "outputs",
           "code"
         ],
         "$decorators": {
@@ -130,21 +126,21 @@
           ]
         }
       },
-      "org.accordproject.template@1.0.0.Logic": {
+      "org.accordproject.protocol@1.0.0.Logic": {
         "title": "Logic",
-        "description": "An instance of org.accordproject.template@1.0.0.Logic",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Logic",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.template@1.0.0.Logic",
-            "pattern": "^org\\.accordproject\\.template@1\\.0\\.0\\.Logic$",
+            "default": "org.accordproject.protocol@1.0.0.Logic",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Logic$",
             "description": "The class identifier for this type"
           },
           "functions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Function"
+              "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Function"
             }
           }
         },
@@ -158,15 +154,15 @@
           ]
         }
       },
-      "org.accordproject.template@1.0.0.Template": {
+      "org.accordproject.protocol@1.0.0.Template": {
         "title": "Template",
-        "description": "An instance of org.accordproject.template@1.0.0.Template",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Template",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.template@1.0.0.Template",
-            "pattern": "^org\\.accordproject\\.template@1\\.0\\.0\\.Template$",
+            "default": "org.accordproject.protocol@1.0.0.Template",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Template$",
             "description": "The class identifier for this type"
           },
           "name": {
@@ -195,16 +191,16 @@
             }
           },
           "logo": {
-            "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Logo"
+            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Logo"
           },
           "model": {
-            "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Model"
+            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Model"
           },
           "text": {
-            "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Text"
+            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Text"
           },
           "logic": {
-            "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Logic"
+            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Logic"
           }
         },
         "required": [
@@ -223,15 +219,15 @@
           ]
         }
       },
-      "org.accordproject.template@1.0.0.Agreement": {
+      "org.accordproject.protocol@1.0.0.Agreement": {
         "title": "Agreement",
-        "description": "An instance of org.accordproject.template@1.0.0.Agreement",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Agreement",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.template@1.0.0.Agreement",
-            "pattern": "^org\\.accordproject\\.template@1\\.0\\.0\\.Agreement$",
+            "default": "org.accordproject.protocol@1.0.0.Agreement",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Agreement$",
             "description": "The class identifier for this type"
           },
           "agreementId": {
@@ -243,7 +239,7 @@
           },
           "template": {
             "type": "string",
-            "description": "The identifier of an instance of org.accordproject.template@1.0.0.Template"
+            "description": "The identifier of an instance of org.accordproject.protocol@1.0.0.Template"
           }
         },
         "required": [
@@ -258,6 +254,41 @@
             "An Accord Project Agreement, an instance of a template"
           ]
         }
+      },
+      "org.accordproject.protocol@1.0.0.ConversionOptions": {
+        "title": "ConversionOptions",
+        "description": "An instance of org.accordproject.protocol@1.0.0.ConversionOptions",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.ConversionOptions",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.ConversionOptions$",
+            "description": "The class identifier for this type"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.protocol@1.0.0.PdfConversionOptions": {
+        "title": "PdfConversionOptions",
+        "description": "An instance of org.accordproject.protocol@1.0.0.PdfConversionOptions",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.PdfConversionOptions",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.PdfConversionOptions$",
+            "description": "The class identifier for this type"
+          },
+          "styles": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "$class"
+        ]
       },
       "concerto.metamodel@0.4.0.Position": {
         "title": "Position",
@@ -2420,7 +2451,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Template"
+                    "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
                   }
                 }
               }
@@ -2438,7 +2469,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Template"
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
               }
             }
           },
@@ -2463,7 +2494,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Template"
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
                 }
               }
             },
@@ -2480,7 +2511,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Template"
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
               }
             }
           },
@@ -2528,7 +2559,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Agreement"
+                    "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Agreement"
                   }
                 }
               }
@@ -2546,7 +2577,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Agreement"
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Agreement"
               }
             }
           },
@@ -2571,7 +2602,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Agreement"
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Agreement"
                 }
               }
             },
@@ -2588,7 +2619,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/org.accordproject.template@1.0.0.Agreement"
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Agreement"
               }
             }
           },
@@ -2612,6 +2643,42 @@
         "operationId": "deleteAgreement",
         "summary": "Delete a agreement",
         "description": "Deletes an existing `agreement`."
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/agreements/{agreementId}/convert/pdf": {
+      "summary": "Path used to convert an agreeement to PDF format.",
+      "description": "The REST endpoint/path used convert or render an `agreement` to PDF format.",
+      "post": {
+        "requestBody": {
+          "description": "PDF conversion options.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.PdfConversionOptions"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful response."
+          }
+        },
+        "operationId": "convertAgreementPdf",
+        "summary": "Convert agreement to PDF",
+        "description": "Converts an existing `agreement` to PDF."
       },
       "parameters": [
         {

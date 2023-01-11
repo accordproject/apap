@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gen": "concerto compile --model ./model/template.cto --target openapi --output .",
-    "build": "openapi -i openapi.json -o ./src",
+    "gen": "concerto compile --model ./model/protocol.cto --target openapi --output ./output",
+    "merge": "node merge.js",
+    "build": "npm run merge && openapi -i openapi.json -o ./src",
     "prebuild": "npm run gen",
     "lint": "int-openapi openapi.json"
   },
@@ -16,6 +17,7 @@
     "@accordproject/concerto-cli": "^3.0.1-20221207104407",
     "@ibm-cloud/openapi-ruleset": "^0.44.3",
     "ibm-openapi-validator": "^0.96.4",
-    "openapi-typescript-codegen": "^0.23.0"
+    "openapi-typescript-codegen": "^0.23.0",
+    "swagger-combine": "^1.4.0"
   }
 }

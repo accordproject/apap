@@ -72,12 +72,14 @@ export type { org_accordproject_commonmark_0_5_0_TableRow } from './models/org_a
 export type { org_accordproject_commonmark_0_5_0_TagInfo } from './models/org_accordproject_commonmark_0_5_0_TagInfo';
 export type { org_accordproject_commonmark_0_5_0_Text } from './models/org_accordproject_commonmark_0_5_0_Text';
 export type { org_accordproject_commonmark_0_5_0_ThematicBreak } from './models/org_accordproject_commonmark_0_5_0_ThematicBreak';
-export type { org_accordproject_template_1_0_0_Agreement } from './models/org_accordproject_template_1_0_0_Agreement';
-export type { org_accordproject_template_1_0_0_Function } from './models/org_accordproject_template_1_0_0_Function';
-export type { org_accordproject_template_1_0_0_Logic } from './models/org_accordproject_template_1_0_0_Logic';
-export type { org_accordproject_template_1_0_0_Logo } from './models/org_accordproject_template_1_0_0_Logo';
-export type { org_accordproject_template_1_0_0_Model } from './models/org_accordproject_template_1_0_0_Model';
-export type { org_accordproject_template_1_0_0_Template } from './models/org_accordproject_template_1_0_0_Template';
-export type { org_accordproject_template_1_0_0_Text } from './models/org_accordproject_template_1_0_0_Text';
+export type { org_accordproject_protocol_1_0_0_Agreement } from './models/org_accordproject_protocol_1_0_0_Agreement';
+export type { org_accordproject_protocol_1_0_0_ConversionOptions } from './models/org_accordproject_protocol_1_0_0_ConversionOptions';
+export type { org_accordproject_protocol_1_0_0_Function } from './models/org_accordproject_protocol_1_0_0_Function';
+export type { org_accordproject_protocol_1_0_0_Logic } from './models/org_accordproject_protocol_1_0_0_Logic';
+export type { org_accordproject_protocol_1_0_0_Logo } from './models/org_accordproject_protocol_1_0_0_Logo';
+export type { org_accordproject_protocol_1_0_0_Model } from './models/org_accordproject_protocol_1_0_0_Model';
+export type { org_accordproject_protocol_1_0_0_PdfConversionOptions } from './models/org_accordproject_protocol_1_0_0_PdfConversionOptions';
+export type { org_accordproject_protocol_1_0_0_Template } from './models/org_accordproject_protocol_1_0_0_Template';
+export type { org_accordproject_protocol_1_0_0_Text } from './models/org_accordproject_protocol_1_0_0_Text';
 
 export { DefaultService } from './services/DefaultService';

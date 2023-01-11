@@ -3,9 +3,9 @@
 /* eslint-disable */
 
 /**
- * An instance of org.accordproject.template@1.0.0.Agreement
+ * An instance of org.accordproject.protocol@1.0.0.Agreement
  */
-export type org_accordproject_template_1_0_0_Agreement = {
+export type org_accordproject_protocol_1_0_0_Agreement = {
     /**
      * The class identifier for this type
      */
@@ -16,7 +16,7 @@ export type org_accordproject_template_1_0_0_Agreement = {
     agreementId: string;
     data: string;
     /**
-     * The identifier of an instance of org.accordproject.template@1.0.0.Template
+     * The identifier of an instance of org.accordproject.protocol@1.0.0.Template
      */
     template: string;
 };

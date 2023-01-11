@@ -5,9 +5,9 @@
 import type { concerto_metamodel_0_4_0_Property } from './concerto_metamodel_0_4_0_Property';
 
 /**
- * An instance of org.accordproject.template@1.0.0.Function
+ * An instance of org.accordproject.protocol@1.0.0.Function
  */
-export type org_accordproject_template_1_0_0_Function = {
+export type org_accordproject_protocol_1_0_0_Function = {
     /**
      * The class identifier for this type
      */
@@ -17,7 +17,7 @@ export type org_accordproject_template_1_0_0_Function = {
      */
     name: string;
     inputs: Array<concerto_metamodel_0_4_0_Property>;
-    outputs: Array<concerto_metamodel_0_4_0_Property>;
+    output?: concerto_metamodel_0_4_0_Property;
     code: string;
 };
 

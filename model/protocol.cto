@@ -1,5 +1,5 @@
 @description("Accord Project Agreement Protocol")
-namespace org.accordproject.template@1.0.0
+namespace org.accordproject.protocol@1.0.0
 
 import concerto.metamodel@0.4.0.{Property,ConceptDeclaration} from https://models.accordproject.org/concerto/metamodel@0.4.0.cto
 import org.accordproject.commonmark@0.5.0.Document from https://models.accordproject.org/markdown/commonmark@0.5.0.cto
@@ -24,8 +24,8 @@ concept Model {
 concept Function identified by name {
     o String name
     o Property[] inputs
-    o Property[] outputs
-    o String code
+    o Property output optional
+    o String code //e.g. this could be an ES2015 JS string, or WASM bytes
 }
 
 @description("The functions for a template")
@@ -55,4 +55,11 @@ concept Agreement identified by agreementId {
     o String agreementId
     o String data
     --> Template template
+}
+
+abstract concept ConversionOptions {
+}
+
+concept PdfConversionOptions extends ConversionOptions {
+    o String styles optional
 }
