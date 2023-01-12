@@ -4,6 +4,7 @@
 import type { org_accordproject_protocol_1_0_0_Agreement } from '../models/org_accordproject_protocol_1_0_0_Agreement';
 import type { org_accordproject_protocol_1_0_0_Capabilities } from '../models/org_accordproject_protocol_1_0_0_Capabilities';
 import type { org_accordproject_protocol_1_0_0_PdfConversionOptions } from '../models/org_accordproject_protocol_1_0_0_PdfConversionOptions';
+import type { org_accordproject_protocol_1_0_0_SharedModel } from '../models/org_accordproject_protocol_1_0_0_SharedModel';
 import type { org_accordproject_protocol_1_0_0_StateResponse } from '../models/org_accordproject_protocol_1_0_0_StateResponse';
 import type { org_accordproject_protocol_1_0_0_Template } from '../models/org_accordproject_protocol_1_0_0_Template';
 import type { org_accordproject_protocol_1_0_0_TriggerRequest } from '../models/org_accordproject_protocol_1_0_0_TriggerRequest';
@@ -14,6 +15,98 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 
 export class DefaultService {
+
+    /**
+     * List All Sharedmodels
+     * Gets a list of all `sharedmodel` entities.
+     * @returns org_accordproject_protocol_1_0_0_SharedModel Successful response - returns an array of `sharedmodel` entities.
+     * @throws ApiError
+     */
+    public static listSharedmodels(): CancelablePromise<Array<org_accordproject_protocol_1_0_0_SharedModel>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/sharedmodels',
+        });
+    }
+
+    /**
+     * Create a Sharedmodel
+     * Creates a new instance of a `sharedmodel`.
+     * @param requestBody A new `sharedmodel` to be created.
+     * @returns any Successful response.
+     * @throws ApiError
+     */
+    public static createSharedmodel(
+        requestBody: org_accordproject_protocol_1_0_0_SharedModel,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/sharedmodels',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+
+    /**
+     * Get a sharedmodel
+     * Gets the details of a single instance of a `sharedmodel`.
+     * @param namespace A unique identifier for a `SharedModel`.
+     * @returns org_accordproject_protocol_1_0_0_SharedModel Successful response - returns a single `sharedmodel`.
+     * @throws ApiError
+     */
+    public static getSharedmodel(
+        namespace: string,
+    ): CancelablePromise<org_accordproject_protocol_1_0_0_SharedModel> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/sharedmodels/{namespace}',
+            path: {
+                'namespace': namespace,
+            },
+        });
+    }
+
+    /**
+     * Update a sharedmodel
+     * Updates an existing `sharedmodel`.
+     * @param namespace A unique identifier for a `SharedModel`.
+     * @param requestBody Updated `sharedmodel` information.
+     * @returns any Successful response.
+     * @throws ApiError
+     */
+    public static replaceSharedmodel(
+        namespace: string,
+        requestBody: org_accordproject_protocol_1_0_0_SharedModel,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/sharedmodels/{namespace}',
+            path: {
+                'namespace': namespace,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+
+    /**
+     * Delete a sharedmodel
+     * Deletes an existing `sharedmodel`.
+     * @param namespace A unique identifier for a `SharedModel`.
+     * @returns void
+     * @throws ApiError
+     */
+    public static deleteSharedmodel(
+        namespace: string,
+    ): CancelablePromise<void> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/sharedmodels/{namespace}',
+            path: {
+                'namespace': namespace,
+            },
+        });
+    }
 
     /**
      * List All Templates

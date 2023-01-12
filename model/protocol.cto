@@ -1,8 +1,11 @@
 @description("Accord Project Agreement Protocol")
 namespace org.accordproject.protocol@1.0.0
 
-import concerto.metamodel@0.4.0.{Property,ConceptDeclaration} from https://models.accordproject.org/concerto/metamodel@0.4.0.cto
+import concerto.metamodel@0.4.0.{Property,ConceptDeclaration,Model} from https://models.accordproject.org/concerto/metamodel@0.4.0.cto
 import org.accordproject.commonmark@0.5.0.Document from https://models.accordproject.org/markdown/commonmark@0.5.0.cto
+
+scalar JSON extends String
+scalar FullyQualifiedTypeName extends String
 
 @description("Bytes and mime type for a logo")
 concept Logo {
@@ -15,21 +18,31 @@ concept Text {
     o Document templateMark
 }
 
-@description("The data model for a template")
-concept Model {
+@description("The concept declaration associated with a template")
+concept TemplateModel {
     o ConceptDeclaration value
 }
 
+@description("A shared data model")
+@resource
+concept SharedModel identified by namespace {
+    o String namespace
+    o Model model
+}
+
+@description("The type (language) of code")
 enum CodeType {
     o ES2015
     o WASM_BYTES
 }
 
+@description("Code encoding scheme")
 enum CodeEncodingType {
     o PLAIN_TEXT
     o BASE64
 }
 
+@description("Executable code")
 concept Code {
     o CodeType type
     o CodeEncodingType encoding
@@ -39,15 +52,15 @@ concept Code {
 @description("A function for a template")
 concept Function identified by name {
     o String name
-    o String requestType
-    o String responseType optional
-    o String[] emittedTypes optional
+    o FullyQualifiedTypeName requestType
+    o FullyQualifiedTypeName responseType optional
+    o FullyQualifiedTypeName[] emittedTypes optional
     o Code code
 }
 
 @description("The functions for a template")
 concept Logic {
-    o String stateType optional
+    o FullyQualifiedTypeName stateType optional
     o Function[] functions
 }
 
@@ -62,7 +75,7 @@ concept Template identified by name {
     o String license
     o String[] keywords optional
     o Logo logo optional
-    o Model model
+    o TemplateModel templateModel
     o Text text
     o Logic logic optional
 }
@@ -71,48 +84,61 @@ concept Template identified by name {
 @description("An Accord Project Agreement, an instance of a template")
 concept Agreement identified by agreementId {
     o String agreementId
-    o String data
+    o JSON data
     --> Template template
 }
 
+@description("Abstract conversion options")
 abstract concept ConversionOptions {
 }
 
+@description("PDF conversion options")
 concept PdfConversionOptions extends ConversionOptions {
-    o String styles optional
+    o JSON styles optional
 }
 
+@description("Server feature identifiers")
 enum FeatureType {
-    o TEMPLATE_MANAGE
-    o TEMPLATE_VERIFY_SIGNATURES
+    // note: crud operations on templates is required
+    o TEMPLATE_VERIFY_SIGNATURES   //verify a signed template
+    o TEMPLATE_LOGIC               // templates with logic
+    o TEMPLATE_STATEFUL            // stateful templates
 
-    o AGREEMENT_MANAGE
-    o AGREEMENT_TRIGGER
-    o AGREEMENT_STATE
-    o AGREEMENT_CONVERT
+    o AGREEMENT_MANAGE             // crud operations on agreements
+    o AGREEMENT_TRIGGER            // trigger agreements
+    o AGREEMENT_STATE              // get the state of an agreement
+    o AGREEMENT_CONVERT_PDF        // convert agreement to PDF
 
-    o MODEL_MANAGE
+    o SHARED_MODEL_MANAGE          // manage shared models
 }
 
+@description("Server capabilities")
 concept Capabilities {
     o FeatureType[] features
 }
 
+@description("Trigger a function with a JSON payload")
 concept TriggerRequest {
     o String functionName
-    o String payload
+    o JSON payload
 }
 
+@description("Response of triggering a function")
 concept TriggerResponse {
-    o String result
+    o JSON result optional
+    o Boolean isError
+    o String errorMessage optional
+    o String errorDetails optional
 }
 
+@description("Runtime status of an agreement")
 enum AgreementStatusType {
     o RUNNING
     o COMPLETED
 }
 
+@description("Runtime state of an agreement")
 concept StateResponse {
     o AgreementStatusType status
-    o String result
+    o JSON result
 }

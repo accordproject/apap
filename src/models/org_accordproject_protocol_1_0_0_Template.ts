@@ -4,7 +4,7 @@
 
 import type { org_accordproject_protocol_1_0_0_Logic } from './org_accordproject_protocol_1_0_0_Logic';
 import type { org_accordproject_protocol_1_0_0_Logo } from './org_accordproject_protocol_1_0_0_Logo';
-import type { org_accordproject_protocol_1_0_0_Model } from './org_accordproject_protocol_1_0_0_Model';
+import type { org_accordproject_protocol_1_0_0_TemplateModel } from './org_accordproject_protocol_1_0_0_TemplateModel';
 import type { org_accordproject_protocol_1_0_0_Text } from './org_accordproject_protocol_1_0_0_Text';
 
 /**
@@ -26,7 +26,7 @@ export type org_accordproject_protocol_1_0_0_Template = {
     license: string;
     keywords?: Array<string>;
     logo?: org_accordproject_protocol_1_0_0_Logo;
-    model: org_accordproject_protocol_1_0_0_Model;
+    templateModel: org_accordproject_protocol_1_0_0_TemplateModel;
     text: org_accordproject_protocol_1_0_0_Text;
     logic?: org_accordproject_protocol_1_0_0_Logic;
 };

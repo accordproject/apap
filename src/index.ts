@@ -80,13 +80,16 @@ export { org_accordproject_protocol_1_0_0_CodeEncodingType } from './models/org_
 export { org_accordproject_protocol_1_0_0_CodeType } from './models/org_accordproject_protocol_1_0_0_CodeType';
 export type { org_accordproject_protocol_1_0_0_ConversionOptions } from './models/org_accordproject_protocol_1_0_0_ConversionOptions';
 export { org_accordproject_protocol_1_0_0_FeatureType } from './models/org_accordproject_protocol_1_0_0_FeatureType';
+export type { org_accordproject_protocol_1_0_0_FullyQualifiedTypeName } from './models/org_accordproject_protocol_1_0_0_FullyQualifiedTypeName';
 export type { org_accordproject_protocol_1_0_0_Function } from './models/org_accordproject_protocol_1_0_0_Function';
+export type { org_accordproject_protocol_1_0_0_JSON } from './models/org_accordproject_protocol_1_0_0_JSON';
 export type { org_accordproject_protocol_1_0_0_Logic } from './models/org_accordproject_protocol_1_0_0_Logic';
 export type { org_accordproject_protocol_1_0_0_Logo } from './models/org_accordproject_protocol_1_0_0_Logo';
-export type { org_accordproject_protocol_1_0_0_Model } from './models/org_accordproject_protocol_1_0_0_Model';
 export type { org_accordproject_protocol_1_0_0_PdfConversionOptions } from './models/org_accordproject_protocol_1_0_0_PdfConversionOptions';
+export type { org_accordproject_protocol_1_0_0_SharedModel } from './models/org_accordproject_protocol_1_0_0_SharedModel';
 export type { org_accordproject_protocol_1_0_0_StateResponse } from './models/org_accordproject_protocol_1_0_0_StateResponse';
 export type { org_accordproject_protocol_1_0_0_Template } from './models/org_accordproject_protocol_1_0_0_Template';
+export type { org_accordproject_protocol_1_0_0_TemplateModel } from './models/org_accordproject_protocol_1_0_0_TemplateModel';
 export type { org_accordproject_protocol_1_0_0_Text } from './models/org_accordproject_protocol_1_0_0_Text';
 export type { org_accordproject_protocol_1_0_0_TriggerRequest } from './models/org_accordproject_protocol_1_0_0_TriggerRequest';
 export type { org_accordproject_protocol_1_0_0_TriggerResponse } from './models/org_accordproject_protocol_1_0_0_TriggerResponse';
