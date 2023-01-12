@@ -12,6 +12,7 @@ export type org_accordproject_protocol_1_0_0_Logic = {
      * The class identifier for this type
      */
     $class: string;
+    stateType?: string;
     functions: Array<org_accordproject_protocol_1_0_0_Function>;
 };
 

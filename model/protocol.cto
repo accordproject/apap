@@ -20,16 +20,34 @@ concept Model {
     o ConceptDeclaration value
 }
 
+enum CodeType {
+    o ES2015
+    o WASM_BYTES
+}
+
+enum CodeEncodingType {
+    o PLAIN_TEXT
+    o BASE64
+}
+
+concept Code {
+    o CodeType type
+    o CodeEncodingType encoding
+    o String value
+}
+
 @description("A function for a template")
 concept Function identified by name {
     o String name
-    o Property[] inputs
-    o Property output optional
-    o String code //e.g. this could be an ES2015 JS string, or WASM bytes
+    o String requestType
+    o String responseType optional
+    o String[] emittedTypes optional
+    o Code code
 }
 
 @description("The functions for a template")
 concept Logic {
+    o String stateType optional
     o Function[] functions
 }
 
@@ -62,4 +80,39 @@ abstract concept ConversionOptions {
 
 concept PdfConversionOptions extends ConversionOptions {
     o String styles optional
+}
+
+enum FeatureType {
+    o TEMPLATE_MANAGE
+    o TEMPLATE_VERIFY_SIGNATURES
+
+    o AGREEMENT_MANAGE
+    o AGREEMENT_TRIGGER
+    o AGREEMENT_STATE
+    o AGREEMENT_CONVERT
+
+    o MODEL_MANAGE
+}
+
+concept Capabilities {
+    o FeatureType[] features
+}
+
+concept TriggerRequest {
+    o String functionName
+    o String payload
+}
+
+concept TriggerResponse {
+    o String result
+}
+
+enum AgreementStatusType {
+    o RUNNING
+    o COMPLETED
+}
+
+concept StateResponse {
+    o AgreementStatusType status
+    o String result
 }

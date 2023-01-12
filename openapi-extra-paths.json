@@ -35,6 +35,102 @@
           "required": true
         }
       ]
+    },
+    "/agreements/{agreementId}/trigger": {
+      "summary": "Path used to trigger an agreeement.",
+      "description": "The REST endpoint/path used trigger an `agreement`.",
+      "post": {
+        "requestBody": {
+          "description": "Incoming data — a JSON serialized Concerto type",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.TriggerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.TriggerResponse"
+                }
+              }
+            },
+            "description": "Successful response - returns the result of calling a function."
+          }
+        },
+        "operationId": "triggerAgreement",
+        "summary": "Trigger an agreement",
+        "description": "Sends data to an existing agreement."
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/agreements/{agreementId}/state": {
+      "summary": "Path used to get the state of an agreeement.",
+      "description": "The REST endpoint/path used get the state of an `agreement`.",
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.StateResponse"
+                }
+              }
+            },
+            "description": "Successful response - returns the state of an `agreement`."
+          }
+        },
+        "operationId": "agreementState",
+        "summary": "Get the state of an agreement",
+        "description": "Gets the runtime state of an agreement."
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/capabilities": {
+      "summary": "Path used to retrieve server capabilities.",
+      "description": "The REST endpoint used to understand the capabiities of the server.",
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Capabilities"
+                }
+              }
+            },
+            "description": "Successful response - returns `capabilities` for the server."
+          }
+        },
+        "operationId": "capabilities",
+        "summary": "Get server capabilities",
+        "description": "Retrieve the supported features of the server."
+      }
     }
   }
 }

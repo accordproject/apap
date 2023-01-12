@@ -73,13 +73,22 @@ export type { org_accordproject_commonmark_0_5_0_TagInfo } from './models/org_ac
 export type { org_accordproject_commonmark_0_5_0_Text } from './models/org_accordproject_commonmark_0_5_0_Text';
 export type { org_accordproject_commonmark_0_5_0_ThematicBreak } from './models/org_accordproject_commonmark_0_5_0_ThematicBreak';
 export type { org_accordproject_protocol_1_0_0_Agreement } from './models/org_accordproject_protocol_1_0_0_Agreement';
+export { org_accordproject_protocol_1_0_0_AgreementStatusType } from './models/org_accordproject_protocol_1_0_0_AgreementStatusType';
+export type { org_accordproject_protocol_1_0_0_Capabilities } from './models/org_accordproject_protocol_1_0_0_Capabilities';
+export type { org_accordproject_protocol_1_0_0_Code } from './models/org_accordproject_protocol_1_0_0_Code';
+export { org_accordproject_protocol_1_0_0_CodeEncodingType } from './models/org_accordproject_protocol_1_0_0_CodeEncodingType';
+export { org_accordproject_protocol_1_0_0_CodeType } from './models/org_accordproject_protocol_1_0_0_CodeType';
 export type { org_accordproject_protocol_1_0_0_ConversionOptions } from './models/org_accordproject_protocol_1_0_0_ConversionOptions';
+export { org_accordproject_protocol_1_0_0_FeatureType } from './models/org_accordproject_protocol_1_0_0_FeatureType';
 export type { org_accordproject_protocol_1_0_0_Function } from './models/org_accordproject_protocol_1_0_0_Function';
 export type { org_accordproject_protocol_1_0_0_Logic } from './models/org_accordproject_protocol_1_0_0_Logic';
 export type { org_accordproject_protocol_1_0_0_Logo } from './models/org_accordproject_protocol_1_0_0_Logo';
 export type { org_accordproject_protocol_1_0_0_Model } from './models/org_accordproject_protocol_1_0_0_Model';
 export type { org_accordproject_protocol_1_0_0_PdfConversionOptions } from './models/org_accordproject_protocol_1_0_0_PdfConversionOptions';
+export type { org_accordproject_protocol_1_0_0_StateResponse } from './models/org_accordproject_protocol_1_0_0_StateResponse';
 export type { org_accordproject_protocol_1_0_0_Template } from './models/org_accordproject_protocol_1_0_0_Template';
 export type { org_accordproject_protocol_1_0_0_Text } from './models/org_accordproject_protocol_1_0_0_Text';
+export type { org_accordproject_protocol_1_0_0_TriggerRequest } from './models/org_accordproject_protocol_1_0_0_TriggerRequest';
+export type { org_accordproject_protocol_1_0_0_TriggerResponse } from './models/org_accordproject_protocol_1_0_0_TriggerResponse';
 
 export { DefaultService } from './services/DefaultService';

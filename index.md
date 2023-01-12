@@ -346,100 +346,22 @@ Gets a list of all `template` entities.
     },
     "logic": {
       "$class": "org.accordproject.protocol@1.0.0.Logic",
+      "stateType": "string",
       "functions": [
         {
           "$class": "org.accordproject.protocol@1.0.0.Function",
           "name": "string",
-          "inputs": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Property",
-              "name": "string",
-              "isArray": true,
-              "isOptional": true,
-              "decorators": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.Decorator",
-                  "name": "string",
-                  "arguments": [
-                    {}
-                  ],
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
+          "requestType": "string",
+          "responseType": "string",
+          "emittedTypes": [
+            "string"
           ],
-          "output": {
-            "$class": "concerto.metamodel@0.4.0.Property",
-            "name": "string",
-            "isArray": true,
-            "isOptional": true,
-            "decorators": [
-              {
-                "$class": "concerto.metamodel@0.4.0.Decorator",
-                "name": "string",
-                "arguments": [
-                  {
-                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                    "location": {}
-                  }
-                ],
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          },
-          "code": "string"
+          "code": {
+            "$class": "org.accordproject.protocol@1.0.0.Code",
+            "type": "ES2015",
+            "encoding": "PLAIN_TEXT",
+            "value": "string"
+          }
         }
       ]
     }
@@ -530,14 +452,28 @@ Status Code **200**
 |»»»» endLine|integer|false|none|none|
 |»» logic|[org.accordproject.protocol@1.0.0.Logic](#schemaorg.accordproject.protocol@1.0.0.logic)|false|none|An instance of org.accordproject.protocol@1.0.0.Logic|
 |»»» $class|string|true|none|The class identifier for this type|
+|»»» stateType|string|false|none|none|
 |»»» functions|[[org.accordproject.protocol@1.0.0.Function](#schemaorg.accordproject.protocol@1.0.0.function)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Function]|
 |»»»» Function|[org.accordproject.protocol@1.0.0.Function](#schemaorg.accordproject.protocol@1.0.0.function)|false|none|An instance of org.accordproject.protocol@1.0.0.Function|
 |»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»» name|string|true|none|The instance identifier for this type|
-|»»»»» inputs|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
-|»»»»»» Property|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-|»»»»» output|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-|»»»»» code|string|true|none|none|
+|»»»»» requestType|string|true|none|none|
+|»»»»» responseType|string|false|none|none|
+|»»»»» emittedTypes|[string]|false|none|none|
+|»»»»» code|[org.accordproject.protocol@1.0.0.Code](#schemaorg.accordproject.protocol@1.0.0.code)|true|none|An instance of org.accordproject.protocol@1.0.0.Code|
+|»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»» type|any|true|none|An instance of org.accordproject.protocol@1.0.0.CodeType|
+|»»»»»» encoding|any|true|none|An instance of org.accordproject.protocol@1.0.0.CodeEncodingType|
+|»»»»»» value|string|true|none|none|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|type|ES2015|
+|type|WASM_BYTES|
+|encoding|PLAIN_TEXT|
+|encoding|BASE64|
 
 <aside class="success">
 This operation does not require authentication
@@ -735,118 +671,22 @@ const inputBody = '{
   },
   "logic": {
     "$class": "org.accordproject.protocol@1.0.0.Logic",
+    "stateType": "string",
     "functions": [
       {
         "$class": "org.accordproject.protocol@1.0.0.Function",
         "name": "string",
-        "inputs": [
-          {
-            "$class": "concerto.metamodel@0.4.0.Property",
-            "name": "string",
-            "isArray": true,
-            "isOptional": true,
-            "decorators": [
-              {
-                "$class": "concerto.metamodel@0.4.0.Decorator",
-                "name": "string",
-                "arguments": [
-                  {
-                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                    "location": {}
-                  }
-                ],
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
+        "requestType": "string",
+        "responseType": "string",
+        "emittedTypes": [
+          "string"
         ],
-        "output": {
-          "$class": "concerto.metamodel@0.4.0.Property",
-          "name": "string",
-          "isArray": true,
-          "isOptional": true,
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        },
-        "code": "string"
+        "code": {
+          "$class": "org.accordproject.protocol@1.0.0.Code",
+          "type": "ES2015",
+          "encoding": "PLAIN_TEXT",
+          "value": "string"
+        }
       }
     ]
   }
@@ -1150,118 +990,22 @@ Creates a new instance of a `template`.
   },
   "logic": {
     "$class": "org.accordproject.protocol@1.0.0.Logic",
+    "stateType": "string",
     "functions": [
       {
         "$class": "org.accordproject.protocol@1.0.0.Function",
         "name": "string",
-        "inputs": [
-          {
-            "$class": "concerto.metamodel@0.4.0.Property",
-            "name": "string",
-            "isArray": true,
-            "isOptional": true,
-            "decorators": [
-              {
-                "$class": "concerto.metamodel@0.4.0.Decorator",
-                "name": "string",
-                "arguments": [
-                  {
-                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                    "location": {}
-                  }
-                ],
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
+        "requestType": "string",
+        "responseType": "string",
+        "emittedTypes": [
+          "string"
         ],
-        "output": {
-          "$class": "concerto.metamodel@0.4.0.Property",
-          "name": "string",
-          "isArray": true,
-          "isOptional": true,
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        },
-        "code": "string"
+        "code": {
+          "$class": "org.accordproject.protocol@1.0.0.Code",
+          "type": "ES2015",
+          "encoding": "PLAIN_TEXT",
+          "value": "string"
+        }
       }
     ]
   }
@@ -1613,118 +1357,22 @@ Gets the details of a single instance of a `template`.
   },
   "logic": {
     "$class": "org.accordproject.protocol@1.0.0.Logic",
+    "stateType": "string",
     "functions": [
       {
         "$class": "org.accordproject.protocol@1.0.0.Function",
         "name": "string",
-        "inputs": [
-          {
-            "$class": "concerto.metamodel@0.4.0.Property",
-            "name": "string",
-            "isArray": true,
-            "isOptional": true,
-            "decorators": [
-              {
-                "$class": "concerto.metamodel@0.4.0.Decorator",
-                "name": "string",
-                "arguments": [
-                  {
-                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                    "location": {}
-                  }
-                ],
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
+        "requestType": "string",
+        "responseType": "string",
+        "emittedTypes": [
+          "string"
         ],
-        "output": {
-          "$class": "concerto.metamodel@0.4.0.Property",
-          "name": "string",
-          "isArray": true,
-          "isOptional": true,
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        },
-        "code": "string"
+        "code": {
+          "$class": "org.accordproject.protocol@1.0.0.Code",
+          "type": "ES2015",
+          "encoding": "PLAIN_TEXT",
+          "value": "string"
+        }
       }
     ]
   }
@@ -1933,118 +1581,22 @@ const inputBody = '{
   },
   "logic": {
     "$class": "org.accordproject.protocol@1.0.0.Logic",
+    "stateType": "string",
     "functions": [
       {
         "$class": "org.accordproject.protocol@1.0.0.Function",
         "name": "string",
-        "inputs": [
-          {
-            "$class": "concerto.metamodel@0.4.0.Property",
-            "name": "string",
-            "isArray": true,
-            "isOptional": true,
-            "decorators": [
-              {
-                "$class": "concerto.metamodel@0.4.0.Decorator",
-                "name": "string",
-                "arguments": [
-                  {
-                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                    "location": {}
-                  }
-                ],
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
+        "requestType": "string",
+        "responseType": "string",
+        "emittedTypes": [
+          "string"
         ],
-        "output": {
-          "$class": "concerto.metamodel@0.4.0.Property",
-          "name": "string",
-          "isArray": true,
-          "isOptional": true,
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        },
-        "code": "string"
+        "code": {
+          "$class": "org.accordproject.protocol@1.0.0.Code",
+          "type": "ES2015",
+          "encoding": "PLAIN_TEXT",
+          "value": "string"
+        }
       }
     ]
   }
@@ -2348,118 +1900,22 @@ Updates an existing `template`.
   },
   "logic": {
     "$class": "org.accordproject.protocol@1.0.0.Logic",
+    "stateType": "string",
     "functions": [
       {
         "$class": "org.accordproject.protocol@1.0.0.Function",
         "name": "string",
-        "inputs": [
-          {
-            "$class": "concerto.metamodel@0.4.0.Property",
-            "name": "string",
-            "isArray": true,
-            "isOptional": true,
-            "decorators": [
-              {
-                "$class": "concerto.metamodel@0.4.0.Decorator",
-                "name": "string",
-                "arguments": [
-                  {
-                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                    "location": {}
-                  }
-                ],
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
+        "requestType": "string",
+        "responseType": "string",
+        "emittedTypes": [
+          "string"
         ],
-        "output": {
-          "$class": "concerto.metamodel@0.4.0.Property",
-          "name": "string",
-          "isArray": true,
-          "isOptional": true,
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        },
-        "code": "string"
+        "code": {
+          "$class": "org.accordproject.protocol@1.0.0.Code",
+          "type": "ES2015",
+          "encoding": "PLAIN_TEXT",
+          "value": "string"
+        }
       }
     ]
   }
@@ -3659,6 +3115,547 @@ Converts an existing `agreement` to PDF.
 This operation does not require authentication
 </aside>
 
+## triggerAgreement
+
+<a id="opIdtriggerAgreement"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X POST /agreements/{agreementId}/trigger \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json'
+
+```
+
+```http
+POST /agreements/{agreementId}/trigger HTTP/1.1
+
+Content-Type: application/json
+Accept: application/json
+
+```
+
+```javascript
+const inputBody = '{
+  "$class": "org.accordproject.protocol@1.0.0.TriggerRequest",
+  "functionName": "string",
+  "payload": "string"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json'
+};
+
+fetch('/agreements/{agreementId}/trigger',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Content-Type' => 'application/json',
+  'Accept' => 'application/json'
+}
+
+result = RestClient.post '/agreements/{agreementId}/trigger',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+r = requests.post('/agreements/{agreementId}/trigger', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Content-Type' => 'application/json',
+    'Accept' => 'application/json',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('POST','/agreements/{agreementId}/trigger', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("/agreements/{agreementId}/trigger");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "/agreements/{agreementId}/trigger", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`POST /agreements/{agreementId}/trigger`
+
+*Trigger an agreement*
+
+Sends data to an existing agreement.
+
+> Body parameter
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.TriggerRequest",
+  "functionName": "string",
+  "payload": "string"
+}
+```
+
+<h3 id="triggeragreement-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[org.accordproject.protocol@1.0.0.TriggerRequest](#schemaorg.accordproject.protocol@1.0.0.triggerrequest)|true|Incoming data — a JSON serialized Concerto type|
+|agreementId|path|string|true|A unique identifier for a `Agreement`.|
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.TriggerResponse",
+  "result": "string"
+}
+```
+
+<h3 id="triggeragreement-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Successful response - returns the result of calling a function.|[org.accordproject.protocol@1.0.0.TriggerResponse](#schemaorg.accordproject.protocol@1.0.0.triggerresponse)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## agreementState
+
+<a id="opIdagreementState"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET /agreements/{agreementId}/state \
+  -H 'Accept: application/json'
+
+```
+
+```http
+GET /agreements/{agreementId}/state HTTP/1.1
+
+Accept: application/json
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('/agreements/{agreementId}/state',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => 'application/json'
+}
+
+result = RestClient.get '/agreements/{agreementId}/state',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': 'application/json'
+}
+
+r = requests.get('/agreements/{agreementId}/state', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => 'application/json',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','/agreements/{agreementId}/state', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("/agreements/{agreementId}/state");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"application/json"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "/agreements/{agreementId}/state", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /agreements/{agreementId}/state`
+
+*Get the state of an agreement*
+
+Gets the runtime state of an agreement.
+
+<h3 id="agreementstate-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|agreementId|path|string|true|A unique identifier for a `Agreement`.|
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.StateResponse",
+  "status": "RUNNING",
+  "result": "string"
+}
+```
+
+<h3 id="agreementstate-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Successful response - returns the state of an `agreement`.|[org.accordproject.protocol@1.0.0.StateResponse](#schemaorg.accordproject.protocol@1.0.0.stateresponse)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## capabilities
+
+<a id="opIdcapabilities"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET /capabilities \
+  -H 'Accept: application/json'
+
+```
+
+```http
+GET /capabilities HTTP/1.1
+
+Accept: application/json
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('/capabilities',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => 'application/json'
+}
+
+result = RestClient.get '/capabilities',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': 'application/json'
+}
+
+r = requests.get('/capabilities', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => 'application/json',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','/capabilities', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("/capabilities");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"application/json"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "/capabilities", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /capabilities`
+
+*Get server capabilities*
+
+Retrieve the supported features of the server.
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Capabilities",
+  "features": [
+    "TEMPLATE_MANAGE"
+  ]
+}
+```
+
+<h3 id="capabilities-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Successful response - returns `capabilities` for the server.|[org.accordproject.protocol@1.0.0.Capabilities](#schemaorg.accordproject.protocol@1.0.0.capabilities)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
 # Schemas
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.Logo">org.accordproject.protocol@1.0.0.Logo</h2>
@@ -3890,6 +3887,88 @@ Model
 |$class|string|true|none|The class identifier for this type|
 |value|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|true|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
 
+<h2 id="tocS_org.accordproject.protocol@1.0.0.CodeType">org.accordproject.protocol@1.0.0.CodeType</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.codetype"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.CodeType"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.codetype"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.codetype"></a>
+
+```json
+"ES2015"
+
+```
+
+CodeType
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|CodeType|any|false|none|An instance of org.accordproject.protocol@1.0.0.CodeType|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|CodeType|ES2015|
+|CodeType|WASM_BYTES|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.CodeEncodingType">org.accordproject.protocol@1.0.0.CodeEncodingType</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.codeencodingtype"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.CodeEncodingType"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.codeencodingtype"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.codeencodingtype"></a>
+
+```json
+"PLAIN_TEXT"
+
+```
+
+CodeEncodingType
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|CodeEncodingType|any|false|none|An instance of org.accordproject.protocol@1.0.0.CodeEncodingType|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|CodeEncodingType|PLAIN_TEXT|
+|CodeEncodingType|BASE64|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Code">org.accordproject.protocol@1.0.0.Code</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.code"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Code"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.code"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.code"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Code",
+  "type": "ES2015",
+  "encoding": "PLAIN_TEXT",
+  "value": "string"
+}
+
+```
+
+Code
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|type|[org.accordproject.protocol@1.0.0.CodeType](#schemaorg.accordproject.protocol@1.0.0.codetype)|true|none|An instance of org.accordproject.protocol@1.0.0.CodeType|
+|encoding|[org.accordproject.protocol@1.0.0.CodeEncodingType](#schemaorg.accordproject.protocol@1.0.0.codeencodingtype)|true|none|An instance of org.accordproject.protocol@1.0.0.CodeEncodingType|
+|value|string|true|none|none|
+
 <h2 id="tocS_org.accordproject.protocol@1.0.0.Function">org.accordproject.protocol@1.0.0.Function</h2>
 <!-- backwards compatibility -->
 <a id="schemaorg.accordproject.protocol@1.0.0.function"></a>
@@ -3901,139 +3980,17 @@ Model
 {
   "$class": "org.accordproject.protocol@1.0.0.Function",
   "name": "string",
-  "inputs": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Property",
-      "name": "string",
-      "isArray": true,
-      "isOptional": true,
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
+  "requestType": "string",
+  "responseType": "string",
+  "emittedTypes": [
+    "string"
   ],
-  "output": {
-    "$class": "concerto.metamodel@0.4.0.Property",
-    "name": "string",
-    "isArray": true,
-    "isOptional": true,
-    "decorators": [
-      {
-        "$class": "concerto.metamodel@0.4.0.Decorator",
-        "name": "string",
-        "arguments": [
-          {
-            "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
-        ],
-        "location": {
-          "$class": "concerto.metamodel@0.4.0.Range",
-          "start": {
-            "$class": "concerto.metamodel@0.4.0.Position",
-            "line": 0,
-            "column": 0,
-            "offset": 0
-          },
-          "end": {
-            "$class": "concerto.metamodel@0.4.0.Position",
-            "line": 0,
-            "column": 0,
-            "offset": 0
-          },
-          "source": "string"
-        }
-      }
-    ],
-    "location": {
-      "$class": "concerto.metamodel@0.4.0.Range",
-      "start": {
-        "$class": "concerto.metamodel@0.4.0.Position",
-        "line": 0,
-        "column": 0,
-        "offset": 0
-      },
-      "end": {
-        "$class": "concerto.metamodel@0.4.0.Position",
-        "line": 0,
-        "column": 0,
-        "offset": 0
-      },
-      "source": "string"
-    }
-  },
-  "code": "string"
+  "code": {
+    "$class": "org.accordproject.protocol@1.0.0.Code",
+    "type": "ES2015",
+    "encoding": "PLAIN_TEXT",
+    "value": "string"
+  }
 }
 
 ```
@@ -4046,9 +4003,10 @@ Function
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for this type|
 |name|string|true|none|The instance identifier for this type|
-|inputs|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
-|output|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-|code|string|true|none|none|
+|requestType|string|true|none|none|
+|responseType|string|false|none|none|
+|emittedTypes|[string]|false|none|none|
+|code|[org.accordproject.protocol@1.0.0.Code](#schemaorg.accordproject.protocol@1.0.0.code)|true|none|An instance of org.accordproject.protocol@1.0.0.Code|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.Logic">org.accordproject.protocol@1.0.0.Logic</h2>
 <!-- backwards compatibility -->
@@ -4060,133 +4018,22 @@ Function
 ```json
 {
   "$class": "org.accordproject.protocol@1.0.0.Logic",
+  "stateType": "string",
   "functions": [
     {
       "$class": "org.accordproject.protocol@1.0.0.Function",
       "name": "string",
-      "inputs": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Property",
-          "name": "string",
-          "isArray": true,
-          "isOptional": true,
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
+      "requestType": "string",
+      "responseType": "string",
+      "emittedTypes": [
+        "string"
       ],
-      "output": {
-        "$class": "concerto.metamodel@0.4.0.Property",
-        "name": "string",
-        "isArray": true,
-        "isOptional": true,
-        "decorators": [
-          {
-            "$class": "concerto.metamodel@0.4.0.Decorator",
-            "name": "string",
-            "arguments": [
-              {
-                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
-        ],
-        "location": {
-          "$class": "concerto.metamodel@0.4.0.Range",
-          "start": {
-            "$class": "concerto.metamodel@0.4.0.Position",
-            "line": 0,
-            "column": 0,
-            "offset": 0
-          },
-          "end": {
-            "$class": "concerto.metamodel@0.4.0.Position",
-            "line": 0,
-            "column": 0,
-            "offset": 0
-          },
-          "source": "string"
-        }
-      },
-      "code": "string"
+      "code": {
+        "$class": "org.accordproject.protocol@1.0.0.Code",
+        "type": "ES2015",
+        "encoding": "PLAIN_TEXT",
+        "value": "string"
+      }
     }
   ]
 }
@@ -4200,6 +4047,7 @@ Logic
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for this type|
+|stateType|string|false|none|none|
 |functions|[[org.accordproject.protocol@1.0.0.Function](#schemaorg.accordproject.protocol@1.0.0.function)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Function]|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.Template">org.accordproject.protocol@1.0.0.Template</h2>
@@ -4381,118 +4229,22 @@ Logic
   },
   "logic": {
     "$class": "org.accordproject.protocol@1.0.0.Logic",
+    "stateType": "string",
     "functions": [
       {
         "$class": "org.accordproject.protocol@1.0.0.Function",
         "name": "string",
-        "inputs": [
-          {
-            "$class": "concerto.metamodel@0.4.0.Property",
-            "name": "string",
-            "isArray": true,
-            "isOptional": true,
-            "decorators": [
-              {
-                "$class": "concerto.metamodel@0.4.0.Decorator",
-                "name": "string",
-                "arguments": [
-                  {
-                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                    "location": {}
-                  }
-                ],
-                "location": {
-                  "$class": "concerto.metamodel@0.4.0.Range",
-                  "start": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "end": {
-                    "$class": "concerto.metamodel@0.4.0.Position",
-                    "line": 0,
-                    "column": 0,
-                    "offset": 0
-                  },
-                  "source": "string"
-                }
-              }
-            ],
-            "location": {
-              "$class": "concerto.metamodel@0.4.0.Range",
-              "start": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "end": {
-                "$class": "concerto.metamodel@0.4.0.Position",
-                "line": 0,
-                "column": 0,
-                "offset": 0
-              },
-              "source": "string"
-            }
-          }
+        "requestType": "string",
+        "responseType": "string",
+        "emittedTypes": [
+          "string"
         ],
-        "output": {
-          "$class": "concerto.metamodel@0.4.0.Property",
-          "name": "string",
-          "isArray": true,
-          "isOptional": true,
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        },
-        "code": "string"
+        "code": {
+          "$class": "org.accordproject.protocol@1.0.0.Code",
+          "type": "ES2015",
+          "encoding": "PLAIN_TEXT",
+          "value": "string"
+        }
       }
     ]
   }
@@ -4593,1216 +4345,166 @@ PdfConversionOptions
 |$class|string|true|none|The class identifier for this type|
 |styles|string|false|none|none|
 
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Node">org.accordproject.commonmark@0.5.0.Node</h2>
+<h2 id="tocS_org.accordproject.protocol@1.0.0.FeatureType">org.accordproject.protocol@1.0.0.FeatureType</h2>
 <!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.node"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Node"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.node"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.node"></a>
+<a id="schemaorg.accordproject.protocol@1.0.0.featuretype"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.FeatureType"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.featuretype"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.featuretype"></a>
+
+```json
+"TEMPLATE_MANAGE"
+
+```
+
+FeatureType
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|FeatureType|any|false|none|An instance of org.accordproject.protocol@1.0.0.FeatureType|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|FeatureType|TEMPLATE_MANAGE|
+|FeatureType|TEMPLATE_VERIFY_SIGNATURES|
+|FeatureType|AGREEMENT_MANAGE|
+|FeatureType|AGREEMENT_TRIGGER|
+|FeatureType|AGREEMENT_STATE|
+|FeatureType|AGREEMENT_CONVERT|
+|FeatureType|MODEL_MANAGE|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Capabilities">org.accordproject.protocol@1.0.0.Capabilities</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.capabilities"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Capabilities"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.capabilities"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.capabilities"></a>
 
 ```json
 {
-  "$class": "org.accordproject.commonmark@0.5.0.Node",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
+  "$class": "org.accordproject.protocol@1.0.0.Capabilities",
+  "features": [
+    "TEMPLATE_MANAGE"
+  ]
 }
 
 ```
 
-Node
+Capabilities
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
+|features|[[org.accordproject.protocol@1.0.0.FeatureType](#schemaorg.accordproject.protocol@1.0.0.featuretype)]|true|none|[An instance of org.accordproject.protocol@1.0.0.FeatureType]|
 
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Root">org.accordproject.commonmark@0.5.0.Root</h2>
+<h2 id="tocS_org.accordproject.protocol@1.0.0.TriggerRequest">org.accordproject.protocol@1.0.0.TriggerRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.root"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Root"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.root"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.root"></a>
+<a id="schemaorg.accordproject.protocol@1.0.0.triggerrequest"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.TriggerRequest"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.triggerrequest"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.triggerrequest"></a>
 
 ```json
 {
-  "$class": "org.accordproject.commonmark@0.5.0.Root",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
+  "$class": "org.accordproject.protocol@1.0.0.TriggerRequest",
+  "functionName": "string",
+  "payload": "string"
 }
 
 ```
 
-Root
+TriggerRequest
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
+|functionName|string|true|none|none|
+|payload|string|true|none|none|
 
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Child">org.accordproject.commonmark@0.5.0.Child</h2>
+<h2 id="tocS_org.accordproject.protocol@1.0.0.TriggerResponse">org.accordproject.protocol@1.0.0.TriggerResponse</h2>
 <!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.child"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Child"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.child"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.child"></a>
+<a id="schemaorg.accordproject.protocol@1.0.0.triggerresponse"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.TriggerResponse"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.triggerresponse"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.triggerresponse"></a>
 
 ```json
 {
-  "$class": "org.accordproject.commonmark@0.5.0.Child",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
+  "$class": "org.accordproject.protocol@1.0.0.TriggerResponse",
+  "result": "string"
 }
 
 ```
 
-Child
+TriggerResponse
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
+|result|string|true|none|none|
 
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Text">org.accordproject.commonmark@0.5.0.Text</h2>
+<h2 id="tocS_org.accordproject.protocol@1.0.0.AgreementStatusType">org.accordproject.protocol@1.0.0.AgreementStatusType</h2>
 <!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.text"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Text"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.text"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.text"></a>
+<a id="schemaorg.accordproject.protocol@1.0.0.agreementstatustype"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.AgreementStatusType"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.agreementstatustype"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.agreementstatustype"></a>
+
+```json
+"RUNNING"
+
+```
+
+AgreementStatusType
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|AgreementStatusType|any|false|none|An instance of org.accordproject.protocol@1.0.0.AgreementStatusType|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|AgreementStatusType|RUNNING|
+|AgreementStatusType|COMPLETED|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.StateResponse">org.accordproject.protocol@1.0.0.StateResponse</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.stateresponse"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.StateResponse"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.stateresponse"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.stateresponse"></a>
 
 ```json
 {
-  "$class": "org.accordproject.commonmark@0.5.0.Text",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
+  "$class": "org.accordproject.protocol@1.0.0.StateResponse",
+  "status": "RUNNING",
+  "result": "string"
 }
 
 ```
 
-Text
+StateResponse
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Attribute">org.accordproject.commonmark@0.5.0.Attribute</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.attribute"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Attribute"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.attribute"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.attribute"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-  "name": "string",
-  "value": "string"
-}
-
-```
-
-Attribute
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|name|string|true|none|none|
-|value|string|true|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TagInfo">org.accordproject.commonmark@0.5.0.TagInfo</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.taginfo"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TagInfo"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.taginfo"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.taginfo"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-  "tagName": "string",
-  "attributeString": "string",
-  "attributes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-      "name": "string",
-      "value": "string"
-    }
-  ],
-  "content": "string",
-  "closed": true
-}
-
-```
-
-TagInfo
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|tagName|string|true|none|none|
-|attributeString|string|true|none|none|
-|attributes|[[org.accordproject.commonmark@0.5.0.Attribute](#schemaorg.accordproject.commonmark@0.5.0.attribute)]|true|none|[An instance of org.accordproject.commonmark@0.5.0.Attribute]|
-|content|string|true|none|none|
-|closed|boolean|true|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.CodeBlock">org.accordproject.commonmark@0.5.0.CodeBlock</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.codeblock"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.CodeBlock"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.codeblock"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.codeblock"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.CodeBlock",
-  "info": "string",
-  "tag": {
-    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-    "tagName": "string",
-    "attributeString": "string",
-    "attributes": [
-      {
-        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-        "name": "string",
-        "value": "string"
-      }
-    ],
-    "content": "string",
-    "closed": true
-  },
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-CodeBlock
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|info|string|false|none|none|
-|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Code">org.accordproject.commonmark@0.5.0.Code</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.code"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Code"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.code"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.code"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Code",
-  "info": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Code
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|info|string|false|none|none|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlInline">org.accordproject.commonmark@0.5.0.HtmlInline</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.htmlinline"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.HtmlInline"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.htmlinline"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.htmlinline"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.HtmlInline",
-  "tag": {
-    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-    "tagName": "string",
-    "attributeString": "string",
-    "attributes": [
-      {
-        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-        "name": "string",
-        "value": "string"
-      }
-    ],
-    "content": "string",
-    "closed": true
-  },
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-HtmlInline
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlBlock">org.accordproject.commonmark@0.5.0.HtmlBlock</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.htmlblock"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.HtmlBlock"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.htmlblock"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.htmlblock"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.HtmlBlock",
-  "tag": {
-    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-    "tagName": "string",
-    "attributeString": "string",
-    "attributes": [
-      {
-        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-        "name": "string",
-        "value": "string"
-      }
-    ],
-    "content": "string",
-    "closed": true
-  },
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-HtmlBlock
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Emph">org.accordproject.commonmark@0.5.0.Emph</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.emph"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Emph"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.emph"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.emph"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Emph",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Emph
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Strong">org.accordproject.commonmark@0.5.0.Strong</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.strong"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Strong"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.strong"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.strong"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Strong",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Strong
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.BlockQuote">org.accordproject.commonmark@0.5.0.BlockQuote</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.blockquote"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.BlockQuote"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.blockquote"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.blockquote"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.BlockQuote",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-BlockQuote
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Heading">org.accordproject.commonmark@0.5.0.Heading</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.heading"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Heading"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.heading"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.heading"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Heading",
-  "level": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Heading
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|level|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.ThematicBreak">org.accordproject.commonmark@0.5.0.ThematicBreak</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.ThematicBreak"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.ThematicBreak",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-ThematicBreak
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Softbreak">org.accordproject.commonmark@0.5.0.Softbreak</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.softbreak"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Softbreak"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.softbreak"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.softbreak"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Softbreak",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Softbreak
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Linebreak">org.accordproject.commonmark@0.5.0.Linebreak</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.linebreak"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Linebreak"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.linebreak"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.linebreak"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Linebreak",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Linebreak
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Link">org.accordproject.commonmark@0.5.0.Link</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.link"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Link"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.link"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.link"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Link",
-  "destination": "string",
-  "title": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Link
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|destination|string|true|none|none|
-|title|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Image">org.accordproject.commonmark@0.5.0.Image</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.image"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Image"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.image"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.image"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Image",
-  "destination": "string",
-  "title": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Image
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|destination|string|true|none|none|
-|title|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Paragraph">org.accordproject.commonmark@0.5.0.Paragraph</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.paragraph"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Paragraph"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.paragraph"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.paragraph"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Paragraph",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Paragraph
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.List">org.accordproject.commonmark@0.5.0.List</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.list"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.List"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.list"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.list"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.List",
-  "type": "string",
-  "start": "string",
-  "tight": "string",
-  "delimiter": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-List
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|type|string|true|none|none|
-|start|string|false|none|none|
-|tight|string|true|none|none|
-|delimiter|string|false|none|none|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Item">org.accordproject.commonmark@0.5.0.Item</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.item"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Item"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.item"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.item"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Item",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Item
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Document">org.accordproject.commonmark@0.5.0.Document</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.document"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Document"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.document"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.document"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Document",
-  "xmlns": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Document
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|xmlns|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Table">org.accordproject.commonmark@0.5.0.Table</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.table"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Table"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.table"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.table"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Table",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Table
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableHead">org.accordproject.commonmark@0.5.0.TableHead</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablehead"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableHead"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablehead"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablehead"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableHead",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableHead
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableBody">org.accordproject.commonmark@0.5.0.TableBody</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablebody"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableBody"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablebody"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablebody"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableBody",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableBody
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableRow">org.accordproject.commonmark@0.5.0.TableRow</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablerow"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableRow"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablerow"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablerow"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableRow",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableRow
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.HeaderCell">org.accordproject.commonmark@0.5.0.HeaderCell</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.headercell"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.HeaderCell"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.headercell"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.headercell"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.HeaderCell",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-HeaderCell
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableCell">org.accordproject.commonmark@0.5.0.TableCell</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablecell"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableCell"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablecell"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablecell"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableCell",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {}
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableCell
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for this type|
-|text|string|false|none|none|
-|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
+|status|[org.accordproject.protocol@1.0.0.AgreementStatusType](#schemaorg.accordproject.protocol@1.0.0.agreementstatustype)|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementStatusType|
+|result|string|true|none|none|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.Position">concerto.metamodel@0.4.0.Position</h2>
 <!-- backwards compatibility -->
@@ -8587,4 +7289,1215 @@ Models
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for this type|
 |models|[[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)]|true|none|[An instance of concerto.metamodel@0.4.0.Model]|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Node">org.accordproject.commonmark@0.5.0.Node</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.node"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Node"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.node"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.node"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Node",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Node
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Root">org.accordproject.commonmark@0.5.0.Root</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.root"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Root"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.root"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.root"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Root",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Root
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Child">org.accordproject.commonmark@0.5.0.Child</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.child"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Child"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.child"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.child"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Child",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Child
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Text">org.accordproject.commonmark@0.5.0.Text</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.text"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Text"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.text"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.text"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Text",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Text
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Attribute">org.accordproject.commonmark@0.5.0.Attribute</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.attribute"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Attribute"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.attribute"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.attribute"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+  "name": "string",
+  "value": "string"
+}
+
+```
+
+Attribute
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|name|string|true|none|none|
+|value|string|true|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TagInfo">org.accordproject.commonmark@0.5.0.TagInfo</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.taginfo"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TagInfo"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.taginfo"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.taginfo"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+  "tagName": "string",
+  "attributeString": "string",
+  "attributes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+      "name": "string",
+      "value": "string"
+    }
+  ],
+  "content": "string",
+  "closed": true
+}
+
+```
+
+TagInfo
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|tagName|string|true|none|none|
+|attributeString|string|true|none|none|
+|attributes|[[org.accordproject.commonmark@0.5.0.Attribute](#schemaorg.accordproject.commonmark@0.5.0.attribute)]|true|none|[An instance of org.accordproject.commonmark@0.5.0.Attribute]|
+|content|string|true|none|none|
+|closed|boolean|true|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.CodeBlock">org.accordproject.commonmark@0.5.0.CodeBlock</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.codeblock"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.CodeBlock"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.codeblock"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.codeblock"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.CodeBlock",
+  "info": "string",
+  "tag": {
+    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+    "tagName": "string",
+    "attributeString": "string",
+    "attributes": [
+      {
+        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+        "name": "string",
+        "value": "string"
+      }
+    ],
+    "content": "string",
+    "closed": true
+  },
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+CodeBlock
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|info|string|false|none|none|
+|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Code">org.accordproject.commonmark@0.5.0.Code</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.code"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Code"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.code"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.code"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Code",
+  "info": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Code
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|info|string|false|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlInline">org.accordproject.commonmark@0.5.0.HtmlInline</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.htmlinline"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.HtmlInline"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.htmlinline"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.htmlinline"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.HtmlInline",
+  "tag": {
+    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+    "tagName": "string",
+    "attributeString": "string",
+    "attributes": [
+      {
+        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+        "name": "string",
+        "value": "string"
+      }
+    ],
+    "content": "string",
+    "closed": true
+  },
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+HtmlInline
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlBlock">org.accordproject.commonmark@0.5.0.HtmlBlock</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.htmlblock"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.HtmlBlock"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.htmlblock"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.htmlblock"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.HtmlBlock",
+  "tag": {
+    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+    "tagName": "string",
+    "attributeString": "string",
+    "attributes": [
+      {
+        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+        "name": "string",
+        "value": "string"
+      }
+    ],
+    "content": "string",
+    "closed": true
+  },
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+HtmlBlock
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Emph">org.accordproject.commonmark@0.5.0.Emph</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.emph"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Emph"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.emph"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.emph"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Emph",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Emph
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Strong">org.accordproject.commonmark@0.5.0.Strong</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.strong"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Strong"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.strong"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.strong"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Strong",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Strong
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.BlockQuote">org.accordproject.commonmark@0.5.0.BlockQuote</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.blockquote"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.BlockQuote"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.blockquote"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.blockquote"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.BlockQuote",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+BlockQuote
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Heading">org.accordproject.commonmark@0.5.0.Heading</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.heading"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Heading"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.heading"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.heading"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Heading",
+  "level": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Heading
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|level|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.ThematicBreak">org.accordproject.commonmark@0.5.0.ThematicBreak</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.ThematicBreak"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.ThematicBreak",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+ThematicBreak
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Softbreak">org.accordproject.commonmark@0.5.0.Softbreak</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.softbreak"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Softbreak"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.softbreak"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.softbreak"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Softbreak",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Softbreak
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Linebreak">org.accordproject.commonmark@0.5.0.Linebreak</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.linebreak"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Linebreak"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.linebreak"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.linebreak"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Linebreak",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Linebreak
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Link">org.accordproject.commonmark@0.5.0.Link</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.link"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Link"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.link"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.link"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Link",
+  "destination": "string",
+  "title": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Link
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|destination|string|true|none|none|
+|title|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Image">org.accordproject.commonmark@0.5.0.Image</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.image"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Image"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.image"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.image"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Image",
+  "destination": "string",
+  "title": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Image
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|destination|string|true|none|none|
+|title|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Paragraph">org.accordproject.commonmark@0.5.0.Paragraph</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.paragraph"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Paragraph"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.paragraph"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.paragraph"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Paragraph",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Paragraph
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.List">org.accordproject.commonmark@0.5.0.List</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.list"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.List"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.list"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.list"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.List",
+  "type": "string",
+  "start": "string",
+  "tight": "string",
+  "delimiter": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+List
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|type|string|true|none|none|
+|start|string|false|none|none|
+|tight|string|true|none|none|
+|delimiter|string|false|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Item">org.accordproject.commonmark@0.5.0.Item</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.item"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Item"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.item"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.item"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Item",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Item
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Document">org.accordproject.commonmark@0.5.0.Document</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.document"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Document"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.document"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.document"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Document",
+  "xmlns": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Document
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|xmlns|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Table">org.accordproject.commonmark@0.5.0.Table</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.table"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Table"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.table"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.table"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Table",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Table
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableHead">org.accordproject.commonmark@0.5.0.TableHead</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablehead"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableHead"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablehead"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablehead"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableHead",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableHead
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableBody">org.accordproject.commonmark@0.5.0.TableBody</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablebody"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableBody"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablebody"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablebody"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableBody",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableBody
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableRow">org.accordproject.commonmark@0.5.0.TableRow</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablerow"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableRow"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablerow"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablerow"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableRow",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableRow
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.HeaderCell">org.accordproject.commonmark@0.5.0.HeaderCell</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.headercell"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.HeaderCell"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.headercell"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.headercell"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.HeaderCell",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+HeaderCell
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableCell">org.accordproject.commonmark@0.5.0.TableCell</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablecell"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableCell"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablecell"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablecell"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableCell",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableCell
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
 
