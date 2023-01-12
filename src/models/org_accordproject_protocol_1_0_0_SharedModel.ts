@@ -15,7 +15,7 @@ export type org_accordproject_protocol_1_0_0_SharedModel = {
     /**
      * The instance identifier for this type
      */
-    namespace: string;
+    modelId: string;
     model: concerto_metamodel_0_4_0_Model;
 };
 

@@ -50,18 +50,18 @@ export class DefaultService {
     /**
      * Get a sharedmodel
      * Gets the details of a single instance of a `sharedmodel`.
-     * @param namespace A unique identifier for a `SharedModel`.
+     * @param modelId A unique identifier for a `SharedModel`.
      * @returns org_accordproject_protocol_1_0_0_SharedModel Successful response - returns a single `sharedmodel`.
      * @throws ApiError
      */
     public static getSharedmodel(
-        namespace: string,
+        modelId: string,
     ): CancelablePromise<org_accordproject_protocol_1_0_0_SharedModel> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/sharedmodels/{namespace}',
+            url: '/sharedmodels/{modelId}',
             path: {
-                'namespace': namespace,
+                'modelId': modelId,
             },
         });
     }
@@ -69,20 +69,20 @@ export class DefaultService {
     /**
      * Update a sharedmodel
      * Updates an existing `sharedmodel`.
-     * @param namespace A unique identifier for a `SharedModel`.
+     * @param modelId A unique identifier for a `SharedModel`.
      * @param requestBody Updated `sharedmodel` information.
      * @returns any Successful response.
      * @throws ApiError
      */
     public static replaceSharedmodel(
-        namespace: string,
+        modelId: string,
         requestBody: org_accordproject_protocol_1_0_0_SharedModel,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/sharedmodels/{namespace}',
+            url: '/sharedmodels/{modelId}',
             path: {
-                'namespace': namespace,
+                'modelId': modelId,
             },
             body: requestBody,
             mediaType: 'application/json',
@@ -92,18 +92,18 @@ export class DefaultService {
     /**
      * Delete a sharedmodel
      * Deletes an existing `sharedmodel`.
-     * @param namespace A unique identifier for a `SharedModel`.
+     * @param modelId A unique identifier for a `SharedModel`.
      * @returns void
      * @throws ApiError
      */
     public static deleteSharedmodel(
-        namespace: string,
+        modelId: string,
     ): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/sharedmodels/{namespace}',
+            url: '/sharedmodels/{modelId}',
             path: {
-                'namespace': namespace,
+                'modelId': modelId,
             },
         });
     }
