@@ -3,18 +3,17 @@
 ## Introduction
 Our legal system is based on documents; written in natural language (English, French, Japanese, German etc.). For agreements/contracts to be legally binding it is therefore imperative that the structured data within agreements is embedded within arbitrary natural language.
 
-Note that for the purposes of this document I use the terms agreement, contract and document interchangeably... They all represent a human/legal natural language context for a set of variable values.
+Note that for the purposes of this document we use the terms agreement, contract and document interchangeably... They all represent a human/legal natural language context for a set of variable values.
 
 ### Learn more...
-1. What is the difference between agreements and contracts?
-2. When do you need a signature?
-3. Conga Glossary (Contract/Agreement/Document)
+1. [What is the difference between agreements and contracts?](https://enable.com/blog/agreements-vs-contracts-what-are-the-differences)
+2. [When do you need a signature?](https://www.bishopslaw.co.uk/can-an-unsigned-contract-be-enforced-in-uk/)
 
 To expose a public REST API for agreements and agreement templates, as well as promote a partner-ecosystem centered around agreements, Accord Project has created a JSON data format for agreements and agreement templates.
 
 Note that this document describes TWO (related) data formats (data models):
-1. Template Format
-2. Agreement Format (an agreement is an instance of a template)
+1. Template Format (aka TemplateMark)
+2. Agreement Format (an agreement is an instance of a template) (aka CiceroMark)
 
 Given that agreements and agreement templates are intended for both human and machine consumption it is useful to be able to represent agreements using a human readable/editable/diffable format, (eg extended markdown) as well as a machine readable format (eg JSON), with an isomorphic transformation to move between these.
 
@@ -31,8 +30,8 @@ Agreements contain embedded variable values (aka “deal points”). It is usefu
 In the example below, the variable values have been highlighted in bold:
 
 >Basic Compensation. (A) SALARY. The Executive  shall be paid an annual salary of **$230,000.00**, subject to an adjustment as provided below (the "Salary"), which will be payable in equal periodic installments according to the Employer's customary payroll practices, but not less frequently than monthly. The Salary will be reviewed by the Board of Directors not less frequently than annually and may be adjusted upward or downward in the sole discretion of the Board of Directors.
-
-### Formulae Values (Computed Values)
+ 
+### Formulae Values (Computed Values)
 Agreements may contain values that are calculated from variable values (the results of applying a formula to variable values).  In the example below the variable values are highlighted in bold, and the formula value is highlighted in italic.
 
 > Fixed rate loan
@@ -41,12 +40,12 @@ This is a fixed interest loan to the amount of **£100,000.00** at the yearly in
 ### Formatted Text
 Agreements do not typically require the full layout and formatting features of a word processor, however control of the presentation of the text may be required or desirable for some applications. This may include:
 
-- Bold (strong)
-- Italic (emphasis)
-- Underline? (BUT read this, and this for a discussion on semantics vs presentation!)
-- Superscript?
-- Subscript?
-- Strikethrough
+- Bold ([strong](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong))
+- Italic ([emphasis](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em))
+- Underline? (BUT read [this](https://talk.commonmark.org/t/feature-request-underline-text/343/8), and [this](https://talk.commonmark.org/t/highlights-strikeout-underlines-spoilers/825) for a discussion on [semantics vs presentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u)!)
+- [Superscript?](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup)
+- [Subscript?](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub)
+- [Strikethrough](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s)
 
 In addition the font rendering for elements of the agreement should be specifiable via a theme or stylesheet, including setting: 
 
@@ -60,10 +59,10 @@ It is not typically necessary (or desirable) to be able to override font choice 
 Agreements typically make extensive use of headings to organize content. Headings are hierarchical: H1, H2, H3, H4, H5, H6 (from markdown) being very common.
 
 ### Clause
-A clause is an identified part of an agreement; and can be considered a container for a set of paragraphs.
+A clause is an [identified part of an agreement](https://dictionary.cambridge.org/dictionary/english/clause); and can be considered a container for a set of paragraphs.
 
 ### Header and Footer
-Agreements usually require page numbers in footer/header and may sometimes require supplemental information, such as confidentiality, status, file name, logo etc, though this is somewhat controversial.
+Agreements usually require page numbers in footer/header and may sometimes require supplemental information, such as [confidentiality](https://www.adamsdrafting.com/other-header-and-footer-information/), status, file name, logo etc, though this is somewhat [controversial](https://www.adamsdrafting.com/adding-logos-to-your-contracts/).
 
 > TBD how to model this.
 
@@ -71,7 +70,7 @@ Agreements usually require page numbers in footer/header and may sometimes requi
 Text is typically organized into a set of sequential paragraphs, separated by whitespace.
 
 ### Whitespace
-Whitespace is not typically semantic, instead whitespace is inserted via explicit line-breaks, paragraphs, or page breaks (“thematic breaks”).
+Whitespace is not typically semantic, instead whitespace is inserted via explicit line-breaks, paragraphs, or page breaks ([“thematic breaks”](https://spec.commonmark.org/0.30/#thematic-breaks)).
 
 ### Images/Diagrams
 Agreements often include images, pictures or diagrams to illustrate products, instructions or business processes. Images should be referenced within the text of the agreement. 
@@ -117,7 +116,7 @@ Other types of annotations could include comments from human reviewers.
 ## Semantic Elements of Agreement Templates
 Now, let us turn to the format for an agreement template. Agreement templates are a superset of agreements, in that a (degenerative) agreement template is simply a hardcoded agreement, absent all variables.
 
-> Note: This syntax/semantics is heavily inspired by Handlebars, so you may want to review that.
+> Note: This syntax/semantics is heavily inspired by [Handlebars](https://handlebarsjs.com/guide/builtin-helpers.html), so you may want to review that.
 
 ### Template Safety
 An explicit goal of the agreement template format is that we should be able to statically validate (potentially compile) the logic of a template, ensuring that all variable references and formula usage is valid and that if the template is presented with valid data it is guaranteed to produce valid output. This contrasts with many current template technologies which fail in unpredictable ways, due to bugs in the template syntax/expressions, or invalid assumptions about the shape of incoming data. For example, if a contract attribute has been marked as optional the template must include appropriate guards to handle cases where the contract attribute is missing.
@@ -240,8 +239,8 @@ Dynamic content may be included in a template by using a formula that returns fo
 > Details TBD, but likely if the formula function returns a JSON Object (AST) rather than a primitive then we can assume it is a template or rich-text content
 
 ## Additional Resources
-1. CommonMark
-1. Accord Project CiceroMark
-1. Accord Project TemplateMark
-1. Confluence Wiki markup
-1. Pandoc
+1. [CommonMark](https://docs.accordproject.org/docs/markup-commonmark.html)
+1. Accord Project [CiceroMark](https://docs.accordproject.org/docs/markup-ciceromark.html)
+1. Accord Project [TemplateMark](https://docs.accordproject.org/docs/markup-templatemark.html)
+1. [Confluence Wiki markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
+1. [Pandoc](https://pandoc.org/MANUAL.html#pandocs-markdown)
