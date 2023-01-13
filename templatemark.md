@@ -163,6 +163,8 @@ The query string is a SQL-like dialect to select templates based on their proper
 {{#insert hr_clauses where jurisdiction_name=data.jurisdiction and status=”active”}}
 ```
 
+> Note: see [Handlebars "Partials"](https://handlebarsjs.com/guide/partials.html)
+
 ### Formula
 Formulae allow the template author to include a dynamically calculated value, calculated from agreement data values.
 
