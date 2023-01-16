@@ -62,6 +62,14 @@ Agreements typically make extensive use of headings to organize content. Heading
 ### Clause
 A clause is an [identified part of an agreement](https://dictionary.cambridge.org/dictionary/english/clause); and can be considered a container for a set of paragraphs.
 
+> TBD. Is this the same as a "section"?
+
+### Appendix
+
+Some pages may be tagged as an appendix.
+
+> TBD. More details required.
+
 ### Header and Footer
 Agreements usually require page numbers in footer/header and may sometimes require supplemental information, such as [confidentiality](https://www.adamsdrafting.com/other-header-and-footer-information/), status, file name, logo etc, though this is somewhat [controversial](https://www.adamsdrafting.com/adding-logos-to-your-contracts/).
 
