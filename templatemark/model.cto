@@ -1,0 +1,7 @@
+namespace test
+
+import org.accordproject.contract.Clause from https://models.accordproject.org/accordproject/contract.cto
+
+asset TemplateModel extends Clause {
+    o String firstName
+}

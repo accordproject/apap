@@ -10,20 +10,58 @@ Note that for the purposes of this document we use the terms agreement, contract
 2. [When do you need a signature?](https://www.bishopslaw.co.uk/can-an-unsigned-contract-be-enforced-in-uk/)
 
 ### Goals
-To expose a public REST API for agreements and agreement templates, as well as promote a vendor and user ecosystem centered around agreements and templates, Accord Project has created a JSON data format for agreements and agreement templates.
+1. To promote a vendor and user ecosystem centered around agreements and templates
+1. To facilitate a standard REST API for agreements and templates
+1. To promote an ecosystem of agreement and template management and editing tools
+1. To future-proof templates and allow templates to be migrated between vendors
 
 Note that this document describes TWO (related) data formats (data models):
 1. Template Format (aka TemplateMark)
-2. Agreement Format (an agreement is an instance of a template) (aka CiceroMark)
+2. Agreement Format (an agreement is an instance of a template) (aka AgreementMark)
 
 Given that agreements and agreement templates are intended for both human and machine consumption it is useful to be able to represent agreements using a human readable/editable/diffable format, (eg extended markdown) as well as a machine readable format (eg JSON), with an isomorphic transformation to move between these.
 
-## Semantic Elements of Agreements
+## Semantic Elements of Agreements (AgreementMark)
 
-First, let’s start by defining the semantic elements of an agreement.
+First, let’s start by defining the semantic elements of an agreement. 
+
+> Note: both AgreementMark and TemplateMark are specified as [Concerto](https://concerto.accordproject.org) data models and use Concerto JSON serialization.
+
+### Document
+
+The root node of an agreement is the `Document` node. A document node contains a set of child nodes.
 
 ### Plain Text
-At the most basic level agreements are expressed as plain text: sequences of Unicode characters, along with markers to escape control characters. 
+At the most basic level agreements are expressed as plain text: sequences of Unicode characters, along with markers to escape control characters.
+
+Text:
+
+```
+This is plain text.
+```
+
+JSON AST:
+
+```json
+{
+  "$class": "org.accordproject.commonmark.Document",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark.Paragraph",
+      "nodes": [
+        {
+          "$class": "org.accordproject.commonmark.Text",
+          "text": "This is plain text."
+        }
+      ]
+    }
+  ]
+}
+```
+
+The AST above defines a document containing a single paragraph, which contains a simple plain text string `"This is plain text."`.
+
+> TBD: need to update these examples to use versioned namespaces
 
 ### Variable Values
 Agreements contain embedded variable values (aka “deal points”). It is useful to distinguish variable values from plain text so that variable values can be highlighted, or displayed in summary views.
@@ -127,6 +165,24 @@ Now, let us turn to the format for an agreement template. Agreement templates ar
 
 There are **many** commercial products for producing agreements from templates (see *Additional Resources* for a selection). Most are broadly similar in terms of features and semantics, however there is no universally adopted system for exchanging templates, which has resulted in a fragmented eco-system and issues of vendor lock-in, and lack of future-proofing the (considerable) investment required to build templates.
 
+A template is expressed as natural-language with embedded variables and template expressions. Template variables are named and rely on an associated [Concerto](https://concerto.accordproject.org) model (type-system).
+
+For example, the trivial template:
+
+```
+Hello {{firstName}}!
+```
+
+Has a single named variable `firstName` and an associated **template model** that specifies that `firstName` is of type `String`:
+
+```
+concept TemplateModel {
+    o String firstName
+}
+```
+
+The template model is critical in ensuring that variable values conform to the model, as well as providing the basis for downstream processing of agreement data, charts, reporting and a guided user-experience when supplying variable values.
+
 > Note: This example syntax/semantics for tempates is heavily inspired by [Handlebars](https://handlebarsjs.com/guide/builtin-helpers.html), so you may want to review that.
 
 ### Template Safety
@@ -192,6 +248,60 @@ Simple unary variables are included in templates using a navigation syntax, allo
 
 ```
 The seller {{data.seller.name}} hereby agrees to sell {{data.goods}} to {{data.buyer.name}}
+```
+
+Text:
+
+```
+Hello {{firstName}}!
+```
+
+Model:
+
+```
+namespace test
+
+import org.accordproject.contract.Clause from https://models.accordproject.org/accordproject/contract.cto
+
+asset TemplateModel extends Clause {
+    o String firstName
+}
+```
+
+JSON AST:
+
+```
+{
+  "$class": "org.accordproject.commonmark.Document",
+  "xmlns": "http://commonmark.org/xml/1.0",
+  "nodes": [
+    {
+      "$class": "org.accordproject.templatemark.ClauseDefinition",
+      "name": "top",
+      "elementType": "test.TemplateModel",
+      "nodes": [
+        {
+          "$class": "org.accordproject.commonmark.Paragraph",
+          "nodes": [
+            {
+              "$class": "org.accordproject.commonmark.Text",
+              "text": "Hello "
+            },
+            {
+              "$class": "org.accordproject.templatemark.VariableDefinition",
+              "name": "firstName",
+              "elementType": "String"
+            },
+            {
+              "$class": "org.accordproject.commonmark.Text",
+              "text": "!"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
 ```
 
 #### Assigning Variables to Recipients
