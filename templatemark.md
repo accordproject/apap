@@ -382,3 +382,5 @@ Dynamic content may be included in a template by using a formula that returns fo
 1. [Open Document Format 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
 1. [Open Document OpenFormula 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
 1. [Formula.js](https://formulajs.info/)
+1. [Docassemble](https://docassemble.org)
+1. [M2Doc](https://www.m2doc.org)
