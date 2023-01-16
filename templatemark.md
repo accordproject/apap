@@ -371,6 +371,19 @@ Dynamic content may be included in a template by using a formula that returns fo
 1. Accord Project [TemplateMark](https://docs.accordproject.org/docs/markup-templatemark.html)
 1. [Confluence Wiki markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
 1. [Pandoc](https://pandoc.org/MANUAL.html#pandocs-markdown)
+1. [Open Office XML](http://officeopenxml.com/WPtext.php)
+1. [Open Document Format 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
+1. [Open Document OpenFormula 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
+1. [Formula.js](https://formulajs.info/)
+
+## Document Automation / Generation Vendors
+
+### Open Souce
+
+1. [Docassemble](https://docassemble.org)
+
+### Commercial
+
 1. [Bryter](https://help.bryter.io/hc/en-us/articles/4417166695569-Elevate-documents-with-conditional-content-using-if-condition-name-and-endif-condition-name-)
 1. [Lawmatics](https://help.lawmatics.com/article/358-types-of-lawmatics-documents-and-when-to-use-each)
 1. [Web Merge](https://support.webmerge.me/s/article/Conditional-Sections-if-else)
@@ -378,11 +391,6 @@ Dynamic content may be included in a template by using a formula that returns fo
 1. [Google AppSheet](https://support.google.com/appsheet/answer/11568425?hl=en&ref_topic=11445504)
 1. [Pandadoc](https://support.pandadoc.com/hc/en-us/articles/4423209193367-Conditional-smart-content-for-senders-#h_01FVJDX1FG84F1BDPWCABBZ52M)
 1. [Hotdocs Conditional Regions](https://help.hotdocs.com/author/current/Conditional_Region_Overview.htm) / [Hotdocs Fields](https://help.hotdocs.com/author/current/HotDocs_Fields_Overview.htm)
-1. [Open Office XML](http://officeopenxml.com/WPtext.php)
-1. [Open Document Format 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
-1. [Open Document OpenFormula 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
-1. [Formula.js](https://formulajs.info/)
-1. [Docassemble](https://docassemble.org)
 1. [M2Doc](https://www.m2doc.org)
 1. [Pathagoras](https://www.pathagoras.com/help/index.html?nested_variables.htm)
 1. [Docmosis](https://www.docmosis.com)
@@ -393,3 +401,4 @@ Dynamic content may be included in a template by using a formula that returns fo
 1. [Legito](https://www.legito.com)
 1. [DocuPrime](https://www.docuprime.io)
 1. [DocuSign](https://www.docusign.com/products/gen)
+1. [Opero](https://www.opero.com)
