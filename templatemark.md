@@ -387,7 +387,7 @@ Dynamic content may be included in a template by using a formula that returns fo
 
 1. [Bryter](https://help.bryter.io/hc/en-us/articles/4417166695569-Elevate-documents-with-conditional-content-using-if-condition-name-and-endif-condition-name-)
 1. [Lawmatics](https://help.lawmatics.com/article/358-types-of-lawmatics-documents-and-when-to-use-each)
-1. [Web Merge](https://support.webmerge.me/s/article/Conditional-Sections-if-else)
+1. [Formstack / Web Merge](https://www.formstack.com/products/documents)
 1. [Insightly](https://support.insight.ly/en-US/Knowledge/article/1397/How_to_use_Microsoft_Word_to_add_conditional_merge_statements_into_templates/)
 1. [Google AppSheet](https://support.google.com/appsheet/answer/11568425?hl=en&ref_topic=11445504)
 1. [Pandadoc](https://support.pandadoc.com/hc/en-us/articles/4423209193367-Conditional-smart-content-for-senders-#h_01FVJDX1FG84F1BDPWCABBZ52M)
