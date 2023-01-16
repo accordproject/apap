@@ -378,6 +378,8 @@ Dynamic content may be included in a template by using a formula that returns fo
 
 ## Document Automation / Generation Vendors
 
+> Pull requests with additional vendors welcome!
+
 ### Open Souce
 
 1. [Docassemble](https://docassemble.org)
