@@ -12,12 +12,13 @@ Note that for the purposes of this document we use the terms agreement, contract
 ### Goals
 1. To promote a vendor and user ecosystem centered around agreements and templates
 1. To facilitate a standard REST API for agreements and templates
-1. To promote an ecosystem of agreement and template management and editing tools
+1. To promote a vendor ecosystem of agreement and template management and editing tools
 1. To future-proof templates and allow templates to be migrated between vendors
+1. To provide a "pivot" data format that can be imported from existing document formats (HTML/OOXML/ODF/PDF etc.) or converted to existing document formats (HTML/OOXML/ODF/PDF etc.)
 
-Note that this document describes TWO (related) data formats (data models):
-1. Template Format (aka TemplateMark)
-2. Agreement Format (an agreement is an instance of a template) (aka AgreementMark)
+Note that this document describes TWO (related) JSON data formats (data models):
+1. Template Format (aka *TemplateMark*)
+2. Agreement Format (an agreement is an instance of a template) (aka *AgreementMark*)
 
 Given that agreements and agreement templates are intended for both human and machine consumption it is useful to be able to represent agreements using a human readable/editable/diffable format, (eg extended markdown) as well as a machine readable format (eg JSON), with an isomorphic transformation to move between these.
 
@@ -61,7 +62,7 @@ JSON AST:
 
 The AST above defines a document containing a single paragraph, which contains a simple plain text string `"This is plain text."`.
 
-> TBD: need to update these examples to use versioned namespaces
+> TBD: need to update these examples to use versioned namespaces.
 
 ### Variable Values
 Agreements contain embedded variable values (aka “deal points”). It is useful to distinguish variable values from plain text so that variable values can be highlighted, or displayed in summary views.
