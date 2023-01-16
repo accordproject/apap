@@ -10,7 +10,7 @@ Note that for the purposes of this document we use the terms agreement, contract
 2. [When do you need a signature?](https://www.bishopslaw.co.uk/can-an-unsigned-contract-be-enforced-in-uk/)
 
 ### Goals
-To expose a public REST API for agreements and agreement templates, as well as promote a partner-ecosystem centered around agreements, Accord Project has created a JSON data format for agreements and agreement templates.
+To expose a public REST API for agreements and agreement templates, as well as promote a vendor and user ecosystem centered around agreements and templates, Accord Project has created a JSON data format for agreements and agreement templates.
 
 Note that this document describes TWO (related) data formats (data models):
 1. Template Format (aka TemplateMark)
