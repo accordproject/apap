@@ -86,6 +86,7 @@ concept Agreement identified by agreementId {
     o String agreementId
     o JSON data
     --> Template template
+    // state?
 }
 
 @description("Abstract conversion options")

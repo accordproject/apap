@@ -9,6 +9,7 @@ Note that for the purposes of this document we use the terms agreement, contract
 1. [What is the difference between agreements and contracts?](https://enable.com/blog/agreements-vs-contracts-what-are-the-differences)
 2. [When do you need a signature?](https://www.bishopslaw.co.uk/can-an-unsigned-contract-be-enforced-in-uk/)
 
+### Goals
 To expose a public REST API for agreements and agreement templates, as well as promote a partner-ecosystem centered around agreements, Accord Project has created a JSON data format for agreements and agreement templates.
 
 Note that this document describes TWO (related) data formats (data models):
@@ -116,7 +117,9 @@ Other types of annotations could include comments from human reviewers.
 ## Semantic Elements of Agreement Templates
 Now, let us turn to the format for an agreement template. Agreement templates are a superset of agreements, in that a (degenerative) agreement template is simply a hardcoded agreement, absent all variables.
 
-> Note: This syntax/semantics is heavily inspired by [Handlebars](https://handlebarsjs.com/guide/builtin-helpers.html), so you may want to review that.
+There are **many** commercial products for producing agreements from templates (see *Additional Resources* for a selection). Most are broadly similar in terms of features and semantics, however there is no universally adopted system for exchanging templates, which has resulted in a fragmented eco-system and issues of vendor lock-in, and lack of future-proofing the (considerable) investment required to build templates.
+
+> Note: This example syntax/semantics for tempates is heavily inspired by [Handlebars](https://handlebarsjs.com/guide/builtin-helpers.html), so you may want to review that.
 
 ### Template Safety
 An explicit goal of the agreement template format is that we should be able to statically validate (potentially compile) the logic of a template, ensuring that all variable references and formula usage is valid and that if the template is presented with valid data it is guaranteed to produce valid output. This contrasts with many current template technologies which fail in unpredictable ways, due to bugs in the template syntax/expressions, or invalid assumptions about the shape of incoming data. For example, if a contract attribute has been marked as optional the template must include appropriate guards to handle cases where the contract attribute is missing.
@@ -183,6 +186,10 @@ Simple unary variables are included in templates using a navigation syntax, allo
 The seller {{data.seller.name}} hereby agrees to sell {{data.goods}} to {{data.buyer.name}}
 ```
 
+#### Assigning Variables to Recipients
+
+A variable may be associated with a recipient, indicating that the variable value must be supplied by a specific role (user) of the template. For example, a recipient role might be "buyer" and another role might be "seller", with variables for `buyer address` and `seller address` with the respective recipient association.
+
 #### Variable Formatting
 Properties that are not strings may optionally be formatted. For example, monetary amounts may include currency code, currency symbol, floating point numbers may include precision, dates/times are converted to human readable localized display strings.
 
@@ -246,3 +253,10 @@ Dynamic content may be included in a template by using a formula that returns fo
 1. Accord Project [TemplateMark](https://docs.accordproject.org/docs/markup-templatemark.html)
 1. [Confluence Wiki markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
 1. [Pandoc](https://pandoc.org/MANUAL.html#pandocs-markdown)
+1. [Bryter](https://help.bryter.io/hc/en-us/articles/4417166695569-Elevate-documents-with-conditional-content-using-if-condition-name-and-endif-condition-name-)
+1. [Lawmatics](https://help.lawmatics.com/article/358-types-of-lawmatics-documents-and-when-to-use-each)
+1. [Web Merge](https://support.webmerge.me/s/article/Conditional-Sections-if-else)
+1. [Insightly](https://support.insight.ly/en-US/Knowledge/article/1397/How_to_use_Microsoft_Word_to_add_conditional_merge_statements_into_templates/)
+1. [Google AppSheet](https://support.google.com/appsheet/answer/11568425?hl=en&ref_topic=11445504)
+1. [Pandadoc](https://support.pandadoc.com/hc/en-us/articles/4423209193367-Conditional-smart-content-for-senders-#h_01FVJDX1FG84F1BDPWCABBZ52M)
+1. [Hotdocs Conditional Regions](https://help.hotdocs.com/author/current/Conditional_Region_Overview.htm) / [Hotdocs Fields](https://help.hotdocs.com/author/current/HotDocs_Fields_Overview.htm)
