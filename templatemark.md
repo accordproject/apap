@@ -160,7 +160,7 @@ It is useful to be able to wrap semantic elements in an annotation, to indicate 
 
 Other types of annotations could include comments from human reviewers.
 
-## Semantic Elements of Agreement Templates
+## Semantic Elements of Agreement Templates (TemplateMark)
 Now, let us turn to the format for an agreement template. Agreement templates are a superset of agreements, in that a (degenerative) agreement template is simply a hardcoded agreement, absent all variables.
 
 There are **many** commercial products for producing agreements from templates (see *Additional Resources* for a selection). Most are broadly similar in terms of features and semantics, however there is no universally adopted system for exchanging templates, which has resulted in a fragmented eco-system and issues of vendor lock-in, and lack of future-proofing the (considerable) investment required to build templates.
