@@ -268,3 +268,7 @@ Dynamic content may be included in a template by using a formula that returns fo
 1. [Google AppSheet](https://support.google.com/appsheet/answer/11568425?hl=en&ref_topic=11445504)
 1. [Pandadoc](https://support.pandadoc.com/hc/en-us/articles/4423209193367-Conditional-smart-content-for-senders-#h_01FVJDX1FG84F1BDPWCABBZ52M)
 1. [Hotdocs Conditional Regions](https://help.hotdocs.com/author/current/Conditional_Region_Overview.htm) / [Hotdocs Fields](https://help.hotdocs.com/author/current/HotDocs_Fields_Overview.htm)
+1. [Open Office XML](http://officeopenxml.com/WPtext.php)
+1. [Open Document Format 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
+1. [Open Document OpenFormula 1.2](http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf)
+1. [Formula.js](https://formulajs.info/)
