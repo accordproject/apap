@@ -22,7 +22,8 @@
         },
         "operationId": "convertAgreementPdf",
         "summary": "Convert agreement to PDF",
-        "description": "Converts an existing `agreement` to PDF."
+        "description": "Converts an existing `agreement` to PDF.",
+        "tags": ["agreements"]
       },
       "parameters": [
         {
@@ -65,7 +66,8 @@
         },
         "operationId": "triggerAgreement",
         "summary": "Trigger an agreement",
-        "description": "Sends data to an existing agreement."
+        "description": "Sends data to an existing agreement.",
+        "tags": ["agreements"]
       },
       "parameters": [
         {
@@ -97,7 +99,8 @@
         },
         "operationId": "agreementState",
         "summary": "Get the state of an agreement",
-        "description": "Gets the runtime state of an agreement."
+        "description": "Gets the runtime state of an agreement.",
+        "tags": ["agreements"]
       },
       "parameters": [
         {
@@ -127,9 +130,10 @@
             "description": "Successful response - returns `capabilities` for the server."
           }
         },
-        "operationId": "capabilities",
+        "operationId": "getCapabilities",
         "summary": "Get server capabilities",
-        "description": "Retrieve the supported features of the server."
+        "description": "Retrieve the supported features of the server.",
+        "tags": ["capabilities"]
       }
     }
   }

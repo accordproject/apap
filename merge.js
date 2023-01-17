@@ -26,4 +26,5 @@ const merged = {
 
 merged.paths = mergedPaths;
 merged.info.title = 'Accord Protocol';
+merged.info.description = 'API for document generation and agreement automation';
 fs.writeFileSync('./openapi.json', JSON.stringify(merged, null, 2));

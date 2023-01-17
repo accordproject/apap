@@ -1,0 +1,314 @@
+<h1 id="agreement-format">Agreement Format</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Our legal system is based on documents; written in natural language (English, French, Japanese, German etc.). For agreements/contracts to be legally binding it is therefore imperative that the structured data within agreements is embedded within arbitrary natural language.</p>
+<p>Note that for the purposes of this document we use the terms agreement, contract and document interchangeably… They all represent a human/legal natural language context for a set of variable values.</p>
+<h3 id="learn-more%E2%80%A6">Learn more…</h3>
+<ol>
+<li><a href="https://enable.com/blog/agreements-vs-contracts-what-are-the-differences">What is the difference between agreements and contracts?</a></li>
+<li><a href="https://www.bishopslaw.co.uk/can-an-unsigned-contract-be-enforced-in-uk/">When do you need a signature?</a></li>
+</ol>
+<h3 id="goals">Goals</h3>
+<ol>
+<li>To promote a vendor and user ecosystem centered around agreements and templates</li>
+<li>To facilitate a standard REST API for agreements and templates</li>
+<li>To promote a vendor ecosystem of agreement and template management and editing tools</li>
+<li>To future-proof templates and allow templates to be migrated between vendors</li>
+<li>To provide a “pivot” data format that can be imported from existing document formats (HTML/OOXML/ODF/PDF etc.) or converted to existing document formats (HTML/OOXML/ODF/PDF etc.)</li>
+</ol>
+<p>Note that this document describes TWO (related) JSON data formats (data models):</p>
+<ol>
+<li>Template Format (aka <em>TemplateMark</em>)</li>
+<li>Agreement Format (an agreement is an instance of a template) (aka <em>AgreementMark</em>)</li>
+</ol>
+<p>Given that agreements and agreement templates are intended for both human and machine consumption it is useful to be able to represent agreements using a human readable/editable/diffable format, (eg extended markdown) as well as a machine readable format (eg JSON), with an isomorphic transformation to move between these.</p>
+<h2 id="semantic-elements-of-agreements-agreementmark">Semantic Elements of Agreements (AgreementMark)</h2>
+<p>First, let’s start by defining the semantic elements of an agreement.</p>
+<blockquote>
+<p>Note: both AgreementMark and TemplateMark are specified as <a href="https://concerto.accordproject.org">Concerto</a> data models and use Concerto JSON serialization.</p>
+</blockquote>
+<h3 id="document">Document</h3>
+<p>The root node of an agreement is the <code>Document</code> node. A document node contains a set of child nodes.</p>
+<h3 id="plain-text">Plain Text</h3>
+<p>At the most basic level agreements are expressed as plain text: sequences of Unicode characters, along with markers to escape control characters.</p>
+<p>Text:</p>
+<pre><code>This is plain text.
+</code></pre>
+<p>JSON AST:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"$class"</span><span class="token operator">:</span> <span class="token string">"org.accordproject.commonmark.Document"</span><span class="token punctuation">,</span><br>  <span class="token property">"nodes"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"$class"</span><span class="token operator">:</span> <span class="token string">"org.accordproject.commonmark.Paragraph"</span><span class="token punctuation">,</span><br>      <span class="token property">"nodes"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>        <span class="token punctuation">{</span><br>          <span class="token property">"$class"</span><span class="token operator">:</span> <span class="token string">"org.accordproject.commonmark.Text"</span><span class="token punctuation">,</span><br>          <span class="token property">"text"</span><span class="token operator">:</span> <span class="token string">"This is plain text."</span><br>        <span class="token punctuation">}</span><br>      <span class="token punctuation">]</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">}</span></code></pre>
+<p>The AST above defines a document containing a single paragraph, which contains a simple plain text string <code>&quot;This is plain text.&quot;</code>.</p>
+<blockquote>
+<p>TBD: need to update these examples to use versioned namespaces.</p>
+</blockquote>
+<h3 id="variable-values">Variable Values</h3>
+<p>Agreements contain embedded variable values (aka “deal points”). It is useful to distinguish variable values from plain text so that variable values can be highlighted, or displayed in summary views.</p>
+<p>In the example below, the variable values have been highlighted in bold:</p>
+<blockquote>
+<p>Basic Compensation. (A) SALARY. The Executive  shall be paid an annual salary of <strong>$230,000.00</strong>, subject to an adjustment as provided below (the “Salary”), which will be payable in equal periodic installments according to the Employer’s customary payroll practices, but not less frequently than monthly. The Salary will be reviewed by the Board of Directors not less frequently than annually and may be adjusted upward or downward in the sole discretion of the Board of Directors.</p>
+</blockquote>
+<h3 id="formulae-values-computed-values">Formulae Values (Computed Values)</h3>
+<p>Agreements may contain values that are calculated from variable values (the results of applying a formula to variable values).  In the example below the variable values are highlighted in bold, and the formula value is highlighted in italic.</p>
+<blockquote>
+<p>Fixed rate loan
+This is a fixed interest loan to the amount of <strong>£100,000.00</strong> at the yearly interest rate of <strong>2.5%</strong> with a loan term of <strong>15 years</strong>, and monthly payments of <em>£667.00</em></p>
+</blockquote>
+<h3 id="formatted-text">Formatted Text</h3>
+<p>Agreements do not typically require the full layout and formatting features of a word processor, however control of the presentation of the text may be required or desirable for some applications. This may include:</p>
+<ul>
+<li>Bold (<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong">strong</a>)</li>
+<li>Italic (<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em">emphasis</a>)</li>
+<li>Underline? (BUT read <a href="https://talk.commonmark.org/t/feature-request-underline-text/343/8">this</a>, and <a href="https://talk.commonmark.org/t/highlights-strikeout-underlines-spoilers/825">this</a> for a discussion on <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u">semantics vs presentation</a>!)</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup">Superscript?</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub">Subscript?</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s">Strikethrough</a></li>
+</ul>
+<p>In addition the font rendering for elements of the agreement should be specifiable via a theme or stylesheet, including setting:</p>
+<ul>
+<li>Font Face</li>
+<li>Font Color</li>
+<li>Font Size</li>
+</ul>
+<p>It is not typically necessary (or desirable) to be able to override font choice within the document itself — instead this should be defined via a CSS-like mechanism that binds semantic elements to display properties. E.g. All H1s should be displayed in Serif Font, Size 32, Bold, Pink.</p>
+<h3 id="headings">Headings</h3>
+<p>Agreements typically make extensive use of headings to organize content. Headings are hierarchical: H1, H2, H3, H4, H5, H6 (from markdown) being very common.</p>
+<h3 id="clause">Clause</h3>
+<p>A clause is an <a href="https://dictionary.cambridge.org/dictionary/english/clause">identified part of an agreement</a>; and can be considered a container for a set of paragraphs.</p>
+<blockquote>
+<p>TBD. Is this the same as a “section”?</p>
+</blockquote>
+<h3 id="appendix">Appendix</h3>
+<p>Some pages may be tagged as an appendix.</p>
+<blockquote>
+<p>TBD. More details required.</p>
+</blockquote>
+<h3 id="header-and-footer">Header and Footer</h3>
+<p>Agreements usually require page numbers in footer/header and may sometimes require supplemental information, such as <a href="https://www.adamsdrafting.com/other-header-and-footer-information/">confidentiality</a>, status, file name, logo etc, though this is somewhat <a href="https://www.adamsdrafting.com/adding-logos-to-your-contracts/">controversial</a>.</p>
+<blockquote>
+<p>TBD how to model this.</p>
+</blockquote>
+<h3 id="paragraphs">Paragraphs</h3>
+<p>Text is typically organized into a set of sequential paragraphs, separated by whitespace.</p>
+<h3 id="whitespace">Whitespace</h3>
+<p>Whitespace is not typically semantic, instead whitespace is inserted via explicit line-breaks, paragraphs, or page breaks (<a href="https://spec.commonmark.org/0.30/#thematic-breaks">“thematic breaks”</a>).</p>
+<h3 id="images%2Fdiagrams">Images/Diagrams</h3>
+<p>Agreements often include images, pictures or diagrams to illustrate products, instructions or business processes. Images should be referenced within the text of the agreement.</p>
+<p>Note: There are security (CORS) issues with referencing external images from web apps.</p>
+<p>See: <a href="https://spec.commonmark.org/0.30/#images">https://spec.commonmark.org/0.30/#images</a></p>
+<p><img src="/url" alt="foo" title="title"></p>
+<h3 id="links">Links</h3>
+<p>Agreements frequently contain hyperlinks to external content.</p>
+<p>See: <a href="https://spec.commonmark.org/0.30/#links">https://spec.commonmark.org/0.30/#links</a></p>
+<p><a href="/uri" title="title">link</a></p>
+<h3 id="pages">Pages</h3>
+<p>Agreements often include explicit page breaks to force content onto a new page, to improve readability or organization. How “pages” are rendered on a mobile device or in a responsive web-browser will vary based on UX considerations. Note that the CommonMark specification therefore refers to these as “thematic breaks”, rather than “page breaks” — because the intent is to insert a switch of theme, rather than necessarily control a printer head and the motors controlling paper advance.</p>
+<h3 id="lists">Lists</h3>
+<p>Most agreements include lists in some form, and some contracts are purely composed of lists and nested lists, ensuring that every element is identified via a unique list path, such as element “1.3.4”, for example.</p>
+<p>Lists numbering may be specified as roman, numeric, alphanumeric or unordered (bullets).</p>
+<h3 id="tables">Tables</h3>
+<p>Many agreements include tables, used to display sets of related data in compact form. For example, for product details, contact details, pricing tables, discount tables, or compensation amounts.</p>
+<h3 id="references">References</h3>
+<p>Agreement text often includes references to semantic elements from within the same agreement, or to other agreements, contracts or documents. Examples:</p>
+<ul>
+<li>As defined in Warranty Clause</li>
+<li>See pricing defined in section 2.3.5</li>
+<li>Defined in Appendix 3</li>
+<li>As specified in image 4.</li>
+</ul>
+<p>See <a href="https://spec.commonmark.org/0.30/#link-reference-definitions">https://spec.commonmark.org/0.30/#link-reference-definitions</a></p>
+<h3 id="annotations-%2F-insights">Annotations / Insights</h3>
+<p>It is useful to be able to wrap semantic elements in an annotation, to indicate for example that a sentence represents high risk, or that a paragraph appears to be an instance of a type of clause. In many cases these annotations would be the result of running a machine-learning algorithm over the source text of the agreement.</p>
+<p>Other types of annotations could include comments from human reviewers.</p>
+<h2 id="semantic-elements-of-agreement-templates-templatemark">Semantic Elements of Agreement Templates (TemplateMark)</h2>
+<p>Now, let us turn to the format for an agreement template. Agreement templates are a superset of agreements, in that a (degenerative) agreement template is simply a hardcoded agreement, absent all variables.</p>
+<p>There are <strong>many</strong> commercial products for producing agreements from templates (see <em>Additional Resources</em> for a selection). Most are broadly similar in terms of features and semantics, however there is no universally adopted system for exchanging templates, which has resulted in a fragmented eco-system and issues of vendor lock-in, and lack of future-proofing the (considerable) investment required to build templates.</p>
+<p>A template is expressed as natural-language with embedded variables and template expressions. Template variables are named and rely on an associated <a href="https://concerto.accordproject.org">Concerto</a> model (type-system).</p>
+<p>For example, the trivial template:</p>
+<pre><code>Hello !
+</code></pre>
+<p>Has a single named variable <code>firstName</code> and an associated <strong>template model</strong> that specifies that <code>firstName</code> is of type <code>String</code>:</p>
+<pre><code>concept TemplateModel {
+    o String firstName
+}
+</code></pre>
+<p>The template model is critical in ensuring that variable values conform to the model, as well as providing the basis for downstream processing of agreement data, charts, reporting and a guided user-experience when supplying variable values.</p>
+<blockquote>
+<p>Note: This example syntax/semantics for tempates is heavily inspired by <a href="https://handlebarsjs.com/guide/builtin-helpers.html">Handlebars</a>, so you may want to review that.</p>
+</blockquote>
+<h3 id="template-safety">Template Safety</h3>
+<p>An explicit goal of the agreement template format is that we should be able to statically validate (potentially compile) the logic of a template, ensuring that all variable references and formula usage is valid and that if the template is presented with valid data it is guaranteed to produce valid output. This contrasts with many current template technologies which fail in unpredictable ways, due to bugs in the template syntax/expressions, or invalid assumptions about the shape of incoming data. For example, if a contract attribute has been marked as optional the template must include appropriate guards to handle cases where the contract attribute is missing.</p>
+<h3 id="conditional-section">Conditional Section</h3>
+<p>Most agreement templates require conditional sections, i.e. sections that should only be included based on the values of variables, for example, including a clause specific to an extended warranty.</p>
+<p>Conceptually, these are of the form:</p>
+<pre><code>
+Insert this content
+
+Otherwise include this content.
+
+</code></pre>
+<h3 id="switch-section">Switch Section</h3>
+<p>For more complex multi-valued inclusion of content a <code>switch</code> statement is useful:</p>
+<pre><code>
+
+Insert this content for red.
+
+
+Include this content for blue.
+
+
+Otherwise include this content.
+
+
+</code></pre>
+<h3 id="dynamic-template-insertion">Dynamic Template Insertion</h3>
+<p>In advanced scenarios it is not practical to package all content within a single template, because content needs to be managed, shared and reused across many templates. In those scenarios the template author should dynamically resolve and include those sub-templates, often based upon variable values that are in scope.</p>
+<p>The example below is dynamically including agreement templates from a logical template store called <code>hr_clauses</code> where the <code>jurisdiction_name</code> property of the template is equal to the <code>jurisdiction</code> variable value, and the <code>status</code> property equals the string <code>“active”</code>.</p>
+<p>The query string is a SQL-like dialect to select templates based on their properties, comparing their properties with hardcoded values, or with variable values in context.</p>
+<pre><code>
+</code></pre>
+<blockquote>
+<p>Note: see <a href="https://handlebarsjs.com/guide/partials.html">Handlebars “Partials”</a></p>
+</blockquote>
+<h3 id="formula">Formula</h3>
+<p>Formulae allow the template author to include a dynamically calculated value, calculated from agreement data values.</p>
+<p>In the example below the <code>monthlyPayments</code> function is being called, passing in three agreement data points for the amount, term and interest rate of a loan. Whenever one of these dependent variables is modified the formula is re-evaluated and a new value is computed.</p>
+<pre><code>
+</code></pre>
+<blockquote>
+<p>TBD. Define how these formulae are specified and packaged with a template.</p>
+</blockquote>
+<h3 id="variable">Variable</h3>
+<p>Simple unary variables are included in templates using a navigation syntax, allowing the template author to navigate through complex types to primitive properties.</p>
+<pre><code>The seller  hereby agrees to sell  to 
+</code></pre>
+<p>Text:</p>
+<pre><code>Hello !
+</code></pre>
+<p>Model:</p>
+<pre><code>namespace test
+
+import org.accordproject.contract.Clause from https://models.accordproject.org/accordproject/contract.cto
+
+asset TemplateModel extends Clause {
+    o String firstName
+}
+</code></pre>
+<p>JSON AST:</p>
+<pre><code>{
+  &quot;$class&quot;: &quot;org.accordproject.commonmark.Document&quot;,
+  &quot;xmlns&quot;: &quot;http://commonmark.org/xml/1.0&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;$class&quot;: &quot;org.accordproject.templatemark.ClauseDefinition&quot;,
+      &quot;name&quot;: &quot;top&quot;,
+      &quot;elementType&quot;: &quot;test.TemplateModel&quot;,
+      &quot;nodes&quot;: [
+        {
+          &quot;$class&quot;: &quot;org.accordproject.commonmark.Paragraph&quot;,
+          &quot;nodes&quot;: [
+            {
+              &quot;$class&quot;: &quot;org.accordproject.commonmark.Text&quot;,
+              &quot;text&quot;: &quot;Hello &quot;
+            },
+            {
+              &quot;$class&quot;: &quot;org.accordproject.templatemark.VariableDefinition&quot;,
+              &quot;name&quot;: &quot;firstName&quot;,
+              &quot;elementType&quot;: &quot;String&quot;
+            },
+            {
+              &quot;$class&quot;: &quot;org.accordproject.commonmark.Text&quot;,
+              &quot;text&quot;: &quot;!&quot;
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+<h4 id="assigning-variables-to-recipients">Assigning Variables to Recipients</h4>
+<p>A variable may be associated with a recipient, indicating that the variable value must be supplied by a specific role (user) of the template. For example, a recipient role might be “buyer” and another role might be “seller”, with variables for <code>buyer address</code> and <code>seller address</code> with the respective recipient association.</p>
+<h4 id="variable-formatting">Variable Formatting</h4>
+<p>Properties that are not strings may optionally be formatted. For example, monetary amounts may include currency code, currency symbol, floating point numbers may include precision, dates/times are converted to human readable localized display strings.</p>
+<p>For example, the syntax below formats a monetary amount using a currency symbol and two significant digits or numeric precision.</p>
+<pre><code>The agreed purchase price of the goods is 
+</code></pre>
+<h4 id="nary-variable">Nary Variable</h4>
+<p>Nary variables (lists) must be expanded/iterated to be inserted into a template. A list variable can be either expanded as a list or as a table.</p>
+<h5 id="list-expansion">List Expansion</h5>
+<pre><code>Patient  declares the following allergies:
+
+
+
+</code></pre>
+<h5 id="table-expansion">Table Expansion</h5>
+<pre><code>Patient  declares the following allergies:
+
+| Allergy Name | Severity |
+|--------------|----------|
+
+| ||
+
+</code></pre>
+<blockquote>
+<p>TBD: Include a sample that shows conditional inclusion of rows?</p>
+</blockquote>
+<h5 id="list-navigation">List Navigation</h5>
+<pre><code>The first seller  hereby agrees to sell  to the first buyer 
+</code></pre>
+<h3 id="navigation">Navigation</h3>
+<p>The <code>with-helper</code> allows you to change the evaluation context of template-part. In the example below the reference to <code>data.person.firstname</code> and <code>data.person.lastname</code> is simplified by first binding <code>data.person</code> to the current context.</p>
+<pre><code>
+ 
+
+</code></pre>
+<h3 id="dynamic-content">Dynamic Content</h3>
+<p>Dynamic content may be included in a template by using a formula that returns formatted text, or even a template.</p>
+<blockquote>
+<p>Details TBD, but likely if the formula function returns a JSON Object (AST) rather than a primitive then we can assume it is a template or rich-text content</p>
+</blockquote>
+<h2 id="additional-resources">Additional Resources</h2>
+<ol>
+<li><a href="https://docs.accordproject.org/docs/markup-commonmark.html">CommonMark</a></li>
+<li>Accord Project <a href="https://docs.accordproject.org/docs/markup-ciceromark.html">CiceroMark</a></li>
+<li>Accord Project <a href="https://docs.accordproject.org/docs/markup-templatemark.html">TemplateMark</a></li>
+<li><a href="https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html">Confluence Wiki markup</a></li>
+<li><a href="https://pandoc.org/MANUAL.html#pandocs-markdown">Pandoc</a></li>
+<li><a href="http://officeopenxml.com/WPtext.php">Open Office XML</a></li>
+<li><a href="http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf">Open Document Format 1.2</a></li>
+<li><a href="http://docs.oasis-open.org/office/v1.2/OpenDocument-v1.2.pdf">Open Document OpenFormula 1.2</a></li>
+<li><a href="https://formulajs.info/">Formula.js</a></li>
+</ol>
+<h2 id="document-automation-%2F-generation-vendors">Document Automation / Generation Vendors</h2>
+<blockquote>
+<p>Pull requests with additional vendors welcome!</p>
+</blockquote>
+<h3 id="open-souce">Open Souce</h3>
+<ol>
+<li><a href="https://docassemble.org">Docassemble</a></li>
+<li><a href="https://www.m2doc.org">M2Doc</a></li>
+</ol>
+<h3 id="commercial">Commercial</h3>
+<ol>
+<li><a href="https://help.bryter.io/hc/en-us/articles/4417166695569-Elevate-documents-with-conditional-content-using-if-condition-name-and-endif-condition-name-">Bryter</a></li>
+<li><a href="https://help.lawmatics.com/article/358-types-of-lawmatics-documents-and-when-to-use-each">Lawmatics</a></li>
+<li><a href="https://www.formstack.com/products/documents">Formstack / Web Merge</a></li>
+<li><a href="https://support.insight.ly/en-US/Knowledge/article/1397/How_to_use_Microsoft_Word_to_add_conditional_merge_statements_into_templates/">Insightly</a></li>
+<li><a href="https://support.google.com/appsheet/answer/11568425?hl=en&amp;ref_topic=11445504">Google AppSheet</a></li>
+<li><a href="https://support.pandadoc.com/hc/en-us/articles/4423209193367-Conditional-smart-content-for-senders-#h_01FVJDX1FG84F1BDPWCABBZ52M">Pandadoc</a></li>
+<li><a href="https://help.hotdocs.com/author/current/Conditional_Region_Overview.htm">Hotdocs Conditional Regions</a> / <a href="https://help.hotdocs.com/author/current/HotDocs_Fields_Overview.htm">Hotdocs Fields</a></li>
+<li><a href="https://www.pathagoras.com/help/index.html?nested_variables.htm">Pathagoras</a></li>
+<li><a href="https://www.docmosis.com">Docmosis</a></li>
+<li><a href="https://conga.com/products/conga-composer">Conga Composer</a></li>
+<li><a href="https://docupilot.app">Docupilot</a></li>
+<li><a href="https://pleodox.com">PleoDox</a></li>
+<li><a href="https://www.templafy.com">Templafy</a></li>
+<li><a href="https://www.legito.com">Legito</a></li>
+<li><a href="https://www.docuprime.io">DocuPrime</a></li>
+<li><a href="https://www.docusign.com/products/gen">DocuSign</a></li>
+<li><a href="https://www.opero.com">Opero</a></li>
+<li><a href="https://www.activedocs.com">ActiveDocs</a></li>
+<li><a href="https://www.dox42.com">dox42</a></li>
+<li><a href="https://www.visirule.co.uk">VisiRule</a></li>
+<li><a href="https://zapier.com/blog/create-autopopulate-google-docs-template/">Zapier + GSuite</a></li>
+<li><a href="https://plumsail.com/documents/">Plumsail</a></li>
+<li><a href="https://www.jotform.com/what-is-document-automation/">JotForm</a></li>
+</ol>
