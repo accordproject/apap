@@ -80,7 +80,23 @@
             "description": "The class identifier for org.accordproject.protocol@1.0.0.TemplateModel"
           },
           "value": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ConceptDeclaration"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ConceptDeclaration"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.AssetDeclaration"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ParticipantDeclaration"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TransactionDeclaration"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.EventDeclaration"
+              }
+            ]
           }
         },
         "required": [
@@ -552,959 +568,6 @@
           ]
         }
       },
-      "org.accordproject.commonmark@0.5.0.Node": {
-        "title": "Node",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Node",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Node",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Node$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Node"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Root": {
-        "title": "Root",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Root",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Root",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Root$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Root"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Child": {
-        "title": "Child",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Child",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Child",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Child$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Child"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Text": {
-        "title": "Text",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Text",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Text",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Text$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Text"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Attribute": {
-        "title": "Attribute",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Attribute",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Attribute",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Attribute$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Attribute"
-          },
-          "name": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "$class",
-          "name",
-          "value"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.TagInfo": {
-        "title": "TagInfo",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.TagInfo",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.TagInfo",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TagInfo$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TagInfo"
-          },
-          "tagName": {
-            "type": "string"
-          },
-          "attributeString": {
-            "type": "string"
-          },
-          "attributes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Attribute"
-            }
-          },
-          "content": {
-            "type": "string"
-          },
-          "closed": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "$class",
-          "tagName",
-          "attributeString",
-          "attributes",
-          "content",
-          "closed"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.CodeBlock": {
-        "title": "CodeBlock",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.CodeBlock",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.CodeBlock",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.CodeBlock$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock"
-          },
-          "info": {
-            "type": "string"
-          },
-          "tag": {
-            "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TagInfo"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Code": {
-        "title": "Code",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Code",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Code",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Code$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Code"
-          },
-          "info": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.HtmlInline": {
-        "title": "HtmlInline",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.HtmlInline",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.HtmlInline",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.HtmlInline$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline"
-          },
-          "tag": {
-            "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TagInfo"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.HtmlBlock": {
-        "title": "HtmlBlock",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.HtmlBlock",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.HtmlBlock",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.HtmlBlock$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock"
-          },
-          "tag": {
-            "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TagInfo"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Emph": {
-        "title": "Emph",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Emph",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Emph",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Emph$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Emph"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Strong": {
-        "title": "Strong",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Strong",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Strong",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Strong$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Strong"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.BlockQuote": {
-        "title": "BlockQuote",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.BlockQuote",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.BlockQuote",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.BlockQuote$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Heading": {
-        "title": "Heading",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Heading",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Heading",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Heading$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Heading"
-          },
-          "level": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class",
-          "level"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.ThematicBreak": {
-        "title": "ThematicBreak",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.ThematicBreak",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.ThematicBreak",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.ThematicBreak$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Softbreak": {
-        "title": "Softbreak",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Softbreak",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Softbreak",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Softbreak$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Softbreak"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Linebreak": {
-        "title": "Linebreak",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Linebreak",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Linebreak",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Linebreak$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Linebreak"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Link": {
-        "title": "Link",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Link",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Link",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Link$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Link"
-          },
-          "destination": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class",
-          "destination",
-          "title"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Image": {
-        "title": "Image",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Image",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Image",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Image$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Image"
-          },
-          "destination": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class",
-          "destination",
-          "title"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Paragraph": {
-        "title": "Paragraph",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Paragraph",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Paragraph",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Paragraph$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Paragraph"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.List": {
-        "title": "List",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.List",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.List",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.List$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.List"
-          },
-          "type": {
-            "type": "string"
-          },
-          "start": {
-            "type": "string"
-          },
-          "tight": {
-            "type": "string"
-          },
-          "delimiter": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class",
-          "type",
-          "tight"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Item": {
-        "title": "Item",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Item",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Item",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Item$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Item"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Document": {
-        "title": "Document",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Document",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Document",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Document$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Document"
-          },
-          "xmlns": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class",
-          "xmlns"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.Table": {
-        "title": "Table",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.Table",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.Table",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Table$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Table"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.TableHead": {
-        "title": "TableHead",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.TableHead",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.TableHead",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableHead$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableHead"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.TableBody": {
-        "title": "TableBody",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.TableBody",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.TableBody",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableBody$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableBody"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.TableRow": {
-        "title": "TableRow",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.TableRow",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.TableRow",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableRow$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableRow"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.HeaderCell": {
-        "title": "HeaderCell",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.HeaderCell",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.HeaderCell",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.HeaderCell$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
-      "org.accordproject.commonmark@0.5.0.TableCell": {
-        "title": "TableCell",
-        "description": "An instance of org.accordproject.commonmark@0.5.0.TableCell",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.commonmark@0.5.0.TableCell",
-            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableCell$",
-            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableCell"
-          },
-          "text": {
-            "type": "string"
-          },
-          "nodes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
-            }
-          },
-          "startLine": {
-            "type": "integer"
-          },
-          "endLine": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "$class"
-        ]
-      },
       "concerto.metamodel@0.4.0.Position": {
         "title": "Position",
         "description": "An instance of concerto.metamodel@0.4.0.Position",
@@ -1715,7 +778,23 @@
           "arguments": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DecoratorLiteral"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DecoratorLiteral"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DecoratorString"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DecoratorNumber"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DecoratorBoolean"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DecoratorTypeReference"
+                }
+              ]
             }
           },
           "location": {
@@ -1875,7 +954,14 @@
             "type": "boolean"
           },
           "identified": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IdentifiedBy"
+              }
+            ]
           },
           "superType": {
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TypeIdentifier"
@@ -1883,7 +969,35 @@
           "properties": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.RelationshipProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ObjectProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.BooleanProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DateTimeProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.StringProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DoubleProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IntegerProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.LongProperty"
+                }
+              ]
             }
           },
           "name": {
@@ -1922,7 +1036,14 @@
             "type": "boolean"
           },
           "identified": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IdentifiedBy"
+              }
+            ]
           },
           "superType": {
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TypeIdentifier"
@@ -1930,7 +1051,35 @@
           "properties": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.RelationshipProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ObjectProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.BooleanProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DateTimeProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.StringProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DoubleProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IntegerProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.LongProperty"
+                }
+              ]
             }
           },
           "name": {
@@ -1969,7 +1118,14 @@
             "type": "boolean"
           },
           "identified": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IdentifiedBy"
+              }
+            ]
           },
           "superType": {
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TypeIdentifier"
@@ -1977,7 +1133,35 @@
           "properties": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.RelationshipProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ObjectProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.BooleanProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DateTimeProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.StringProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DoubleProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IntegerProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.LongProperty"
+                }
+              ]
             }
           },
           "name": {
@@ -2016,7 +1200,14 @@
             "type": "boolean"
           },
           "identified": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IdentifiedBy"
+              }
+            ]
           },
           "superType": {
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TypeIdentifier"
@@ -2024,7 +1215,35 @@
           "properties": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.RelationshipProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ObjectProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.BooleanProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DateTimeProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.StringProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DoubleProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IntegerProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.LongProperty"
+                }
+              ]
             }
           },
           "name": {
@@ -2063,7 +1282,14 @@
             "type": "boolean"
           },
           "identified": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Identified"
+              },
+              {
+                "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IdentifiedBy"
+              }
+            ]
           },
           "superType": {
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TypeIdentifier"
@@ -2071,7 +1297,35 @@
           "properties": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Property"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.RelationshipProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ObjectProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.BooleanProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DateTimeProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.StringProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.DoubleProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.IntegerProperty"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.LongProperty"
+                }
+              ]
             }
           },
           "name": {
@@ -2661,13 +1915,45 @@
           "imports": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Import"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Import"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ImportAll"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ImportType"
+                }
+              ]
             }
           },
           "declarations": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Declaration"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Declaration"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.EnumDeclaration"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ConceptDeclaration"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.AssetDeclaration"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.ParticipantDeclaration"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TransactionDeclaration"
+                },
+                {
+                  "$ref": "#/components/schemas/concerto.metamodel@0.4.0.EventDeclaration"
+                }
+              ]
             }
           }
         },
@@ -2697,6 +1983,3173 @@
         "required": [
           "$class",
           "models"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Node": {
+        "title": "Node",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Node",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Node",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Node$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Node"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Root": {
+        "title": "Root",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Root",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Root",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Root$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Root"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Child": {
+        "title": "Child",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Child",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Child",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Child$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Child"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Text": {
+        "title": "Text",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Text",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Text",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Text$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Text"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Attribute": {
+        "title": "Attribute",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Attribute",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Attribute",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Attribute$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Attribute"
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "$class",
+          "name",
+          "value"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.TagInfo": {
+        "title": "TagInfo",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.TagInfo",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.TagInfo",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TagInfo$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TagInfo"
+          },
+          "tagName": {
+            "type": "string"
+          },
+          "attributeString": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Attribute"
+            }
+          },
+          "content": {
+            "type": "string"
+          },
+          "closed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "$class",
+          "tagName",
+          "attributeString",
+          "attributes",
+          "content",
+          "closed"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.CodeBlock": {
+        "title": "CodeBlock",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.CodeBlock",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.CodeBlock",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.CodeBlock$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock"
+          },
+          "info": {
+            "type": "string"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TagInfo"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Code": {
+        "title": "Code",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Code",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Code",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Code$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Code"
+          },
+          "info": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.HtmlInline": {
+        "title": "HtmlInline",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.HtmlInline",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.HtmlInline",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.HtmlInline$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TagInfo"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.HtmlBlock": {
+        "title": "HtmlBlock",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.HtmlBlock",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.HtmlBlock",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.HtmlBlock$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TagInfo"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Emph": {
+        "title": "Emph",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Emph",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Emph",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Emph$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Emph"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Strong": {
+        "title": "Strong",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Strong",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Strong",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Strong$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Strong"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.BlockQuote": {
+        "title": "BlockQuote",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.BlockQuote",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.BlockQuote",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.BlockQuote$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Heading": {
+        "title": "Heading",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Heading",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Heading",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Heading$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Heading"
+          },
+          "level": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class",
+          "level"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.ThematicBreak": {
+        "title": "ThematicBreak",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.ThematicBreak",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.ThematicBreak",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.ThematicBreak$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Softbreak": {
+        "title": "Softbreak",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Softbreak",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Softbreak",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Softbreak$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Softbreak"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Linebreak": {
+        "title": "Linebreak",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Linebreak",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Linebreak",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Linebreak$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Linebreak"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Link": {
+        "title": "Link",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Link",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Link",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Link$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Link"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class",
+          "destination",
+          "title"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Image": {
+        "title": "Image",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Image",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Image",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Image$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Image"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class",
+          "destination",
+          "title"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Paragraph": {
+        "title": "Paragraph",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Paragraph",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Paragraph",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Paragraph$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Paragraph"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.List": {
+        "title": "List",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.List",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.List",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.List$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.List"
+          },
+          "type": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string"
+          },
+          "tight": {
+            "type": "string"
+          },
+          "delimiter": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class",
+          "type",
+          "tight"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Item": {
+        "title": "Item",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Item",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Item",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Item$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Item"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Document": {
+        "title": "Document",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Document",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Document",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Document$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Document"
+          },
+          "xmlns": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class",
+          "xmlns"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.Table": {
+        "title": "Table",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.Table",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.Table",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.Table$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.Table"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.TableHead": {
+        "title": "TableHead",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.TableHead",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.TableHead",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableHead$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableHead"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.TableBody": {
+        "title": "TableBody",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.TableBody",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.TableBody",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableBody$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableBody"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.TableRow": {
+        "title": "TableRow",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.TableRow",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.TableRow",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableRow$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableRow"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.HeaderCell": {
+        "title": "HeaderCell",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.HeaderCell",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.HeaderCell",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.HeaderCell$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.commonmark@0.5.0.TableCell": {
+        "title": "TableCell",
+        "description": "An instance of org.accordproject.commonmark@0.5.0.TableCell",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.commonmark@0.5.0.TableCell",
+            "pattern": "^org\\.accordproject\\.commonmark@0\\.5\\.0\\.TableCell$",
+            "description": "The class identifier for org.accordproject.commonmark@0.5.0.TableCell"
+          },
+          "text": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Node"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Root"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Child"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Text"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.CodeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Code"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlInline"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HtmlBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Emph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Strong"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.BlockQuote"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.ThematicBreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Softbreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Linebreak"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Link"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Image"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.List"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Item"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Table"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableHead"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableBody"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableRow"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.HeaderCell"
+                },
+                {
+                  "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.TableCell"
+                }
+              ]
+            }
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "$class"
         ]
       }
     }
