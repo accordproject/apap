@@ -20,7 +20,6 @@
     "@ibm-cloud/openapi-ruleset": "^0.44.3",
     "ibm-openapi-validator": "^0.96.4",
     "openapi-typescript": "^6.1.0",
-    "openapi-typescript-codegen": "^0.23.0",
     "reslate": "^3.0.0-5",
     "swagger-combine": "^1.4.0",
     "widdershins": "^4.0.1"
