@@ -8,7 +8,7 @@
     "gen": "concerto compile --model ./model/protocol.cto --target openapi --output ./output",
     "merge": "node merge.js",
     "build-api-docs": "widdershins openapi.json -o index.md",
-    "build": "npm run merge && npm run build-api-docs && openapi -i openapi.json -o ./src && npx reslate build",
+    "build": "npm run merge && npm run build-api-docs && npx openapi-typescript openapi.json --output ./src/apap.ts && npx reslate build",
     "prebuild": "npm run gen",
     "lint": "int-openapi openapi.json",
     "serve": "npx reslate serve"
@@ -16,9 +16,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@accordproject/concerto-cli": "^3.0.1-20221207104407",
+    "@accordproject/concerto-cli": "^3.4.0",
     "@ibm-cloud/openapi-ruleset": "^0.44.3",
     "ibm-openapi-validator": "^0.96.4",
+    "openapi-typescript": "^6.1.0",
     "openapi-typescript-codegen": "^0.23.0",
     "reslate": "^3.0.0-5",
     "swagger-combine": "^1.4.0",

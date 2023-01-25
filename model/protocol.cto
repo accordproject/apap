@@ -82,14 +82,14 @@ concept Template identified by name {
 }
 
 @description("A key/value pair")
-concept Property {
+concept KeyValue {
     o String key
     o String value
 }
 
 @description("Generic metadata comprised of key/value pairs")
 concept Metadata {
-    o Property[] properties
+    o KeyValue[] values
 }
 
 @resource
