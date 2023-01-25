@@ -10765,7 +10765,8 @@ This operation does not require authentication
 ```shell
 # You can also use wget
 curl -X POST /agreements/{agreementId}/convert/pdf \
-  -H 'Content-Type: application/json'
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/pdf:'
 
 ```
 
@@ -10773,6 +10774,7 @@ curl -X POST /agreements/{agreementId}/convert/pdf \
 POST /agreements/{agreementId}/convert/pdf HTTP/1.1
 
 Content-Type: application/json
+Accept: application/pdf:
 
 ```
 
@@ -10782,7 +10784,8 @@ const inputBody = '{
   "styles": "string"
 }';
 const headers = {
-  'Content-Type':'application/json'
+  'Content-Type':'application/json',
+  'Accept':'application/pdf:'
 };
 
 fetch('/agreements/{agreementId}/convert/pdf',
@@ -10804,7 +10807,8 @@ require 'rest-client'
 require 'json'
 
 headers = {
-  'Content-Type' => 'application/json'
+  'Content-Type' => 'application/json',
+  'Accept' => 'application/pdf:'
 }
 
 result = RestClient.post '/agreements/{agreementId}/convert/pdf',
@@ -10818,7 +10822,8 @@ p JSON.parse(result)
 ```python
 import requests
 headers = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
+  'Accept': 'application/pdf:'
 }
 
 r = requests.post('/agreements/{agreementId}/convert/pdf', headers = headers)
@@ -10834,6 +10839,7 @@ require 'vendor/autoload.php';
 
 $headers = array(
     'Content-Type' => 'application/json',
+    'Accept' => 'application/pdf:',
 );
 
 $client = new \GuzzleHttp\Client();
@@ -10887,6 +10893,7 @@ func main() {
 
     headers := map[string][]string{
         "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/pdf:"},
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
@@ -10922,11 +10929,15 @@ Converts an existing `agreement` to PDF.
 |body|body|[org.accordproject.protocol@1.0.0.PdfConversionOptions](#schemaorg.accordproject.protocol@1.0.0.pdfconversionoptions)|true|PDF conversion options.|
 |agreementId|path|string|true|A unique identifier for a `Agreement`.|
 
+> Example responses
+
+> 202 Response
+
 <h3 id="convertagreementpdf-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|202|[Accepted](https://tools.ietf.org/html/rfc7231#section-6.3.3)|Successful response.|None|
+|202|[Accepted](https://tools.ietf.org/html/rfc7231#section-6.3.3)|A PDF file|string|
 
 <aside class="success">
 This operation does not require authentication
@@ -12519,6 +12530,30 @@ AgreementStatusType
 |AgreementStatusType|SIGNNG|
 |AgreementStatusType|COMPLETED|
 |AgreementStatusType|SUPERSEDED|
+
+<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.party@0.2.0.party"></a>
+<a id="schema_org.accordproject.party@0.2.0.Party"></a>
+<a id="tocSorg.accordproject.party@0.2.0.party"></a>
+<a id="tocsorg.accordproject.party@0.2.0.party"></a>
+
+```json
+{
+  "$class": "org.accordproject.party@0.2.0.Party",
+  "partyId": "string"
+}
+
+```
+
+Party
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
+|partyId|string|true|none|The instance identifier for this type|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.Position">concerto.metamodel@0.4.0.Position</h2>
 <!-- backwards compatibility -->
@@ -21659,28 +21694,4 @@ continued
 |---|---|---|---|---|
 |startLine|integer|false|none|none|
 |endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.party@0.2.0.party"></a>
-<a id="schema_org.accordproject.party@0.2.0.Party"></a>
-<a id="tocSorg.accordproject.party@0.2.0.party"></a>
-<a id="tocsorg.accordproject.party@0.2.0.party"></a>
-
-```json
-{
-  "$class": "org.accordproject.party@0.2.0.Party",
-  "partyId": "string"
-}
-
-```
-
-Party
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
-|partyId|string|true|none|The instance identifier for this type|
 

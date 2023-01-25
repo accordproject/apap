@@ -17,7 +17,15 @@
         },
         "responses": {
           "202": {
-            "description": "Successful response."
+            "description": "A PDF file",
+            "content" : {
+              "application/pdf:" : {
+                "schema" : {
+                  "type" : "string",
+                  "format": "binary"
+                }
+              }
+            }
           }
         },
         "operationId": "convertAgreementPdf",
