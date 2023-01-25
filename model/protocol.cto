@@ -21,7 +21,9 @@ concept Text {
 
 @description("The concept declaration associated with a template")
 concept TemplateModel {
-    o ConceptDeclaration value
+    o FullyQualifiedTypeName typeName       // name of the type for this template
+    --> SharedModel sharedModel optional    // reference to a shared model
+    o Model model optional                  // an inline model
 }
 
 @description("A shared data model")
@@ -96,8 +98,9 @@ concept Metadata {
 @description("An Accord Project Agreement, an instance of a template")
 concept Agreement identified by agreementId {
     o String agreementId
-    o JSON data
-    --> Template template
+    o JSON data                             // Data for the agreement (an instance of the data for its template)
+    o JSON state optional                   // Runtime state of the agreement
+    --> Template template                   // Template for the the agreement
     o AgreementParty[] agreementParties     // Parties to the agreement
     o Signature[] signatures                // Signatures of the parties to the agreement
     o AgreementStatusType agreementStatus   // Current status of agreement
@@ -194,10 +197,4 @@ enum AgreementStatusType {
     o SIGNNG        // Signed by some but not all signatories
     o COMPLETED     // Signing by all signatories completed
     o SUPERSEDED    // Superseded by subsequent agreement
-}
-
-@description("Runtime state of an agreement")
-concept StateResponse {
-    o AgreementStatusType status
-    o JSON result
 }

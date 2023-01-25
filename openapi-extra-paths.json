@@ -81,39 +81,6 @@
         }
       ]
     },
-    "/agreements/{agreementId}/state": {
-      "summary": "Path used to get the state of an agreeement.",
-      "description": "The REST endpoint/path used get the state of an `agreement`.",
-      "get": {
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.StateResponse"
-                }
-              }
-            },
-            "description": "Successful response - returns the state of an `agreement`."
-          }
-        },
-        "operationId": "agreementState",
-        "summary": "Get the state of an agreement",
-        "description": "Gets the runtime state of an agreement.",
-        "tags": ["agreements"]
-      },
-      "parameters": [
-        {
-          "name": "agreementId",
-          "description": "A unique identifier for a `Agreement`.",
-          "schema": {
-            "type": "string"
-          },
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
     "/capabilities": {
       "summary": "Path used to retrieve server capabilities.",
       "description": "The REST endpoint used to understand the capabiities of the server.",
