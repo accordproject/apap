@@ -3,7 +3,7 @@ namespace org.accordproject.protocol@1.0.0
 
 import concerto.metamodel@0.4.0.{Property,ConceptDeclaration,Model} from https://models.accordproject.org/concerto/metamodel@0.4.0.cto
 import org.accordproject.commonmark@0.5.0.Document from https://models.accordproject.org/markdown/commonmark@0.5.0.cto
-import org.accordproject.party@0.2.0.* from https://models.accordproject.org/accordproject/party@0.2.0.cto
+import org.accordproject.party@0.2.0.{Party} from https://models.accordproject.org/accordproject/party@0.2.0.cto
 
 scalar JSON extends String
 scalar FullyQualifiedTypeName extends String
@@ -81,6 +81,17 @@ concept Template identified by name {
     o Logic logic optional
 }
 
+@description("A key/value pair")
+concept Property {
+    o String key
+    o String value
+}
+
+@description("Generic metadata comprised of key/value pairs")
+concept Metadata {
+    o Property[] properties
+}
+
 @resource
 @description("An Accord Project Agreement, an instance of a template")
 concept Agreement identified by agreementId {
@@ -90,13 +101,12 @@ concept Agreement identified by agreementId {
     o AgreementParty[] agreementParties     // Parties to the agreement
     o Signature[] signatures                // Signatures of the parties to the agreement
     o AgreementStatusType agreementStatus   // Current status of agreement
-    o History[] history                     // History of document state and details.
+    o HistoryEntry[] historyEntries         // History of document state and details.
     o Blob[] attachments                    // Pdfs, images, multimedia, etc. that form part of the agreement
     o String[] references                   // uri/urls to external references relevant to agreement
-    o String[] metaData                     // Additional data that may be relevant to the agreement
+    o Metadata metadata                     // Additional data that may be relevant to the agreement
 }
 
-@resource
 @description("A Party to an Agreement")
 participant AgreementParty extends Party {
     o String name
@@ -109,7 +119,6 @@ participant AgreementParty extends Party {
     o Address address optional
 }
 
-@resource
 @description("An Address of an Agreement Party")
 concept Address {
   o String[] streetRoad
@@ -119,21 +128,18 @@ concept Address {
   o String country optional
 }
 
-@resource
-@description("The History of an Agreement")
-concept History {
-    o DateTime dateTime
+@description("A history entry for an Agreement")
+transaction HistoryEntry {
     o AgreementStatusType agreementStatus   // Status at time of change
     o JSON data                             // Data at time of change
-    o String[] metaData                     // Additional data that may be relevant to the agreement at time of change
+    o Metadata metadata                     // Additional data that may be relevant to the agreement at time of change
 }
 
-@resource
 @description("A signature of an Agreement Party")
 concept Signature {
     o AgreementParty signatory              // The Agreement Party signing the Agreement
     o DateTime signedAt optional            // When the signing occurred
-    o String[] metaData                     // Geolocation data, IP address, etc.
+    o Metadata metadata                     // Geolocation data, IP address, etc.
     o Blob[] signatureImage                 // Selfie, proof-of-id, sign-on-glass image
 }
 

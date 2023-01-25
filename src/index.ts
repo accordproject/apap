@@ -72,8 +72,12 @@ export type { org_accordproject_commonmark_0_5_0_TableRow } from './models/org_a
 export type { org_accordproject_commonmark_0_5_0_TagInfo } from './models/org_accordproject_commonmark_0_5_0_TagInfo';
 export type { org_accordproject_commonmark_0_5_0_Text } from './models/org_accordproject_commonmark_0_5_0_Text';
 export type { org_accordproject_commonmark_0_5_0_ThematicBreak } from './models/org_accordproject_commonmark_0_5_0_ThematicBreak';
+export type { org_accordproject_party_0_2_0_Party } from './models/org_accordproject_party_0_2_0_Party';
+export type { org_accordproject_protocol_1_0_0_Address } from './models/org_accordproject_protocol_1_0_0_Address';
 export type { org_accordproject_protocol_1_0_0_Agreement } from './models/org_accordproject_protocol_1_0_0_Agreement';
+export type { org_accordproject_protocol_1_0_0_AgreementParty } from './models/org_accordproject_protocol_1_0_0_AgreementParty';
 export { org_accordproject_protocol_1_0_0_AgreementStatusType } from './models/org_accordproject_protocol_1_0_0_AgreementStatusType';
+export type { org_accordproject_protocol_1_0_0_Blob } from './models/org_accordproject_protocol_1_0_0_Blob';
 export type { org_accordproject_protocol_1_0_0_Capabilities } from './models/org_accordproject_protocol_1_0_0_Capabilities';
 export type { org_accordproject_protocol_1_0_0_Code } from './models/org_accordproject_protocol_1_0_0_Code';
 export { org_accordproject_protocol_1_0_0_CodeEncodingType } from './models/org_accordproject_protocol_1_0_0_CodeEncodingType';
@@ -82,11 +86,14 @@ export type { org_accordproject_protocol_1_0_0_ConversionOptions } from './model
 export { org_accordproject_protocol_1_0_0_FeatureType } from './models/org_accordproject_protocol_1_0_0_FeatureType';
 export type { org_accordproject_protocol_1_0_0_FullyQualifiedTypeName } from './models/org_accordproject_protocol_1_0_0_FullyQualifiedTypeName';
 export type { org_accordproject_protocol_1_0_0_Function } from './models/org_accordproject_protocol_1_0_0_Function';
+export type { org_accordproject_protocol_1_0_0_HistoryEntry } from './models/org_accordproject_protocol_1_0_0_HistoryEntry';
 export type { org_accordproject_protocol_1_0_0_JSON } from './models/org_accordproject_protocol_1_0_0_JSON';
 export type { org_accordproject_protocol_1_0_0_Logic } from './models/org_accordproject_protocol_1_0_0_Logic';
-export type { org_accordproject_protocol_1_0_0_Logo } from './models/org_accordproject_protocol_1_0_0_Logo';
+export type { org_accordproject_protocol_1_0_0_Metadata } from './models/org_accordproject_protocol_1_0_0_Metadata';
 export type { org_accordproject_protocol_1_0_0_PdfConversionOptions } from './models/org_accordproject_protocol_1_0_0_PdfConversionOptions';
+export type { org_accordproject_protocol_1_0_0_Property } from './models/org_accordproject_protocol_1_0_0_Property';
 export type { org_accordproject_protocol_1_0_0_SharedModel } from './models/org_accordproject_protocol_1_0_0_SharedModel';
+export type { org_accordproject_protocol_1_0_0_Signature } from './models/org_accordproject_protocol_1_0_0_Signature';
 export type { org_accordproject_protocol_1_0_0_StateResponse } from './models/org_accordproject_protocol_1_0_0_StateResponse';
 export type { org_accordproject_protocol_1_0_0_Template } from './models/org_accordproject_protocol_1_0_0_Template';
 export type { org_accordproject_protocol_1_0_0_TemplateModel } from './models/org_accordproject_protocol_1_0_0_TemplateModel';
@@ -94,4 +101,6 @@ export type { org_accordproject_protocol_1_0_0_Text } from './models/org_accordp
 export type { org_accordproject_protocol_1_0_0_TriggerRequest } from './models/org_accordproject_protocol_1_0_0_TriggerRequest';
 export type { org_accordproject_protocol_1_0_0_TriggerResponse } from './models/org_accordproject_protocol_1_0_0_TriggerResponse';
 
+export { AgreementsService } from './services/AgreementsService';
+export { CapabilitiesService } from './services/CapabilitiesService';
 export { DefaultService } from './services/DefaultService';

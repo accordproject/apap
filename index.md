@@ -27,7 +27,7 @@ API for document generation and agreement automation
 
 Base URLs:
 
-<h1 id="accord-protocol-sharedmodels">sharedmodels</h1>
+<h1 id="accord-protocol-default">Default</h1>
 
 ## listSharedmodels
 
@@ -271,686 +271,39 @@ Status Code **200**
 |---|---|---|---|---|
 |*anonymous*|[[org.accordproject.protocol@1.0.0.SharedModel](#schemaorg.accordproject.protocol@1.0.0.sharedmodel)]|false|none|[An instance of org.accordproject.protocol@1.0.0.SharedModel]|
 |» SharedModel|[org.accordproject.protocol@1.0.0.SharedModel](#schemaorg.accordproject.protocol@1.0.0.sharedmodel)|false|none|An instance of org.accordproject.protocol@1.0.0.SharedModel|
-|»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.SharedModel|
+|»» $class|string|true|none|The class identifier for this type|
 |»» modelId|string|true|none|The instance identifier for this type|
 |»» model|[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)|true|none|An instance of concerto.metamodel@0.4.0.Model|
-|»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Model|
+|»»» $class|string|true|none|The class identifier for this type|
 |»»» namespace|string|true|none|none|
 |»»» sourceUri|string|false|none|none|
 |»»» concertoVersion|string|false|none|none|
-|»»» imports|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.Import](#schemaconcerto.metamodel@0.4.0.import)|false|none|An instance of concerto.metamodel@0.4.0.Import|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Import|
+|»»» imports|[[concerto.metamodel@0.4.0.Import](#schemaconcerto.metamodel@0.4.0.import)]|false|none|[An instance of concerto.metamodel@0.4.0.Import]|
+|»»»» Import|[concerto.metamodel@0.4.0.Import](#schemaconcerto.metamodel@0.4.0.import)|false|none|An instance of concerto.metamodel@0.4.0.Import|
+|»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»» namespace|string|true|none|none|
 |»»»»» uri|string|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.ImportAll](#schemaconcerto.metamodel@0.4.0.importall)|false|none|An instance of concerto.metamodel@0.4.0.ImportAll|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportAll|
-|»»»»» namespace|string|true|none|none|
-|»»»»» uri|string|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.ImportType](#schemaconcerto.metamodel@0.4.0.importtype)|false|none|An instance of concerto.metamodel@0.4.0.ImportType|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportType|
-|»»»»» name|string|true|none|none|
-|»»»»» namespace|string|true|none|none|
-|»»»»» uri|string|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»» declarations|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.Declaration](#schemaconcerto.metamodel@0.4.0.declaration)|false|none|An instance of concerto.metamodel@0.4.0.Declaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Declaration|
+|»»» declarations|[[concerto.metamodel@0.4.0.Declaration](#schemaconcerto.metamodel@0.4.0.declaration)]|false|none|[An instance of concerto.metamodel@0.4.0.Declaration]|
+|»»»» Declaration|[concerto.metamodel@0.4.0.Declaration](#schemaconcerto.metamodel@0.4.0.declaration)|false|none|An instance of concerto.metamodel@0.4.0.Declaration|
+|»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»» name|string|true|none|none|
 |»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Decorator|
+|»»»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»»»» name|string|true|none|none|
-|»»»»»»» arguments|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
-|»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral|
+|»»»»»»» arguments|[[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)]|false|none|[An instance of concerto.metamodel@0.4.0.DecoratorLiteral]|
+|»»»»»»»» DecoratorLiteral|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
+|»»»»»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-|»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Range|
+|»»»»»»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»»»»»»» start|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
-|»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Position|
+|»»»»»»»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»»»»»»»» line|integer|true|none|none|
 |»»»»»»»»»»» column|integer|true|none|none|
 |»»»»»»»»»»» offset|integer|true|none|none|
 |»»»»»»»»»» end|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
 |»»»»»»»»»» source|string|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorString](#schemaconcerto.metamodel@0.4.0.decoratorstring)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorString|
-|»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorString|
-|»»»»»»»»» value|string|true|none|none|
-|»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorNumber](#schemaconcerto.metamodel@0.4.0.decoratornumber)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorNumber|
-|»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorNumber|
-|»»»»»»»»» value|number|true|none|none|
-|»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorBoolean](#schemaconcerto.metamodel@0.4.0.decoratorboolean)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorBoolean|
-|»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean|
-|»»»»»»»»» value|boolean|true|none|none|
-|»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorTypeReference](#schemaconcerto.metamodel@0.4.0.decoratortypereference)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorTypeReference|
-|»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference|
-|»»»»»»»»» type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»»»»»» name|string|true|none|none|
-|»»»»»»»»»» namespace|string|false|none|none|
-|»»»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
 |»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.EnumDeclaration](#schemaconcerto.metamodel@0.4.0.enumdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EnumDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumDeclaration|
-|»»»»» properties|[[concerto.metamodel@0.4.0.EnumProperty](#schemaconcerto.metamodel@0.4.0.enumproperty)]|true|none|[An instance of concerto.metamodel@0.4.0.EnumProperty]|
-|»»»»»» EnumProperty|[concerto.metamodel@0.4.0.EnumProperty](#schemaconcerto.metamodel@0.4.0.enumproperty)|false|none|An instance of concerto.metamodel@0.4.0.EnumProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumProperty|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IdentifiedBy|
-|»»»»»»» name|string|true|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Property|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.RelationshipProperty|
-|»»»»»»» type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ObjectProperty|
-|»»»»»»» defaultValue|string|false|none|none|
-|»»»»»»» type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.BooleanProperty|
-|»»»»»»» defaultValue|boolean|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DateTimeProperty|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringProperty|
-|»»»»»»» defaultValue|string|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.StringRegexValidator](#schemaconcerto.metamodel@0.4.0.stringregexvalidator)|false|none|An instance of concerto.metamodel@0.4.0.StringRegexValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringRegexValidator|
-|»»»»»»»» pattern|string|true|none|none|
-|»»»»»»»» flags|string|true|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleProperty|
-|»»»»»»» defaultValue|number|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.DoubleDomainValidator](#schemaconcerto.metamodel@0.4.0.doubledomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.DoubleDomainValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator|
-|»»»»»»»» lower|number|false|none|none|
-|»»»»»»»» upper|number|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerProperty|
-|»»»»»»» defaultValue|integer|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.IntegerDomainValidator](#schemaconcerto.metamodel@0.4.0.integerdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.IntegerDomainValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator|
-|»»»»»»»» lower|integer|false|none|none|
-|»»»»»»»» upper|integer|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongProperty|
-|»»»»»»» defaultValue|integer|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.LongDomainValidator](#schemaconcerto.metamodel@0.4.0.longdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.LongDomainValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongDomainValidator|
-|»»»»»»»» lower|integer|false|none|none|
-|»»»»»»»» upper|integer|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.AssetDeclaration](#schemaconcerto.metamodel@0.4.0.assetdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.AssetDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.AssetDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.ParticipantDeclaration](#schemaconcerto.metamodel@0.4.0.participantdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ParticipantDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.TransactionDeclaration](#schemaconcerto.metamodel@0.4.0.transactiondeclaration)|false|none|An instance of concerto.metamodel@0.4.0.TransactionDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.EventDeclaration](#schemaconcerto.metamodel@0.4.0.eventdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EventDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EventDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
 |»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
 
 <aside class="success">
@@ -2012,8 +1365,6 @@ Deletes an existing `sharedmodel`.
 This operation does not require authentication
 </aside>
 
-<h1 id="accord-protocol-templates">templates</h1>
-
 ## listTemplates
 
 <a id="opIdlistTemplates"></a>
@@ -2179,7 +1530,7 @@ Gets a list of all `template` entities.
       "string"
     ],
     "logo": {
-      "$class": "org.accordproject.protocol@1.0.0.Logo",
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
       "base64": "string",
       "mimeType": "string"
     },
@@ -2321,13 +1672,7 @@ Gets a list of all `template` entities.
             "$class": "org.accordproject.commonmark@0.5.0.Node",
             "text": "string",
             "nodes": [
-              {
-                "$class": "org.accordproject.commonmark@0.5.0.Node",
-                "text": "string",
-                "nodes": [],
-                "startLine": 0,
-                "endLine": 0
-              }
+              {}
             ],
             "startLine": 0,
             "endLine": 0
@@ -2346,7 +1691,9 @@ Gets a list of all `template` entities.
           "name": "string",
           "requestType": "string",
           "responseType": "string",
-          "emittedTypes": "string",
+          "emittedTypes": [
+            "string"
+          ],
           "code": {
             "$class": "org.accordproject.protocol@1.0.0.Code",
             "type": "ES2015",
@@ -2374,7 +1721,7 @@ Status Code **200**
 |---|---|---|---|---|
 |*anonymous*|[[org.accordproject.protocol@1.0.0.Template](#schemaorg.accordproject.protocol@1.0.0.template)]|false|none|[An instance of org.accordproject.protocol@1.0.0.Template]|
 |» Template|[org.accordproject.protocol@1.0.0.Template](#schemaorg.accordproject.protocol@1.0.0.template)|false|none|An instance of org.accordproject.protocol@1.0.0.Template|
-|»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Template|
+|»» $class|string|true|none|The class identifier for this type|
 |»» name|string|true|none|The instance identifier for this type|
 |»» author|string|true|none|none|
 |»» displayName|string|false|none|none|
@@ -2382,5469 +1729,77 @@ Status Code **200**
 |»» description|string|false|none|none|
 |»» license|string|true|none|none|
 |»» keywords|[string]|false|none|none|
-|»» logo|[org.accordproject.protocol@1.0.0.Logo](#schemaorg.accordproject.protocol@1.0.0.logo)|false|none|An instance of org.accordproject.protocol@1.0.0.Logo|
-|»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Logo|
+|»» logo|[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)|false|none|An instance of org.accordproject.protocol@1.0.0.Blob|
+|»»» $class|string|true|none|The class identifier for this type|
 |»»» base64|string|true|none|none|
 |»»» mimeType|string|true|none|none|
 |»» templateModel|[org.accordproject.protocol@1.0.0.TemplateModel](#schemaorg.accordproject.protocol@1.0.0.templatemodel)|true|none|An instance of org.accordproject.protocol@1.0.0.TemplateModel|
-|»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.TemplateModel|
-|»»» value|any|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IdentifiedBy|
-|»»»»»»» name|string|true|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TypeIdentifier|
+|»»» $class|string|true|none|The class identifier for this type|
+|»»» value|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|true|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
+|»»»» $class|string|true|none|The class identifier for this type|
+|»»»» isAbstract|boolean|true|none|none|
+|»»»» identified|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
+|»»»»» $class|string|true|none|The class identifier for this type|
+|»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»» name|string|true|none|none|
+|»»»»» namespace|string|false|none|none|
+|»»»» properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
+|»»»»» Property|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
+|»»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»»» name|string|true|none|none|
-|»»»»»» namespace|string|false|none|none|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Property|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Decorator|
-|»»»»»»»»» name|string|true|none|none|
-|»»»»»»»»» arguments|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
-|»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral|
-|»»»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-|»»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Range|
-|»»»»»»»»»»»» start|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
-|»»»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Position|
-|»»»»»»»»»»»»» line|integer|true|none|none|
-|»»»»»»»»»»»»» column|integer|true|none|none|
-|»»»»»»»»»»»»» offset|integer|true|none|none|
-|»»»»»»»»»»»» end|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
-|»»»»»»»»»»»» source|string|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorString](#schemaconcerto.metamodel@0.4.0.decoratorstring)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorString|
-|»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorString|
-|»»»»»»»»»»» value|string|true|none|none|
-|»»»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorNumber](#schemaconcerto.metamodel@0.4.0.decoratornumber)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorNumber|
-|»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorNumber|
-|»»»»»»»»»»» value|number|true|none|none|
-|»»»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorBoolean](#schemaconcerto.metamodel@0.4.0.decoratorboolean)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorBoolean|
-|»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean|
-|»»»»»»»»»»» value|boolean|true|none|none|
-|»»»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DecoratorTypeReference](#schemaconcerto.metamodel@0.4.0.decoratortypereference)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorTypeReference|
-|»»»»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference|
-|»»»»»»»»»»» type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.RelationshipProperty|
-|»»»»»»» type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ObjectProperty|
-|»»»»»»» defaultValue|string|false|none|none|
-|»»»»»»» type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.BooleanProperty|
-|»»»»»»» defaultValue|boolean|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DateTimeProperty|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringProperty|
-|»»»»»»» defaultValue|string|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.StringRegexValidator](#schemaconcerto.metamodel@0.4.0.stringregexvalidator)|false|none|An instance of concerto.metamodel@0.4.0.StringRegexValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringRegexValidator|
-|»»»»»»»» pattern|string|true|none|none|
-|»»»»»»»» flags|string|true|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleProperty|
-|»»»»»»» defaultValue|number|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.DoubleDomainValidator](#schemaconcerto.metamodel@0.4.0.doubledomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.DoubleDomainValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator|
-|»»»»»»»» lower|number|false|none|none|
-|»»»»»»»» upper|number|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerProperty|
-|»»»»»»» defaultValue|integer|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.IntegerDomainValidator](#schemaconcerto.metamodel@0.4.0.integerdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.IntegerDomainValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator|
-|»»»»»»»» lower|integer|false|none|none|
-|»»»»»»»» upper|integer|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-|»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongProperty|
-|»»»»»»» defaultValue|integer|false|none|none|
-|»»»»»»» validator|[concerto.metamodel@0.4.0.LongDomainValidator](#schemaconcerto.metamodel@0.4.0.longdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.LongDomainValidator|
-|»»»»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongDomainValidator|
-|»»»»»»»» lower|integer|false|none|none|
-|»»»»»»»» upper|integer|false|none|none|
-|»»»»»»» name|string|true|none|none|
-|»»»»»»» isArray|boolean|true|none|none|
-|»»»»»»» isOptional|boolean|true|none|none|
-|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.AssetDeclaration](#schemaconcerto.metamodel@0.4.0.assetdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.AssetDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.AssetDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.ParticipantDeclaration](#schemaconcerto.metamodel@0.4.0.participantdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ParticipantDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.TransactionDeclaration](#schemaconcerto.metamodel@0.4.0.transactiondeclaration)|false|none|An instance of concerto.metamodel@0.4.0.TransactionDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»» *anonymous*|[concerto.metamodel@0.4.0.EventDeclaration](#schemaconcerto.metamodel@0.4.0.eventdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EventDeclaration|
-|»»»»» $class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EventDeclaration|
-|»»»»» isAbstract|boolean|true|none|none|
-|»»»»» identified|any|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|»»»»» properties|[anyOf]|true|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» name|string|true|none|none|
-|»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
-|»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+|»»»»»» isArray|boolean|true|none|none|
+|»»»»»» isOptional|boolean|true|none|none|
+|»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
+|»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»» name|string|true|none|none|
+|»»»»»»»» arguments|[[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)]|false|none|[An instance of concerto.metamodel@0.4.0.DecoratorLiteral]|
+|»»»»»»»»» DecoratorLiteral|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
+|»»»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+|»»»»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»»»»» start|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
+|»»»»»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»»»»»» line|integer|true|none|none|
+|»»»»»»»»»»»» column|integer|true|none|none|
+|»»»»»»»»»»»» offset|integer|true|none|none|
+|»»»»»»»»»»» end|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
+|»»»»»»»»»»» source|string|false|none|none|
+|»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+|»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+|»»»» name|string|true|none|none|
+|»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
+|»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
 |»» text|[org.accordproject.protocol@1.0.0.Text](#schemaorg.accordproject.protocol@1.0.0.text)|true|none|An instance of org.accordproject.protocol@1.0.0.Text|
-|»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Text|
+|»»» $class|string|true|none|The class identifier for this type|
 |»»» templateMark|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|true|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-|»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Document|
+|»»»» $class|string|true|none|The class identifier for this type|
 |»»»» xmlns|string|true|none|none|
 |»»»» text|string|false|none|none|
-|»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-|»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Node|
+|»»»» nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|»»»»» Node|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
+|»»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»»» text|string|false|none|none|
-|»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-|»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Root|
-|»»»»»»»» text|string|false|none|none|
-|»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-|»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Child|
-|»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-|»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Text|
-|»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-|»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock|
-|»»»»»»»»»»»»»» info|string|false|none|none|
-|»»»»»»»»»»»»»» tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TagInfo|
-|»»»»»»»»»»»»»»» tagName|string|true|none|none|
-|»»»»»»»»»»»»»»» attributeString|string|true|none|none|
-|»»»»»»»»»»»»»»» attributes|[[org.accordproject.commonmark@0.5.0.Attribute](#schemaorg.accordproject.commonmark@0.5.0.attribute)]|true|none|[An instance of org.accordproject.commonmark@0.5.0.Attribute]|
-|»»»»»»»»»»»»»»»» Attribute|[org.accordproject.commonmark@0.5.0.Attribute](#schemaorg.accordproject.commonmark@0.5.0.attribute)|false|none|An instance of org.accordproject.commonmark@0.5.0.Attribute|
-|»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Attribute|
-|»»»»»»»»»»»»»»»»» name|string|true|none|none|
-|»»»»»»»»»»»»»»»»» value|string|true|none|none|
-|»»»»»»»»»»»»»»» content|string|true|none|none|
-|»»»»»»»»»»»»»»» closed|boolean|true|none|none|
-|»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-|»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Code|
-|»»»»»»»»»»»»»»»» info|string|false|none|none|
-|»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-|»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline|
-|»»»»»»»»»»»»»»»»»» tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-|»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock|
-|»»»»»»»»»»»»»»»»»»»» tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-|»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Emph|
-|»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-|»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Strong|
-|»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-|»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote|
-|»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Heading|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»» level|string|true|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Softbreak|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Linebreak|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Link|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» destination|string|true|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» title|string|true|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Image|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» destination|string|true|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» title|string|true|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Paragraph|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.List|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» type|string|true|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» start|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» tight|string|true|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» delimiter|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Item|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Table|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableHead|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableBody|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableRow|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» $class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableCell|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» text|string|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» nodes|[anyOf]|false|none|none|
-
-*anyOf*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»»» startLine|integer|false|none|none|
-|»»»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|»»»»»» nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
+|»»»»»»» Node|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
 |»»»»»» startLine|integer|false|none|none|
 |»»»»»» endLine|integer|false|none|none|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-*or*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|»»»»» *anonymous*|any|false|none|none|
-
-*continued*
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
 |»»»» startLine|integer|false|none|none|
 |»»»» endLine|integer|false|none|none|
 |»» logic|[org.accordproject.protocol@1.0.0.Logic](#schemaorg.accordproject.protocol@1.0.0.logic)|false|none|An instance of org.accordproject.protocol@1.0.0.Logic|
-|»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Logic|
-|»»» stateType|string|false|none|none|
+|»»» $class|string|true|none|The class identifier for this type|
+|»»» stateType|[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)|false|none|none|
 |»»» functions|[[org.accordproject.protocol@1.0.0.Function](#schemaorg.accordproject.protocol@1.0.0.function)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Function]|
 |»»»» Function|[org.accordproject.protocol@1.0.0.Function](#schemaorg.accordproject.protocol@1.0.0.function)|false|none|An instance of org.accordproject.protocol@1.0.0.Function|
-|»»»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Function|
+|»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»» name|string|true|none|The instance identifier for this type|
-|»»»»» requestType|string|true|none|none|
-|»»»»» responseType|string|false|none|none|
-|»»»»» emittedTypes|string|false|none|none|
+|»»»»» requestType|[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)|true|none|none|
+|»»»»» responseType|[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)|false|none|none|
+|»»»»» emittedTypes|[[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)]|false|none|none|
 |»»»»» code|[org.accordproject.protocol@1.0.0.Code](#schemaorg.accordproject.protocol@1.0.0.code)|true|none|An instance of org.accordproject.protocol@1.0.0.Code|
-|»»»»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Code|
+|»»»»»» $class|string|true|none|The class identifier for this type|
 |»»»»»» type|any|true|none|An instance of org.accordproject.protocol@1.0.0.CodeType|
 |»»»»»» encoding|any|true|none|An instance of org.accordproject.protocol@1.0.0.CodeEncodingType|
 |»»»»»» value|string|true|none|none|
@@ -7895,7 +1850,7 @@ const inputBody = '{
     "string"
   ],
   "logo": {
-    "$class": "org.accordproject.protocol@1.0.0.Logo",
+    "$class": "org.accordproject.protocol@1.0.0.Blob",
     "base64": "string",
     "mimeType": "string"
   },
@@ -8042,13 +1997,7 @@ const inputBody = '{
           "$class": "org.accordproject.commonmark@0.5.0.Node",
           "text": "string",
           "nodes": [
-            {
-              "$class": "org.accordproject.commonmark@0.5.0.Node",
-              "text": "string",
-              "nodes": [],
-              "startLine": 0,
-              "endLine": 0
-            }
+            {}
           ],
           "startLine": 0,
           "endLine": 0
@@ -8067,7 +2016,9 @@ const inputBody = '{
         "name": "string",
         "requestType": "string",
         "responseType": "string",
-        "emittedTypes": "string",
+        "emittedTypes": [
+          "string"
+        ],
         "code": {
           "$class": "org.accordproject.protocol@1.0.0.Code",
           "type": "ES2015",
@@ -8218,7 +2169,7 @@ Creates a new instance of a `template`.
     "string"
   ],
   "logo": {
-    "$class": "org.accordproject.protocol@1.0.0.Logo",
+    "$class": "org.accordproject.protocol@1.0.0.Blob",
     "base64": "string",
     "mimeType": "string"
   },
@@ -8365,13 +2316,7 @@ Creates a new instance of a `template`.
           "$class": "org.accordproject.commonmark@0.5.0.Node",
           "text": "string",
           "nodes": [
-            {
-              "$class": "org.accordproject.commonmark@0.5.0.Node",
-              "text": "string",
-              "nodes": [],
-              "startLine": 0,
-              "endLine": 0
-            }
+            {}
           ],
           "startLine": 0,
           "endLine": 0
@@ -8390,7 +2335,9 @@ Creates a new instance of a `template`.
         "name": "string",
         "requestType": "string",
         "responseType": "string",
-        "emittedTypes": "string",
+        "emittedTypes": [
+          "string"
+        ],
         "code": {
           "$class": "org.accordproject.protocol@1.0.0.Code",
           "type": "ES2015",
@@ -8589,7 +2536,7 @@ Gets the details of a single instance of a `template`.
     "string"
   ],
   "logo": {
-    "$class": "org.accordproject.protocol@1.0.0.Logo",
+    "$class": "org.accordproject.protocol@1.0.0.Blob",
     "base64": "string",
     "mimeType": "string"
   },
@@ -8736,13 +2683,7 @@ Gets the details of a single instance of a `template`.
           "$class": "org.accordproject.commonmark@0.5.0.Node",
           "text": "string",
           "nodes": [
-            {
-              "$class": "org.accordproject.commonmark@0.5.0.Node",
-              "text": "string",
-              "nodes": [],
-              "startLine": 0,
-              "endLine": 0
-            }
+            {}
           ],
           "startLine": 0,
           "endLine": 0
@@ -8761,7 +2702,9 @@ Gets the details of a single instance of a `template`.
         "name": "string",
         "requestType": "string",
         "responseType": "string",
-        "emittedTypes": "string",
+        "emittedTypes": [
+          "string"
+        ],
         "code": {
           "$class": "org.accordproject.protocol@1.0.0.Code",
           "type": "ES2015",
@@ -8817,7 +2760,7 @@ const inputBody = '{
     "string"
   ],
   "logo": {
-    "$class": "org.accordproject.protocol@1.0.0.Logo",
+    "$class": "org.accordproject.protocol@1.0.0.Blob",
     "base64": "string",
     "mimeType": "string"
   },
@@ -8964,13 +2907,7 @@ const inputBody = '{
           "$class": "org.accordproject.commonmark@0.5.0.Node",
           "text": "string",
           "nodes": [
-            {
-              "$class": "org.accordproject.commonmark@0.5.0.Node",
-              "text": "string",
-              "nodes": [],
-              "startLine": 0,
-              "endLine": 0
-            }
+            {}
           ],
           "startLine": 0,
           "endLine": 0
@@ -8989,7 +2926,9 @@ const inputBody = '{
         "name": "string",
         "requestType": "string",
         "responseType": "string",
-        "emittedTypes": "string",
+        "emittedTypes": [
+          "string"
+        ],
         "code": {
           "$class": "org.accordproject.protocol@1.0.0.Code",
           "type": "ES2015",
@@ -9140,7 +3079,7 @@ Updates an existing `template`.
     "string"
   ],
   "logo": {
-    "$class": "org.accordproject.protocol@1.0.0.Logo",
+    "$class": "org.accordproject.protocol@1.0.0.Blob",
     "base64": "string",
     "mimeType": "string"
   },
@@ -9287,13 +3226,7 @@ Updates an existing `template`.
           "$class": "org.accordproject.commonmark@0.5.0.Node",
           "text": "string",
           "nodes": [
-            {
-              "$class": "org.accordproject.commonmark@0.5.0.Node",
-              "text": "string",
-              "nodes": [],
-              "startLine": 0,
-              "endLine": 0
-            }
+            {}
           ],
           "startLine": 0,
           "endLine": 0
@@ -9312,7 +3245,9 @@ Updates an existing `template`.
         "name": "string",
         "requestType": "string",
         "responseType": "string",
-        "emittedTypes": "string",
+        "emittedTypes": [
+          "string"
+        ],
         "code": {
           "$class": "org.accordproject.protocol@1.0.0.Code",
           "type": "ES2015",
@@ -9482,8 +3417,6 @@ Deletes an existing `template`.
 This operation does not require authentication
 </aside>
 
-<h1 id="accord-protocol-agreements">agreements</h1>
-
 ## listAgreements
 
 <a id="opIdlistAgreements"></a>
@@ -9641,7 +3574,226 @@ Gets a list of all `agreement` entities.
     "$class": "org.accordproject.protocol@1.0.0.Agreement",
     "agreementId": "string",
     "data": "string",
-    "template": "string"
+    "template": "string",
+    "agreementParties": [
+      {
+        "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+        "name": "string",
+        "signatory": true,
+        "role": "string",
+        "email": "string",
+        "phone": "string",
+        "company": "string",
+        "network": "string",
+        "address": {
+          "$class": "org.accordproject.protocol@1.0.0.Address",
+          "streetRoad": [
+            "string"
+          ],
+          "suburbTownCity": "string",
+          "stateTerritoryRegion": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "partyId": "string"
+      }
+    ],
+    "signatures": [
+      {
+        "$class": "org.accordproject.protocol@1.0.0.Signature",
+        "signatory": {
+          "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+          "name": "string",
+          "signatory": true,
+          "role": "string",
+          "email": "string",
+          "phone": "string",
+          "company": "string",
+          "network": "string",
+          "address": {
+            "$class": "org.accordproject.protocol@1.0.0.Address",
+            "streetRoad": [
+              "string"
+            ],
+            "suburbTownCity": "string",
+            "stateTerritoryRegion": "string",
+            "postalCode": "string",
+            "country": "string"
+          },
+          "partyId": "string"
+        },
+        "signedAt": "2019-08-24T14:15:22Z",
+        "metadata": {
+          "$class": "org.accordproject.protocol@1.0.0.Metadata",
+          "properties": [
+            {
+              "$class": "concerto.metamodel@0.4.0.Property",
+              "name": "string",
+              "isArray": true,
+              "isOptional": true,
+              "decorators": [
+                {
+                  "$class": "concerto.metamodel@0.4.0.Decorator",
+                  "name": "string",
+                  "arguments": [
+                    {}
+                  ],
+                  "location": {
+                    "$class": "concerto.metamodel@0.4.0.Range",
+                    "start": {},
+                    "end": {},
+                    "source": "string"
+                  }
+                }
+              ],
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ]
+        },
+        "signatureImage": [
+          {
+            "$class": "org.accordproject.protocol@1.0.0.Blob",
+            "base64": "string",
+            "mimeType": "string"
+          }
+        ]
+      }
+    ],
+    "agreementStatus": "DRAFT",
+    "historyEntries": [
+      {
+        "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+        "agreementStatus": "DRAFT",
+        "data": "string",
+        "metadata": {
+          "$class": "org.accordproject.protocol@1.0.0.Metadata",
+          "properties": [
+            {
+              "$class": "concerto.metamodel@0.4.0.Property",
+              "name": "string",
+              "isArray": true,
+              "isOptional": true,
+              "decorators": [
+                {
+                  "$class": "concerto.metamodel@0.4.0.Decorator",
+                  "name": "string",
+                  "arguments": [
+                    {}
+                  ],
+                  "location": {
+                    "$class": "concerto.metamodel@0.4.0.Range",
+                    "start": {},
+                    "end": {},
+                    "source": "string"
+                  }
+                }
+              ],
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "attachments": [
+      {
+        "$class": "org.accordproject.protocol@1.0.0.Blob",
+        "base64": "string",
+        "mimeType": "string"
+      }
+    ],
+    "references": [
+      "string"
+    ],
+    "metadata": {
+      "$class": "org.accordproject.protocol@1.0.0.Metadata",
+      "properties": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Property",
+          "name": "string",
+          "isArray": true,
+          "isOptional": true,
+          "decorators": [
+            {
+              "$class": "concerto.metamodel@0.4.0.Decorator",
+              "name": "string",
+              "arguments": [
+                {
+                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                  "location": {
+                    "$class": "concerto.metamodel@0.4.0.Range",
+                    "start": {},
+                    "end": {},
+                    "source": "string"
+                  }
+                }
+              ],
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ]
+    }
   }
 ]
 ```
@@ -9660,10 +3812,88 @@ Status Code **200**
 |---|---|---|---|---|
 |*anonymous*|[[org.accordproject.protocol@1.0.0.Agreement](#schemaorg.accordproject.protocol@1.0.0.agreement)]|false|none|[An instance of org.accordproject.protocol@1.0.0.Agreement]|
 |» Agreement|[org.accordproject.protocol@1.0.0.Agreement](#schemaorg.accordproject.protocol@1.0.0.agreement)|false|none|An instance of org.accordproject.protocol@1.0.0.Agreement|
-|»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Agreement|
+|»» $class|string|true|none|The class identifier for this type|
 |»» agreementId|string|true|none|The instance identifier for this type|
-|»» data|string|true|none|none|
+|»» data|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|true|none|none|
 |»» template|string|true|none|The identifier of an instance of org.accordproject.protocol@1.0.0.Template|
+|»» agreementParties|[[org.accordproject.protocol@1.0.0.AgreementParty](#schemaorg.accordproject.protocol@1.0.0.agreementparty)]|true|none|[An instance of org.accordproject.protocol@1.0.0.AgreementParty]|
+|»»» AgreementParty|[org.accordproject.protocol@1.0.0.AgreementParty](#schemaorg.accordproject.protocol@1.0.0.agreementparty)|false|none|An instance of org.accordproject.protocol@1.0.0.AgreementParty|
+|»»»» $class|string|true|none|The class identifier for this type|
+|»»»» name|string|true|none|none|
+|»»»» signatory|boolean|true|none|none|
+|»»»» role|string|false|none|none|
+|»»»» email|string|false|none|none|
+|»»»» phone|string|false|none|none|
+|»»»» company|string|false|none|none|
+|»»»» network|string|false|none|none|
+|»»»» address|[org.accordproject.protocol@1.0.0.Address](#schemaorg.accordproject.protocol@1.0.0.address)|false|none|An instance of org.accordproject.protocol@1.0.0.Address|
+|»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»» streetRoad|[string]|true|none|none|
+|»»»»» suburbTownCity|string|false|none|none|
+|»»»»» stateTerritoryRegion|string|false|none|none|
+|»»»»» postalCode|string|false|none|none|
+|»»»»» country|string|false|none|none|
+|»»»» partyId|string|true|none|The instance identifier for this type|
+|»» signatures|[[org.accordproject.protocol@1.0.0.Signature](#schemaorg.accordproject.protocol@1.0.0.signature)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Signature]|
+|»»» Signature|[org.accordproject.protocol@1.0.0.Signature](#schemaorg.accordproject.protocol@1.0.0.signature)|false|none|An instance of org.accordproject.protocol@1.0.0.Signature|
+|»»»» $class|string|true|none|The class identifier for this type|
+|»»»» signatory|[org.accordproject.protocol@1.0.0.AgreementParty](#schemaorg.accordproject.protocol@1.0.0.agreementparty)|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementParty|
+|»»»» signedAt|string(date-time)|false|none|none|
+|»»»» metadata|[org.accordproject.protocol@1.0.0.Metadata](#schemaorg.accordproject.protocol@1.0.0.metadata)|true|none|An instance of org.accordproject.protocol@1.0.0.Metadata|
+|»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»» properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
+|»»»»»» Property|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
+|»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»» name|string|true|none|none|
+|»»»»»»» isArray|boolean|true|none|none|
+|»»»»»»» isOptional|boolean|true|none|none|
+|»»»»»»» decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|»»»»»»»» Decorator|[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)|false|none|An instance of concerto.metamodel@0.4.0.Decorator|
+|»»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»»» name|string|true|none|none|
+|»»»»»»»»» arguments|[[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)]|false|none|[An instance of concerto.metamodel@0.4.0.DecoratorLiteral]|
+|»»»»»»»»»» DecoratorLiteral|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
+|»»»»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+|»»»»»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»»»»»» start|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
+|»»»»»»»»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»»»»»»»»» line|integer|true|none|none|
+|»»»»»»»»»»»»» column|integer|true|none|none|
+|»»»»»»»»»»»»» offset|integer|true|none|none|
+|»»»»»»»»»»»» end|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
+|»»»»»»»»»»»» source|string|false|none|none|
+|»»»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+|»»»»»»» location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+|»»»» signatureImage|[[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Blob]|
+|»»»»» Blob|[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)|false|none|An instance of org.accordproject.protocol@1.0.0.Blob|
+|»»»»»» $class|string|true|none|The class identifier for this type|
+|»»»»»» base64|string|true|none|none|
+|»»»»»» mimeType|string|true|none|none|
+|»» agreementStatus|any|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementStatusType|
+|»» historyEntries|[[org.accordproject.protocol@1.0.0.HistoryEntry](#schemaorg.accordproject.protocol@1.0.0.historyentry)]|true|none|[An instance of org.accordproject.protocol@1.0.0.HistoryEntry]|
+|»»» HistoryEntry|[org.accordproject.protocol@1.0.0.HistoryEntry](#schemaorg.accordproject.protocol@1.0.0.historyentry)|false|none|An instance of org.accordproject.protocol@1.0.0.HistoryEntry|
+|»»»» $class|string|true|none|The class identifier for this type|
+|»»»» agreementStatus|any|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementStatusType|
+|»»»» data|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|true|none|none|
+|»»»» metadata|[org.accordproject.protocol@1.0.0.Metadata](#schemaorg.accordproject.protocol@1.0.0.metadata)|true|none|An instance of org.accordproject.protocol@1.0.0.Metadata|
+|»» attachments|[[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Blob]|
+|»»» Blob|[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)|false|none|An instance of org.accordproject.protocol@1.0.0.Blob|
+|»» references|[string]|true|none|none|
+|»» metadata|[org.accordproject.protocol@1.0.0.Metadata](#schemaorg.accordproject.protocol@1.0.0.metadata)|true|none|An instance of org.accordproject.protocol@1.0.0.Metadata|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|agreementStatus|DRAFT|
+|agreementStatus|SIGNNG|
+|agreementStatus|COMPLETED|
+|agreementStatus|SUPERSEDED|
+|agreementStatus|DRAFT|
+|agreementStatus|SIGNNG|
+|agreementStatus|COMPLETED|
+|agreementStatus|SUPERSEDED|
 
 <aside class="success">
 This operation does not require authentication
@@ -9694,7 +3924,262 @@ const inputBody = '{
   "$class": "org.accordproject.protocol@1.0.0.Agreement",
   "agreementId": "string",
   "data": "string",
-  "template": "string"
+  "template": "string",
+  "agreementParties": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+      "name": "string",
+      "signatory": true,
+      "role": "string",
+      "email": "string",
+      "phone": "string",
+      "company": "string",
+      "network": "string",
+      "address": {
+        "$class": "org.accordproject.protocol@1.0.0.Address",
+        "streetRoad": [
+          "string"
+        ],
+        "suburbTownCity": "string",
+        "stateTerritoryRegion": "string",
+        "postalCode": "string",
+        "country": "string"
+      },
+      "partyId": "string"
+    }
+  ],
+  "signatures": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Signature",
+      "signatory": {
+        "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+        "name": "string",
+        "signatory": true,
+        "role": "string",
+        "email": "string",
+        "phone": "string",
+        "company": "string",
+        "network": "string",
+        "address": {
+          "$class": "org.accordproject.protocol@1.0.0.Address",
+          "streetRoad": [
+            "string"
+          ],
+          "suburbTownCity": "string",
+          "stateTerritoryRegion": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "partyId": "string"
+      },
+      "signedAt": "2019-08-24T14:15:22Z",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      },
+      "signatureImage": [
+        {
+          "$class": "org.accordproject.protocol@1.0.0.Blob",
+          "base64": "string",
+          "mimeType": "string"
+        }
+      ]
+    }
+  ],
+  "agreementStatus": "DRAFT",
+  "historyEntries": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+      "agreementStatus": "DRAFT",
+      "data": "string",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
+      "base64": "string",
+      "mimeType": "string"
+    }
+  ],
+  "references": [
+    "string"
+  ],
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  }
 }';
 const headers = {
   'Content-Type':'application/json'
@@ -9828,7 +4313,262 @@ Creates a new instance of a `agreement`.
   "$class": "org.accordproject.protocol@1.0.0.Agreement",
   "agreementId": "string",
   "data": "string",
-  "template": "string"
+  "template": "string",
+  "agreementParties": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+      "name": "string",
+      "signatory": true,
+      "role": "string",
+      "email": "string",
+      "phone": "string",
+      "company": "string",
+      "network": "string",
+      "address": {
+        "$class": "org.accordproject.protocol@1.0.0.Address",
+        "streetRoad": [
+          "string"
+        ],
+        "suburbTownCity": "string",
+        "stateTerritoryRegion": "string",
+        "postalCode": "string",
+        "country": "string"
+      },
+      "partyId": "string"
+    }
+  ],
+  "signatures": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Signature",
+      "signatory": {
+        "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+        "name": "string",
+        "signatory": true,
+        "role": "string",
+        "email": "string",
+        "phone": "string",
+        "company": "string",
+        "network": "string",
+        "address": {
+          "$class": "org.accordproject.protocol@1.0.0.Address",
+          "streetRoad": [
+            "string"
+          ],
+          "suburbTownCity": "string",
+          "stateTerritoryRegion": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "partyId": "string"
+      },
+      "signedAt": "2019-08-24T14:15:22Z",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      },
+      "signatureImage": [
+        {
+          "$class": "org.accordproject.protocol@1.0.0.Blob",
+          "base64": "string",
+          "mimeType": "string"
+        }
+      ]
+    }
+  ],
+  "agreementStatus": "DRAFT",
+  "historyEntries": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+      "agreementStatus": "DRAFT",
+      "data": "string",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
+      "base64": "string",
+      "mimeType": "string"
+    }
+  ],
+  "references": [
+    "string"
+  ],
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -10010,7 +4750,262 @@ Gets the details of a single instance of a `agreement`.
   "$class": "org.accordproject.protocol@1.0.0.Agreement",
   "agreementId": "string",
   "data": "string",
-  "template": "string"
+  "template": "string",
+  "agreementParties": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+      "name": "string",
+      "signatory": true,
+      "role": "string",
+      "email": "string",
+      "phone": "string",
+      "company": "string",
+      "network": "string",
+      "address": {
+        "$class": "org.accordproject.protocol@1.0.0.Address",
+        "streetRoad": [
+          "string"
+        ],
+        "suburbTownCity": "string",
+        "stateTerritoryRegion": "string",
+        "postalCode": "string",
+        "country": "string"
+      },
+      "partyId": "string"
+    }
+  ],
+  "signatures": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Signature",
+      "signatory": {
+        "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+        "name": "string",
+        "signatory": true,
+        "role": "string",
+        "email": "string",
+        "phone": "string",
+        "company": "string",
+        "network": "string",
+        "address": {
+          "$class": "org.accordproject.protocol@1.0.0.Address",
+          "streetRoad": [
+            "string"
+          ],
+          "suburbTownCity": "string",
+          "stateTerritoryRegion": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "partyId": "string"
+      },
+      "signedAt": "2019-08-24T14:15:22Z",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      },
+      "signatureImage": [
+        {
+          "$class": "org.accordproject.protocol@1.0.0.Blob",
+          "base64": "string",
+          "mimeType": "string"
+        }
+      ]
+    }
+  ],
+  "agreementStatus": "DRAFT",
+  "historyEntries": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+      "agreementStatus": "DRAFT",
+      "data": "string",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
+      "base64": "string",
+      "mimeType": "string"
+    }
+  ],
+  "references": [
+    "string"
+  ],
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -10049,7 +5044,262 @@ const inputBody = '{
   "$class": "org.accordproject.protocol@1.0.0.Agreement",
   "agreementId": "string",
   "data": "string",
-  "template": "string"
+  "template": "string",
+  "agreementParties": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+      "name": "string",
+      "signatory": true,
+      "role": "string",
+      "email": "string",
+      "phone": "string",
+      "company": "string",
+      "network": "string",
+      "address": {
+        "$class": "org.accordproject.protocol@1.0.0.Address",
+        "streetRoad": [
+          "string"
+        ],
+        "suburbTownCity": "string",
+        "stateTerritoryRegion": "string",
+        "postalCode": "string",
+        "country": "string"
+      },
+      "partyId": "string"
+    }
+  ],
+  "signatures": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Signature",
+      "signatory": {
+        "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+        "name": "string",
+        "signatory": true,
+        "role": "string",
+        "email": "string",
+        "phone": "string",
+        "company": "string",
+        "network": "string",
+        "address": {
+          "$class": "org.accordproject.protocol@1.0.0.Address",
+          "streetRoad": [
+            "string"
+          ],
+          "suburbTownCity": "string",
+          "stateTerritoryRegion": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "partyId": "string"
+      },
+      "signedAt": "2019-08-24T14:15:22Z",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      },
+      "signatureImage": [
+        {
+          "$class": "org.accordproject.protocol@1.0.0.Blob",
+          "base64": "string",
+          "mimeType": "string"
+        }
+      ]
+    }
+  ],
+  "agreementStatus": "DRAFT",
+  "historyEntries": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+      "agreementStatus": "DRAFT",
+      "data": "string",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
+      "base64": "string",
+      "mimeType": "string"
+    }
+  ],
+  "references": [
+    "string"
+  ],
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  }
 }';
 const headers = {
   'Content-Type':'application/json'
@@ -10183,7 +5433,262 @@ Updates an existing `agreement`.
   "$class": "org.accordproject.protocol@1.0.0.Agreement",
   "agreementId": "string",
   "data": "string",
-  "template": "string"
+  "template": "string",
+  "agreementParties": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+      "name": "string",
+      "signatory": true,
+      "role": "string",
+      "email": "string",
+      "phone": "string",
+      "company": "string",
+      "network": "string",
+      "address": {
+        "$class": "org.accordproject.protocol@1.0.0.Address",
+        "streetRoad": [
+          "string"
+        ],
+        "suburbTownCity": "string",
+        "stateTerritoryRegion": "string",
+        "postalCode": "string",
+        "country": "string"
+      },
+      "partyId": "string"
+    }
+  ],
+  "signatures": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Signature",
+      "signatory": {
+        "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+        "name": "string",
+        "signatory": true,
+        "role": "string",
+        "email": "string",
+        "phone": "string",
+        "company": "string",
+        "network": "string",
+        "address": {
+          "$class": "org.accordproject.protocol@1.0.0.Address",
+          "streetRoad": [
+            "string"
+          ],
+          "suburbTownCity": "string",
+          "stateTerritoryRegion": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "partyId": "string"
+      },
+      "signedAt": "2019-08-24T14:15:22Z",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      },
+      "signatureImage": [
+        {
+          "$class": "org.accordproject.protocol@1.0.0.Blob",
+          "base64": "string",
+          "mimeType": "string"
+        }
+      ]
+    }
+  ],
+  "agreementStatus": "DRAFT",
+  "historyEntries": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+      "agreementStatus": "DRAFT",
+      "data": "string",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
+      "base64": "string",
+      "mimeType": "string"
+    }
+  ],
+  "references": [
+    "string"
+  ],
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -10343,6 +5848,8 @@ Deletes an existing `agreement`.
 <aside class="success">
 This operation does not require authentication
 </aside>
+
+<h1 id="accord-protocol-agreements">agreements</h1>
 
 ## convertAgreementPdf
 
@@ -10879,7 +6386,7 @@ Gets the runtime state of an agreement.
 ```json
 {
   "$class": "org.accordproject.protocol@1.0.0.StateResponse",
-  "status": "RUNNING",
+  "status": "DRAFT",
   "result": "string"
 }
 ```
@@ -11104,29 +6611,29 @@ This operation does not require authentication
 |---|---|---|---|---|
 |*anonymous*|string|false|none|none|
 
-<h2 id="tocS_org.accordproject.protocol@1.0.0.Logo">org.accordproject.protocol@1.0.0.Logo</h2>
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Blob">org.accordproject.protocol@1.0.0.Blob</h2>
 <!-- backwards compatibility -->
-<a id="schemaorg.accordproject.protocol@1.0.0.logo"></a>
-<a id="schema_org.accordproject.protocol@1.0.0.Logo"></a>
-<a id="tocSorg.accordproject.protocol@1.0.0.logo"></a>
-<a id="tocsorg.accordproject.protocol@1.0.0.logo"></a>
+<a id="schemaorg.accordproject.protocol@1.0.0.blob"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Blob"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.blob"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.blob"></a>
 
 ```json
 {
-  "$class": "org.accordproject.protocol@1.0.0.Logo",
+  "$class": "org.accordproject.protocol@1.0.0.Blob",
   "base64": "string",
   "mimeType": "string"
 }
 
 ```
 
-Logo
+Blob
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Logo|
+|$class|string|true|none|The class identifier for this type|
 |base64|string|true|none|none|
 |mimeType|string|true|none|none|
 
@@ -11149,13 +6656,7 @@ Logo
         "$class": "org.accordproject.commonmark@0.5.0.Node",
         "text": "string",
         "nodes": [
-          {
-            "$class": "org.accordproject.commonmark@0.5.0.Node",
-            "text": "string",
-            "nodes": [],
-            "startLine": 0,
-            "endLine": 0
-          }
+          {}
         ],
         "startLine": 0,
         "endLine": 0
@@ -11174,7 +6675,7 @@ Text
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Text|
+|$class|string|true|none|The class identifier for this type|
 |templateMark|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|true|none|An instance of org.accordproject.commonmark@0.5.0.Document|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.TemplateModel">org.accordproject.protocol@1.0.0.TemplateModel</h2>
@@ -11336,38 +6837,8 @@ TemplateModel
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.TemplateModel|
-|value|any|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.AssetDeclaration](#schemaconcerto.metamodel@0.4.0.assetdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.AssetDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ParticipantDeclaration](#schemaconcerto.metamodel@0.4.0.participantdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ParticipantDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.TransactionDeclaration](#schemaconcerto.metamodel@0.4.0.transactiondeclaration)|false|none|An instance of concerto.metamodel@0.4.0.TransactionDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.EventDeclaration](#schemaconcerto.metamodel@0.4.0.eventdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EventDeclaration|
+|$class|string|true|none|The class identifier for this type|
+|value|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|true|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.SharedModel">org.accordproject.protocol@1.0.0.SharedModel</h2>
 <!-- backwards compatibility -->
@@ -11468,7 +6939,7 @@ SharedModel
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.SharedModel|
+|$class|string|true|none|The class identifier for this type|
 |modelId|string|true|none|The instance identifier for this type|
 |model|[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)|true|none|An instance of concerto.metamodel@0.4.0.Model|
 
@@ -11549,7 +7020,7 @@ Code
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Code|
+|$class|string|true|none|The class identifier for this type|
 |type|[org.accordproject.protocol@1.0.0.CodeType](#schemaorg.accordproject.protocol@1.0.0.codetype)|true|none|An instance of org.accordproject.protocol@1.0.0.CodeType|
 |encoding|[org.accordproject.protocol@1.0.0.CodeEncodingType](#schemaorg.accordproject.protocol@1.0.0.codeencodingtype)|true|none|An instance of org.accordproject.protocol@1.0.0.CodeEncodingType|
 |value|string|true|none|none|
@@ -11567,7 +7038,9 @@ Code
   "name": "string",
   "requestType": "string",
   "responseType": "string",
-  "emittedTypes": "string",
+  "emittedTypes": [
+    "string"
+  ],
   "code": {
     "$class": "org.accordproject.protocol@1.0.0.Code",
     "type": "ES2015",
@@ -11584,11 +7057,11 @@ Function
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Function|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|The instance identifier for this type|
-|requestType|string|true|none|none|
-|responseType|string|false|none|none|
-|emittedTypes|string|false|none|none|
+|requestType|[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)|true|none|none|
+|responseType|[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)|false|none|none|
+|emittedTypes|[[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)]|false|none|none|
 |code|[org.accordproject.protocol@1.0.0.Code](#schemaorg.accordproject.protocol@1.0.0.code)|true|none|An instance of org.accordproject.protocol@1.0.0.Code|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.Logic">org.accordproject.protocol@1.0.0.Logic</h2>
@@ -11608,7 +7081,9 @@ Function
       "name": "string",
       "requestType": "string",
       "responseType": "string",
-      "emittedTypes": "string",
+      "emittedTypes": [
+        "string"
+      ],
       "code": {
         "$class": "org.accordproject.protocol@1.0.0.Code",
         "type": "ES2015",
@@ -11627,8 +7102,8 @@ Logic
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Logic|
-|stateType|string|false|none|none|
+|$class|string|true|none|The class identifier for this type|
+|stateType|[org.accordproject.protocol@1.0.0.FullyQualifiedTypeName](#schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename)|false|none|none|
 |functions|[[org.accordproject.protocol@1.0.0.Function](#schemaorg.accordproject.protocol@1.0.0.function)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Function]|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.Template">org.accordproject.protocol@1.0.0.Template</h2>
@@ -11651,7 +7126,7 @@ Logic
     "string"
   ],
   "logo": {
-    "$class": "org.accordproject.protocol@1.0.0.Logo",
+    "$class": "org.accordproject.protocol@1.0.0.Blob",
     "base64": "string",
     "mimeType": "string"
   },
@@ -11798,13 +7273,7 @@ Logic
           "$class": "org.accordproject.commonmark@0.5.0.Node",
           "text": "string",
           "nodes": [
-            {
-              "$class": "org.accordproject.commonmark@0.5.0.Node",
-              "text": "string",
-              "nodes": [],
-              "startLine": 0,
-              "endLine": 0
-            }
+            {}
           ],
           "startLine": 0,
           "endLine": 0
@@ -11823,7 +7292,9 @@ Logic
         "name": "string",
         "requestType": "string",
         "responseType": "string",
-        "emittedTypes": "string",
+        "emittedTypes": [
+          "string"
+        ],
         "code": {
           "$class": "org.accordproject.protocol@1.0.0.Code",
           "type": "ES2015",
@@ -11843,7 +7314,7 @@ Template
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Template|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|The instance identifier for this type|
 |author|string|true|none|none|
 |displayName|string|false|none|none|
@@ -11851,10 +7322,126 @@ Template
 |description|string|false|none|none|
 |license|string|true|none|none|
 |keywords|[string]|false|none|none|
-|logo|[org.accordproject.protocol@1.0.0.Logo](#schemaorg.accordproject.protocol@1.0.0.logo)|false|none|An instance of org.accordproject.protocol@1.0.0.Logo|
+|logo|[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)|false|none|An instance of org.accordproject.protocol@1.0.0.Blob|
 |templateModel|[org.accordproject.protocol@1.0.0.TemplateModel](#schemaorg.accordproject.protocol@1.0.0.templatemodel)|true|none|An instance of org.accordproject.protocol@1.0.0.TemplateModel|
 |text|[org.accordproject.protocol@1.0.0.Text](#schemaorg.accordproject.protocol@1.0.0.text)|true|none|An instance of org.accordproject.protocol@1.0.0.Text|
 |logic|[org.accordproject.protocol@1.0.0.Logic](#schemaorg.accordproject.protocol@1.0.0.logic)|false|none|An instance of org.accordproject.protocol@1.0.0.Logic|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Property">org.accordproject.protocol@1.0.0.Property</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.property"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Property"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.property"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.property"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Property",
+  "key": "string",
+  "value": "string"
+}
+
+```
+
+Property
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|key|string|true|none|none|
+|value|string|true|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Metadata">org.accordproject.protocol@1.0.0.Metadata</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.metadata"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Metadata"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.metadata"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.metadata"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Metadata",
+  "properties": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Property",
+      "name": "string",
+      "isArray": true,
+      "isOptional": true,
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ]
+}
+
+```
+
+Metadata
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.Agreement">org.accordproject.protocol@1.0.0.Agreement</h2>
 <!-- backwards compatibility -->
@@ -11868,7 +7455,262 @@ Template
   "$class": "org.accordproject.protocol@1.0.0.Agreement",
   "agreementId": "string",
   "data": "string",
-  "template": "string"
+  "template": "string",
+  "agreementParties": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+      "name": "string",
+      "signatory": true,
+      "role": "string",
+      "email": "string",
+      "phone": "string",
+      "company": "string",
+      "network": "string",
+      "address": {
+        "$class": "org.accordproject.protocol@1.0.0.Address",
+        "streetRoad": [
+          "string"
+        ],
+        "suburbTownCity": "string",
+        "stateTerritoryRegion": "string",
+        "postalCode": "string",
+        "country": "string"
+      },
+      "partyId": "string"
+    }
+  ],
+  "signatures": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Signature",
+      "signatory": {
+        "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+        "name": "string",
+        "signatory": true,
+        "role": "string",
+        "email": "string",
+        "phone": "string",
+        "company": "string",
+        "network": "string",
+        "address": {
+          "$class": "org.accordproject.protocol@1.0.0.Address",
+          "streetRoad": [
+            "string"
+          ],
+          "suburbTownCity": "string",
+          "stateTerritoryRegion": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "partyId": "string"
+      },
+      "signedAt": "2019-08-24T14:15:22Z",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      },
+      "signatureImage": [
+        {
+          "$class": "org.accordproject.protocol@1.0.0.Blob",
+          "base64": "string",
+          "mimeType": "string"
+        }
+      ]
+    }
+  ],
+  "agreementStatus": "DRAFT",
+  "historyEntries": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+      "agreementStatus": "DRAFT",
+      "data": "string",
+      "metadata": {
+        "$class": "org.accordproject.protocol@1.0.0.Metadata",
+        "properties": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Property",
+            "name": "string",
+            "isArray": true,
+            "isOptional": true,
+            "decorators": [
+              {
+                "$class": "concerto.metamodel@0.4.0.Decorator",
+                "name": "string",
+                "arguments": [
+                  {
+                    "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                    "location": {}
+                  }
+                ],
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
+      "base64": "string",
+      "mimeType": "string"
+    }
+  ],
+  "references": [
+    "string"
+  ],
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  }
 }
 
 ```
@@ -11879,10 +7721,322 @@ Agreement
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Agreement|
+|$class|string|true|none|The class identifier for this type|
 |agreementId|string|true|none|The instance identifier for this type|
-|data|string|true|none|none|
+|data|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|true|none|none|
 |template|string|true|none|The identifier of an instance of org.accordproject.protocol@1.0.0.Template|
+|agreementParties|[[org.accordproject.protocol@1.0.0.AgreementParty](#schemaorg.accordproject.protocol@1.0.0.agreementparty)]|true|none|[An instance of org.accordproject.protocol@1.0.0.AgreementParty]|
+|signatures|[[org.accordproject.protocol@1.0.0.Signature](#schemaorg.accordproject.protocol@1.0.0.signature)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Signature]|
+|agreementStatus|[org.accordproject.protocol@1.0.0.AgreementStatusType](#schemaorg.accordproject.protocol@1.0.0.agreementstatustype)|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementStatusType|
+|historyEntries|[[org.accordproject.protocol@1.0.0.HistoryEntry](#schemaorg.accordproject.protocol@1.0.0.historyentry)]|true|none|[An instance of org.accordproject.protocol@1.0.0.HistoryEntry]|
+|attachments|[[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Blob]|
+|references|[string]|true|none|none|
+|metadata|[org.accordproject.protocol@1.0.0.Metadata](#schemaorg.accordproject.protocol@1.0.0.metadata)|true|none|An instance of org.accordproject.protocol@1.0.0.Metadata|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.AgreementParty">org.accordproject.protocol@1.0.0.AgreementParty</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.agreementparty"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.AgreementParty"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.agreementparty"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.agreementparty"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+  "name": "string",
+  "signatory": true,
+  "role": "string",
+  "email": "string",
+  "phone": "string",
+  "company": "string",
+  "network": "string",
+  "address": {
+    "$class": "org.accordproject.protocol@1.0.0.Address",
+    "streetRoad": [
+      "string"
+    ],
+    "suburbTownCity": "string",
+    "stateTerritoryRegion": "string",
+    "postalCode": "string",
+    "country": "string"
+  },
+  "partyId": "string"
+}
+
+```
+
+AgreementParty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|name|string|true|none|none|
+|signatory|boolean|true|none|none|
+|role|string|false|none|none|
+|email|string|false|none|none|
+|phone|string|false|none|none|
+|company|string|false|none|none|
+|network|string|false|none|none|
+|address|[org.accordproject.protocol@1.0.0.Address](#schemaorg.accordproject.protocol@1.0.0.address)|false|none|An instance of org.accordproject.protocol@1.0.0.Address|
+|partyId|string|true|none|The instance identifier for this type|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Address">org.accordproject.protocol@1.0.0.Address</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.address"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Address"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.address"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.address"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Address",
+  "streetRoad": [
+    "string"
+  ],
+  "suburbTownCity": "string",
+  "stateTerritoryRegion": "string",
+  "postalCode": "string",
+  "country": "string"
+}
+
+```
+
+Address
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|streetRoad|[string]|true|none|none|
+|suburbTownCity|string|false|none|none|
+|stateTerritoryRegion|string|false|none|none|
+|postalCode|string|false|none|none|
+|country|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.HistoryEntry">org.accordproject.protocol@1.0.0.HistoryEntry</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.historyentry"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.HistoryEntry"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.historyentry"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.historyentry"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.HistoryEntry",
+  "agreementStatus": "DRAFT",
+  "data": "string",
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  }
+}
+
+```
+
+HistoryEntry
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|agreementStatus|[org.accordproject.protocol@1.0.0.AgreementStatusType](#schemaorg.accordproject.protocol@1.0.0.agreementstatustype)|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementStatusType|
+|data|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|true|none|none|
+|metadata|[org.accordproject.protocol@1.0.0.Metadata](#schemaorg.accordproject.protocol@1.0.0.metadata)|true|none|An instance of org.accordproject.protocol@1.0.0.Metadata|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Signature">org.accordproject.protocol@1.0.0.Signature</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.signature"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Signature"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.signature"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.signature"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Signature",
+  "signatory": {
+    "$class": "org.accordproject.protocol@1.0.0.AgreementParty",
+    "name": "string",
+    "signatory": true,
+    "role": "string",
+    "email": "string",
+    "phone": "string",
+    "company": "string",
+    "network": "string",
+    "address": {
+      "$class": "org.accordproject.protocol@1.0.0.Address",
+      "streetRoad": [
+        "string"
+      ],
+      "suburbTownCity": "string",
+      "stateTerritoryRegion": "string",
+      "postalCode": "string",
+      "country": "string"
+    },
+    "partyId": "string"
+  },
+  "signedAt": "2019-08-24T14:15:22Z",
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.Metadata",
+    "properties": [
+      {
+        "$class": "concerto.metamodel@0.4.0.Property",
+        "name": "string",
+        "isArray": true,
+        "isOptional": true,
+        "decorators": [
+          {
+            "$class": "concerto.metamodel@0.4.0.Decorator",
+            "name": "string",
+            "arguments": [
+              {
+                "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                "location": {
+                  "$class": "concerto.metamodel@0.4.0.Range",
+                  "start": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "end": {
+                    "$class": "concerto.metamodel@0.4.0.Position",
+                    "line": 0,
+                    "column": 0,
+                    "offset": 0
+                  },
+                  "source": "string"
+                }
+              }
+            ],
+            "location": {
+              "$class": "concerto.metamodel@0.4.0.Range",
+              "start": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "end": {
+                "$class": "concerto.metamodel@0.4.0.Position",
+                "line": 0,
+                "column": 0,
+                "offset": 0
+              },
+              "source": "string"
+            }
+          }
+        ],
+        "location": {
+          "$class": "concerto.metamodel@0.4.0.Range",
+          "start": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "end": {
+            "$class": "concerto.metamodel@0.4.0.Position",
+            "line": 0,
+            "column": 0,
+            "offset": 0
+          },
+          "source": "string"
+        }
+      }
+    ]
+  },
+  "signatureImage": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.Blob",
+      "base64": "string",
+      "mimeType": "string"
+    }
+  ]
+}
+
+```
+
+Signature
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|signatory|[org.accordproject.protocol@1.0.0.AgreementParty](#schemaorg.accordproject.protocol@1.0.0.agreementparty)|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementParty|
+|signedAt|string(date-time)|false|none|none|
+|metadata|[org.accordproject.protocol@1.0.0.Metadata](#schemaorg.accordproject.protocol@1.0.0.metadata)|true|none|An instance of org.accordproject.protocol@1.0.0.Metadata|
+|signatureImage|[[org.accordproject.protocol@1.0.0.Blob](#schemaorg.accordproject.protocol@1.0.0.blob)]|true|none|[An instance of org.accordproject.protocol@1.0.0.Blob]|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.ConversionOptions">org.accordproject.protocol@1.0.0.ConversionOptions</h2>
 <!-- backwards compatibility -->
@@ -11904,7 +8058,7 @@ ConversionOptions
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.ConversionOptions|
+|$class|string|true|none|The class identifier for this type|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.PdfConversionOptions">org.accordproject.protocol@1.0.0.PdfConversionOptions</h2>
 <!-- backwards compatibility -->
@@ -11927,8 +8081,8 @@ PdfConversionOptions
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.PdfConversionOptions|
-|styles|string|false|none|none|
+|$class|string|true|none|The class identifier for this type|
+|styles|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|false|none|none|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.FeatureType">org.accordproject.protocol@1.0.0.FeatureType</h2>
 <!-- backwards compatibility -->
@@ -11986,7 +8140,7 @@ Capabilities
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Capabilities|
+|$class|string|true|none|The class identifier for this type|
 |features|[[org.accordproject.protocol@1.0.0.FeatureType](#schemaorg.accordproject.protocol@1.0.0.featuretype)]|true|none|[An instance of org.accordproject.protocol@1.0.0.FeatureType]|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.TriggerRequest">org.accordproject.protocol@1.0.0.TriggerRequest</h2>
@@ -12011,9 +8165,9 @@ TriggerRequest
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.TriggerRequest|
+|$class|string|true|none|The class identifier for this type|
 |functionName|string|true|none|none|
-|payload|string|true|none|none|
+|payload|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|true|none|none|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.TriggerResponse">org.accordproject.protocol@1.0.0.TriggerResponse</h2>
 <!-- backwards compatibility -->
@@ -12039,8 +8193,8 @@ TriggerResponse
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.TriggerResponse|
-|result|string|false|none|none|
+|$class|string|true|none|The class identifier for this type|
+|result|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|false|none|none|
 |isError|boolean|true|none|none|
 |errorMessage|string|false|none|none|
 |errorDetails|string|false|none|none|
@@ -12053,7 +8207,7 @@ TriggerResponse
 <a id="tocsorg.accordproject.protocol@1.0.0.agreementstatustype"></a>
 
 ```json
-"RUNNING"
+"DRAFT"
 
 ```
 
@@ -12069,8 +8223,10 @@ AgreementStatusType
 
 |Property|Value|
 |---|---|
-|AgreementStatusType|RUNNING|
+|AgreementStatusType|DRAFT|
+|AgreementStatusType|SIGNNG|
 |AgreementStatusType|COMPLETED|
+|AgreementStatusType|SUPERSEDED|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.StateResponse">org.accordproject.protocol@1.0.0.StateResponse</h2>
 <!-- backwards compatibility -->
@@ -12082,7 +8238,7 @@ AgreementStatusType
 ```json
 {
   "$class": "org.accordproject.protocol@1.0.0.StateResponse",
-  "status": "RUNNING",
+  "status": "DRAFT",
   "result": "string"
 }
 
@@ -12094,9 +8250,1220 @@ StateResponse
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.StateResponse|
+|$class|string|true|none|The class identifier for this type|
 |status|[org.accordproject.protocol@1.0.0.AgreementStatusType](#schemaorg.accordproject.protocol@1.0.0.agreementstatustype)|true|none|An instance of org.accordproject.protocol@1.0.0.AgreementStatusType|
-|result|string|true|none|none|
+|result|[org.accordproject.protocol@1.0.0.JSON](#schemaorg.accordproject.protocol@1.0.0.json)|true|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Node">org.accordproject.commonmark@0.5.0.Node</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.node"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Node"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.node"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.node"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Node",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Node
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Root">org.accordproject.commonmark@0.5.0.Root</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.root"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Root"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.root"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.root"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Root",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Root
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Child">org.accordproject.commonmark@0.5.0.Child</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.child"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Child"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.child"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.child"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Child",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Child
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Text">org.accordproject.commonmark@0.5.0.Text</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.text"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Text"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.text"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.text"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Text",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Text
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Attribute">org.accordproject.commonmark@0.5.0.Attribute</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.attribute"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Attribute"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.attribute"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.attribute"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+  "name": "string",
+  "value": "string"
+}
+
+```
+
+Attribute
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|name|string|true|none|none|
+|value|string|true|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TagInfo">org.accordproject.commonmark@0.5.0.TagInfo</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.taginfo"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TagInfo"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.taginfo"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.taginfo"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+  "tagName": "string",
+  "attributeString": "string",
+  "attributes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+      "name": "string",
+      "value": "string"
+    }
+  ],
+  "content": "string",
+  "closed": true
+}
+
+```
+
+TagInfo
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|tagName|string|true|none|none|
+|attributeString|string|true|none|none|
+|attributes|[[org.accordproject.commonmark@0.5.0.Attribute](#schemaorg.accordproject.commonmark@0.5.0.attribute)]|true|none|[An instance of org.accordproject.commonmark@0.5.0.Attribute]|
+|content|string|true|none|none|
+|closed|boolean|true|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.CodeBlock">org.accordproject.commonmark@0.5.0.CodeBlock</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.codeblock"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.CodeBlock"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.codeblock"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.codeblock"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.CodeBlock",
+  "info": "string",
+  "tag": {
+    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+    "tagName": "string",
+    "attributeString": "string",
+    "attributes": [
+      {
+        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+        "name": "string",
+        "value": "string"
+      }
+    ],
+    "content": "string",
+    "closed": true
+  },
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+CodeBlock
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|info|string|false|none|none|
+|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Code">org.accordproject.commonmark@0.5.0.Code</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.code"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Code"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.code"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.code"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Code",
+  "info": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Code
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|info|string|false|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlInline">org.accordproject.commonmark@0.5.0.HtmlInline</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.htmlinline"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.HtmlInline"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.htmlinline"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.htmlinline"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.HtmlInline",
+  "tag": {
+    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+    "tagName": "string",
+    "attributeString": "string",
+    "attributes": [
+      {
+        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+        "name": "string",
+        "value": "string"
+      }
+    ],
+    "content": "string",
+    "closed": true
+  },
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+HtmlInline
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlBlock">org.accordproject.commonmark@0.5.0.HtmlBlock</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.htmlblock"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.HtmlBlock"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.htmlblock"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.htmlblock"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.HtmlBlock",
+  "tag": {
+    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
+    "tagName": "string",
+    "attributeString": "string",
+    "attributes": [
+      {
+        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
+        "name": "string",
+        "value": "string"
+      }
+    ],
+    "content": "string",
+    "closed": true
+  },
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+HtmlBlock
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Emph">org.accordproject.commonmark@0.5.0.Emph</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.emph"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Emph"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.emph"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.emph"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Emph",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Emph
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Strong">org.accordproject.commonmark@0.5.0.Strong</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.strong"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Strong"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.strong"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.strong"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Strong",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Strong
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.BlockQuote">org.accordproject.commonmark@0.5.0.BlockQuote</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.blockquote"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.BlockQuote"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.blockquote"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.blockquote"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.BlockQuote",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+BlockQuote
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Heading">org.accordproject.commonmark@0.5.0.Heading</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.heading"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Heading"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.heading"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.heading"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Heading",
+  "level": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Heading
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|level|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.ThematicBreak">org.accordproject.commonmark@0.5.0.ThematicBreak</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.ThematicBreak"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.ThematicBreak",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+ThematicBreak
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Softbreak">org.accordproject.commonmark@0.5.0.Softbreak</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.softbreak"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Softbreak"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.softbreak"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.softbreak"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Softbreak",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Softbreak
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Linebreak">org.accordproject.commonmark@0.5.0.Linebreak</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.linebreak"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Linebreak"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.linebreak"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.linebreak"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Linebreak",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Linebreak
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Link">org.accordproject.commonmark@0.5.0.Link</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.link"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Link"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.link"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.link"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Link",
+  "destination": "string",
+  "title": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Link
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|destination|string|true|none|none|
+|title|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Image">org.accordproject.commonmark@0.5.0.Image</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.image"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Image"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.image"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.image"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Image",
+  "destination": "string",
+  "title": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Image
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|destination|string|true|none|none|
+|title|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Paragraph">org.accordproject.commonmark@0.5.0.Paragraph</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.paragraph"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Paragraph"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.paragraph"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.paragraph"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Paragraph",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Paragraph
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.List">org.accordproject.commonmark@0.5.0.List</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.list"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.List"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.list"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.list"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.List",
+  "type": "string",
+  "start": "string",
+  "tight": "string",
+  "delimiter": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+List
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|type|string|true|none|none|
+|start|string|false|none|none|
+|tight|string|true|none|none|
+|delimiter|string|false|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Item">org.accordproject.commonmark@0.5.0.Item</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.item"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Item"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.item"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.item"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Item",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Item
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Document">org.accordproject.commonmark@0.5.0.Document</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.document"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Document"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.document"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.document"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Document",
+  "xmlns": "string",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Document
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|xmlns|string|true|none|none|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.Table">org.accordproject.commonmark@0.5.0.Table</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.table"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.Table"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.table"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.table"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.Table",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+Table
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableHead">org.accordproject.commonmark@0.5.0.TableHead</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablehead"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableHead"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablehead"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablehead"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableHead",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableHead
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableBody">org.accordproject.commonmark@0.5.0.TableBody</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablebody"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableBody"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablebody"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablebody"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableBody",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableBody
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableRow">org.accordproject.commonmark@0.5.0.TableRow</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablerow"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableRow"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablerow"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablerow"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableRow",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableRow
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.HeaderCell">org.accordproject.commonmark@0.5.0.HeaderCell</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.headercell"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.HeaderCell"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.headercell"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.headercell"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.HeaderCell",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+HeaderCell
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
+
+<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableCell">org.accordproject.commonmark@0.5.0.TableCell</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.commonmark@0.5.0.tablecell"></a>
+<a id="schema_org.accordproject.commonmark@0.5.0.TableCell"></a>
+<a id="tocSorg.accordproject.commonmark@0.5.0.tablecell"></a>
+<a id="tocsorg.accordproject.commonmark@0.5.0.tablecell"></a>
+
+```json
+{
+  "$class": "org.accordproject.commonmark@0.5.0.TableCell",
+  "text": "string",
+  "nodes": [
+    {
+      "$class": "org.accordproject.commonmark@0.5.0.Node",
+      "text": "string",
+      "nodes": [
+        {}
+      ],
+      "startLine": 0,
+      "endLine": 0
+    }
+  ],
+  "startLine": 0,
+  "endLine": 0
+}
+
+```
+
+TableCell
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for this type|
+|text|string|false|none|none|
+|nodes|[[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)]|false|none|[An instance of org.accordproject.commonmark@0.5.0.Node]|
+|startLine|integer|false|none|none|
+|endLine|integer|false|none|none|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.Position">concerto.metamodel@0.4.0.Position</h2>
 <!-- backwards compatibility -->
@@ -12121,7 +9488,7 @@ Position
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Position|
+|$class|string|true|none|The class identifier for this type|
 |line|integer|true|none|none|
 |column|integer|true|none|none|
 |offset|integer|true|none|none|
@@ -12159,7 +9526,7 @@ Range
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Range|
+|$class|string|true|none|The class identifier for this type|
 |start|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
 |end|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
 |source|string|false|none|none|
@@ -12186,7 +9553,7 @@ TypeIdentifier
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TypeIdentifier|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
 |namespace|string|false|none|none|
 
@@ -12226,7 +9593,7 @@ DecoratorLiteral
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral|
+|$class|string|true|none|The class identifier for this type|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.DecoratorString">concerto.metamodel@0.4.0.DecoratorString</h2>
@@ -12266,7 +9633,7 @@ DecoratorString
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorString|
+|$class|string|true|none|The class identifier for this type|
 |value|string|true|none|none|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
 
@@ -12307,7 +9674,7 @@ DecoratorNumber
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorNumber|
+|$class|string|true|none|The class identifier for this type|
 |value|number|true|none|none|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
 
@@ -12348,7 +9715,7 @@ DecoratorBoolean
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean|
+|$class|string|true|none|The class identifier for this type|
 |value|boolean|true|none|none|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
 
@@ -12394,7 +9761,7 @@ DecoratorTypeReference
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference|
+|$class|string|true|none|The class identifier for this type|
 |type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
 |isArray|boolean|true|none|none|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -12457,44 +9824,9 @@ Decorator
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Decorator|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
-|arguments|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorString](#schemaconcerto.metamodel@0.4.0.decoratorstring)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorString|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorNumber](#schemaconcerto.metamodel@0.4.0.decoratornumber)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorNumber|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorBoolean](#schemaconcerto.metamodel@0.4.0.decoratorboolean)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorBoolean|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorTypeReference](#schemaconcerto.metamodel@0.4.0.decoratortypereference)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorTypeReference|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|arguments|[[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)]|false|none|[An instance of concerto.metamodel@0.4.0.DecoratorLiteral]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.Identified">concerto.metamodel@0.4.0.Identified</h2>
@@ -12517,7 +9849,7 @@ Identified
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Identified|
+|$class|string|true|none|The class identifier for this type|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.IdentifiedBy">concerto.metamodel@0.4.0.IdentifiedBy</h2>
 <!-- backwards compatibility -->
@@ -12540,7 +9872,7 @@ IdentifiedBy
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IdentifiedBy|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.Declaration">concerto.metamodel@0.4.0.Declaration</h2>
@@ -12623,7 +9955,7 @@ Declaration
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Declaration|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -12773,7 +10105,7 @@ EnumDeclaration
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumDeclaration|
+|$class|string|true|none|The class identifier for this type|
 |properties|[[concerto.metamodel@0.4.0.EnumProperty](#schemaconcerto.metamodel@0.4.0.enumproperty)]|true|none|[An instance of concerto.metamodel@0.4.0.EnumProperty]|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
@@ -12859,7 +10191,7 @@ EnumProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumProperty|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -13020,87 +10352,11 @@ ConceptDeclaration
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration|
+|$class|string|true|none|The class identifier for this type|
 |isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|identified|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
 |superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -13261,87 +10517,11 @@ AssetDeclaration
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.AssetDeclaration|
+|$class|string|true|none|The class identifier for this type|
 |isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|identified|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
 |superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -13502,87 +10682,11 @@ ParticipantDeclaration
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration|
+|$class|string|true|none|The class identifier for this type|
 |isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|identified|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
 |superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -13743,87 +10847,11 @@ TransactionDeclaration
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration|
+|$class|string|true|none|The class identifier for this type|
 |isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|identified|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
 |superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -13984,87 +11012,11 @@ EventDeclaration
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EventDeclaration|
+|$class|string|true|none|The class identifier for this type|
 |isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|identified|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
 |superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
+|properties|[[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)]|true|none|[An instance of concerto.metamodel@0.4.0.Property]|
 |name|string|true|none|none|
 |decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
 |location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
@@ -14151,7 +11103,7 @@ Property
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Property|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
 |isArray|boolean|true|none|none|
 |isOptional|boolean|true|none|none|
@@ -14245,7 +11197,7 @@ RelationshipProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.RelationshipProperty|
+|$class|string|true|none|The class identifier for this type|
 |type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
 |name|string|true|none|none|
 |isArray|boolean|true|none|none|
@@ -14341,7 +11293,7 @@ ObjectProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ObjectProperty|
+|$class|string|true|none|The class identifier for this type|
 |defaultValue|string|false|none|none|
 |type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
 |name|string|true|none|none|
@@ -14433,7 +11385,7 @@ BooleanProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.BooleanProperty|
+|$class|string|true|none|The class identifier for this type|
 |defaultValue|boolean|false|none|none|
 |name|string|true|none|none|
 |isArray|boolean|true|none|none|
@@ -14523,7 +11475,7 @@ DateTimeProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DateTimeProperty|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
 |isArray|boolean|true|none|none|
 |isOptional|boolean|true|none|none|
@@ -14618,7 +11570,7 @@ StringProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringProperty|
+|$class|string|true|none|The class identifier for this type|
 |defaultValue|string|false|none|none|
 |validator|[concerto.metamodel@0.4.0.StringRegexValidator](#schemaconcerto.metamodel@0.4.0.stringregexvalidator)|false|none|An instance of concerto.metamodel@0.4.0.StringRegexValidator|
 |name|string|true|none|none|
@@ -14649,7 +11601,7 @@ StringRegexValidator
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringRegexValidator|
+|$class|string|true|none|The class identifier for this type|
 |pattern|string|true|none|none|
 |flags|string|true|none|none|
 
@@ -14741,7 +11693,7 @@ DoubleProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleProperty|
+|$class|string|true|none|The class identifier for this type|
 |defaultValue|number|false|none|none|
 |validator|[concerto.metamodel@0.4.0.DoubleDomainValidator](#schemaconcerto.metamodel@0.4.0.doubledomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.DoubleDomainValidator|
 |name|string|true|none|none|
@@ -14772,7 +11724,7 @@ DoubleDomainValidator
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator|
+|$class|string|true|none|The class identifier for this type|
 |lower|number|false|none|none|
 |upper|number|false|none|none|
 
@@ -14864,7 +11816,7 @@ IntegerProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerProperty|
+|$class|string|true|none|The class identifier for this type|
 |defaultValue|integer|false|none|none|
 |validator|[concerto.metamodel@0.4.0.IntegerDomainValidator](#schemaconcerto.metamodel@0.4.0.integerdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.IntegerDomainValidator|
 |name|string|true|none|none|
@@ -14895,7 +11847,7 @@ IntegerDomainValidator
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator|
+|$class|string|true|none|The class identifier for this type|
 |lower|integer|false|none|none|
 |upper|integer|false|none|none|
 
@@ -14987,7 +11939,7 @@ LongProperty
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongProperty|
+|$class|string|true|none|The class identifier for this type|
 |defaultValue|integer|false|none|none|
 |validator|[concerto.metamodel@0.4.0.LongDomainValidator](#schemaconcerto.metamodel@0.4.0.longdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.LongDomainValidator|
 |name|string|true|none|none|
@@ -15018,7 +11970,7 @@ LongDomainValidator
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongDomainValidator|
+|$class|string|true|none|The class identifier for this type|
 |lower|integer|false|none|none|
 |upper|integer|false|none|none|
 
@@ -15044,7 +11996,7 @@ Import
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Import|
+|$class|string|true|none|The class identifier for this type|
 |namespace|string|true|none|none|
 |uri|string|false|none|none|
 
@@ -15070,7 +12022,7 @@ ImportAll
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportAll|
+|$class|string|true|none|The class identifier for this type|
 |namespace|string|true|none|none|
 |uri|string|false|none|none|
 
@@ -15097,7 +12049,7 @@ ImportType
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportType|
+|$class|string|true|none|The class identifier for this type|
 |name|string|true|none|none|
 |namespace|string|true|none|none|
 |uri|string|false|none|none|
@@ -15197,77 +12149,12 @@ Model
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Model|
+|$class|string|true|none|The class identifier for this type|
 |namespace|string|true|none|none|
 |sourceUri|string|false|none|none|
 |concertoVersion|string|false|none|none|
-|imports|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Import](#schemaconcerto.metamodel@0.4.0.import)|false|none|An instance of concerto.metamodel@0.4.0.Import|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ImportAll](#schemaconcerto.metamodel@0.4.0.importall)|false|none|An instance of concerto.metamodel@0.4.0.ImportAll|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ImportType](#schemaconcerto.metamodel@0.4.0.importtype)|false|none|An instance of concerto.metamodel@0.4.0.ImportType|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|declarations|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Declaration](#schemaconcerto.metamodel@0.4.0.declaration)|false|none|An instance of concerto.metamodel@0.4.0.Declaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.EnumDeclaration](#schemaconcerto.metamodel@0.4.0.enumdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EnumDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.AssetDeclaration](#schemaconcerto.metamodel@0.4.0.assetdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.AssetDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ParticipantDeclaration](#schemaconcerto.metamodel@0.4.0.participantdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ParticipantDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.TransactionDeclaration](#schemaconcerto.metamodel@0.4.0.transactiondeclaration)|false|none|An instance of concerto.metamodel@0.4.0.TransactionDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.EventDeclaration](#schemaconcerto.metamodel@0.4.0.eventdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EventDeclaration|
+|imports|[[concerto.metamodel@0.4.0.Import](#schemaconcerto.metamodel@0.4.0.import)]|false|none|[An instance of concerto.metamodel@0.4.0.Import]|
+|declarations|[[concerto.metamodel@0.4.0.Declaration](#schemaconcerto.metamodel@0.4.0.declaration)]|false|none|[An instance of concerto.metamodel@0.4.0.Declaration]|
 
 <h2 id="tocS_concerto.metamodel@0.4.0.Models">concerto.metamodel@0.4.0.Models</h2>
 <!-- backwards compatibility -->
@@ -15359,5882 +12246,30 @@ Models
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Models|
+|$class|string|true|none|The class identifier for this type|
 |models|[[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)]|true|none|[An instance of concerto.metamodel@0.4.0.Model]|
 
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Node">org.accordproject.commonmark@0.5.0.Node</h2>
+<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
 <!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.node"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Node"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.node"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.node"></a>
+<a id="schemaorg.accordproject.party@0.2.0.party"></a>
+<a id="schema_org.accordproject.party@0.2.0.Party"></a>
+<a id="tocSorg.accordproject.party@0.2.0.party"></a>
+<a id="tocsorg.accordproject.party@0.2.0.party"></a>
 
 ```json
 {
-  "$class": "org.accordproject.commonmark@0.5.0.Node",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
+  "$class": "org.accordproject.party@0.2.0.Party",
+  "partyId": "string"
 }
 
 ```
 
-Node
+Party
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Node|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Root">org.accordproject.commonmark@0.5.0.Root</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.root"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Root"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.root"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.root"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Root",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Root
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Root|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Child">org.accordproject.commonmark@0.5.0.Child</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.child"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Child"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.child"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.child"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Child",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Child
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Child|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Text">org.accordproject.commonmark@0.5.0.Text</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.text"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Text"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.text"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.text"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Text",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Text
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Text|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Attribute">org.accordproject.commonmark@0.5.0.Attribute</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.attribute"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Attribute"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.attribute"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.attribute"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-  "name": "string",
-  "value": "string"
-}
-
-```
-
-Attribute
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Attribute|
-|name|string|true|none|none|
-|value|string|true|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TagInfo">org.accordproject.commonmark@0.5.0.TagInfo</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.taginfo"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TagInfo"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.taginfo"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.taginfo"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-  "tagName": "string",
-  "attributeString": "string",
-  "attributes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-      "name": "string",
-      "value": "string"
-    }
-  ],
-  "content": "string",
-  "closed": true
-}
-
-```
-
-TagInfo
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TagInfo|
-|tagName|string|true|none|none|
-|attributeString|string|true|none|none|
-|attributes|[[org.accordproject.commonmark@0.5.0.Attribute](#schemaorg.accordproject.commonmark@0.5.0.attribute)]|true|none|[An instance of org.accordproject.commonmark@0.5.0.Attribute]|
-|content|string|true|none|none|
-|closed|boolean|true|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.CodeBlock">org.accordproject.commonmark@0.5.0.CodeBlock</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.codeblock"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.CodeBlock"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.codeblock"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.codeblock"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.CodeBlock",
-  "info": "string",
-  "tag": {
-    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-    "tagName": "string",
-    "attributeString": "string",
-    "attributes": [
-      {
-        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-        "name": "string",
-        "value": "string"
-      }
-    ],
-    "content": "string",
-    "closed": true
-  },
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-CodeBlock
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock|
-|info|string|false|none|none|
-|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Code">org.accordproject.commonmark@0.5.0.Code</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.code"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Code"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.code"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.code"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Code",
-  "info": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Code
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Code|
-|info|string|false|none|none|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlInline">org.accordproject.commonmark@0.5.0.HtmlInline</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.htmlinline"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.HtmlInline"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.htmlinline"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.htmlinline"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.HtmlInline",
-  "tag": {
-    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-    "tagName": "string",
-    "attributeString": "string",
-    "attributes": [
-      {
-        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-        "name": "string",
-        "value": "string"
-      }
-    ],
-    "content": "string",
-    "closed": true
-  },
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-HtmlInline
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline|
-|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.HtmlBlock">org.accordproject.commonmark@0.5.0.HtmlBlock</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.htmlblock"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.HtmlBlock"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.htmlblock"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.htmlblock"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.HtmlBlock",
-  "tag": {
-    "$class": "org.accordproject.commonmark@0.5.0.TagInfo",
-    "tagName": "string",
-    "attributeString": "string",
-    "attributes": [
-      {
-        "$class": "org.accordproject.commonmark@0.5.0.Attribute",
-        "name": "string",
-        "value": "string"
-      }
-    ],
-    "content": "string",
-    "closed": true
-  },
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-HtmlBlock
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock|
-|tag|[org.accordproject.commonmark@0.5.0.TagInfo](#schemaorg.accordproject.commonmark@0.5.0.taginfo)|false|none|An instance of org.accordproject.commonmark@0.5.0.TagInfo|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Emph">org.accordproject.commonmark@0.5.0.Emph</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.emph"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Emph"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.emph"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.emph"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Emph",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Emph
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Emph|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Strong">org.accordproject.commonmark@0.5.0.Strong</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.strong"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Strong"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.strong"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.strong"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Strong",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Strong
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Strong|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.BlockQuote">org.accordproject.commonmark@0.5.0.BlockQuote</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.blockquote"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.BlockQuote"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.blockquote"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.blockquote"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.BlockQuote",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-BlockQuote
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Heading">org.accordproject.commonmark@0.5.0.Heading</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.heading"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Heading"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.heading"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.heading"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Heading",
-  "level": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Heading
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Heading|
-|level|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.ThematicBreak">org.accordproject.commonmark@0.5.0.ThematicBreak</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.ThematicBreak"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.thematicbreak"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.ThematicBreak",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-ThematicBreak
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Softbreak">org.accordproject.commonmark@0.5.0.Softbreak</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.softbreak"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Softbreak"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.softbreak"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.softbreak"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Softbreak",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Softbreak
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Softbreak|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Linebreak">org.accordproject.commonmark@0.5.0.Linebreak</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.linebreak"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Linebreak"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.linebreak"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.linebreak"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Linebreak",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Linebreak
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Linebreak|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Link">org.accordproject.commonmark@0.5.0.Link</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.link"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Link"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.link"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.link"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Link",
-  "destination": "string",
-  "title": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Link
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Link|
-|destination|string|true|none|none|
-|title|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Image">org.accordproject.commonmark@0.5.0.Image</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.image"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Image"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.image"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.image"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Image",
-  "destination": "string",
-  "title": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Image
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Image|
-|destination|string|true|none|none|
-|title|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Paragraph">org.accordproject.commonmark@0.5.0.Paragraph</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.paragraph"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Paragraph"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.paragraph"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.paragraph"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Paragraph",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Paragraph
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Paragraph|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.List">org.accordproject.commonmark@0.5.0.List</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.list"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.List"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.list"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.list"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.List",
-  "type": "string",
-  "start": "string",
-  "tight": "string",
-  "delimiter": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-List
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.List|
-|type|string|true|none|none|
-|start|string|false|none|none|
-|tight|string|true|none|none|
-|delimiter|string|false|none|none|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Item">org.accordproject.commonmark@0.5.0.Item</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.item"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Item"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.item"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.item"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Item",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Item
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Item|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Document">org.accordproject.commonmark@0.5.0.Document</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.document"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Document"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.document"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.document"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Document",
-  "xmlns": "string",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Document
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Document|
-|xmlns|string|true|none|none|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.Table">org.accordproject.commonmark@0.5.0.Table</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.table"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.Table"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.table"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.table"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.Table",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-Table
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.Table|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableHead">org.accordproject.commonmark@0.5.0.TableHead</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablehead"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableHead"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablehead"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablehead"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableHead",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableHead
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableHead|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableBody">org.accordproject.commonmark@0.5.0.TableBody</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablebody"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableBody"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablebody"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablebody"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableBody",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableBody
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableBody|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableRow">org.accordproject.commonmark@0.5.0.TableRow</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablerow"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableRow"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablerow"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablerow"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableRow",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableRow
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableRow|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.HeaderCell">org.accordproject.commonmark@0.5.0.HeaderCell</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.headercell"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.HeaderCell"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.headercell"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.headercell"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.HeaderCell",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-HeaderCell
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.commonmark@0.5.0.TableCell">org.accordproject.commonmark@0.5.0.TableCell</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.commonmark@0.5.0.tablecell"></a>
-<a id="schema_org.accordproject.commonmark@0.5.0.TableCell"></a>
-<a id="tocSorg.accordproject.commonmark@0.5.0.tablecell"></a>
-<a id="tocsorg.accordproject.commonmark@0.5.0.tablecell"></a>
-
-```json
-{
-  "$class": "org.accordproject.commonmark@0.5.0.TableCell",
-  "text": "string",
-  "nodes": [
-    {
-      "$class": "org.accordproject.commonmark@0.5.0.Node",
-      "text": "string",
-      "nodes": [
-        {
-          "$class": "org.accordproject.commonmark@0.5.0.Node",
-          "text": "string",
-          "nodes": [],
-          "startLine": 0,
-          "endLine": 0
-        }
-      ],
-      "startLine": 0,
-      "endLine": 0
-    }
-  ],
-  "startLine": 0,
-  "endLine": 0
-}
-
-```
-
-TableCell
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.commonmark@0.5.0.TableCell|
-|text|string|false|none|none|
-|nodes|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Node](#schemaorg.accordproject.commonmark@0.5.0.node)|false|none|An instance of org.accordproject.commonmark@0.5.0.Node|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Root](#schemaorg.accordproject.commonmark@0.5.0.root)|false|none|An instance of org.accordproject.commonmark@0.5.0.Root|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Document](#schemaorg.accordproject.commonmark@0.5.0.document)|false|none|An instance of org.accordproject.commonmark@0.5.0.Document|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Child](#schemaorg.accordproject.commonmark@0.5.0.child)|false|none|An instance of org.accordproject.commonmark@0.5.0.Child|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Text](#schemaorg.accordproject.commonmark@0.5.0.text)|false|none|An instance of org.accordproject.commonmark@0.5.0.Text|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.CodeBlock](#schemaorg.accordproject.commonmark@0.5.0.codeblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.CodeBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Code](#schemaorg.accordproject.commonmark@0.5.0.code)|false|none|An instance of org.accordproject.commonmark@0.5.0.Code|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlInline](#schemaorg.accordproject.commonmark@0.5.0.htmlinline)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlInline|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HtmlBlock](#schemaorg.accordproject.commonmark@0.5.0.htmlblock)|false|none|An instance of org.accordproject.commonmark@0.5.0.HtmlBlock|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Emph](#schemaorg.accordproject.commonmark@0.5.0.emph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Emph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Strong](#schemaorg.accordproject.commonmark@0.5.0.strong)|false|none|An instance of org.accordproject.commonmark@0.5.0.Strong|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.BlockQuote](#schemaorg.accordproject.commonmark@0.5.0.blockquote)|false|none|An instance of org.accordproject.commonmark@0.5.0.BlockQuote|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Heading](#schemaorg.accordproject.commonmark@0.5.0.heading)|false|none|An instance of org.accordproject.commonmark@0.5.0.Heading|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.ThematicBreak](#schemaorg.accordproject.commonmark@0.5.0.thematicbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.ThematicBreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Softbreak](#schemaorg.accordproject.commonmark@0.5.0.softbreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Softbreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Linebreak](#schemaorg.accordproject.commonmark@0.5.0.linebreak)|false|none|An instance of org.accordproject.commonmark@0.5.0.Linebreak|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Link](#schemaorg.accordproject.commonmark@0.5.0.link)|false|none|An instance of org.accordproject.commonmark@0.5.0.Link|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Image](#schemaorg.accordproject.commonmark@0.5.0.image)|false|none|An instance of org.accordproject.commonmark@0.5.0.Image|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Paragraph](#schemaorg.accordproject.commonmark@0.5.0.paragraph)|false|none|An instance of org.accordproject.commonmark@0.5.0.Paragraph|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.List](#schemaorg.accordproject.commonmark@0.5.0.list)|false|none|An instance of org.accordproject.commonmark@0.5.0.List|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Item](#schemaorg.accordproject.commonmark@0.5.0.item)|false|none|An instance of org.accordproject.commonmark@0.5.0.Item|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.Table](#schemaorg.accordproject.commonmark@0.5.0.table)|false|none|An instance of org.accordproject.commonmark@0.5.0.Table|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableHead](#schemaorg.accordproject.commonmark@0.5.0.tablehead)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableHead|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableBody](#schemaorg.accordproject.commonmark@0.5.0.tablebody)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableBody|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableRow](#schemaorg.accordproject.commonmark@0.5.0.tablerow)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableRow|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.HeaderCell](#schemaorg.accordproject.commonmark@0.5.0.headercell)|false|none|An instance of org.accordproject.commonmark@0.5.0.HeaderCell|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[org.accordproject.commonmark@0.5.0.TableCell](#schemaorg.accordproject.commonmark@0.5.0.tablecell)|false|none|An instance of org.accordproject.commonmark@0.5.0.TableCell|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|startLine|integer|false|none|none|
-|endLine|integer|false|none|none|
+|$class|string|true|none|The class identifier for this type|
+|partyId|string|true|none|The instance identifier for this type|
 
