@@ -3,14 +3,15 @@ namespace org.accordproject.protocol@1.0.0
 
 import concerto.metamodel@0.4.0.{Property,ConceptDeclaration,Model} from https://models.accordproject.org/concerto/metamodel@0.4.0.cto
 import org.accordproject.commonmark@0.5.0.Document from https://models.accordproject.org/markdown/commonmark@0.5.0.cto
+import org.accordproject.party@0.2.0.* from https://models.accordproject.org/accordproject/party@0.2.0.cto
 
 scalar JSON extends String
 scalar FullyQualifiedTypeName extends String
 
-@description("Bytes and mime type for a logo")
-concept Logo {
+@description("Bytes and mime type for a blob of data, such as images, files, etc.")
+concept Blob {
     o String base64
-    o String mimeType
+    o String mimeType   // e.g. "image/jpeg", "application/pdf", "audio/mpeg", "video/mp4", etc...
 }
 
 @description("The text for a template")
@@ -74,7 +75,7 @@ concept Template identified by name {
     o String description optional
     o String license
     o String[] keywords optional
-    o Logo logo optional
+    o Blob logo optional
     o TemplateModel templateModel
     o Text text
     o Logic logic optional
@@ -86,7 +87,54 @@ concept Agreement identified by agreementId {
     o String agreementId
     o JSON data
     --> Template template
-    // state?
+    o AgreementParty[] agreementParties     // Parties to the agreement
+    o Signature[] signatures                // Signatures of the parties to the agreement
+    o AgreementStatusType agreementStatus   // Current status of agreement
+    o History[] history                     // History of document state and details.
+    o Blob[] attachments                    // Pdfs, images, multimedia, etc. that form part of the agreement
+    o String[] references                   // uri/urls to external references relevant to agreement
+    o String[] metaData                     // Additional data that may be relevant to the agreement
+}
+
+@resource
+@description("A Party to an Agreement")
+participant AgreementParty extends Party {
+    o String name
+    o Boolean signatory                     // Sometimes a party named on an agreement are not required to sign (e.g. beneficiary)
+    o String role optional                  // Role of AgreementParty (e.g. "Owner", "Company Director", etc..)
+	o String email optional
+	o String phone optional
+    o String company optional
+    o String network optional
+    o Address address optional
+}
+
+@resource
+@description("An Address of an Agreement Party")
+concept Address {
+  o String[] streetRoad
+  o String suburbTownCity optional
+  o String stateTerritoryRegion optional
+  o String postalCode optional
+  o String country optional
+}
+
+@resource
+@description("The History of an Agreement")
+concept History {
+    o DateTime dateTime
+    o AgreementStatusType agreementStatus   // Status at time of change
+    o JSON data                             // Data at time of change
+    o String[] metaData                     // Additional data that may be relevant to the agreement at time of change
+}
+
+@resource
+@description("A signature of an Agreement Party")
+concept Signature {
+    o AgreementParty signatory              // The Agreement Party signing the Agreement
+    o DateTime signedAt optional            // When the signing occurred
+    o String[] metaData                     // Geolocation data, IP address, etc.
+    o Blob[] signatureImage                 // Selfie, proof-of-id, sign-on-glass image
 }
 
 @description("Abstract conversion options")
@@ -136,8 +184,10 @@ concept TriggerResponse {
 
 @description("Runtime status of an agreement")
 enum AgreementStatusType {
-    o RUNNING
-    o COMPLETED
+    o DRAFT         // No signatories have signed yet
+    o SIGNNG        // Signed by some but not all signatories
+    o COMPLETED     // Signing by all signatories completed
+    o SUPERSEDED    // Superseded by subsequent agreement
 }
 
 @description("Runtime state of an agreement")
