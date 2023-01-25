@@ -39,4 +39,8 @@ Notice the actual integration of an agreement server into a particular tool is n
 
 To simplify the implementation of agreement servers and clients, there are libraries or SDKs:
 
-Development tool SDKs each development tool typically provides a library for integrating agreement servers. For example, for JavaScript/TypeScript there is the [agreement client npm module](./src/).
+Development tool SDKs each development tool typically provides a library for integrating agreement servers. Generated client code for various platforms is available in the [client](./client/) directory.
+
+## Reference Implementation
+
+A reference implementation of the protocol is available in the [server](./server) directory.
