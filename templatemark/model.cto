@@ -1,7 +1,8 @@
-namespace test
+namespace test@1.0.0
 
-import org.accordproject.contract.Clause from https://models.accordproject.org/accordproject/contract.cto
-
-asset TemplateModel extends Clause {
+@template
+concept TemplateData {
     o String firstName
+    o String lastName optional
+    o DateTime lastVisit
 }
