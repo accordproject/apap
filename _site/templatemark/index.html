@@ -169,11 +169,13 @@ Otherwise include this content.
 </blockquote>
 <h3 id="formula">Formula</h3>
 <p>Formulae allow the template author to include a dynamically calculated value, calculated from agreement data values.</p>
-<p>In the example below the <code>monthlyPayments</code> function is being called, passing in three agreement data points for the amount, term and interest rate of a loan. Whenever one of these dependent variables is modified the formula is re-evaluated and a new value is computed.</p>
-<pre><code>
+<p>In the example below an inline JS expression is being called. The JS expresson is evaluated, and the expression return value is inlined into the AgreementMark document.</p>
+<pre><code>Hello  !
+
+Thank you for visiting us NaN days ago.
 </code></pre>
 <blockquote>
-<p>TBD. Define how these formulae are specified and packaged with a template.</p>
+<p>TBD. Can external libraries or functions be called?</p>
 </blockquote>
 <h3 id="variable">Variable</h3>
 <p>Simple unary variables are included in templates using a navigation syntax, allowing the template author to navigate through complex types to primitive properties.</p>
@@ -185,9 +187,8 @@ Otherwise include this content.
 <p>Model:</p>
 <pre><code>namespace test
 
-import org.accordproject.contract.Clause from https://models.accordproject.org/accordproject/contract.cto
-
-asset TemplateModel extends Clause {
+@template
+concept TemplateModel {
     o String firstName
 }
 </code></pre>

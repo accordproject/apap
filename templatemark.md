@@ -236,13 +236,15 @@ The query string is a SQL-like dialect to select templates based on their proper
 ### Formula
 Formulae allow the template author to include a dynamically calculated value, calculated from agreement data values.
 
-In the example below the `monthlyPayments` function is being called, passing in three agreement data points for the amount, term and interest rate of a loan. Whenever one of these dependent variables is modified the formula is re-evaluated and a new value is computed.
+In the example below an inline JS expression is being called. The JS expresson is evaluated, and the expression return value is inlined into the AgreementMark document.
 
 ```
-{{#formula monthlyPayments(data.loanAmount, data.loanTerm, data.loanInterestRate) }}
+Hello {{data.firstName}}{{#if data.lastName && data.lastName !== 'Selman'}} {{data.lastName}}{{/if}}!
+
+Thank you for visiting us {{%const difference = now.getTime() - data.lastVisit.getTime();return Math.ceil(difference / (1000 * 3600 * 24));%}} days ago.
 ```
 
-> TBD. Define how these formulae are specified and packaged with a template.
+> TBD. Can external libraries or functions be called?
 
 ### Variable
 Simple unary variables are included in templates using a navigation syntax, allowing the template author to navigate through complex types to primitive properties.
@@ -262,9 +264,8 @@ Model:
 ```
 namespace test
 
-import org.accordproject.contract.Clause from https://models.accordproject.org/accordproject/contract.cto
-
-asset TemplateModel extends Clause {
+@template
+concept TemplateModel {
     o String firstName
 }
 ```
