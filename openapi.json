@@ -32,11 +32,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "base64",
-          "mimeType"
-        ],
+        "required": ["$class", "base64", "mimeType"],
         "$decorators": {
           "description": [
             "Bytes and mime type for a blob of data, such as images, files, etc."
@@ -58,14 +54,9 @@
             "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
           }
         },
-        "required": [
-          "$class",
-          "templateMark"
-        ],
+        "required": ["$class", "templateMark"],
         "$decorators": {
-          "description": [
-            "The text for a template"
-          ]
+          "description": ["The text for a template"]
         }
       },
       "org.accordproject.protocol@1.0.0.TemplateModel": {
@@ -90,14 +81,9 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Model"
           }
         },
-        "required": [
-          "$class",
-          "typeName"
-        ],
+        "required": ["$class", "typeName"],
         "$decorators": {
-          "description": [
-            "The concept declaration associated with a template"
-          ]
+          "description": ["The concept declaration associated with a template"]
         }
       },
       "org.accordproject.protocol@1.0.0.SharedModel": {
@@ -119,42 +105,26 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Model"
           }
         },
-        "required": [
-          "$class",
-          "modelId",
-          "model"
-        ],
+        "required": ["$class", "modelId", "model"],
         "$decorators": {
-          "description": [
-            "A shared data model"
-          ],
+          "description": ["A shared data model"],
           "resource": []
         }
       },
       "org.accordproject.protocol@1.0.0.CodeType": {
         "title": "CodeType",
         "description": "An instance of org.accordproject.protocol@1.0.0.CodeType",
-        "enum": [
-          "ES2015",
-          "WASM_BYTES"
-        ],
+        "enum": ["ES2015", "WASM_BYTES"],
         "$decorators": {
-          "description": [
-            "The type (language) of code"
-          ]
+          "description": ["The type (language) of code"]
         }
       },
       "org.accordproject.protocol@1.0.0.CodeEncodingType": {
         "title": "CodeEncodingType",
         "description": "An instance of org.accordproject.protocol@1.0.0.CodeEncodingType",
-        "enum": [
-          "PLAIN_TEXT",
-          "BASE64"
-        ],
+        "enum": ["PLAIN_TEXT", "BASE64"],
         "$decorators": {
-          "description": [
-            "Code encoding scheme"
-          ]
+          "description": ["Code encoding scheme"]
         }
       },
       "org.accordproject.protocol@1.0.0.Code": {
@@ -178,16 +148,9 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "type",
-          "encoding",
-          "value"
-        ],
+        "required": ["$class", "type", "encoding", "value"],
         "$decorators": {
-          "description": [
-            "Executable code"
-          ]
+          "description": ["Executable code"]
         }
       },
       "org.accordproject.protocol@1.0.0.Function": {
@@ -218,16 +181,9 @@
             "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Code"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "requestType",
-          "code"
-        ],
+        "required": ["$class", "name", "requestType", "code"],
         "$decorators": {
-          "description": [
-            "A function for a template"
-          ]
+          "description": ["A function for a template"]
         }
       },
       "org.accordproject.protocol@1.0.0.Logic": {
@@ -251,14 +207,9 @@
             }
           }
         },
-        "required": [
-          "$class",
-          "functions"
-        ],
+        "required": ["$class", "functions"],
         "$decorators": {
-          "description": [
-            "The functions for a template"
-          ]
+          "description": ["The functions for a template"]
         }
       },
       "org.accordproject.protocol@1.0.0.Template": {
@@ -321,9 +272,7 @@
         ],
         "$decorators": {
           "resource": [],
-          "description": [
-            "An Accord Project template"
-          ]
+          "description": ["An Accord Project template"]
         }
       },
       "org.accordproject.protocol@1.0.0.KeyValue": {
@@ -344,15 +293,9 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "key",
-          "value"
-        ],
+        "required": ["$class", "key", "value"],
         "$decorators": {
-          "description": [
-            "A key/value pair"
-          ]
+          "description": ["A key/value pair"]
         }
       },
       "org.accordproject.protocol@1.0.0.Metadata": {
@@ -373,14 +316,9 @@
             }
           }
         },
-        "required": [
-          "$class",
-          "values"
-        ],
+        "required": ["$class", "values"],
         "$decorators": {
-          "description": [
-            "Generic metadata comprised of key/value pairs"
-          ]
+          "description": ["Generic metadata comprised of key/value pairs"]
         }
       },
       "org.accordproject.protocol@1.0.0.Agreement": {
@@ -505,16 +443,9 @@
             "description": "The instance identifier for this type"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "signatory",
-          "partyId"
-        ],
+        "required": ["$class", "name", "signatory", "partyId"],
         "$decorators": {
-          "description": [
-            "A Party to an Agreement"
-          ]
+          "description": ["A Party to an Agreement"]
         }
       },
       "org.accordproject.protocol@1.0.0.Address": {
@@ -547,14 +478,9 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "streetRoad"
-        ],
+        "required": ["$class", "streetRoad"],
         "$decorators": {
-          "description": [
-            "An Address of an Agreement Party"
-          ]
+          "description": ["An Address of an Agreement Party"]
         }
       },
       "org.accordproject.protocol@1.0.0.HistoryEntry": {
@@ -578,16 +504,9 @@
             "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Metadata"
           }
         },
-        "required": [
-          "$class",
-          "agreementStatus",
-          "data",
-          "metadata"
-        ],
+        "required": ["$class", "agreementStatus", "data", "metadata"],
         "$decorators": {
-          "description": [
-            "A history entry for an Agreement"
-          ]
+          "description": ["A history entry for an Agreement"]
         }
       },
       "org.accordproject.protocol@1.0.0.Signature": {
@@ -618,16 +537,9 @@
             }
           }
         },
-        "required": [
-          "$class",
-          "signatory",
-          "metadata",
-          "signatureImage"
-        ],
+        "required": ["$class", "signatory", "metadata", "signatureImage"],
         "$decorators": {
-          "description": [
-            "A signature of an Agreement Party"
-          ]
+          "description": ["A signature of an Agreement Party"]
         }
       },
       "org.accordproject.protocol@1.0.0.ConversionOptions": {
@@ -642,13 +554,9 @@
             "description": "The class identifier for org.accordproject.protocol@1.0.0.ConversionOptions"
           }
         },
-        "required": [
-          "$class"
-        ],
+        "required": ["$class"],
         "$decorators": {
-          "description": [
-            "Abstract conversion options"
-          ]
+          "description": ["Abstract conversion options"]
         }
       },
       "org.accordproject.protocol@1.0.0.PdfConversionOptions": {
@@ -666,13 +574,9 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class"
-        ],
+        "required": ["$class"],
         "$decorators": {
-          "description": [
-            "PDF conversion options"
-          ]
+          "description": ["PDF conversion options"]
         }
       },
       "org.accordproject.protocol@1.0.0.FeatureType": {
@@ -689,9 +593,7 @@
           "SHARED_MODEL_MANAGE"
         ],
         "$decorators": {
-          "description": [
-            "Server feature identifiers"
-          ]
+          "description": ["Server feature identifiers"]
         }
       },
       "org.accordproject.protocol@1.0.0.Capabilities": {
@@ -712,14 +614,9 @@
             }
           }
         },
-        "required": [
-          "$class",
-          "features"
-        ],
+        "required": ["$class", "features"],
         "$decorators": {
-          "description": [
-            "Server capabilities"
-          ]
+          "description": ["Server capabilities"]
         }
       },
       "org.accordproject.protocol@1.0.0.TriggerRequest": {
@@ -740,15 +637,9 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "functionName",
-          "payload"
-        ],
+        "required": ["$class", "functionName", "payload"],
         "$decorators": {
-          "description": [
-            "Trigger a function with a JSON payload"
-          ]
+          "description": ["Trigger a function with a JSON payload"]
         }
       },
       "org.accordproject.protocol@1.0.0.TriggerResponse": {
@@ -775,29 +666,17 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "isError"
-        ],
+        "required": ["$class", "isError"],
         "$decorators": {
-          "description": [
-            "Response of triggering a function"
-          ]
+          "description": ["Response of triggering a function"]
         }
       },
       "org.accordproject.protocol@1.0.0.AgreementStatusType": {
         "title": "AgreementStatusType",
         "description": "An instance of org.accordproject.protocol@1.0.0.AgreementStatusType",
-        "enum": [
-          "DRAFT",
-          "SIGNNG",
-          "COMPLETED",
-          "SUPERSEDED"
-        ],
+        "enum": ["DRAFT", "SIGNNG", "COMPLETED", "SUPERSEDED"],
         "$decorators": {
-          "description": [
-            "Runtime status of an agreement"
-          ]
+          "description": ["Runtime status of an agreement"]
         }
       },
       "org.accordproject.party@0.2.0.Party": {
@@ -816,10 +695,7 @@
             "description": "The instance identifier for this type"
           }
         },
-        "required": [
-          "$class",
-          "partyId"
-        ]
+        "required": ["$class", "partyId"]
       },
       "concerto.metamodel@0.4.0.Position": {
         "title": "Position",
@@ -842,12 +718,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class",
-          "line",
-          "column",
-          "offset"
-        ]
+        "required": ["$class", "line", "column", "offset"]
       },
       "concerto.metamodel@0.4.0.Range": {
         "title": "Range",
@@ -870,11 +741,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "start",
-          "end"
-        ]
+        "required": ["$class", "start", "end"]
       },
       "concerto.metamodel@0.4.0.TypeIdentifier": {
         "title": "TypeIdentifier",
@@ -894,10 +761,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "name"
-        ]
+        "required": ["$class", "name"]
       },
       "concerto.metamodel@0.4.0.DecoratorLiteral": {
         "title": "DecoratorLiteral",
@@ -914,9 +778,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "concerto.metamodel@0.4.0.DecoratorString": {
         "title": "DecoratorString",
@@ -936,10 +798,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "value"
-        ]
+        "required": ["$class", "value"]
       },
       "concerto.metamodel@0.4.0.DecoratorNumber": {
         "title": "DecoratorNumber",
@@ -959,10 +818,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "value"
-        ]
+        "required": ["$class", "value"]
       },
       "concerto.metamodel@0.4.0.DecoratorBoolean": {
         "title": "DecoratorBoolean",
@@ -982,10 +838,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "value"
-        ]
+        "required": ["$class", "value"]
       },
       "concerto.metamodel@0.4.0.DecoratorTypeReference": {
         "title": "DecoratorTypeReference",
@@ -1008,11 +861,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "type",
-          "isArray"
-        ]
+        "required": ["$class", "type", "isArray"]
       },
       "concerto.metamodel@0.4.0.Decorator": {
         "title": "Decorator",
@@ -1054,10 +903,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name"
-        ]
+        "required": ["$class", "name"]
       },
       "concerto.metamodel@0.4.0.Identified": {
         "title": "Identified",
@@ -1071,9 +917,7 @@
             "description": "The class identifier for concerto.metamodel@0.4.0.Identified"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "concerto.metamodel@0.4.0.IdentifiedBy": {
         "title": "IdentifiedBy",
@@ -1090,10 +934,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "name"
-        ]
+        "required": ["$class", "name"]
       },
       "concerto.metamodel@0.4.0.Declaration": {
         "title": "Declaration",
@@ -1120,10 +961,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name"
-        ]
+        "required": ["$class", "name"]
       },
       "concerto.metamodel@0.4.0.EnumDeclaration": {
         "title": "EnumDeclaration",
@@ -1156,11 +994,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "properties",
-          "name"
-        ]
+        "required": ["$class", "properties", "name"]
       },
       "concerto.metamodel@0.4.0.EnumProperty": {
         "title": "EnumProperty",
@@ -1187,10 +1021,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name"
-        ]
+        "required": ["$class", "name"]
       },
       "concerto.metamodel@0.4.0.ConceptDeclaration": {
         "title": "ConceptDeclaration",
@@ -1267,12 +1098,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "isAbstract",
-          "properties",
-          "name"
-        ]
+        "required": ["$class", "isAbstract", "properties", "name"]
       },
       "concerto.metamodel@0.4.0.AssetDeclaration": {
         "title": "AssetDeclaration",
@@ -1349,12 +1175,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "isAbstract",
-          "properties",
-          "name"
-        ]
+        "required": ["$class", "isAbstract", "properties", "name"]
       },
       "concerto.metamodel@0.4.0.ParticipantDeclaration": {
         "title": "ParticipantDeclaration",
@@ -1431,12 +1252,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "isAbstract",
-          "properties",
-          "name"
-        ]
+        "required": ["$class", "isAbstract", "properties", "name"]
       },
       "concerto.metamodel@0.4.0.TransactionDeclaration": {
         "title": "TransactionDeclaration",
@@ -1513,12 +1329,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "isAbstract",
-          "properties",
-          "name"
-        ]
+        "required": ["$class", "isAbstract", "properties", "name"]
       },
       "concerto.metamodel@0.4.0.EventDeclaration": {
         "title": "EventDeclaration",
@@ -1595,12 +1406,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "isAbstract",
-          "properties",
-          "name"
-        ]
+        "required": ["$class", "isAbstract", "properties", "name"]
       },
       "concerto.metamodel@0.4.0.Property": {
         "title": "Property",
@@ -1633,12 +1439,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.RelationshipProperty": {
         "title": "RelationshipProperty",
@@ -1674,13 +1475,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "type",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "type", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.ObjectProperty": {
         "title": "ObjectProperty",
@@ -1719,13 +1514,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "type",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "type", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.BooleanProperty": {
         "title": "BooleanProperty",
@@ -1761,12 +1550,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.DateTimeProperty": {
         "title": "DateTimeProperty",
@@ -1799,12 +1583,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.StringProperty": {
         "title": "StringProperty",
@@ -1843,12 +1622,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.StringRegexValidator": {
         "title": "StringRegexValidator",
@@ -1868,11 +1642,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "pattern",
-          "flags"
-        ]
+        "required": ["$class", "pattern", "flags"]
       },
       "concerto.metamodel@0.4.0.DoubleProperty": {
         "title": "DoubleProperty",
@@ -1911,12 +1681,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.DoubleDomainValidator": {
         "title": "DoubleDomainValidator",
@@ -1936,9 +1701,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "concerto.metamodel@0.4.0.IntegerProperty": {
         "title": "IntegerProperty",
@@ -1977,12 +1740,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.IntegerDomainValidator": {
         "title": "IntegerDomainValidator",
@@ -2002,9 +1760,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "concerto.metamodel@0.4.0.LongProperty": {
         "title": "LongProperty",
@@ -2043,12 +1799,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Range"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "isArray",
-          "isOptional"
-        ]
+        "required": ["$class", "name", "isArray", "isOptional"]
       },
       "concerto.metamodel@0.4.0.LongDomainValidator": {
         "title": "LongDomainValidator",
@@ -2068,9 +1819,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "concerto.metamodel@0.4.0.Import": {
         "title": "Import",
@@ -2090,10 +1839,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "namespace"
-        ]
+        "required": ["$class", "namespace"]
       },
       "concerto.metamodel@0.4.0.ImportAll": {
         "title": "ImportAll",
@@ -2113,10 +1859,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "namespace"
-        ]
+        "required": ["$class", "namespace"]
       },
       "concerto.metamodel@0.4.0.ImportType": {
         "title": "ImportType",
@@ -2139,11 +1882,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "namespace"
-        ]
+        "required": ["$class", "name", "namespace"]
       },
       "concerto.metamodel@0.4.0.Model": {
         "title": "Model",
@@ -2210,10 +1949,7 @@
             }
           }
         },
-        "required": [
-          "$class",
-          "namespace"
-        ]
+        "required": ["$class", "namespace"]
       },
       "concerto.metamodel@0.4.0.Models": {
         "title": "Models",
@@ -2233,10 +1969,7 @@
             }
           }
         },
-        "required": [
-          "$class",
-          "models"
-        ]
+        "required": ["$class", "models"]
       },
       "org.accordproject.commonmark@0.5.0.Node": {
         "title": "Node",
@@ -2347,9 +2080,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Root": {
         "title": "Root",
@@ -2460,9 +2191,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Child": {
         "title": "Child",
@@ -2573,9 +2302,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Text": {
         "title": "Text",
@@ -2686,9 +2413,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Attribute": {
         "title": "Attribute",
@@ -2708,11 +2433,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "$class",
-          "name",
-          "value"
-        ]
+        "required": ["$class", "name", "value"]
       },
       "org.accordproject.commonmark@0.5.0.TagInfo": {
         "title": "TagInfo",
@@ -2868,9 +2589,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Code": {
         "title": "Code",
@@ -2984,9 +2703,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.HtmlInline": {
         "title": "HtmlInline",
@@ -3100,9 +2817,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.HtmlBlock": {
         "title": "HtmlBlock",
@@ -3216,9 +2931,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Emph": {
         "title": "Emph",
@@ -3329,9 +3042,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Strong": {
         "title": "Strong",
@@ -3442,9 +3153,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.BlockQuote": {
         "title": "BlockQuote",
@@ -3555,9 +3264,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Heading": {
         "title": "Heading",
@@ -3671,10 +3378,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class",
-          "level"
-        ]
+        "required": ["$class", "level"]
       },
       "org.accordproject.commonmark@0.5.0.ThematicBreak": {
         "title": "ThematicBreak",
@@ -3785,9 +3489,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Softbreak": {
         "title": "Softbreak",
@@ -3898,9 +3600,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Linebreak": {
         "title": "Linebreak",
@@ -4011,9 +3711,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Link": {
         "title": "Link",
@@ -4130,11 +3828,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class",
-          "destination",
-          "title"
-        ]
+        "required": ["$class", "destination", "title"]
       },
       "org.accordproject.commonmark@0.5.0.Image": {
         "title": "Image",
@@ -4251,11 +3945,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class",
-          "destination",
-          "title"
-        ]
+        "required": ["$class", "destination", "title"]
       },
       "org.accordproject.commonmark@0.5.0.Paragraph": {
         "title": "Paragraph",
@@ -4366,9 +4056,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.List": {
         "title": "List",
@@ -4491,11 +4179,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class",
-          "type",
-          "tight"
-        ]
+        "required": ["$class", "type", "tight"]
       },
       "org.accordproject.commonmark@0.5.0.Item": {
         "title": "Item",
@@ -4606,9 +4290,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.Document": {
         "title": "Document",
@@ -4722,10 +4404,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class",
-          "xmlns"
-        ]
+        "required": ["$class", "xmlns"]
       },
       "org.accordproject.commonmark@0.5.0.Table": {
         "title": "Table",
@@ -4836,9 +4515,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.TableHead": {
         "title": "TableHead",
@@ -4949,9 +4626,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.TableBody": {
         "title": "TableBody",
@@ -5062,9 +4737,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.TableRow": {
         "title": "TableRow",
@@ -5175,9 +4848,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.HeaderCell": {
         "title": "HeaderCell",
@@ -5288,9 +4959,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       },
       "org.accordproject.commonmark@0.5.0.TableCell": {
         "title": "TableCell",
@@ -5401,9 +5070,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "$class"
-        ]
+        "required": ["$class"]
       }
     }
   },
@@ -5430,9 +5097,7 @@
         "operationId": "listSharedmodels",
         "summary": "List All Sharedmodels",
         "description": "Gets a list of all `sharedmodel` entities.",
-        "tags": [
-          "sharedmodels"
-        ]
+        "tags": ["sharedmodels"]
       },
       "post": {
         "requestBody": {
@@ -5454,9 +5119,7 @@
         "operationId": "createSharedmodel",
         "summary": "Create a Sharedmodel",
         "description": "Creates a new instance of a `sharedmodel`.",
-        "tags": [
-          "sharedmodels"
-        ]
+        "tags": ["sharedmodels"]
       }
     },
     "/sharedmodels/{modelId}": {
@@ -5478,9 +5141,7 @@
         "operationId": "getSharedmodel",
         "summary": "Get a sharedmodel",
         "description": "Gets the details of a single instance of a `sharedmodel`.",
-        "tags": [
-          "sharedmodels"
-        ]
+        "tags": ["sharedmodels"]
       },
       "put": {
         "requestBody": {
@@ -5502,9 +5163,7 @@
         "operationId": "replaceSharedmodel",
         "summary": "Update a sharedmodel",
         "description": "Updates an existing `sharedmodel`.",
-        "tags": [
-          "sharedmodels"
-        ]
+        "tags": ["sharedmodels"]
       },
       "delete": {
         "responses": {
@@ -5515,9 +5174,7 @@
         "operationId": "deleteSharedmodel",
         "summary": "Delete a sharedmodel",
         "description": "Deletes an existing `sharedmodel`.",
-        "tags": [
-          "sharedmodels"
-        ]
+        "tags": ["sharedmodels"]
       },
       "parameters": [
         {
@@ -5533,29 +5190,105 @@
     },
     "/templates": {
       "summary": "Path used to manage the list of templates.",
-      "description": "The REST endpoint/path used to list and create zero or more `template` entities.  This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively.",
+      "description": "The REST endpoint/path used to list and create zero or more `template` entities. This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively.",
       "get": {
+        "summary": "List All Templates",
+        "description": "Gets a paginated list of all `template` entities. By default, returns metadata only (id, name, createdAt) unless `full=true` or specific `fields` are requested.",
+        "tags": ["templates"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to skip",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (capped at 100 on the server)",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "Comma-separated list of fields to include (e.g., id,name,content). Defaults to id,name,createdAt if not specified.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "full",
+            "in": "query",
+            "description": "If true, returns full template objects instead of filtered fields",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "responses": {
           "200": {
+            "description": "Successful response - returns a paginated array of `template` entities.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "limit": { "type": "integer" }
+                      },
+                      "required": ["total", "offset", "limit"]
+                    },
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "self": { "type": "string" },
+                        "next": { "type": "string", "nullable": true },
+                        "prev": { "type": "string", "nullable": true },
+                        "first": { "type": "string" },
+                        "last": { "type": "string" }
+                      },
+                      "required": ["self", "next", "prev", "first", "last"]
+                    }
+                  },
+                  "required": ["data", "meta", "links"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "array", "items": { "type": "object" } }
                   }
                 }
               }
-            },
-            "description": "Successful response - returns an array of `template` entities."
+            }
           }
         },
-        "operationId": "listTemplates",
-        "summary": "List All Templates",
-        "description": "Gets a list of all `template` entities.",
-        "tags": [
-          "templates"
-        ]
+        "operationId": "listTemplates"
       },
       "post": {
         "requestBody": {
@@ -5577,9 +5310,7 @@
         "operationId": "createTemplate",
         "summary": "Create a Template",
         "description": "Creates a new instance of a `template`.",
-        "tags": [
-          "templates"
-        ]
+        "tags": ["templates"]
       }
     },
     "/templates/{name}": {
@@ -5601,9 +5332,7 @@
         "operationId": "getTemplate",
         "summary": "Get a template",
         "description": "Gets the details of a single instance of a `template`.",
-        "tags": [
-          "templates"
-        ]
+        "tags": ["templates"]
       },
       "put": {
         "requestBody": {
@@ -5625,9 +5354,7 @@
         "operationId": "replaceTemplate",
         "summary": "Update a template",
         "description": "Updates an existing `template`.",
-        "tags": [
-          "templates"
-        ]
+        "tags": ["templates"]
       },
       "delete": {
         "responses": {
@@ -5638,9 +5365,7 @@
         "operationId": "deleteTemplate",
         "summary": "Delete a template",
         "description": "Deletes an existing `template`.",
-        "tags": [
-          "templates"
-        ]
+        "tags": ["templates"]
       },
       "parameters": [
         {
@@ -5656,29 +5381,92 @@
     },
     "/agreements": {
       "summary": "Path used to manage the list of agreements.",
-      "description": "The REST endpoint/path used to list and create zero or more `agreement` entities.  This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively.",
+      "description": "The REST endpoint/path used to list and create zero or more `agreement` entities.",
       "get": {
+        "summary": "List All Agreements",
+        "description": "Gets a paginated list of all `agreement` entities. By default, returns metadata only (id, name, createdAt) unless `full=true` or specific `fields` are requested.",
+        "tags": ["agreements"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to skip",
+            "schema": { "type": "integer", "default": 0, "minimum": 0 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (capped at 100 on the server)",
+            "schema": { "type": "integer", "default": 10, "minimum": 1 }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "Comma-separated list of fields to include (e.g., id,name,details). Defaults to id,name,createdAt.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "full",
+            "in": "query",
+            "description": "If true, returns full agreement objects instead of filtered fields",
+            "schema": { "type": "boolean", "default": false }
+          }
+        ],
         "responses": {
           "200": {
+            "description": "Successful response - returns a paginated array of `agreement` entities.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Agreement"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Agreement"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "limit": { "type": "integer" }
+                      },
+                      "required": ["total", "offset", "limit"]
+                    },
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "self": { "type": "string" },
+                        "next": { "type": "string", "nullable": true },
+                        "prev": { "type": "string", "nullable": true },
+                        "first": { "type": "string" },
+                        "last": { "type": "string" }
+                      },
+                      "required": ["self", "next", "prev", "first", "last"]
+                    }
+                  },
+                  "required": ["data", "meta", "links"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "array", "items": { "type": "object" } }
                   }
                 }
               }
-            },
-            "description": "Successful response - returns an array of `agreement` entities."
+            }
           }
         },
-        "operationId": "listAgreements",
-        "summary": "List All Agreements",
-        "description": "Gets a list of all `agreement` entities.",
-        "tags": [
-          "agreements"
-        ]
+        "operationId": "listAgreements"
       },
       "post": {
         "requestBody": {
@@ -5700,9 +5488,7 @@
         "operationId": "createAgreement",
         "summary": "Create a Agreement",
         "description": "Creates a new instance of a `agreement`.",
-        "tags": [
-          "agreements"
-        ]
+        "tags": ["agreements"]
       }
     },
     "/agreements/{agreementId}": {
@@ -5724,9 +5510,7 @@
         "operationId": "getAgreement",
         "summary": "Get a agreement",
         "description": "Gets the details of a single instance of a `agreement`.",
-        "tags": [
-          "agreements"
-        ]
+        "tags": ["agreements"]
       },
       "put": {
         "requestBody": {
@@ -5748,9 +5532,7 @@
         "operationId": "replaceAgreement",
         "summary": "Update a agreement",
         "description": "Updates an existing `agreement`.",
-        "tags": [
-          "agreements"
-        ]
+        "tags": ["agreements"]
       },
       "delete": {
         "responses": {
@@ -5761,9 +5543,7 @@
         "operationId": "deleteAgreement",
         "summary": "Delete a agreement",
         "description": "Deletes an existing `agreement`.",
-        "tags": [
-          "agreements"
-        ]
+        "tags": ["agreements"]
       },
       "parameters": [
         {
@@ -5808,9 +5588,7 @@
         "operationId": "convertAgreementPdf",
         "summary": "Convert agreement to PDF",
         "description": "Converts an existing `agreement` to PDF.",
-        "tags": [
-          "agreements"
-        ]
+        "tags": ["agreements"]
       },
       "parameters": [
         {
@@ -5854,9 +5632,7 @@
         "operationId": "triggerAgreement",
         "summary": "Trigger an agreement",
         "description": "Sends data to an existing agreement.",
-        "tags": [
-          "agreements"
-        ]
+        "tags": ["agreements"]
       },
       "parameters": [
         {
@@ -5889,9 +5665,7 @@
         "operationId": "getCapabilities",
         "summary": "Get server capabilities",
         "description": "Retrieve the supported features of the server.",
-        "tags": [
-          "capabilities"
-        ]
+        "tags": ["capabilities"]
       }
     }
   }
