@@ -44,3 +44,31 @@ Development tool SDKs each development tool typically provides a library for int
 ## Reference Implementation
 
 A reference implementation of the protocol is available in the [server](./server) directory.
+
+## Pagination and Partial Fetching
+
+The `listTemplates` operation now supports pagination and partial fetching options. The following query parameters are available:
+
+- `offset`: The number of items to skip before starting to collect the result set.
+- `limit`: The number of items to return.
+- `fields`: A comma-separated list of fields to include in the response.
+
+The response includes pagination metadata and pagination links:
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "total": 100,
+    "offset": 0,
+    "limit": 10
+  },
+  "links": {
+    "self": "/templates?offset=0&limit=10",
+    "next": "/templates?offset=10&limit=10",
+    "prev": null,
+    "first": "/templates?offset=0&limit=10",
+    "last": "/templates?offset=90&limit=10"
+  }
+}
+```

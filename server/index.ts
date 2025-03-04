@@ -17,8 +17,28 @@ const api = new OpenAPIBackend({
     quick: true, // disabled validation of OpenAPI on load
     definition: openApiPath,
     handlers: {
-        listTemplates: async (c, req: Express.Request, res: Express.Response) =>
-            res.status(200).json([]),
+        listTemplates: async (c, req: Express.Request, res: Express.Response) => {
+            const { offset = 0, limit = 10, fields } = req.query;
+            const templates = []; // Fetch templates from your data source
+            const total = templates.length;
+            const paginatedTemplates = templates.slice(offset, offset + limit);
+            const response = {
+                data: paginatedTemplates,
+                meta: {
+                    total,
+                    offset,
+                    limit,
+                },
+                links: {
+                    self: `/templates?offset=${offset}&limit=${limit}`,
+                    next: offset + limit < total ? `/templates?offset=${offset + limit}&limit=${limit}` : null,
+                    prev: offset > 0 ? `/templates?offset=${offset - limit}&limit=${limit}` : null,
+                    first: `/templates?offset=0&limit=${limit}`,
+                    last: `/templates?offset=${Math.floor(total / limit) * limit}&limit=${limit}`,
+                },
+            };
+            res.status(200).json(response);
+        },
         createTemplate: async (c, req: Express.Request, res: Express.Response) =>
             res.status(200).json({}),
         getTemplate: async (c, req: Express.Request, res: Express.Response) =>

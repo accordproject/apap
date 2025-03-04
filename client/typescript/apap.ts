@@ -51,6 +51,13 @@ export interface paths {
      * @description Creates a new instance of a `template`.
      */
     post: operations["createTemplate"];
+    parameters: {
+      query: {
+        offset?: number;
+        limit?: number;
+        fields?: string;
+      };
+    };
   };
   "/templates/{name}": {
     /**
@@ -1576,11 +1583,32 @@ export interface operations {
      * List All Templates 
      * @description Gets a list of all `template` entities.
      */
+    parameters: {
+      query: {
+        offset?: number;
+        limit?: number;
+        fields?: string;
+      };
+    };
     responses: {
       /** @description Successful response - returns an array of `template` entities. */
       200: {
         content: {
-          "application/json": (components["schemas"]["org.accordproject.protocol@1.0.0.Template"])[];
+          "application/json": {
+            data: (components["schemas"]["org.accordproject.protocol@1.0.0.Template"])[],
+            meta: {
+              total: number;
+              offset: number;
+              limit: number;
+            },
+            links: {
+              self: string;
+              next?: string;
+              prev?: string;
+              first: string;
+              last: string;
+            }
+          };
         };
       };
     };
