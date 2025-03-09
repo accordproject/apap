@@ -3,7 +3,7 @@
       "target": "es2017",
       "module": "commonjs",
       "moduleResolution": "node",
-      "lib": ["es7", "esnext.asynciterable"],
+      "lib": ["es7", "esnext.asynciterable", "dom"],
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
       "esModuleInterop": true,

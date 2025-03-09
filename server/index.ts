@@ -1,8 +1,12 @@
 import 'source-map-support/register';
-import OpenAPIBackend, { Request } from 'openapi-backend';
+import OpenAPIBackend, { Request, Context } from 'openapi-backend';
 import Express from 'express';
-import morgan from 'morgan'
+import morgan from 'morgan';
 import path from 'path';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 import { Request as ExpressReq, Response as ExpressRes } from 'express';
 
@@ -17,19 +21,19 @@ const api = new OpenAPIBackend({
     quick: true, // disabled validation of OpenAPI on load
     definition: openApiPath,
     handlers: {
-        listTemplates: async (c, req: Express.Request, res: Express.Response) =>
+        listTemplates: async (c: Context, req: Express.Request, res: Express.Response) =>
             res.status(200).json([]),
-        createTemplate: async (c, req: Express.Request, res: Express.Response) =>
+        createTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
             res.status(200).json({}),
-        getTemplate: async (c, req: Express.Request, res: Express.Response) =>
+        getTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
             res.status(200).json({}),
-        replaceTemplate: async (c, req: Express.Request, res: Express.Response) =>
+        replaceTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
             res.status(200).json({}),
-        deleteTemplate: async (c, req: Express.Request, res: Express.Response) =>
+        deleteTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
             res.status(200).json({}),
-        validationFail: async (c, req: ExpressReq, res: ExpressRes) => res.status(400).json({ err: c.validation.errors }),
-        notFound: async (c, req: ExpressReq, res: ExpressRes) => res.status(404).json({ err: 'not found' }),
-        notImplemented: async (c, req: ExpressReq, res: ExpressRes) => {
+        validationFail: async (c: Context, req: ExpressReq, res: ExpressRes) => res.status(400).json({ err: c.validation.errors }),
+        notFound: async (c: Context, req: ExpressReq, res: ExpressRes) => res.status(404).json({ err: 'not found' }),
+        notImplemented: async (c: Context, req: ExpressReq, res: ExpressRes) => {
             const { status, mock } = c.api.mockResponseForOperation(c.operation.operationId);
             return res.status(status).json(mock);
         },
@@ -42,7 +46,12 @@ api.init();
 app.use(morgan('combined'));
 
 // use as express middleware
-app.use((req, res) => api.handleRequest(req as Request, req, res));
+app.use((req: Express.Request, res: Express.Response) => api.handleRequest(req as Request, req, res));
+
+const HOST = process.env.HOST || 'localhost';
+const PORT = parseInt(process.env.PORT || '9000', 10);
 
 // start server
-app.listen(9000, () => console.info('api listening at http://localhost:9000'));
+app.listen(PORT, HOST, () => {
+    console.info(`API listening at http://${HOST}:${PORT}`);
+});
