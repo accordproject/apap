@@ -88,6 +88,10 @@
           },
           "model": {
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Model"
+          },
+          "cto": {
+            "type": "string",
+            "description": "An optional Concerto (CTO) string representation of the model"
           }
         },
         "required": [
@@ -96,7 +100,7 @@
         ],
         "$decorators": {
           "description": [
-            "The concept declaration associated with a template"
+            "The concept declaration associated with a template. Either `model` or `cto` must be provided to define the template's data model. If both are provided, `cto` takes precedence and is parsed to populate the `model` field."
           ]
         }
       },
