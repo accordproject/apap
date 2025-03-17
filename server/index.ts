@@ -1,9 +1,17 @@
+
 import "source-map-support/register";
 import { ModelManager } from "@accordproject/concerto-core";
-import OpenAPIBackend, { Request } from "openapi-backend";
+import OpenAPIBackend, { Request, Context } from 'openapi-backend';
 import Express from "express";
 import morgan from "morgan";
 import path from "path";
+import dotenv from 'dotenv';
+
+
+
+// Load environment variables from .env file
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
 
 import { Request as ExpressReq, Response as ExpressRes } from "express";
 
@@ -17,6 +25,7 @@ console.log(openApiPath);
 
 // define api
 const api = new OpenAPIBackend({
+
   quick: true, // disabled validation of OpenAPI on load
   definition: openApiPath,
   handlers: {
@@ -65,6 +74,7 @@ const api = new OpenAPIBackend({
         c.operation.operationId
       );
       return res.status(status).json(mock);
+
     },
   },
 });
@@ -75,7 +85,13 @@ api.init();
 app.use(morgan("combined"));
 
 // use as express middleware
-app.use((req, res) => api.handleRequest(req as Request, req, res));
+app.use((req: Express.Request, res: Express.Response) => api.handleRequest(req as Request, req, res));
 
-// start server
-app.listen(9000, () => console.info("api listening at http://localhost:9000"));
+const HOST = process.env.HOST || 'localhost';
+const PORT = parseInt(process.env.PORT || '9000', 10);
+
+
+app.listen(PORT, HOST, () => {
+    console.info(`API listening at http://${HOST}:${PORT}`);
+});
+
