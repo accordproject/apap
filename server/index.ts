@@ -69,18 +69,25 @@ const api = new OpenAPIBackend({
         const template = await fetchTemplate(templateName);
         const etag = generateETag(template);
         const lastModified = getLastModified(templateName);
+
         console.log(templateName, etag, lastModified);
+
         res.set("ETag", etag);
         res.set("Last-Modified", lastModified.toUTCString());
 
         if (req.headers["if-none-match"] === etag) {
           return res.status(304).send();
         }
-        if (
-          req.headers["if-modified-since"] &&
-          req.headers["if-modified-since"] >= lastModified.toUTCString()
-        ) {
-          return res.status(304).send();
+
+        if (req.headers["if-modified-since"]) {
+          const ifModifiedSince = new Date(req.headers["if-modified-since"]);
+
+          if (
+            !isNaN(ifModifiedSince.getTime()) &&
+            ifModifiedSince >= lastModified
+          ) {
+            return res.status(304).send();
+          }
         }
 
         res.status(200).json(template);
@@ -89,7 +96,6 @@ const api = new OpenAPIBackend({
         res.status(500).json({ error: "Failed to retrieve template" });
       }
     },
-
     replaceTemplate: async (
       _c: Context,
       _req: Express.Request,
