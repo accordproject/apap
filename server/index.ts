@@ -9,8 +9,6 @@ import etag from "etag";
 
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
-import { Request as ExpressReq, Response as ExpressRes } from "express";
-
 const app = Express();
 app.use(Express.json());
 
@@ -50,17 +48,19 @@ const api = new OpenAPIBackend({
   definition: openApiPath,
   handlers: {
     listTemplates: async (
-      c: Context,
-      req: Express.Request,
+      _c: Context,
+      _req: Express.Request,
       res: Express.Response
     ) => res.status(200).json([]),
+
     createTemplate: async (
-      c: Context,
-      req: Express.Request,
+      _c: Context,
+      _req: Express.Request,
       res: Express.Response
     ) => res.status(200).json({}),
+
     getTemplate: async (
-      c: Context,
+      _c: Context,
       req: Express.Request,
       res: Express.Response
     ) => {
@@ -89,21 +89,36 @@ const api = new OpenAPIBackend({
         res.status(500).json({ error: "Failed to retrieve template" });
       }
     },
+
     replaceTemplate: async (
-      c: Context,
-      req: Express.Request,
+      _c: Context,
+      _req: Express.Request,
       res: Express.Response
     ) => res.status(200).json({}),
+
     deleteTemplate: async (
-      c: Context,
-      req: Express.Request,
+      _c: Context,
+      _req: Express.Request,
       res: Express.Response
     ) => res.status(200).json({}),
-    validationFail: async (c: Context, req: ExpressReq, res: ExpressRes) =>
-      res.status(400).json({ err: c.validation.errors }),
-    notFound: async (c: Context, req: ExpressReq, res: ExpressRes) =>
-      res.status(404).json({ err: "not found" }),
-    notImplemented: async (c: Context, req: ExpressReq, res: ExpressRes) => {
+
+    validationFail: async (
+      c: Context,
+      _req: Express.Request,
+      res: Express.Response
+    ) => res.status(400).json({ err: c.validation.errors }),
+
+    notFound: async (
+      _c: Context,
+      _req: Express.Request,
+      res: Express.Response
+    ) => res.status(404).json({ err: "not found" }),
+
+    notImplemented: async (
+      c: Context,
+      _req: Express.Request,
+      res: Express.Response
+    ) => {
       const { status, mock } = c.api.mockResponseForOperation(
         c.operation.operationId
       );
