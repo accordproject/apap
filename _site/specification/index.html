@@ -4,3 +4,13 @@
 <h2 id="open-api">Open API</h2>
 <p>The protocol is defined via an <a href="./openapi.json">Open API document</a>, which specified the required API methods as well as their expected request and response data formats.</p>
 <p>The Open API documentation has been generated in both <a href="./index.md">markdown format</a>, and as a <a href="./_site/index.html">static HTML site</a> viewable by cloning this repository and running <code>npm i &amp;&amp; npm run build &amp;&amp; npm run serve</code>.</p>
+<h2 id="get-%2Ftemplates">GET /templates</h2>
+<p>Returns a list of template entities.</p>
+<h3 id="query-parameters">Query Parameters</h3>
+<ul>
+<li><code>keywords</code>: <em>string</em> (optional)<br>
+A comma-separated list of keywords to filter templates.<br>
+Matches any of the provided values in the <code>keywords</code> field.</li>
+</ul>
+<h4 id="example%3A">Example:</h4>
+<pre class="language-http"><code class="language-http">GET /templates?keywords=contract,legal</code></pre>
