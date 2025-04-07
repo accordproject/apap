@@ -5555,6 +5555,18 @@
         "description": "Gets a list of all `template` entities.",
         "tags": [
           "templates"
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "description": "Comma-separated list of keywords to filter templates. Matches any keyword in the `keywords` field.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "contract,legal"
+            }
+          }
         ]
       },
       "post": {
@@ -5872,7 +5884,7 @@
     },
     "/capabilities": {
       "summary": "Path used to retrieve server capabilities.",
-      "description": "The REST endpoint used to understand the capabiities of the server.",
+      "description": "The REST endpoint used to understand the capabilities of the server.",
       "get": {
         "responses": {
           "200": {
