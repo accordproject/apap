@@ -110,12 +110,12 @@ export interface paths {
       };
     };
   };
-  "/agreements/{agreementId}/convert/pdf": {
+  "/agreements/{agreementId}/convert/html": {
     /**
-     * Convert agreement to PDF 
-     * @description Converts an existing `agreement` to PDF.
+     * Convert agreement to HTML 
+     * @description Converts an existing `agreement` to HTML.
      */
-    post: operations["convertAgreementPdf"];
+    post: operations["convertAgreementHtml"];
     parameters: {
         /** @description A unique identifier for a `Agreement`. */
       path: {
@@ -150,6 +150,7 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     "org.accordproject.protocol@1.0.0.JSON": string;
+    "org.accordproject.protocol@1.0.0.CTO": string;
     "org.accordproject.protocol@1.0.0.FullyQualifiedTypeName": string;
     /**
      * Blob 
@@ -174,7 +175,43 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.Text
        */
       $class: string;
-      templateMark: components["schemas"]["org.accordproject.commonmark@0.5.0.Document"];
+      templateMark?: components["schemas"]["org.accordproject.commonmark@0.5.0.Document"];
+      templateText?: string;
+    };
+    /**
+     * DomainModel 
+     * @description An instance of org.accordproject.protocol@1.0.0.DomainModel
+     */
+    "org.accordproject.protocol@1.0.0.DomainModel": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.DomainModel 
+       * @default org.accordproject.protocol@1.0.0.DomainModel
+       */
+      $class: string;
+    };
+    /**
+     * CtoModel 
+     * @description An instance of org.accordproject.protocol@1.0.0.CtoModel
+     */
+    "org.accordproject.protocol@1.0.0.CtoModel": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.CtoModel 
+       * @default org.accordproject.protocol@1.0.0.CtoModel
+       */
+      $class: string;
+      ctoFiles: (string)[];
+    };
+    /**
+     * JsonModel 
+     * @description An instance of org.accordproject.protocol@1.0.0.JsonModel
+     */
+    "org.accordproject.protocol@1.0.0.JsonModel": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.JsonModel 
+       * @default org.accordproject.protocol@1.0.0.JsonModel
+       */
+      $class: string;
+      model?: components["schemas"]["concerto.metamodel@0.4.0.Model"];
     };
     /**
      * TemplateModel 
@@ -189,7 +226,7 @@ export interface components {
       typeName: string;
       /** @description The identifier of an instance of org.accordproject.protocol@1.0.0.SharedModel */
       sharedModel?: string;
-      model?: components["schemas"]["concerto.metamodel@0.4.0.Model"];
+      model?: components["schemas"]["org.accordproject.protocol@1.0.0.DomainModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.CtoModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.JsonModel"];
     };
     /**
      * SharedModel 
@@ -203,14 +240,14 @@ export interface components {
       $class: string;
       /** @description The instance identifier for this type */
       modelId: string;
-      model: components["schemas"]["concerto.metamodel@0.4.0.Model"];
+      model: components["schemas"]["org.accordproject.protocol@1.0.0.DomainModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.CtoModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.JsonModel"];
     };
     /**
      * CodeType 
      * @description An instance of org.accordproject.protocol@1.0.0.CodeType 
      * @enum {unknown}
      */
-    "org.accordproject.protocol@1.0.0.CodeType": "ES2015" | "WASM_BYTES";
+    "org.accordproject.protocol@1.0.0.CodeType": "ES2015" | "WASM_BYTES" | "TYPESCRIPT";
     /**
      * CodeEncodingType 
      * @description An instance of org.accordproject.protocol@1.0.0.CodeEncodingType 
@@ -227,26 +264,11 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.Code
        */
       $class: string;
+      /** @description The instance identifier for this type */
+      id: string;
       type: components["schemas"]["org.accordproject.protocol@1.0.0.CodeType"];
       encoding: components["schemas"]["org.accordproject.protocol@1.0.0.CodeEncodingType"];
       value: string;
-    };
-    /**
-     * Function 
-     * @description An instance of org.accordproject.protocol@1.0.0.Function
-     */
-    "org.accordproject.protocol@1.0.0.Function": {
-      /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Function 
-       * @default org.accordproject.protocol@1.0.0.Function
-       */
-      $class: string;
-      /** @description The instance identifier for this type */
-      name: string;
-      requestType: string;
-      responseType?: string;
-      emittedTypes?: string;
-      code: components["schemas"]["org.accordproject.protocol@1.0.0.Code"];
     };
     /**
      * Logic 
@@ -259,7 +281,21 @@ export interface components {
        */
       $class: string;
       stateType?: string;
-      functions: (components["schemas"]["org.accordproject.protocol@1.0.0.Function"])[];
+      codes: (components["schemas"]["org.accordproject.protocol@1.0.0.Code"])[];
+    };
+    /**
+     * TemplateMetadata 
+     * @description An instance of org.accordproject.protocol@1.0.0.TemplateMetadata
+     */
+    "org.accordproject.protocol@1.0.0.TemplateMetadata": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.TemplateMetadata 
+       * @default org.accordproject.protocol@1.0.0.TemplateMetadata
+       */
+      $class: string;
+      runtime: string;
+      template: string;
+      cicero: string;
     };
     /**
      * Template 
@@ -271,6 +307,7 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.Template
        */
       $class: string;
+      metadata: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateMetadata"];
       /** @description The instance identifier for this type */
       name: string;
       author: string;
@@ -283,6 +320,7 @@ export interface components {
       templateModel: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateModel"];
       text: components["schemas"]["org.accordproject.protocol@1.0.0.Text"];
       logic?: components["schemas"]["org.accordproject.protocol@1.0.0.Logic"];
+      sampleRequest?: string;
     };
     /**
      * KeyValue 
@@ -412,23 +450,22 @@ export interface components {
       $class: string;
     };
     /**
-     * PdfConversionOptions 
-     * @description An instance of org.accordproject.protocol@1.0.0.PdfConversionOptions
+     * HtmlConversionOptions 
+     * @description An instance of org.accordproject.protocol@1.0.0.HtmlConversionOptions
      */
-    "org.accordproject.protocol@1.0.0.PdfConversionOptions": {
+    "org.accordproject.protocol@1.0.0.HtmlConversionOptions": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.PdfConversionOptions 
-       * @default org.accordproject.protocol@1.0.0.PdfConversionOptions
+       * @description The class identifier for org.accordproject.protocol@1.0.0.HtmlConversionOptions 
+       * @default org.accordproject.protocol@1.0.0.HtmlConversionOptions
        */
       $class: string;
-      styles?: string;
     };
     /**
      * FeatureType 
      * @description An instance of org.accordproject.protocol@1.0.0.FeatureType 
      * @enum {unknown}
      */
-    "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_CONVERT_PDF" | "SHARED_MODEL_MANAGE";
+    "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "LOGIC_WASM" | "LOGIC_ES2015" | "LOGIC_TYPESCRIPT" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_DRAFT" | "AGREEMENT_SIGNING" | "SHARED_MODEL_MANAGE";
     /**
      * Capabilities 
      * @description An instance of org.accordproject.protocol@1.0.0.Capabilities
@@ -451,7 +488,6 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.TriggerRequest
        */
       $class: string;
-      functionName: string;
       payload: string;
     };
     /**
@@ -487,558 +523,6 @@ export interface components {
       $class: string;
       /** @description The instance identifier for this type */
       partyId: string;
-    };
-    /**
-     * Position 
-     * @description An instance of concerto.metamodel@0.4.0.Position
-     */
-    "concerto.metamodel@0.4.0.Position": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Position 
-       * @default concerto.metamodel@0.4.0.Position
-       */
-      $class: string;
-      line: number;
-      column: number;
-      offset: number;
-    };
-    /**
-     * Range 
-     * @description An instance of concerto.metamodel@0.4.0.Range
-     */
-    "concerto.metamodel@0.4.0.Range": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Range 
-       * @default concerto.metamodel@0.4.0.Range
-       */
-      $class: string;
-      start: components["schemas"]["concerto.metamodel@0.4.0.Position"];
-      end: components["schemas"]["concerto.metamodel@0.4.0.Position"];
-      source?: string;
-    };
-    /**
-     * TypeIdentifier 
-     * @description An instance of concerto.metamodel@0.4.0.TypeIdentifier
-     */
-    "concerto.metamodel@0.4.0.TypeIdentifier": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.TypeIdentifier 
-       * @default concerto.metamodel@0.4.0.TypeIdentifier
-       */
-      $class: string;
-      name: string;
-      namespace?: string;
-    };
-    /**
-     * DecoratorLiteral 
-     * @description An instance of concerto.metamodel@0.4.0.DecoratorLiteral
-     */
-    "concerto.metamodel@0.4.0.DecoratorLiteral": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral 
-       * @default concerto.metamodel@0.4.0.DecoratorLiteral
-       */
-      $class: string;
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * DecoratorString 
-     * @description An instance of concerto.metamodel@0.4.0.DecoratorString
-     */
-    "concerto.metamodel@0.4.0.DecoratorString": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorString 
-       * @default concerto.metamodel@0.4.0.DecoratorString
-       */
-      $class: string;
-      value: string;
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * DecoratorNumber 
-     * @description An instance of concerto.metamodel@0.4.0.DecoratorNumber
-     */
-    "concerto.metamodel@0.4.0.DecoratorNumber": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorNumber 
-       * @default concerto.metamodel@0.4.0.DecoratorNumber
-       */
-      $class: string;
-      value: number;
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * DecoratorBoolean 
-     * @description An instance of concerto.metamodel@0.4.0.DecoratorBoolean
-     */
-    "concerto.metamodel@0.4.0.DecoratorBoolean": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean 
-       * @default concerto.metamodel@0.4.0.DecoratorBoolean
-       */
-      $class: string;
-      value: boolean;
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * DecoratorTypeReference 
-     * @description An instance of concerto.metamodel@0.4.0.DecoratorTypeReference
-     */
-    "concerto.metamodel@0.4.0.DecoratorTypeReference": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference 
-       * @default concerto.metamodel@0.4.0.DecoratorTypeReference
-       */
-      $class: string;
-      type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      isArray: boolean;
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * Decorator 
-     * @description An instance of concerto.metamodel@0.4.0.Decorator
-     */
-    "concerto.metamodel@0.4.0.Decorator": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Decorator 
-       * @default concerto.metamodel@0.4.0.Decorator
-       */
-      $class: string;
-      name: string;
-      arguments?: (components["schemas"]["concerto.metamodel@0.4.0.DecoratorLiteral"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorString"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorNumber"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorBoolean"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorTypeReference"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * Identified 
-     * @description An instance of concerto.metamodel@0.4.0.Identified
-     */
-    "concerto.metamodel@0.4.0.Identified": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Identified 
-       * @default concerto.metamodel@0.4.0.Identified
-       */
-      $class: string;
-    };
-    /**
-     * IdentifiedBy 
-     * @description An instance of concerto.metamodel@0.4.0.IdentifiedBy
-     */
-    "concerto.metamodel@0.4.0.IdentifiedBy": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.IdentifiedBy 
-       * @default concerto.metamodel@0.4.0.IdentifiedBy
-       */
-      $class: string;
-      name: string;
-    };
-    /**
-     * Declaration 
-     * @description An instance of concerto.metamodel@0.4.0.Declaration
-     */
-    "concerto.metamodel@0.4.0.Declaration": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Declaration 
-       * @default concerto.metamodel@0.4.0.Declaration
-       */
-      $class: string;
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * EnumDeclaration 
-     * @description An instance of concerto.metamodel@0.4.0.EnumDeclaration
-     */
-    "concerto.metamodel@0.4.0.EnumDeclaration": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.EnumDeclaration 
-       * @default concerto.metamodel@0.4.0.EnumDeclaration
-       */
-      $class: string;
-      properties: (components["schemas"]["concerto.metamodel@0.4.0.EnumProperty"])[];
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * EnumProperty 
-     * @description An instance of concerto.metamodel@0.4.0.EnumProperty
-     */
-    "concerto.metamodel@0.4.0.EnumProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.EnumProperty 
-       * @default concerto.metamodel@0.4.0.EnumProperty
-       */
-      $class: string;
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * ConceptDeclaration 
-     * @description An instance of concerto.metamodel@0.4.0.ConceptDeclaration
-     */
-    "concerto.metamodel@0.4.0.ConceptDeclaration": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration 
-       * @default concerto.metamodel@0.4.0.ConceptDeclaration
-       */
-      $class: string;
-      isAbstract: boolean;
-      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
-      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * AssetDeclaration 
-     * @description An instance of concerto.metamodel@0.4.0.AssetDeclaration
-     */
-    "concerto.metamodel@0.4.0.AssetDeclaration": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.AssetDeclaration 
-       * @default concerto.metamodel@0.4.0.AssetDeclaration
-       */
-      $class: string;
-      isAbstract: boolean;
-      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
-      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * ParticipantDeclaration 
-     * @description An instance of concerto.metamodel@0.4.0.ParticipantDeclaration
-     */
-    "concerto.metamodel@0.4.0.ParticipantDeclaration": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration 
-       * @default concerto.metamodel@0.4.0.ParticipantDeclaration
-       */
-      $class: string;
-      isAbstract: boolean;
-      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
-      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * TransactionDeclaration 
-     * @description An instance of concerto.metamodel@0.4.0.TransactionDeclaration
-     */
-    "concerto.metamodel@0.4.0.TransactionDeclaration": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration 
-       * @default concerto.metamodel@0.4.0.TransactionDeclaration
-       */
-      $class: string;
-      isAbstract: boolean;
-      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
-      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * EventDeclaration 
-     * @description An instance of concerto.metamodel@0.4.0.EventDeclaration
-     */
-    "concerto.metamodel@0.4.0.EventDeclaration": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.EventDeclaration 
-       * @default concerto.metamodel@0.4.0.EventDeclaration
-       */
-      $class: string;
-      isAbstract: boolean;
-      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
-      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
-      name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * Property 
-     * @description An instance of concerto.metamodel@0.4.0.Property
-     */
-    "concerto.metamodel@0.4.0.Property": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Property 
-       * @default concerto.metamodel@0.4.0.Property
-       */
-      $class: string;
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * RelationshipProperty 
-     * @description An instance of concerto.metamodel@0.4.0.RelationshipProperty
-     */
-    "concerto.metamodel@0.4.0.RelationshipProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.RelationshipProperty 
-       * @default concerto.metamodel@0.4.0.RelationshipProperty
-       */
-      $class: string;
-      type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * ObjectProperty 
-     * @description An instance of concerto.metamodel@0.4.0.ObjectProperty
-     */
-    "concerto.metamodel@0.4.0.ObjectProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ObjectProperty 
-       * @default concerto.metamodel@0.4.0.ObjectProperty
-       */
-      $class: string;
-      defaultValue?: string;
-      type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * BooleanProperty 
-     * @description An instance of concerto.metamodel@0.4.0.BooleanProperty
-     */
-    "concerto.metamodel@0.4.0.BooleanProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.BooleanProperty 
-       * @default concerto.metamodel@0.4.0.BooleanProperty
-       */
-      $class: string;
-      defaultValue?: boolean;
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * DateTimeProperty 
-     * @description An instance of concerto.metamodel@0.4.0.DateTimeProperty
-     */
-    "concerto.metamodel@0.4.0.DateTimeProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DateTimeProperty 
-       * @default concerto.metamodel@0.4.0.DateTimeProperty
-       */
-      $class: string;
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * StringProperty 
-     * @description An instance of concerto.metamodel@0.4.0.StringProperty
-     */
-    "concerto.metamodel@0.4.0.StringProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.StringProperty 
-       * @default concerto.metamodel@0.4.0.StringProperty
-       */
-      $class: string;
-      defaultValue?: string;
-      validator?: components["schemas"]["concerto.metamodel@0.4.0.StringRegexValidator"];
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * StringRegexValidator 
-     * @description An instance of concerto.metamodel@0.4.0.StringRegexValidator
-     */
-    "concerto.metamodel@0.4.0.StringRegexValidator": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.StringRegexValidator 
-       * @default concerto.metamodel@0.4.0.StringRegexValidator
-       */
-      $class: string;
-      pattern: string;
-      flags: string;
-    };
-    /**
-     * DoubleProperty 
-     * @description An instance of concerto.metamodel@0.4.0.DoubleProperty
-     */
-    "concerto.metamodel@0.4.0.DoubleProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DoubleProperty 
-       * @default concerto.metamodel@0.4.0.DoubleProperty
-       */
-      $class: string;
-      defaultValue?: number;
-      validator?: components["schemas"]["concerto.metamodel@0.4.0.DoubleDomainValidator"];
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * DoubleDomainValidator 
-     * @description An instance of concerto.metamodel@0.4.0.DoubleDomainValidator
-     */
-    "concerto.metamodel@0.4.0.DoubleDomainValidator": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator 
-       * @default concerto.metamodel@0.4.0.DoubleDomainValidator
-       */
-      $class: string;
-      lower?: number;
-      upper?: number;
-    };
-    /**
-     * IntegerProperty 
-     * @description An instance of concerto.metamodel@0.4.0.IntegerProperty
-     */
-    "concerto.metamodel@0.4.0.IntegerProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.IntegerProperty 
-       * @default concerto.metamodel@0.4.0.IntegerProperty
-       */
-      $class: string;
-      defaultValue?: number;
-      validator?: components["schemas"]["concerto.metamodel@0.4.0.IntegerDomainValidator"];
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * IntegerDomainValidator 
-     * @description An instance of concerto.metamodel@0.4.0.IntegerDomainValidator
-     */
-    "concerto.metamodel@0.4.0.IntegerDomainValidator": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator 
-       * @default concerto.metamodel@0.4.0.IntegerDomainValidator
-       */
-      $class: string;
-      lower?: number;
-      upper?: number;
-    };
-    /**
-     * LongProperty 
-     * @description An instance of concerto.metamodel@0.4.0.LongProperty
-     */
-    "concerto.metamodel@0.4.0.LongProperty": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.LongProperty 
-       * @default concerto.metamodel@0.4.0.LongProperty
-       */
-      $class: string;
-      defaultValue?: number;
-      validator?: components["schemas"]["concerto.metamodel@0.4.0.LongDomainValidator"];
-      name: string;
-      isArray: boolean;
-      isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
-      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
-    };
-    /**
-     * LongDomainValidator 
-     * @description An instance of concerto.metamodel@0.4.0.LongDomainValidator
-     */
-    "concerto.metamodel@0.4.0.LongDomainValidator": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.LongDomainValidator 
-       * @default concerto.metamodel@0.4.0.LongDomainValidator
-       */
-      $class: string;
-      lower?: number;
-      upper?: number;
-    };
-    /**
-     * Import 
-     * @description An instance of concerto.metamodel@0.4.0.Import
-     */
-    "concerto.metamodel@0.4.0.Import": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Import 
-       * @default concerto.metamodel@0.4.0.Import
-       */
-      $class: string;
-      namespace: string;
-      uri?: string;
-    };
-    /**
-     * ImportAll 
-     * @description An instance of concerto.metamodel@0.4.0.ImportAll
-     */
-    "concerto.metamodel@0.4.0.ImportAll": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ImportAll 
-       * @default concerto.metamodel@0.4.0.ImportAll
-       */
-      $class: string;
-      namespace: string;
-      uri?: string;
-    };
-    /**
-     * ImportType 
-     * @description An instance of concerto.metamodel@0.4.0.ImportType
-     */
-    "concerto.metamodel@0.4.0.ImportType": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ImportType 
-       * @default concerto.metamodel@0.4.0.ImportType
-       */
-      $class: string;
-      name: string;
-      namespace: string;
-      uri?: string;
-    };
-    /**
-     * Model 
-     * @description An instance of concerto.metamodel@0.4.0.Model
-     */
-    "concerto.metamodel@0.4.0.Model": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Model 
-       * @default concerto.metamodel@0.4.0.Model
-       */
-      $class: string;
-      namespace: string;
-      sourceUri?: string;
-      concertoVersion?: string;
-      imports?: (components["schemas"]["concerto.metamodel@0.4.0.Import"] | components["schemas"]["concerto.metamodel@0.4.0.ImportAll"] | components["schemas"]["concerto.metamodel@0.4.0.ImportType"])[];
-      declarations?: (components["schemas"]["concerto.metamodel@0.4.0.Declaration"] | components["schemas"]["concerto.metamodel@0.4.0.EnumDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.ConceptDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.AssetDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.ParticipantDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.TransactionDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.EventDeclaration"])[];
-    };
-    /**
-     * Models 
-     * @description An instance of concerto.metamodel@0.4.0.Models
-     */
-    "concerto.metamodel@0.4.0.Models": {
-      /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Models 
-       * @default concerto.metamodel@0.4.0.Models
-       */
-      $class: string;
-      models: (components["schemas"]["concerto.metamodel@0.4.0.Model"])[];
     };
     /**
      * Node 
@@ -1489,6 +973,582 @@ export interface components {
       startLine?: number;
       endLine?: number;
     };
+    /**
+     * Position 
+     * @description An instance of concerto.metamodel@0.4.0.Position
+     */
+    "concerto.metamodel@0.4.0.Position": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Position 
+       * @default concerto.metamodel@0.4.0.Position
+       */
+      $class: string;
+      line: number;
+      column: number;
+      offset: number;
+    };
+    /**
+     * Range 
+     * @description An instance of concerto.metamodel@0.4.0.Range
+     */
+    "concerto.metamodel@0.4.0.Range": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Range 
+       * @default concerto.metamodel@0.4.0.Range
+       */
+      $class: string;
+      start: components["schemas"]["concerto.metamodel@0.4.0.Position"];
+      end: components["schemas"]["concerto.metamodel@0.4.0.Position"];
+      source?: string;
+    };
+    /**
+     * TypeIdentifier 
+     * @description An instance of concerto.metamodel@0.4.0.TypeIdentifier
+     */
+    "concerto.metamodel@0.4.0.TypeIdentifier": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.TypeIdentifier 
+       * @default concerto.metamodel@0.4.0.TypeIdentifier
+       */
+      $class: string;
+      name: string;
+      namespace?: string;
+    };
+    /**
+     * DecoratorLiteral 
+     * @description An instance of concerto.metamodel@0.4.0.DecoratorLiteral
+     */
+    "concerto.metamodel@0.4.0.DecoratorLiteral": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral 
+       * @default concerto.metamodel@0.4.0.DecoratorLiteral
+       */
+      $class: string;
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * DecoratorString 
+     * @description An instance of concerto.metamodel@0.4.0.DecoratorString
+     */
+    "concerto.metamodel@0.4.0.DecoratorString": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorString 
+       * @default concerto.metamodel@0.4.0.DecoratorString
+       */
+      $class: string;
+      value: string;
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * DecoratorNumber 
+     * @description An instance of concerto.metamodel@0.4.0.DecoratorNumber
+     */
+    "concerto.metamodel@0.4.0.DecoratorNumber": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorNumber 
+       * @default concerto.metamodel@0.4.0.DecoratorNumber
+       */
+      $class: string;
+      value: number;
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * DecoratorBoolean 
+     * @description An instance of concerto.metamodel@0.4.0.DecoratorBoolean
+     */
+    "concerto.metamodel@0.4.0.DecoratorBoolean": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean 
+       * @default concerto.metamodel@0.4.0.DecoratorBoolean
+       */
+      $class: string;
+      value: boolean;
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * DecoratorTypeReference 
+     * @description An instance of concerto.metamodel@0.4.0.DecoratorTypeReference
+     */
+    "concerto.metamodel@0.4.0.DecoratorTypeReference": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference 
+       * @default concerto.metamodel@0.4.0.DecoratorTypeReference
+       */
+      $class: string;
+      type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      /** @default false */
+      isArray: boolean;
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * Decorator 
+     * @description An instance of concerto.metamodel@0.4.0.Decorator
+     */
+    "concerto.metamodel@0.4.0.Decorator": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Decorator 
+       * @default concerto.metamodel@0.4.0.Decorator
+       */
+      $class: string;
+      name: string;
+      arguments?: (components["schemas"]["concerto.metamodel@0.4.0.DecoratorLiteral"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorString"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorNumber"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorBoolean"] | components["schemas"]["concerto.metamodel@0.4.0.DecoratorTypeReference"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * Identified 
+     * @description An instance of concerto.metamodel@0.4.0.Identified
+     */
+    "concerto.metamodel@0.4.0.Identified": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Identified 
+       * @default concerto.metamodel@0.4.0.Identified
+       */
+      $class: string;
+    };
+    /**
+     * IdentifiedBy 
+     * @description An instance of concerto.metamodel@0.4.0.IdentifiedBy
+     */
+    "concerto.metamodel@0.4.0.IdentifiedBy": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.IdentifiedBy 
+       * @default concerto.metamodel@0.4.0.IdentifiedBy
+       */
+      $class: string;
+      name: string;
+    };
+    /**
+     * Declaration 
+     * @description An instance of concerto.metamodel@0.4.0.Declaration
+     */
+    "concerto.metamodel@0.4.0.Declaration": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Declaration 
+       * @default concerto.metamodel@0.4.0.Declaration
+       */
+      $class: string;
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * EnumDeclaration 
+     * @description An instance of concerto.metamodel@0.4.0.EnumDeclaration
+     */
+    "concerto.metamodel@0.4.0.EnumDeclaration": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.EnumDeclaration 
+       * @default concerto.metamodel@0.4.0.EnumDeclaration
+       */
+      $class: string;
+      properties: (components["schemas"]["concerto.metamodel@0.4.0.EnumProperty"])[];
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * EnumProperty 
+     * @description An instance of concerto.metamodel@0.4.0.EnumProperty
+     */
+    "concerto.metamodel@0.4.0.EnumProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.EnumProperty 
+       * @default concerto.metamodel@0.4.0.EnumProperty
+       */
+      $class: string;
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * ConceptDeclaration 
+     * @description An instance of concerto.metamodel@0.4.0.ConceptDeclaration
+     */
+    "concerto.metamodel@0.4.0.ConceptDeclaration": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration 
+       * @default concerto.metamodel@0.4.0.ConceptDeclaration
+       */
+      $class: string;
+      /** @default false */
+      isAbstract: boolean;
+      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
+      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * AssetDeclaration 
+     * @description An instance of concerto.metamodel@0.4.0.AssetDeclaration
+     */
+    "concerto.metamodel@0.4.0.AssetDeclaration": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.AssetDeclaration 
+       * @default concerto.metamodel@0.4.0.AssetDeclaration
+       */
+      $class: string;
+      /** @default false */
+      isAbstract: boolean;
+      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
+      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * ParticipantDeclaration 
+     * @description An instance of concerto.metamodel@0.4.0.ParticipantDeclaration
+     */
+    "concerto.metamodel@0.4.0.ParticipantDeclaration": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration 
+       * @default concerto.metamodel@0.4.0.ParticipantDeclaration
+       */
+      $class: string;
+      /** @default false */
+      isAbstract: boolean;
+      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
+      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * TransactionDeclaration 
+     * @description An instance of concerto.metamodel@0.4.0.TransactionDeclaration
+     */
+    "concerto.metamodel@0.4.0.TransactionDeclaration": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration 
+       * @default concerto.metamodel@0.4.0.TransactionDeclaration
+       */
+      $class: string;
+      /** @default false */
+      isAbstract: boolean;
+      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
+      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * EventDeclaration 
+     * @description An instance of concerto.metamodel@0.4.0.EventDeclaration
+     */
+    "concerto.metamodel@0.4.0.EventDeclaration": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.EventDeclaration 
+       * @default concerto.metamodel@0.4.0.EventDeclaration
+       */
+      $class: string;
+      /** @default false */
+      isAbstract: boolean;
+      identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
+      superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
+      name: string;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * Property 
+     * @description An instance of concerto.metamodel@0.4.0.Property
+     */
+    "concerto.metamodel@0.4.0.Property": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Property 
+       * @default concerto.metamodel@0.4.0.Property
+       */
+      $class: string;
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * RelationshipProperty 
+     * @description An instance of concerto.metamodel@0.4.0.RelationshipProperty
+     */
+    "concerto.metamodel@0.4.0.RelationshipProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.RelationshipProperty 
+       * @default concerto.metamodel@0.4.0.RelationshipProperty
+       */
+      $class: string;
+      type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * ObjectProperty 
+     * @description An instance of concerto.metamodel@0.4.0.ObjectProperty
+     */
+    "concerto.metamodel@0.4.0.ObjectProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.ObjectProperty 
+       * @default concerto.metamodel@0.4.0.ObjectProperty
+       */
+      $class: string;
+      defaultValue?: string;
+      type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * BooleanProperty 
+     * @description An instance of concerto.metamodel@0.4.0.BooleanProperty
+     */
+    "concerto.metamodel@0.4.0.BooleanProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.BooleanProperty 
+       * @default concerto.metamodel@0.4.0.BooleanProperty
+       */
+      $class: string;
+      defaultValue?: boolean;
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * DateTimeProperty 
+     * @description An instance of concerto.metamodel@0.4.0.DateTimeProperty
+     */
+    "concerto.metamodel@0.4.0.DateTimeProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DateTimeProperty 
+       * @default concerto.metamodel@0.4.0.DateTimeProperty
+       */
+      $class: string;
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * StringProperty 
+     * @description An instance of concerto.metamodel@0.4.0.StringProperty
+     */
+    "concerto.metamodel@0.4.0.StringProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.StringProperty 
+       * @default concerto.metamodel@0.4.0.StringProperty
+       */
+      $class: string;
+      defaultValue?: string;
+      validator?: components["schemas"]["concerto.metamodel@0.4.0.StringRegexValidator"];
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * StringRegexValidator 
+     * @description An instance of concerto.metamodel@0.4.0.StringRegexValidator
+     */
+    "concerto.metamodel@0.4.0.StringRegexValidator": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.StringRegexValidator 
+       * @default concerto.metamodel@0.4.0.StringRegexValidator
+       */
+      $class: string;
+      pattern: string;
+      flags: string;
+    };
+    /**
+     * DoubleProperty 
+     * @description An instance of concerto.metamodel@0.4.0.DoubleProperty
+     */
+    "concerto.metamodel@0.4.0.DoubleProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DoubleProperty 
+       * @default concerto.metamodel@0.4.0.DoubleProperty
+       */
+      $class: string;
+      defaultValue?: number;
+      validator?: components["schemas"]["concerto.metamodel@0.4.0.DoubleDomainValidator"];
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * DoubleDomainValidator 
+     * @description An instance of concerto.metamodel@0.4.0.DoubleDomainValidator
+     */
+    "concerto.metamodel@0.4.0.DoubleDomainValidator": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator 
+       * @default concerto.metamodel@0.4.0.DoubleDomainValidator
+       */
+      $class: string;
+      lower?: number;
+      upper?: number;
+    };
+    /**
+     * IntegerProperty 
+     * @description An instance of concerto.metamodel@0.4.0.IntegerProperty
+     */
+    "concerto.metamodel@0.4.0.IntegerProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.IntegerProperty 
+       * @default concerto.metamodel@0.4.0.IntegerProperty
+       */
+      $class: string;
+      defaultValue?: number;
+      validator?: components["schemas"]["concerto.metamodel@0.4.0.IntegerDomainValidator"];
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * IntegerDomainValidator 
+     * @description An instance of concerto.metamodel@0.4.0.IntegerDomainValidator
+     */
+    "concerto.metamodel@0.4.0.IntegerDomainValidator": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator 
+       * @default concerto.metamodel@0.4.0.IntegerDomainValidator
+       */
+      $class: string;
+      lower?: number;
+      upper?: number;
+    };
+    /**
+     * LongProperty 
+     * @description An instance of concerto.metamodel@0.4.0.LongProperty
+     */
+    "concerto.metamodel@0.4.0.LongProperty": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.LongProperty 
+       * @default concerto.metamodel@0.4.0.LongProperty
+       */
+      $class: string;
+      defaultValue?: number;
+      validator?: components["schemas"]["concerto.metamodel@0.4.0.LongDomainValidator"];
+      name: string;
+      /** @default false */
+      isArray: boolean;
+      /** @default false */
+      isOptional: boolean;
+      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
+    };
+    /**
+     * LongDomainValidator 
+     * @description An instance of concerto.metamodel@0.4.0.LongDomainValidator
+     */
+    "concerto.metamodel@0.4.0.LongDomainValidator": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.LongDomainValidator 
+       * @default concerto.metamodel@0.4.0.LongDomainValidator
+       */
+      $class: string;
+      lower?: number;
+      upper?: number;
+    };
+    /**
+     * Import 
+     * @description An instance of concerto.metamodel@0.4.0.Import
+     */
+    "concerto.metamodel@0.4.0.Import": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Import 
+       * @default concerto.metamodel@0.4.0.Import
+       */
+      $class: string;
+      namespace: string;
+      uri?: string;
+    };
+    /**
+     * ImportAll 
+     * @description An instance of concerto.metamodel@0.4.0.ImportAll
+     */
+    "concerto.metamodel@0.4.0.ImportAll": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.ImportAll 
+       * @default concerto.metamodel@0.4.0.ImportAll
+       */
+      $class: string;
+      namespace: string;
+      uri?: string;
+    };
+    /**
+     * ImportType 
+     * @description An instance of concerto.metamodel@0.4.0.ImportType
+     */
+    "concerto.metamodel@0.4.0.ImportType": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.ImportType 
+       * @default concerto.metamodel@0.4.0.ImportType
+       */
+      $class: string;
+      name: string;
+      namespace: string;
+      uri?: string;
+    };
+    /**
+     * Model 
+     * @description An instance of concerto.metamodel@0.4.0.Model
+     */
+    "concerto.metamodel@0.4.0.Model": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Model 
+       * @default concerto.metamodel@0.4.0.Model
+       */
+      $class: string;
+      namespace: string;
+      sourceUri?: string;
+      concertoVersion?: string;
+      imports?: (components["schemas"]["concerto.metamodel@0.4.0.Import"] | components["schemas"]["concerto.metamodel@0.4.0.ImportAll"] | components["schemas"]["concerto.metamodel@0.4.0.ImportType"])[];
+      declarations?: (components["schemas"]["concerto.metamodel@0.4.0.Declaration"] | components["schemas"]["concerto.metamodel@0.4.0.EnumDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.ConceptDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.AssetDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.ParticipantDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.TransactionDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.EventDeclaration"])[];
+    };
+    /**
+     * Models 
+     * @description An instance of concerto.metamodel@0.4.0.Models
+     */
+    "concerto.metamodel@0.4.0.Models": {
+      /**
+       * @description The class identifier for concerto.metamodel@0.4.0.Models 
+       * @default concerto.metamodel@0.4.0.Models
+       */
+      $class: string;
+      models: (components["schemas"]["concerto.metamodel@0.4.0.Model"])[];
+    };
   };
   responses: never;
   parameters: never;
@@ -1711,19 +1771,19 @@ export interface operations {
       204: never;
     };
   };
-  convertAgreementPdf: {
+  convertAgreementHtml: {
     /**
-     * Convert agreement to PDF 
-     * @description Converts an existing `agreement` to PDF.
+     * Convert agreement to HTML 
+     * @description Converts an existing `agreement` to HTML.
      */
-    /** @description PDF conversion options. */
+    /** @description HTML conversion options. */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.PdfConversionOptions"];
+        "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.HtmlConversionOptions"];
       };
     };
     responses: {
-      /** @description A PDF file */
+      /** @description A HTML file */
       202: {
         content: {
           "application/pdf:": string;

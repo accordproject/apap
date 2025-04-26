@@ -6,6 +6,7 @@ import org.accordproject.commonmark@0.5.0.Document from https://models.accordpro
 import org.accordproject.party@0.2.0.{Party} from https://models.accordproject.org/accordproject/party@0.2.0.cto
 
 scalar JSON extends String
+scalar CTO extends String
 scalar FullyQualifiedTypeName extends String
 
 @description("Bytes and mime type for a blob of data, such as images, files, etc.")
@@ -16,27 +17,39 @@ concept Blob {
 
 @description("The text for a template")
 concept Text {
-    o Document templateMark
+    o Document templateMark optional // must include one or the other, not both
+    o String templateText optional
+}
+
+abstract concept DomainModel {}
+
+concept CtoModel extends DomainModel {
+    o CTO[] ctoFiles
+}
+
+concept JsonModel extends DomainModel {
+    o Model model optional                  // a model, as an AST
 }
 
 @description("The concept declaration associated with a template")
 concept TemplateModel {
     o FullyQualifiedTypeName typeName       // name of the type for this template
     --> SharedModel sharedModel optional    // reference to a shared model
-    o Model model optional                  // an inline model
+    o DomainModel model optional            // an inline model
 }
 
 @description("A shared data model")
 @resource
-concept SharedModel identified by modelId {
-    o String modelId
-    o Model model
+concept SharedModel identified by id {
+    o String id
+    o DomainModel model
 }
 
 @description("The type (language) of code")
 enum CodeType {
     o ES2015
     o WASM_BYTES
+    o TYPESCRIPT
 }
 
 @description("Code encoding scheme")
@@ -46,31 +59,30 @@ enum CodeEncodingType {
 }
 
 @description("Executable code")
-concept Code {
+concept Code identified by id {
+    o String id
     o CodeType type
     o CodeEncodingType encoding
     o String value
 }
 
-@description("A function for a template")
-concept Function identified by name {
-    o String name
-    o FullyQualifiedTypeName requestType
-    o FullyQualifiedTypeName responseType optional
-    o FullyQualifiedTypeName[] emittedTypes optional
-    o Code code
-}
-
 @description("The functions for a template")
 concept Logic {
     o FullyQualifiedTypeName stateType optional
-    o Function[] functions
+    o Code[] codes
+}
+
+concept TemplateMetadata {
+    o String runtime
+    o String template
+    o String cicero
 }
 
 @resource
 @description("An Accord Project template")
-concept Template identified by name {
-    o String name
+concept Template identified by id {
+    o TemplateMetadata metadata
+    o String id
     o String author
     o String displayName optional
     o String version
@@ -81,6 +93,7 @@ concept Template identified by name {
     o TemplateModel templateModel
     o Text text
     o Logic logic optional
+    o JSON sampleRequest optional
 }
 
 @description("A key/value pair")
@@ -94,10 +107,18 @@ concept Metadata {
     o KeyValue[] values
 }
 
+@description("Runtime status of an agreement")
+enum AgreementStatusType {
+    o DRAFT         // No signatories have signed yet
+    o SIGNNG        // Signed by some but not all signatories
+    o COMPLETED     // Signing by all signatories completed
+    o SUPERSEDED    // Superseded by subsequent agreement
+}
+
 @resource
 @description("An Accord Project Agreement, an instance of a template")
-concept Agreement identified by agreementId {
-    o String agreementId
+concept Agreement identified by id {
+    o String id
     o JSON data                             // Data for the agreement (an instance of the data for its template)
     o JSON state optional                   // Runtime state of the agreement
     --> Template template                   // Template for the the agreement
@@ -150,9 +171,8 @@ concept Signature {
 abstract concept ConversionOptions {
 }
 
-@description("PDF conversion options")
-concept PdfConversionOptions extends ConversionOptions {
-    o JSON styles optional
+@description("HTML conversion options")
+concept HtmlConversionOptions extends ConversionOptions {
 }
 
 @description("Server feature identifiers")
@@ -162,13 +182,20 @@ enum FeatureType {
     o TEMPLATE_LOGIC               // templates with logic
     o TEMPLATE_STATEFUL            // stateful templates
 
+    // which logic languages are supported
+    o LOGIC_WASM
+    o LOGIC_ES2015
+    o LOGIC_TYPESCRIPT
+
     o AGREEMENT_MANAGE             // crud operations on agreements
     o AGREEMENT_TRIGGER            // trigger agreements
     o AGREEMENT_STATE              // get the state of an agreement
-    o AGREEMENT_CONVERT_PDF        // convert agreement to PDF
+    o AGREEMENT_DRAFT              // draft an agreement to an output format
 
-    // o AGREEMENT_SIGNING
+    // send an agreement for signature
+    o AGREEMENT_SIGNING
 
+    // crud operations over shared models
     o SHARED_MODEL_MANAGE          // manage shared models
 }
 
@@ -177,9 +204,8 @@ concept Capabilities {
     o FeatureType[] features
 }
 
-@description("Trigger a function with a JSON payload")
+@description("Trigger with a JSON payload")
 concept TriggerRequest {
-    o String functionName
     o JSON payload
 }
 
@@ -189,12 +215,4 @@ concept TriggerResponse {
     o Boolean isError
     o String errorMessage optional
     o String errorDetails optional
-}
-
-@description("Runtime status of an agreement")
-enum AgreementStatusType {
-    o DRAFT         // No signatories have signed yet
-    o SIGNNG        // Signed by some but not all signatories
-    o COMPLETED     // Signing by all signatories completed
-    o SUPERSEDED    // Superseded by subsequent agreement
 }

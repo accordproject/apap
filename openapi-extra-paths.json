@@ -1,15 +1,15 @@
 {
   "paths": {
-    "/agreements/{agreementId}/convert/pdf": {
-      "summary": "Path used to convert an agreeement to PDF format.",
-      "description": "The REST endpoint/path used convert or render an `agreement` to PDF format.",
+    "/agreements/{agreementId}/convert/html": {
+      "summary": "Path used to convert an agreeement to HTML format.",
+      "description": "The REST endpoint/path used convert or render an `agreement` to HTML format.",
       "post": {
         "requestBody": {
-          "description": "PDF conversion options.",
+          "description": "HTML conversion options.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.PdfConversionOptions"
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.HtmlConversionOptions"
               }
             }
           },
@@ -17,7 +17,7 @@
         },
         "responses": {
           "202": {
-            "description": "A PDF file",
+            "description": "A HTML file",
             "content" : {
               "application/pdf:" : {
                 "schema" : {
@@ -28,9 +28,9 @@
             }
           }
         },
-        "operationId": "convertAgreementPdf",
-        "summary": "Convert agreement to PDF",
-        "description": "Converts an existing `agreement` to PDF.",
+        "operationId": "convertAgreementHtml",
+        "summary": "Convert agreement to HTML",
+        "description": "Converts an existing `agreement` to HTML.",
         "tags": ["agreements"]
       },
       "parameters": [
