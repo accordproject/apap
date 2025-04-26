@@ -59,6 +59,23 @@ curl --request POST \
 }'
 ```
 
+Callers should refer to the `/capabilities` route to get the capabiltities of the RI:
+
+```
+http://localhost:9000/capabilities
+```
+
+Example response:
+
+```
+[
+	"AGREEMENT_MANAGE",
+	"SHARED_MODEL_MANAGE"
+]
+```
+
+These capabiltities will evolve as the functionality of the RI is extended to new use cases.
+
 ## Updating RI When Protocol Changes
 
 When the protocol (model) changes we need to regenerate the Drizzle ORM code (under `./db/schema.ts`) that is used for persistence and then push the modified database schema to

@@ -14,6 +14,7 @@ import { Request as ExpressReq, Response as ExpressRes } from 'express';
 import templatesRouter from './handlers/templates';
 import agreementsRouter from './handlers/agreements';
 import sharedModelsRouter from './handlers/sharedmodels';
+import capabilitiesRouter from './handlers/capabilities';
 
 const app = Express();
 app.use(Express.json());
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/templates', templatesRouter);
 app.use('/agreements', agreementsRouter);
 app.use('/sharedmodels', sharedModelsRouter);
+app.use('/capabilities', capabilitiesRouter);
 
 const openApiPath = path.join(__dirname, '..', '..', 'openapi.json');
 console.log(openApiPath);
