@@ -64,6 +64,7 @@ class DrizzleVisitor {
         parameters.fileWriter.openFile('schema.ts');
 
         parameters.fileWriter.writeLine(0, `
+// GENERATED CODE, DO NOT MODIFY
 import {
     text,
     uuid,
