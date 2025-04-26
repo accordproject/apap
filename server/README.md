@@ -30,3 +30,31 @@ GET routes support filtering by property name as well as `limit` and `page` para
 curl --request GET \
   --url http://localhost:9000/templates?name=test?limit=10&page=0
 ```
+
+POST routes example:
+
+```
+curl --request POST \
+  --url http://localhost:9000/templates \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "name" : "test",
+    "author" : "dan",
+    "displayName" : "This is a test",
+    "description" : "This is a template",
+    "keywords": ["one", "two"],
+    "version" : "1.0",
+    "license" : "Apache-2",
+    "metadata" : {
+        "runtime" : "TypeScript",
+            "template" : "clause",
+            "cicero" : "1.0"
+    },
+    "templateModel": {
+    },
+    "logo": {},
+    "logic" : {},
+    "sampleRequest" : {},
+    "text": {}
+}'
+```
