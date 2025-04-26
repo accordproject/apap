@@ -38,7 +38,7 @@
     "concurrently": "^6.2.0",
     "drizzle-kit": "^0.31.0",
     "jest": "^29.3.1",
-    "nodemon": "^1.18.10",
+    "nodemon": "^3.1.10",
     "ts-jest": "^29.0.3",
     "tslint": "^5.12.1",
     "tsx": "^4.19.3",
