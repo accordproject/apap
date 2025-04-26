@@ -4,7 +4,6 @@ import { buildCrudRouter } from './crud';
 
 const router = express.Router();
 
-// Define type-safe where clause builder for bots
 function buildWhereClause(req: Request, res: Response) : any {
     return undefined;
 }
