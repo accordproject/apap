@@ -58,3 +58,13 @@ curl --request POST \
     "text": {}
 }'
 ```
+
+## Updating RI When Protocol Changes
+
+When the protocol (model) changes we need to regenerate the Drizzle ORM code (under `./db/schema.ts`) that is used for persistence and then push the modified database schema to
+the Postgres database.
+
+```
+npm run drizzle-gen
+npx drizzle-kit push
+```
