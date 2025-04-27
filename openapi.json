@@ -11,6 +11,9 @@
       "org.accordproject.protocol@1.0.0.JSON": {
         "type": "string"
       },
+      "org.accordproject.protocol@1.0.0.CTO": {
+        "type": "string"
+      },
       "org.accordproject.protocol@1.0.0.FullyQualifiedTypeName": {
         "type": "string"
       },
@@ -56,17 +59,77 @@
           },
           "templateMark": {
             "$ref": "#/components/schemas/org.accordproject.commonmark@0.5.0.Document"
+          },
+          "templateText": {
+            "type": "string"
           }
         },
         "required": [
-          "$class",
-          "templateMark"
+          "$class"
         ],
         "$decorators": {
           "description": [
             "The text for a template"
           ]
         }
+      },
+      "org.accordproject.protocol@1.0.0.DomainModel": {
+        "title": "DomainModel",
+        "description": "An instance of org.accordproject.protocol@1.0.0.DomainModel",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.DomainModel",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.DomainModel$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.DomainModel"
+          }
+        },
+        "required": [
+          "$class"
+        ]
+      },
+      "org.accordproject.protocol@1.0.0.CtoModel": {
+        "title": "CtoModel",
+        "description": "An instance of org.accordproject.protocol@1.0.0.CtoModel",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.CtoModel",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.CtoModel$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.CtoModel"
+          },
+          "ctoFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "$class",
+          "ctoFiles"
+        ]
+      },
+      "org.accordproject.protocol@1.0.0.JsonModel": {
+        "title": "JsonModel",
+        "description": "An instance of org.accordproject.protocol@1.0.0.JsonModel",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.JsonModel",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.JsonModel$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.JsonModel"
+          },
+          "model": {
+            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Model"
+          }
+        },
+        "required": [
+          "$class"
+        ]
       },
       "org.accordproject.protocol@1.0.0.TemplateModel": {
         "title": "TemplateModel",
@@ -87,7 +150,17 @@
             "description": "The identifier of an instance of org.accordproject.protocol@1.0.0.SharedModel"
           },
           "model": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Model"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.DomainModel"
+              },
+              {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.CtoModel"
+              },
+              {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.JsonModel"
+              }
+            ]
           }
         },
         "required": [
@@ -111,17 +184,27 @@
             "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.SharedModel$",
             "description": "The class identifier for org.accordproject.protocol@1.0.0.SharedModel"
           },
-          "modelId": {
+          "id": {
             "type": "string",
             "description": "The instance identifier for this type"
           },
           "model": {
-            "$ref": "#/components/schemas/concerto.metamodel@0.4.0.Model"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.DomainModel"
+              },
+              {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.CtoModel"
+              },
+              {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.JsonModel"
+              }
+            ]
           }
         },
         "required": [
           "$class",
-          "modelId",
+          "id",
           "model"
         ],
         "$decorators": {
@@ -136,7 +219,8 @@
         "description": "An instance of org.accordproject.protocol@1.0.0.CodeType",
         "enum": [
           "ES2015",
-          "WASM_BYTES"
+          "WASM_BYTES",
+          "TYPESCRIPT"
         ],
         "$decorators": {
           "description": [
@@ -168,6 +252,10 @@
             "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Code$",
             "description": "The class identifier for org.accordproject.protocol@1.0.0.Code"
           },
+          "id": {
+            "type": "string",
+            "description": "The instance identifier for this type"
+          },
           "type": {
             "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.CodeType"
           },
@@ -180,6 +268,7 @@
         },
         "required": [
           "$class",
+          "id",
           "type",
           "encoding",
           "value"
@@ -187,46 +276,6 @@
         "$decorators": {
           "description": [
             "Executable code"
-          ]
-        }
-      },
-      "org.accordproject.protocol@1.0.0.Function": {
-        "title": "Function",
-        "description": "An instance of org.accordproject.protocol@1.0.0.Function",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.protocol@1.0.0.Function",
-            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Function$",
-            "description": "The class identifier for org.accordproject.protocol@1.0.0.Function"
-          },
-          "name": {
-            "type": "string",
-            "description": "The instance identifier for this type"
-          },
-          "requestType": {
-            "type": "string"
-          },
-          "responseType": {
-            "type": "string"
-          },
-          "emittedTypes": {
-            "type": "string"
-          },
-          "code": {
-            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Code"
-          }
-        },
-        "required": [
-          "$class",
-          "name",
-          "requestType",
-          "code"
-        ],
-        "$decorators": {
-          "description": [
-            "A function for a template"
           ]
         }
       },
@@ -244,22 +293,50 @@
           "stateType": {
             "type": "string"
           },
-          "functions": {
+          "codes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Function"
+              "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Code"
             }
           }
         },
         "required": [
           "$class",
-          "functions"
+          "codes"
         ],
         "$decorators": {
           "description": [
             "The functions for a template"
           ]
         }
+      },
+      "org.accordproject.protocol@1.0.0.TemplateMetadata": {
+        "title": "TemplateMetadata",
+        "description": "An instance of org.accordproject.protocol@1.0.0.TemplateMetadata",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.TemplateMetadata$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.TemplateMetadata"
+          },
+          "runtime": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "cicero": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "$class",
+          "runtime",
+          "template",
+          "cicero"
+        ]
       },
       "org.accordproject.protocol@1.0.0.Template": {
         "title": "Template",
@@ -272,7 +349,10 @@
             "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Template$",
             "description": "The class identifier for org.accordproject.protocol@1.0.0.Template"
           },
-          "name": {
+          "metadata": {
+            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.TemplateMetadata"
+          },
+          "id": {
             "type": "string",
             "description": "The instance identifier for this type"
           },
@@ -308,11 +388,15 @@
           },
           "logic": {
             "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Logic"
+          },
+          "sampleRequest": {
+            "type": "string"
           }
         },
         "required": [
           "$class",
-          "name",
+          "metadata",
+          "id",
           "author",
           "version",
           "license",
@@ -383,6 +467,21 @@
           ]
         }
       },
+      "org.accordproject.protocol@1.0.0.AgreementStatusType": {
+        "title": "AgreementStatusType",
+        "description": "An instance of org.accordproject.protocol@1.0.0.AgreementStatusType",
+        "enum": [
+          "DRAFT",
+          "SIGNNG",
+          "COMPLETED",
+          "SUPERSEDED"
+        ],
+        "$decorators": {
+          "description": [
+            "Runtime status of an agreement"
+          ]
+        }
+      },
       "org.accordproject.protocol@1.0.0.Agreement": {
         "title": "Agreement",
         "description": "An instance of org.accordproject.protocol@1.0.0.Agreement",
@@ -394,7 +493,7 @@
             "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Agreement$",
             "description": "The class identifier for org.accordproject.protocol@1.0.0.Agreement"
           },
-          "agreementId": {
+          "id": {
             "type": "string",
             "description": "The instance identifier for this type"
           },
@@ -447,7 +546,7 @@
         },
         "required": [
           "$class",
-          "agreementId",
+          "id",
           "data",
           "template",
           "agreementParties",
@@ -651,19 +750,16 @@
           ]
         }
       },
-      "org.accordproject.protocol@1.0.0.PdfConversionOptions": {
-        "title": "PdfConversionOptions",
-        "description": "An instance of org.accordproject.protocol@1.0.0.PdfConversionOptions",
+      "org.accordproject.protocol@1.0.0.HtmlConversionOptions": {
+        "title": "HtmlConversionOptions",
+        "description": "An instance of org.accordproject.protocol@1.0.0.HtmlConversionOptions",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.protocol@1.0.0.PdfConversionOptions",
-            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.PdfConversionOptions$",
-            "description": "The class identifier for org.accordproject.protocol@1.0.0.PdfConversionOptions"
-          },
-          "styles": {
-            "type": "string"
+            "default": "org.accordproject.protocol@1.0.0.HtmlConversionOptions",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.HtmlConversionOptions$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.HtmlConversionOptions"
           }
         },
         "required": [
@@ -671,7 +767,7 @@
         ],
         "$decorators": {
           "description": [
-            "PDF conversion options"
+            "HTML conversion options"
           ]
         }
       },
@@ -682,10 +778,14 @@
           "TEMPLATE_VERIFY_SIGNATURES",
           "TEMPLATE_LOGIC",
           "TEMPLATE_STATEFUL",
+          "LOGIC_WASM",
+          "LOGIC_ES2015",
+          "LOGIC_TYPESCRIPT",
           "AGREEMENT_MANAGE",
           "AGREEMENT_TRIGGER",
           "AGREEMENT_STATE",
-          "AGREEMENT_CONVERT_PDF",
+          "AGREEMENT_DRAFT",
+          "AGREEMENT_SIGNING",
           "SHARED_MODEL_MANAGE"
         ],
         "$decorators": {
@@ -733,21 +833,17 @@
             "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.TriggerRequest$",
             "description": "The class identifier for org.accordproject.protocol@1.0.0.TriggerRequest"
           },
-          "functionName": {
-            "type": "string"
-          },
           "payload": {
             "type": "string"
           }
         },
         "required": [
           "$class",
-          "functionName",
           "payload"
         ],
         "$decorators": {
           "description": [
-            "Trigger a function with a JSON payload"
+            "Trigger with a JSON payload"
           ]
         }
       },
@@ -782,21 +878,6 @@
         "$decorators": {
           "description": [
             "Response of triggering a function"
-          ]
-        }
-      },
-      "org.accordproject.protocol@1.0.0.AgreementStatusType": {
-        "title": "AgreementStatusType",
-        "description": "An instance of org.accordproject.protocol@1.0.0.AgreementStatusType",
-        "enum": [
-          "DRAFT",
-          "SIGNNG",
-          "COMPLETED",
-          "SUPERSEDED"
-        ],
-        "$decorators": {
-          "description": [
-            "Runtime status of an agreement"
           ]
         }
       },
@@ -1002,6 +1083,7 @@
             "$ref": "#/components/schemas/concerto.metamodel@0.4.0.TypeIdentifier"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "location": {
@@ -1204,6 +1286,7 @@
             "description": "The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration"
           },
           "isAbstract": {
+            "default": false,
             "type": "boolean"
           },
           "identified": {
@@ -1286,6 +1369,7 @@
             "description": "The class identifier for concerto.metamodel@0.4.0.AssetDeclaration"
           },
           "isAbstract": {
+            "default": false,
             "type": "boolean"
           },
           "identified": {
@@ -1368,6 +1452,7 @@
             "description": "The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration"
           },
           "isAbstract": {
+            "default": false,
             "type": "boolean"
           },
           "identified": {
@@ -1450,6 +1535,7 @@
             "description": "The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration"
           },
           "isAbstract": {
+            "default": false,
             "type": "boolean"
           },
           "identified": {
@@ -1532,6 +1618,7 @@
             "description": "The class identifier for concerto.metamodel@0.4.0.EventDeclaration"
           },
           "isAbstract": {
+            "default": false,
             "type": "boolean"
           },
           "identified": {
@@ -1618,9 +1705,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -1659,9 +1748,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -1704,9 +1795,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -1746,9 +1839,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -1784,9 +1879,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -1828,9 +1925,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -1896,9 +1995,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -1962,9 +2063,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -2028,9 +2131,11 @@
             "pattern": "^(?!null|true|false)(\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4})(?:\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Lm}|\\p{Lo}|\\p{Nl}|\\$|_|\\\\u[0-9A-Fa-f]{4}|\\p{Mn}|\\p{Mc}|\\p{Nd}|\\p{Pc}|\\u200C|\\u200D)*$"
           },
           "isArray": {
+            "default": false,
             "type": "boolean"
           },
           "isOptional": {
+            "default": false,
             "type": "boolean"
           },
           "decorators": {
@@ -5459,7 +5564,7 @@
         ]
       }
     },
-    "/sharedmodels/{modelId}": {
+    "/sharedmodels/{id}": {
       "summary": "Path used to manage a single sharedmodel.",
       "description": "The REST endpoint/path used to get, update, and delete single instances of a `sharedmodel`.  This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks, respectively.",
       "get": {
@@ -5521,7 +5626,7 @@
       },
       "parameters": [
         {
-          "name": "modelId",
+          "name": "id",
           "description": "A unique identifier for a `SharedModel`.",
           "schema": {
             "type": "string"
@@ -5594,7 +5699,7 @@
         ]
       }
     },
-    "/templates/{name}": {
+    "/templates/{id}": {
       "summary": "Path used to manage a single template.",
       "description": "The REST endpoint/path used to get, update, and delete single instances of a `template`.  This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks, respectively.",
       "get": {
@@ -5656,7 +5761,7 @@
       },
       "parameters": [
         {
-          "name": "name",
+          "name": "id",
           "description": "A unique identifier for a `Template`.",
           "schema": {
             "type": "string"
@@ -5717,7 +5822,7 @@
         ]
       }
     },
-    "/agreements/{agreementId}": {
+    "/agreements/{id}": {
       "summary": "Path used to manage a single agreement.",
       "description": "The REST endpoint/path used to get, update, and delete single instances of a `agreement`.  This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks, respectively.",
       "get": {
@@ -5779,7 +5884,7 @@
       },
       "parameters": [
         {
-          "name": "agreementId",
+          "name": "id",
           "description": "A unique identifier for a `Agreement`.",
           "schema": {
             "type": "string"
@@ -5789,16 +5894,16 @@
         }
       ]
     },
-    "/agreements/{agreementId}/convert/pdf": {
-      "summary": "Path used to convert an agreeement to PDF format.",
-      "description": "The REST endpoint/path used convert or render an `agreement` to PDF format.",
+    "/agreements/{agreementId}/convert/html": {
+      "summary": "Path used to convert an agreeement to HTML format.",
+      "description": "The REST endpoint/path used convert or render an `agreement` to HTML format.",
       "post": {
         "requestBody": {
-          "description": "PDF conversion options.",
+          "description": "HTML conversion options.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.PdfConversionOptions"
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.HtmlConversionOptions"
               }
             }
           },
@@ -5806,7 +5911,7 @@
         },
         "responses": {
           "202": {
-            "description": "A PDF file",
+            "description": "A HTML file",
             "content": {
               "application/pdf:": {
                 "schema": {
@@ -5817,9 +5922,9 @@
             }
           }
         },
-        "operationId": "convertAgreementPdf",
-        "summary": "Convert agreement to PDF",
-        "description": "Converts an existing `agreement` to PDF.",
+        "operationId": "convertAgreementHtml",
+        "summary": "Convert agreement to HTML",
+        "description": "Converts an existing `agreement` to HTML.",
         "tags": [
           "agreements"
         ]

@@ -4,11 +4,17 @@ import Express from 'express';
 import morgan from 'morgan';
 import path from 'path';
 import dotenv from 'dotenv';
+import { drizzle } from 'drizzle-orm/neon-http';
 
 // Load environment variables from .env file
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 import { Request as ExpressReq, Response as ExpressRes } from 'express';
+
+import templatesRouter from './handlers/templates';
+import agreementsRouter from './handlers/agreements';
+import sharedModelsRouter from './handlers/sharedmodels';
+import capabilitiesRouter from './handlers/capabilities';
 
 const app = Express();
 app.use(Express.json());
@@ -47,6 +53,27 @@ app.get('/templates', (req: ExpressReq, res: ExpressRes) => {
   return res.status(200).json(templates);
 });
 
+// Database middleware
+app.use((req, res, next) => {
+    if (process.env.DATABASE_URL) {
+        const db = drizzle(process.env.DATABASE_URL, {
+            casing: 'snake_case',
+        });
+        res.locals.db = db;
+    }
+    else {
+        res.status(500);
+        res.send('DATABASE_URL is not set');
+    }
+    next();
+});
+
+app.use('/templates', templatesRouter);
+app.use('/agreements', agreementsRouter);
+app.use('/sharedmodels', sharedModelsRouter);
+app.use('/capabilities', capabilitiesRouter);
+
+
 const openApiPath = path.join(__dirname, '..', '..', 'openapi.json');
 console.log(openApiPath);
 
@@ -55,16 +82,6 @@ const api = new OpenAPIBackend({
     quick: true, // disabled validation of OpenAPI on load
     definition: openApiPath,
     handlers: {
-        listTemplates: async (c: Context, req: Express.Request, res: Express.Response) =>
-            res.status(200).json([]),
-        createTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
-            res.status(200).json({}),
-        getTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
-            res.status(200).json({}),
-        replaceTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
-            res.status(200).json({}),
-        deleteTemplate: async (c: Context, req: Express.Request, res: Express.Response) =>
-            res.status(200).json({}),
         validationFail: async (c: Context, req: ExpressReq, res: ExpressRes) => res.status(400).json({ err: c.validation.errors }),
         notFound: async (c: Context, req: ExpressReq, res: ExpressRes) => res.status(404).json({ err: 'not found' }),
         notImplemented: async (c: Context, req: ExpressReq, res: ExpressRes) => {

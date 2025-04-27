@@ -17,7 +17,7 @@ export interface paths {
      */
     post: operations["createSharedmodel"];
   };
-  "/sharedmodels/{modelId}": {
+  "/sharedmodels/{id}": {
     /**
      * Get a sharedmodel 
      * @description Gets the details of a single instance of a `sharedmodel`.
@@ -36,7 +36,7 @@ export interface paths {
     parameters: {
         /** @description A unique identifier for a `SharedModel`. */
       path: {
-        modelId: string;
+        id: string;
       };
     };
   };
@@ -52,7 +52,7 @@ export interface paths {
      */
     post: operations["createTemplate"];
   };
-  "/templates/{name}": {
+  "/templates/{id}": {
     /**
      * Get a template 
      * @description Gets the details of a single instance of a `template`.
@@ -71,7 +71,7 @@ export interface paths {
     parameters: {
         /** @description A unique identifier for a `Template`. */
       path: {
-        name: string;
+        id: string;
       };
     };
   };
@@ -87,7 +87,7 @@ export interface paths {
      */
     post: operations["createAgreement"];
   };
-  "/agreements/{agreementId}": {
+  "/agreements/{id}": {
     /**
      * Get a agreement 
      * @description Gets the details of a single instance of a `agreement`.
@@ -106,16 +106,16 @@ export interface paths {
     parameters: {
         /** @description A unique identifier for a `Agreement`. */
       path: {
-        agreementId: string;
+        id: string;
       };
     };
   };
-  "/agreements/{agreementId}/convert/pdf": {
+  "/agreements/{agreementId}/convert/html": {
     /**
-     * Convert agreement to PDF 
-     * @description Converts an existing `agreement` to PDF.
+     * Convert agreement to HTML 
+     * @description Converts an existing `agreement` to HTML.
      */
-    post: operations["convertAgreementPdf"];
+    post: operations["convertAgreementHtml"];
     parameters: {
         /** @description A unique identifier for a `Agreement`. */
       path: {
@@ -150,6 +150,7 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     "org.accordproject.protocol@1.0.0.JSON": string;
+    "org.accordproject.protocol@1.0.0.CTO": string;
     "org.accordproject.protocol@1.0.0.FullyQualifiedTypeName": string;
     /**
      * Blob 
@@ -174,7 +175,43 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.Text
        */
       $class: string;
-      templateMark: components["schemas"]["org.accordproject.commonmark@0.5.0.Document"];
+      templateMark?: components["schemas"]["org.accordproject.commonmark@0.5.0.Document"];
+      templateText?: string;
+    };
+    /**
+     * DomainModel 
+     * @description An instance of org.accordproject.protocol@1.0.0.DomainModel
+     */
+    "org.accordproject.protocol@1.0.0.DomainModel": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.DomainModel 
+       * @default org.accordproject.protocol@1.0.0.DomainModel
+       */
+      $class: string;
+    };
+    /**
+     * CtoModel 
+     * @description An instance of org.accordproject.protocol@1.0.0.CtoModel
+     */
+    "org.accordproject.protocol@1.0.0.CtoModel": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.CtoModel 
+       * @default org.accordproject.protocol@1.0.0.CtoModel
+       */
+      $class: string;
+      ctoFiles: (string)[];
+    };
+    /**
+     * JsonModel 
+     * @description An instance of org.accordproject.protocol@1.0.0.JsonModel
+     */
+    "org.accordproject.protocol@1.0.0.JsonModel": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.JsonModel 
+       * @default org.accordproject.protocol@1.0.0.JsonModel
+       */
+      $class: string;
+      model?: components["schemas"]["concerto.metamodel@0.4.0.Model"];
     };
     /**
      * TemplateModel 
@@ -189,7 +226,7 @@ export interface components {
       typeName: string;
       /** @description The identifier of an instance of org.accordproject.protocol@1.0.0.SharedModel */
       sharedModel?: string;
-      model?: components["schemas"]["concerto.metamodel@0.4.0.Model"];
+      model?: components["schemas"]["org.accordproject.protocol@1.0.0.DomainModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.CtoModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.JsonModel"];
     };
     /**
      * SharedModel 
@@ -202,15 +239,15 @@ export interface components {
        */
       $class: string;
       /** @description The instance identifier for this type */
-      modelId: string;
-      model: components["schemas"]["concerto.metamodel@0.4.0.Model"];
+      id: string;
+      model: components["schemas"]["org.accordproject.protocol@1.0.0.DomainModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.CtoModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.JsonModel"];
     };
     /**
      * CodeType 
      * @description An instance of org.accordproject.protocol@1.0.0.CodeType 
      * @enum {unknown}
      */
-    "org.accordproject.protocol@1.0.0.CodeType": "ES2015" | "WASM_BYTES";
+    "org.accordproject.protocol@1.0.0.CodeType": "ES2015" | "WASM_BYTES" | "TYPESCRIPT";
     /**
      * CodeEncodingType 
      * @description An instance of org.accordproject.protocol@1.0.0.CodeEncodingType 
@@ -227,26 +264,11 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.Code
        */
       $class: string;
+      /** @description The instance identifier for this type */
+      id: string;
       type: components["schemas"]["org.accordproject.protocol@1.0.0.CodeType"];
       encoding: components["schemas"]["org.accordproject.protocol@1.0.0.CodeEncodingType"];
       value: string;
-    };
-    /**
-     * Function 
-     * @description An instance of org.accordproject.protocol@1.0.0.Function
-     */
-    "org.accordproject.protocol@1.0.0.Function": {
-      /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Function 
-       * @default org.accordproject.protocol@1.0.0.Function
-       */
-      $class: string;
-      /** @description The instance identifier for this type */
-      name: string;
-      requestType: string;
-      responseType?: string;
-      emittedTypes?: string;
-      code: components["schemas"]["org.accordproject.protocol@1.0.0.Code"];
     };
     /**
      * Logic 
@@ -259,7 +281,21 @@ export interface components {
        */
       $class: string;
       stateType?: string;
-      functions: (components["schemas"]["org.accordproject.protocol@1.0.0.Function"])[];
+      codes: (components["schemas"]["org.accordproject.protocol@1.0.0.Code"])[];
+    };
+    /**
+     * TemplateMetadata 
+     * @description An instance of org.accordproject.protocol@1.0.0.TemplateMetadata
+     */
+    "org.accordproject.protocol@1.0.0.TemplateMetadata": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.TemplateMetadata 
+       * @default org.accordproject.protocol@1.0.0.TemplateMetadata
+       */
+      $class: string;
+      runtime: string;
+      template: string;
+      cicero: string;
     };
     /**
      * Template 
@@ -271,8 +307,9 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.Template
        */
       $class: string;
+      metadata: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateMetadata"];
       /** @description The instance identifier for this type */
-      name: string;
+      id: string;
       author: string;
       displayName?: string;
       version: string;
@@ -283,6 +320,7 @@ export interface components {
       templateModel: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateModel"];
       text: components["schemas"]["org.accordproject.protocol@1.0.0.Text"];
       logic?: components["schemas"]["org.accordproject.protocol@1.0.0.Logic"];
+      sampleRequest?: string;
     };
     /**
      * KeyValue 
@@ -310,6 +348,12 @@ export interface components {
       values: (components["schemas"]["org.accordproject.protocol@1.0.0.KeyValue"])[];
     };
     /**
+     * AgreementStatusType 
+     * @description An instance of org.accordproject.protocol@1.0.0.AgreementStatusType 
+     * @enum {unknown}
+     */
+    "org.accordproject.protocol@1.0.0.AgreementStatusType": "DRAFT" | "SIGNNG" | "COMPLETED" | "SUPERSEDED";
+    /**
      * Agreement 
      * @description An instance of org.accordproject.protocol@1.0.0.Agreement
      */
@@ -320,7 +364,7 @@ export interface components {
        */
       $class: string;
       /** @description The instance identifier for this type */
-      agreementId: string;
+      id: string;
       data: string;
       state?: string;
       /** @description The identifier of an instance of org.accordproject.protocol@1.0.0.Template */
@@ -412,23 +456,22 @@ export interface components {
       $class: string;
     };
     /**
-     * PdfConversionOptions 
-     * @description An instance of org.accordproject.protocol@1.0.0.PdfConversionOptions
+     * HtmlConversionOptions 
+     * @description An instance of org.accordproject.protocol@1.0.0.HtmlConversionOptions
      */
-    "org.accordproject.protocol@1.0.0.PdfConversionOptions": {
+    "org.accordproject.protocol@1.0.0.HtmlConversionOptions": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.PdfConversionOptions 
-       * @default org.accordproject.protocol@1.0.0.PdfConversionOptions
+       * @description The class identifier for org.accordproject.protocol@1.0.0.HtmlConversionOptions 
+       * @default org.accordproject.protocol@1.0.0.HtmlConversionOptions
        */
       $class: string;
-      styles?: string;
     };
     /**
      * FeatureType 
      * @description An instance of org.accordproject.protocol@1.0.0.FeatureType 
      * @enum {unknown}
      */
-    "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_CONVERT_PDF" | "SHARED_MODEL_MANAGE";
+    "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "LOGIC_WASM" | "LOGIC_ES2015" | "LOGIC_TYPESCRIPT" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_DRAFT" | "AGREEMENT_SIGNING" | "SHARED_MODEL_MANAGE";
     /**
      * Capabilities 
      * @description An instance of org.accordproject.protocol@1.0.0.Capabilities
@@ -451,7 +494,6 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.TriggerRequest
        */
       $class: string;
-      functionName: string;
       payload: string;
     };
     /**
@@ -469,12 +511,6 @@ export interface components {
       errorMessage?: string;
       errorDetails?: string;
     };
-    /**
-     * AgreementStatusType 
-     * @description An instance of org.accordproject.protocol@1.0.0.AgreementStatusType 
-     * @enum {unknown}
-     */
-    "org.accordproject.protocol@1.0.0.AgreementStatusType": "DRAFT" | "SIGNNG" | "COMPLETED" | "SUPERSEDED";
     /**
      * Party 
      * @description An instance of org.accordproject.party@0.2.0.Party
@@ -591,6 +627,7 @@ export interface components {
        */
       $class: string;
       type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
+      /** @default false */
       isArray: boolean;
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
@@ -684,6 +721,7 @@ export interface components {
        * @default concerto.metamodel@0.4.0.ConceptDeclaration
        */
       $class: string;
+      /** @default false */
       isAbstract: boolean;
       identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
@@ -702,6 +740,7 @@ export interface components {
        * @default concerto.metamodel@0.4.0.AssetDeclaration
        */
       $class: string;
+      /** @default false */
       isAbstract: boolean;
       identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
@@ -720,6 +759,7 @@ export interface components {
        * @default concerto.metamodel@0.4.0.ParticipantDeclaration
        */
       $class: string;
+      /** @default false */
       isAbstract: boolean;
       identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
@@ -738,6 +778,7 @@ export interface components {
        * @default concerto.metamodel@0.4.0.TransactionDeclaration
        */
       $class: string;
+      /** @default false */
       isAbstract: boolean;
       identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
@@ -756,6 +797,7 @@ export interface components {
        * @default concerto.metamodel@0.4.0.EventDeclaration
        */
       $class: string;
+      /** @default false */
       isAbstract: boolean;
       identified?: components["schemas"]["concerto.metamodel@0.4.0.Identified"] | components["schemas"]["concerto.metamodel@0.4.0.IdentifiedBy"];
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
@@ -775,7 +817,9 @@ export interface components {
        */
       $class: string;
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -792,7 +836,9 @@ export interface components {
       $class: string;
       type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -810,7 +856,9 @@ export interface components {
       defaultValue?: string;
       type: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -827,7 +875,9 @@ export interface components {
       $class: string;
       defaultValue?: boolean;
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -843,7 +893,9 @@ export interface components {
        */
       $class: string;
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -861,7 +913,9 @@ export interface components {
       defaultValue?: string;
       validator?: components["schemas"]["concerto.metamodel@0.4.0.StringRegexValidator"];
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -892,7 +946,9 @@ export interface components {
       defaultValue?: number;
       validator?: components["schemas"]["concerto.metamodel@0.4.0.DoubleDomainValidator"];
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -923,7 +979,9 @@ export interface components {
       defaultValue?: number;
       validator?: components["schemas"]["concerto.metamodel@0.4.0.IntegerDomainValidator"];
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -954,7 +1012,9 @@ export interface components {
       defaultValue?: number;
       validator?: components["schemas"]["concerto.metamodel@0.4.0.LongDomainValidator"];
       name: string;
+      /** @default false */
       isArray: boolean;
+      /** @default false */
       isOptional: boolean;
       decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
@@ -1711,19 +1771,19 @@ export interface operations {
       204: never;
     };
   };
-  convertAgreementPdf: {
+  convertAgreementHtml: {
     /**
-     * Convert agreement to PDF 
-     * @description Converts an existing `agreement` to PDF.
+     * Convert agreement to HTML 
+     * @description Converts an existing `agreement` to HTML.
      */
-    /** @description PDF conversion options. */
+    /** @description HTML conversion options. */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.PdfConversionOptions"];
+        "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.HtmlConversionOptions"];
       };
     };
     responses: {
-      /** @description A PDF file */
+      /** @description A HTML file */
       202: {
         content: {
           "application/pdf:": string;
