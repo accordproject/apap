@@ -4,6 +4,16 @@ This is the reference implementation (RI) of an Accord Project Agreement Protoco
 
 # Running using Docker
 
+## Create a .env file
+Clone the `.env_example` file, and save it as `.env`. The contents of the file should be:
+```env
+POSTGRES_DATABASE=postgres
+POSTGRES_HOST=localhost
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=1baddeed
+POSTGRES_PORT=5432
+```
+
 ## Run the System
 We can easily run the whole with only a single command:
 ```bash
@@ -15,6 +25,11 @@ Docker will pull the Postgres and Node.js images (if our machine does not have i
 The services can be run on the background with command:
 ```bash
 docker compose up -d
+```
+
+After starting for the first time, you'll need to initialize the database schema. Run the following command from your host terminal.
+```bash
+npx drizzle-kit push
 ```
 
 ## Stop the System
@@ -50,7 +65,7 @@ npm start
 
 When a new datbase is created the database schema needs to be pushed to the Postgres database.
 
-```
+```bash
 npx drizzle-kit push
 ```
 
