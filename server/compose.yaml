@@ -17,11 +17,6 @@ services:
       POSTGRES_HOST: db # Docker Compose mounts the db service under this DNS name
     ports:
       - 9000:9000
-
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts.
     depends_on:
       db:
         condition: service_healthy
