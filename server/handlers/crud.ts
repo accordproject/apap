@@ -175,6 +175,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 
                 res.json(response);
             } catch (error) {
+                console.log(error);
                 const message = error instanceof Error ? error.message : 'Unknown error';
                 res.status(500).json({ error: message });
             }
