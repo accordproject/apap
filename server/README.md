@@ -121,13 +121,11 @@ curl --request POST \
 	"version": "1.0",
 	"license": "Apache-2",
 	"metadata": {
-		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "TypeScript",
 		"template": "clause",
 		"cicero": "1.0"
 	},
 	"templateModel": {
-		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
 		"typeName": "foo",
 		"model": {
 			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
