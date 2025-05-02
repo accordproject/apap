@@ -1,0 +1,42 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "apap_ri".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  apap_ri:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      POSTGRES_HOST: db # Docker Compose mounts the db service under this DNS name
+    ports:
+      - 9000:9000
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=1baddeed
+    expose:
+      - 5432
+    ports:
+      - 5432:5432 # Expose the Postgres port so we can run tools against it
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  db-data:
