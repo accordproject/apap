@@ -40,11 +40,32 @@ interface TableWithId {
     id: AnyColumn;
 }
 
+export type ValidationError = {
+    code?: string,
+    expected?: string,
+    received?: string,
+    path?: Array<string>
+    message: string
+}
+
+export type ValidationResult = {
+    success: boolean
+    error?: {
+        errors: Array<ValidationError>
+    }
+    data?: any
+}
+
+export type InsertValidator = {
+    schema?: z.ZodSchema,
+    custom?: (body:any) => Promise<ValidationResult>,
+}
+
 interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     table: T;
     typeName: string;
     buildWhereClause?: (req: Request, queryParams: QueryParams) => SQL | undefined;
-    validateBody?: (req: Request, res: Response) => z.ZodSchema;
+    validateBody?: InsertValidator;
     transformResponse?: (item: any) => any;
     transformRequest?: (req: Request) => any;
 }
@@ -210,9 +231,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 };
 
                 // Validate body if schema provided
-                if (validateBody) {
-                    const schema = validateBody(req, res);
-                    const result = schema.safeParse(req.body);
+                if (validateBody.schema) {
+                    const result = validateBody.schema.safeParse(req.body);
                     if (!result.success) {
                         return res.status(400).json({ 
                             error: 'Invalid request body',
@@ -220,6 +240,16 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         });
                     }
                     req.body = result.data;  // Use validated data
+                    if(validateBody.custom) {
+                        const result = await validateBody.custom(req.body);
+                        if (!result.success) {
+                            return res.status(400).json({ 
+                                error: 'Invalid request body',
+                                details: result.error.errors 
+                            });
+                        }
+                        req.body = result.data;  // Use validated data        
+                    }
                 }
 
                 if (transformRequest) {

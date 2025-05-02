@@ -107,27 +107,39 @@ These capabiltities will evolve as the functionality of the RI is extended to ne
 
 ```
 curl --request POST \
-  --url 'http://localhost:9000/templates' \
+  --url http://localhost:9000/templates \
   --header 'Content-Type: application/json' \
   --data '{
-    "uri" : "apap://test",
-    "author" : "tim",
-    "displayName" : "This is a test",
-    "description" : "This is a template",
-    "keywords": ["one", "two"],
-    "version" : "1.0",
-    "license" : "Apache-2",
-    "metadata" : {
-        "runtime" : "TypeScript",
-            "template" : "clause",
-            "cicero" : "1.0"
-    },
-    "templateModel": {
-    },
-    "logo": { "ddddd" : 1 },
-    "logic" : {},
-    "sampleRequest" : {},
-    "text": {}
+	"uri": "apap://dan",
+	"author": "dan",
+	"displayName": "This is a test",
+	"description": "This is a template",
+	"keywords": [
+		"one",
+		"two"
+	],
+	"version": "1.0",
+	"license": "Apache-2",
+	"metadata": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+		"runtime": "TypeScript",
+		"template": "clause",
+		"cicero": "1.0"
+	},
+	"templateModel": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+		"typeName": "foo",
+		"model": {
+			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+			"ctoFiles": [
+				"test"
+			]
+		}
+	},
+	"text": {
+		"$class": "org.accordproject.protocol@1.0.0.Text",
+		"templateText": "test"
+	}
 }'
 ```
 
@@ -137,9 +149,9 @@ Response:
 
 ```json
 {
-	"id": 9,
-	"uri": "apap://test",
-	"author": "tim",
+	"id": 18,
+	"uri": "apap://dan2",
+	"author": "dan",
 	"displayName": "This is a test",
 	"version": "1.0",
 	"description": "This is a template",
@@ -149,17 +161,28 @@ Response:
 		"two"
 	],
 	"metadata": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "TypeScript",
 		"template": "clause",
 		"cicero": "1.0"
 	},
-	"logo": {
-		"ddddd": 1
+	"logo": null,
+	"templateModel": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+		"typeName": "foo",
+		"model": {
+			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+			"ctoFiles": [
+				"test"
+			]
+		}
 	},
-	"templateModel": {},
-	"text": {},
-	"logic": {},
-	"sampleRequest": {}
+	"text": {
+		"$class": "org.accordproject.protocol@1.0.0.Text",
+		"templateText": "test"
+	},
+	"logic": null,
+	"sampleRequest": null
 }
 ```
 
@@ -175,9 +198,9 @@ Response:
 
 ```json
 {
-	"id": 9,
-	"uri": "apap://test",
-	"author": "tim",
+	"id": 18,
+	"uri": "apap://dan2",
+	"author": "dan",
 	"displayName": "This is a test",
 	"version": "1.0",
 	"description": "This is a template",
@@ -187,17 +210,28 @@ Response:
 		"two"
 	],
 	"metadata": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "TypeScript",
 		"template": "clause",
 		"cicero": "1.0"
 	},
-	"logo": {
-		"ddddd": 1
+	"logo": null,
+	"templateModel": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+		"typeName": "foo",
+		"model": {
+			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+			"ctoFiles": [
+				"test"
+			]
+		}
 	},
-	"templateModel": {},
-	"text": {},
-	"logic": {},
-	"sampleRequest": {}
+	"text": {
+		"$class": "org.accordproject.protocol@1.0.0.Text",
+		"templateText": "test"
+	},
+	"logic": null,
+	"sampleRequest": null
 }
 ```
 
@@ -217,9 +251,9 @@ Response:
 {
 	"items": [
 		{
-			"id": 9,
+			"id": 11,
 			"uri": "apap://test",
-			"author": "tim",
+			"author": "dan",
 			"displayName": "This is a test",
 			"version": "1.0",
 			"description": "This is a template",
@@ -229,17 +263,28 @@ Response:
 				"two"
 			],
 			"metadata": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 				"runtime": "TypeScript",
 				"template": "clause",
 				"cicero": "1.0"
 			},
-			"logo": {
-				"ddddd": 1
+			"logo": null,
+			"templateModel": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+				"typeName": "foo",
+				"model": {
+					"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+					"ctoFiles": [
+						"test"
+					]
+				}
 			},
-			"templateModel": {},
-			"text": {},
-			"logic": {},
-			"sampleRequest": {}
+			"text": {
+				"$class": "org.accordproject.protocol@1.0.0.Text",
+				"templateText": "test"
+			},
+			"logic": null,
+			"sampleRequest": null
 		}
 	],
 	"total": 1,
@@ -275,8 +320,8 @@ Response:
 
 ```json
 {
-	"id": 9,
-	"uri": "apap://test",
+	"id": 18,
+	"uri": "apap://dan2",
 	"author": "dan",
 	"displayName": "This is a test",
 	"version": "1.0",
@@ -287,17 +332,28 @@ Response:
 		"two"
 	],
 	"metadata": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "TypeScript",
 		"template": "clause",
 		"cicero": "1.0"
 	},
-	"logo": {
-		"ddddd": 1
+	"logo": null,
+	"templateModel": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+		"typeName": "foo",
+		"model": {
+			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+			"ctoFiles": [
+				"test"
+			]
+		}
 	},
-	"templateModel": {},
-	"text": {},
-	"logic": {},
-	"sampleRequest": {}
+	"text": {
+		"$class": "org.accordproject.protocol@1.0.0.Text",
+		"templateText": "test"
+	},
+	"logic": null,
+	"sampleRequest": null
 }
 ```
 

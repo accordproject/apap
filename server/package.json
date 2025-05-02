@@ -7,9 +7,9 @@
   "keywords": [],
   "scripts": {
     "db:studio": "drizzle-kit studio",
-		"db:generate": "drizzle-kit generate",
-		"db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
-		"db:migrateprod": "NODE_ENV=production tsc ./scripts/drizzle-gen.ts && node ./scripts/drizzle-migrate.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
+    "db:migrateprod": "NODE_ENV=production tsc ./scripts/drizzle-gen.ts && node ./scripts/drizzle-migrate.js",
     "postinstall": "npm run build",
     "drizzle-gen": "tsc ./scripts/drizzle-gen.ts && node ./scripts/drizzle-gen.js",
     "build": "tsc -p .",
@@ -32,7 +32,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@accordproject/concerto-core": "^3.20.4",
+    "@accordproject/concerto-core": "^3.21.0",
     "@accordproject/concerto-util": "^3.20.4",
     "@types/express": "^4.17.13",
     "@types/jest": "^29.2.5",

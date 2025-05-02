@@ -1,14 +1,13 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 import { SharedModel, SharedModelInsertSchema } from '../db/schema';
-import { buildCrudRouter, QueryParams } from './crud';
-import { SQL } from 'drizzle-orm';
+import { buildCrudRouter } from './crud';
 
 const router = express.Router();
 
 const crudRouter = buildCrudRouter({
     table: SharedModel,
     typeName: 'SharedModel',
-    validateBody: (req, res) => SharedModelInsertSchema
+    validateBody: {schema: SharedModelInsertSchema}
 });
 
 router.use('/', crudRouter);

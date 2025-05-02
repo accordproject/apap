@@ -41,7 +41,7 @@ class DrizzleVisitor {
         } else if (thing.isMapDeclaration?.()) {
             return this.visitMapDeclaration(thing, parameters);
         } else if (thing.isTypeScalar?.()) {
-            return this.visitField(thing.getScalarField(), {scalarType: thing.getType(), ...parameters});
+            return this.visitScalar(thing, parameters);
         } else if (thing.isField?.()) {
             return this.visitField(thing, parameters);
         } else if (thing.isRelationship?.()) {
@@ -85,6 +85,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
             modelFile.accept(this, parameters);
         });
 
+        parameters.fileWriter.writeLine(0, `export const MODEL="${parameters.model}"`);
         parameters.fileWriter.closeFile();
         return null;
     }
@@ -149,6 +150,26 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
         return null;
     }
 
+
+    /**
+     * Visitor design pattern
+     * @param {Property} scalar - the object being visited
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitScalar(scalar: Property, parameters: any): any {
+        if(parameters.idField) {
+            // resource ID fields are always unique (note, not the PK for the table!)
+            parameters.fileWriter.writeLine(1, `${scalar.getName()}: text().unique().notNull(),`);
+        }
+        else {
+            const line = `${scalar.getName()}: ${this.toDrizzleType(scalar.getType(), false)}${scalar.isArray() ? '.array()' : ''}${scalar.isOptional() ? '' : '.notNull()'},`;
+            parameters.fileWriter.writeLine(1, line);
+        }
+        return null;
+    }
+
     /**
      * Visitor design pattern
      * @param {Field} field - the object being visited
@@ -162,8 +183,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
             parameters.fileWriter.writeLine(1, `${field.getName()}: text().unique().notNull(),`);
         }
         else {
-            const type = parameters.scalarType ? parameters.scalarType : field.getType();
-            const line = `${field.getName()}: ${this.toDrizzleType(type, field.isTypeEnum())}${field.isArray() ? '.array()' : ''}${field.isOptional() ? '' : '.notNull()'},`;
+            const line = `${field.getName()}: ${this.toDrizzleType(field.getType(), field.isTypeEnum())}${field.isArray() ? '.array()' : ''}${field.isOptional() ? '' : '.notNull()'},`;
             parameters.fileWriter.writeLine(1, line);
         }
         return null;
@@ -242,7 +262,7 @@ async function main() {
 
     const fileWriter = new FileWriter('./db');
     const visitor = new DrizzleVisitor();
-    const params = { fileWriter };
+    const params = { fileWriter, model: Buffer.from(cto).toString('base64')};
     mm.accept(visitor, params);
 }
 
