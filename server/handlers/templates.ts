@@ -1,17 +1,13 @@
 import express, { Request, Response } from 'express'
 import { Template, TemplateInsertSchema } from '../db/schema';
-import { buildCrudRouter } from './crud';
+import { buildCrudRouter, QueryParams } from './crud';
+import { and, eq, sql, SQL } from 'drizzle-orm';
 
 const router = express.Router();
-
-function buildWhereClause(req: Request, res: Response) : any {
-    return undefined;
-}
 
 const crudRouter = buildCrudRouter({
     table: Template,
     typeName: 'Template',
-    buildWhereClause,
     validateBody: (req, res) => TemplateInsertSchema
 });
 

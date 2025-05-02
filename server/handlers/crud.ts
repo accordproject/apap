@@ -1,15 +1,26 @@
 import { Router, Request, Response } from 'express';
-import { SQLWrapper, AnyColumn, desc, asc, eq, and } from 'drizzle-orm';
+import { SQLWrapper, AnyColumn, desc, asc, eq, and, sql} from 'drizzle-orm';
+import { toSnakeCase } from 'drizzle-orm/casing';
 // import { eq, and, asc, desc } from 'drizzle-orm/expressions';
 import { PgTable } from 'drizzle-orm/pg-core';
 // import { authCheckJwt, authRequiredPermissions, getOrgIdFromJwt } from './auth';
 import { z } from 'zod';
 import { SQL } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
+import escapeString from '../db/escape';
 // import { getUserRoles } from '../auth0/client';
 
+function defaultWhereClause<T extends PgTable<any>>(req: Request, queryParams: QueryParams) : SQL | undefined {
+    const conditions = queryParams.filters ? Object.keys(queryParams.filters).map(key => {
+        const value = queryParams.filters[key];
+        // TODO, only works for string cols as we use "=" to compare LHS and RHS
+        return sql.raw(`"${toSnakeCase(key)}"=${escapeString(value.toString())}`);
+    }) : [];
+    return conditions.length > 0 ? and(...conditions) : undefined;
+}
+
 // Types for query parameters
-interface QueryParams {
+export interface QueryParams {
     page: number;
     limit: number;
     sortBy?: string;
@@ -32,7 +43,7 @@ interface TableWithId {
 interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     table: T;
     typeName: string;
-    buildWhereClause: (req: Request, res: Response) => SQLWrapper | undefined;
+    buildWhereClause?: (req: Request, queryParams: QueryParams) => SQL | undefined;
     validateBody?: (req: Request, res: Response) => z.ZodSchema;
     transformResponse?: (item: any) => any;
     transformRequest?: (req: Request) => any;
@@ -113,8 +124,10 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         // authRequiredPermissions('read:' + typeName),
         async (req: Request, res: Response) => {
             try {
-                const { page, limit, sortBy, sortOrder } = parseQueryParams(req);
-                const whereClause = buildWhereClause(req, res);
+                const queryParams = parseQueryParams(req);
+                const { page, limit, sortBy, sortOrder } = queryParams;
+                const whereClause = buildWhereClause ? buildWhereClause(req, queryParams) : 
+                    defaultWhereClause(req, queryParams);
                 const orderClause = buildOrderClause(table, sortBy, sortOrder);
 
                 // Log the generated SQL
@@ -234,8 +247,9 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         // authRequiredPermissions('read:' + typeName),
         async (req: Request, res: Response) => {
             try {
+                const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    buildWhereClause(req, res),
+                    buildWhereClause(req, queryParams),
                     // Check if table has UUID primary key
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
@@ -283,8 +297,9 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     organization: res.locals.orgId
                 };
 
+                const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    buildWhereClause(req, res),
+                    buildWhereClause(req, queryParams),
                     // Check if table has UUID primary key
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
@@ -317,8 +332,9 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         // authRequiredPermissions('write:' + typeName),
         async (req: Request, res: Response) => {
             try {
+                const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    buildWhereClause(req, res),
+                    buildWhereClause(req, queryParams),
                     // Check if table has UUID primary key
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
