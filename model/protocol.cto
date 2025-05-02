@@ -5,6 +5,7 @@ import concerto.metamodel@0.4.0.{Property,ConceptDeclaration,Model} from https:/
 import org.accordproject.commonmark@0.5.0.Document from https://models.accordproject.org/markdown/commonmark@0.5.0.cto
 import org.accordproject.party@0.2.0.{Party} from https://models.accordproject.org/accordproject/party@0.2.0.cto
 
+scalar URI extends String
 scalar JSON extends String
 scalar CTO extends String
 scalar FullyQualifiedTypeName extends String
@@ -40,8 +41,8 @@ concept TemplateModel {
 
 @description("A shared data model")
 @resource
-concept SharedModel identified by id {
-    o String id
+concept SharedModel identified by uri {
+    o URI uri
     o DomainModel model
 }
 
@@ -80,15 +81,15 @@ concept TemplateMetadata {
 
 @resource
 @description("An Accord Project template")
-concept Template identified by id {
-    o TemplateMetadata metadata
-    o String id
+concept Template identified by uri {
+    o URI uri
     o String author
     o String displayName optional
     o String version
     o String description optional
     o String license
     o String[] keywords optional
+    o TemplateMetadata metadata
     o Blob logo optional
     o TemplateModel templateModel
     o Text text
@@ -117,8 +118,8 @@ enum AgreementStatusType {
 
 @resource
 @description("An Accord Project Agreement, an instance of a template")
-concept Agreement identified by id {
-    o String id
+concept Agreement identified by uri {
+    o URI uri
     o JSON data                             // Data for the agreement (an instance of the data for its template)
     o JSON state optional                   // Runtime state of the agreement
     --> Template template                   // Template for the the agreement
@@ -177,7 +178,8 @@ concept HtmlConversionOptions extends ConversionOptions {
 
 @description("Server feature identifiers")
 enum FeatureType {
-    // note: crud operations on templates is required
+    o TEMPLATE_MANAGE             // crud operations on templates
+
     o TEMPLATE_VERIFY_SIGNATURES   // verify a signed template
     o TEMPLATE_LOGIC               // templates with logic
     o TEMPLATE_STATEFUL            // stateful templates

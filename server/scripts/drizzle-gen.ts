@@ -129,7 +129,12 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
         if(classDeclaration.getDecorator('resource')) {
             parameters.fileWriter.writeLine(0, `\n// **** ${classDeclaration.getName()} ***`);
             parameters.fileWriter.writeLine(0, `export const ${classDeclaration.getName()} = pgTable("${classDeclaration.getName()}", {`);
+
             const idFieldName = classDeclaration.getIdentifierFieldName();
+
+            // create a database ID for the resource, serial, PK
+            parameters.fileWriter.writeLine(1, 'id: serial().primaryKey(),');
+
             classDeclaration.getOwnProperties().forEach((property) => {
                 const idField = property.getName() === idFieldName;
                 property.accept(this, {idField, ...parameters});
@@ -153,8 +158,8 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
      */
     visitField(field: Property, parameters: any): any {
         if(parameters.idField) {
-            // ID fields are always serial, PK
-            parameters.fileWriter.writeLine(1, `${field.getName()}: serial().primaryKey(),`);
+            // resource ID fields are always unique (note, not the PK for the table!)
+            parameters.fileWriter.writeLine(1, `${field.getName()}: text().unique().notNull(),`);
         }
         else {
             const type = parameters.scalarType ? parameters.scalarType : field.getType();

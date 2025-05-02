@@ -83,22 +83,35 @@ When Drizzle studio has launched you can connect using: https://local.drizzle.st
 
 The API is mounted at the `/` root path and can be accessed via cURL (or Postman/Insomnia or similar).
 
-GET routes support filtering by property name as well as `limit` and `page` parameters to page through large result sets.
+## Getting Capabilities of the Server
 
-```bash
-curl --request GET \
-  --url http://localhost:9000/templates?name=test?limit=10&page=0
+Callers should call the `/capabilities` route to get the capabiltities of an APAP server (including the RI):
+
+```
+http://localhost:9000/capabilities
 ```
 
-POST routes example:
+Example response:
+
+```
+[
+  "TEMPLATE_MANAGE",
+	"AGREEMENT_MANAGE",
+	"SHARED_MODEL_MANAGE"
+]
+```
+
+These capabiltities will evolve as the functionality of the RI is extended to new use cases.
+
+## Creating a Resource
 
 ```
 curl --request POST \
-  --url http://localhost:9000/templates \
+  --url 'http://localhost:9000/templates' \
   --header 'Content-Type: application/json' \
   --data '{
-    "name" : "test",
-    "author" : "dan",
+    "uri" : "apap://test",
+    "author" : "tim",
     "displayName" : "This is a test",
     "description" : "This is a template",
     "keywords": ["one", "two"],
@@ -111,29 +124,198 @@ curl --request POST \
     },
     "templateModel": {
     },
-    "logo": {},
+    "logo": { "ddddd" : 1 },
     "logic" : {},
     "sampleRequest" : {},
     "text": {}
 }'
 ```
 
-Callers should refer to the `/capabilities` route to get the capabiltities of the RI:
+Response:
+
+> Note the id field which must be used to get, update or delete the resource.
+
+```json
+{
+	"id": 9,
+	"uri": "apap://test",
+	"author": "tim",
+	"displayName": "This is a test",
+	"version": "1.0",
+	"description": "This is a template",
+	"license": "Apache-2",
+	"keywords": [
+		"one",
+		"two"
+	],
+	"metadata": {
+		"runtime": "TypeScript",
+		"template": "clause",
+		"cicero": "1.0"
+	},
+	"logo": {
+		"ddddd": 1
+	},
+	"templateModel": {},
+	"text": {},
+	"logic": {},
+	"sampleRequest": {}
+}
+```
+
+## Getting a Single Resource
+
+```bash
+curl --request GET \
+  --url http://localhost:9000/templates/8 \
+  --header 'Content-Type: application/json'
+```
+
+Response:
+
+```json
+{
+	"id": 9,
+	"uri": "apap://test",
+	"author": "tim",
+	"displayName": "This is a test",
+	"version": "1.0",
+	"description": "This is a template",
+	"license": "Apache-2",
+	"keywords": [
+		"one",
+		"two"
+	],
+	"metadata": {
+		"runtime": "TypeScript",
+		"template": "clause",
+		"cicero": "1.0"
+	},
+	"logo": {
+		"ddddd": 1
+	},
+	"templateModel": {},
+	"text": {},
+	"logic": {},
+	"sampleRequest": {}
+}
+```
+
+## Getting Resources
+
+Getting templates using query parameters:
 
 ```
-http://localhost:9000/capabilities
+curl --request GET \
+  --url 'http://localhost:9000/templates?uri=apap%3A%2F%2Ftest&author=tim' \
+  --header 'Content-Type: application/json'
 ```
 
-Example response:
+Response:
+
+```json
+{
+	"items": [
+		{
+			"id": 9,
+			"uri": "apap://test",
+			"author": "tim",
+			"displayName": "This is a test",
+			"version": "1.0",
+			"description": "This is a template",
+			"license": "Apache-2",
+			"keywords": [
+				"one",
+				"two"
+			],
+			"metadata": {
+				"runtime": "TypeScript",
+				"template": "clause",
+				"cicero": "1.0"
+			},
+			"logo": {
+				"ddddd": 1
+			},
+			"templateModel": {},
+			"text": {},
+			"logic": {},
+			"sampleRequest": {}
+		}
+	],
+	"total": 1,
+	"page": 1,
+	"limit": 100,
+	"totalPages": 1
+}
+```
+
+> Note that only string parameters and the "=" operator are currently supported .
+
+### Pagination
+
+GET routes support filtering by property name as well as `limit` and `page` parameters to page through large result sets.
+
+```bash
+curl --request GET \
+  --url http://localhost:9000/templates?author=tim?limit=10&page=0
+```
+
+## Updating Resources
+
+```bash
+curl --request PUT \
+  --url http://localhost:9000/templates/8 \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "author" : "dan"
+}'
+```
+
+Response:
+
+```json
+{
+	"id": 9,
+	"uri": "apap://test",
+	"author": "dan",
+	"displayName": "This is a test",
+	"version": "1.0",
+	"description": "This is a template",
+	"license": "Apache-2",
+	"keywords": [
+		"one",
+		"two"
+	],
+	"metadata": {
+		"runtime": "TypeScript",
+		"template": "clause",
+		"cicero": "1.0"
+	},
+	"logo": {
+		"ddddd": 1
+	},
+	"templateModel": {},
+	"text": {},
+	"logic": {},
+	"sampleRequest": {}
+}
+```
+
+## Deleting a Single Resource
+
+```bash
+curl --request DELETE \
+  --url http://localhost:9000/templates/8 \
+  --header 'Content-Type: application/json'
+```
+
+Response:
 
 ```
-[
-	"AGREEMENT_MANAGE",
-	"SHARED_MODEL_MANAGE"
-]
+{
+	"status": "deleted"
+}
 ```
-
-These capabiltities will evolve as the functionality of the RI is extended to new use cases.
 
 # Updating RI When Protocol Changes
 

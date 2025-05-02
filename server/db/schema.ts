@@ -19,6 +19,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
 // **** SharedModel ***
 export const SharedModel = pgTable("SharedModel", {
    id: serial().primaryKey(),
+   uri: text().unique().notNull(),
    model: json().notNull(),
 });
 export const SharedModelSelectSchema = createSelectSchema(SharedModel);
@@ -33,14 +34,15 @@ export const CodeEncodingType = pgEnum('CodeEncodingType', ['PLAIN_TEXT',
 
 // **** Template ***
 export const Template = pgTable("Template", {
-   metadata: json().notNull(),
    id: serial().primaryKey(),
+   uri: text().unique().notNull(),
    author: text().notNull(),
    displayName: text(),
    version: text().notNull(),
    description: text(),
    license: text().notNull(),
    keywords: text().array(),
+   metadata: json().notNull(),
    logo: json(),
    templateModel: json().notNull(),
    text: json().notNull(),
@@ -59,6 +61,7 @@ export const AgreementStatusType = pgEnum('AgreementStatusType', ['DRAFT',
 // **** Agreement ***
 export const Agreement = pgTable("Agreement", {
    id: serial().primaryKey(),
+   uri: text().unique().notNull(),
    data: json().notNull(),
    state: json().notNull(),
    template: text(),
@@ -74,7 +77,8 @@ export const AgreementSelectSchema = createSelectSchema(Agreement);
 export const AgreementInsertSchema = createInsertSchema(Agreement);
 export const AgreementUpdateSchema = createUpdateSchema(Agreement);
 
-export const FeatureType = pgEnum('FeatureType', ['TEMPLATE_VERIFY_SIGNATURES',
+export const FeatureType = pgEnum('FeatureType', ['TEMPLATE_MANAGE',
+'TEMPLATE_VERIFY_SIGNATURES',
 'TEMPLATE_LOGIC',
 'TEMPLATE_STATEFUL',
 'LOGIC_WASM',

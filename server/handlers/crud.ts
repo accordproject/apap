@@ -249,7 +249,6 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
             try {
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    buildWhereClause(req, queryParams),
                     // Check if table has UUID primary key
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
@@ -299,8 +298,6 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    buildWhereClause(req, queryParams),
-                    // Check if table has UUID primary key
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
                         eq(table.id, parseInt(req.params.id))
@@ -334,8 +331,6 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
             try {
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    buildWhereClause(req, queryParams),
-                    // Check if table has UUID primary key
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
                         eq(table.id, parseInt(req.params.id))
