@@ -43,6 +43,12 @@ If you need to stop and remove all containers, networks, and all images used by 
 docker compose down --rmi all
 ```
 
+## Rebuild the images
+
+```bash
+docker-compose build
+```
+
 # Running Locally without Docker
 
 The RI uses a Postgres database for persistence. Set the DATABASE_URL environment variable to a Postgres connection string. If you are running
