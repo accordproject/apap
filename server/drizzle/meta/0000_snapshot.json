@@ -1,5 +1,5 @@
 {
-  "id": "c263287c-332c-46bf-81f9-77f812efe719",
+  "id": "feba7b85-89bc-4fce-bf2b-7b2fa3a876f4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -14,14 +14,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "data": {
-          "name": "data",
-          "type": "json",
+        "uri": {
+          "name": "uri",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "state": {
-          "name": "state",
+        "data": {
+          "name": "data",
           "type": "json",
           "primaryKey": false,
           "notNull": true
@@ -32,17 +32,11 @@
           "primaryKey": false,
           "notNull": false
         },
-        "agreement_parties": {
-          "name": "agreement_parties",
-          "type": "json[]",
+        "state": {
+          "name": "state",
+          "type": "json",
           "primaryKey": false,
-          "notNull": true
-        },
-        "signatures": {
-          "name": "signatures",
-          "type": "json[]",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "agreement_status": {
           "name": "agreement_status",
@@ -51,35 +45,55 @@
           "primaryKey": false,
           "notNull": true
         },
+        "agreement_parties": {
+          "name": "agreement_parties",
+          "type": "json[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "signatures": {
+          "name": "signatures",
+          "type": "json[]",
+          "primaryKey": false,
+          "notNull": false
+        },
         "history_entries": {
           "name": "history_entries",
           "type": "json[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "attachments": {
           "name": "attachments",
           "type": "json[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "references": {
           "name": "references",
           "type": "text[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "metadata": {
           "name": "metadata",
           "type": "json",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "Agreement_uri_unique": {
+          "name": "Agreement_uri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uri"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -94,6 +108,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "uri": {
+          "name": "uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "model": {
           "name": "model",
           "type": "json",
@@ -104,7 +124,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "SharedModel_uri_unique": {
+          "name": "SharedModel_uri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uri"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -113,16 +141,16 @@
       "name": "Template",
       "schema": "",
       "columns": {
-        "metadata": {
-          "name": "metadata",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": true
-        },
         "id": {
           "name": "id",
           "type": "serial",
           "primaryKey": true,
+          "notNull": true
+        },
+        "uri": {
+          "name": "uri",
+          "type": "text",
+          "primaryKey": false,
           "notNull": true
         },
         "author": {
@@ -161,6 +189,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
         "logo": {
           "name": "logo",
           "type": "json",
@@ -189,13 +223,21 @@
           "name": "sample_request",
           "type": "json",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "Template_uri_unique": {
+          "name": "Template_uri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uri"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -233,6 +275,7 @@
       "name": "FeatureType",
       "schema": "public",
       "values": [
+        "TEMPLATE_MANAGE",
         "TEMPLATE_VERIFY_SIGNATURES",
         "TEMPLATE_LOGIC",
         "TEMPLATE_STATEFUL",
@@ -242,7 +285,7 @@
         "AGREEMENT_MANAGE",
         "AGREEMENT_TRIGGER",
         "AGREEMENT_STATE",
-        "AGREEMENT_DRAFT",
+        "AGREEMENT_CONVERT_HTML",
         "AGREEMENT_SIGNING",
         "SHARED_MODEL_MANAGE"
       ]

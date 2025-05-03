@@ -61,6 +61,8 @@ npm i
 npm start
 ```
 
+> Note: `npm run dev` will start a dev server that will hot-reload code changes.
+
 # Creating Database Schema
 
 When a new datbase is created the database schema needs to be pushed to the Postgres database.
@@ -95,49 +97,55 @@ Example response:
 
 ```
 [
-  "TEMPLATE_MANAGE",
+  	"TEMPLATE_MANAGE",
 	"AGREEMENT_MANAGE",
-	"SHARED_MODEL_MANAGE"
+	"SHARED_MODEL_MANAGE",
+	"AGREEMENT_CONVERT_HTML"
 ]
 ```
 
 These capabiltities will evolve as the functionality of the RI is extended to new use cases.
 
-## Creating a Resource
+## Creating a Template
 
-```
+```bash
 curl --request POST \
   --url http://localhost:9000/templates \
   --header 'Content-Type: application/json' \
   --data '{
-	"uri": "apap://dan",
+	"uri": "resource:org.accordproject.protocol@1.0.0.Template#dan",
 	"author": "dan",
-	"displayName": "This is a test",
-	"description": "This is a template",
+	"displayName": "Late Delivery and Penalty",
+	"version": "1.0.0",
+	"description": "This is late delivery and penalty template",
+	"license": "Apache-2",
 	"keywords": [
 		"one",
 		"two"
 	],
-	"version": "1.0",
-	"license": "Apache-2",
 	"metadata": {
-		"runtime": "TypeScript",
+		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "1.0"
+		"cicero": "0.25.x"
 	},
+	"logo": null,
 	"templateModel": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
 		"typeName": "foo",
 		"model": {
 			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
 			"ctoFiles": [
-				"test"
+				"namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}"
 			]
 		}
 	},
 	"text": {
 		"$class": "org.accordproject.protocol@1.0.0.Text",
-		"templateText": "test"
-	}
+		"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
+	},
+	"logic": null,
+	"sampleRequest": null
 }'
 ```
 
@@ -147,12 +155,12 @@ Response:
 
 ```json
 {
-	"id": 18,
-	"uri": "apap://dan2",
+	"id": 25,
+	"uri": "resource:org.accordproject.protocol@1.0.0.Template#dan",
 	"author": "dan",
-	"displayName": "This is a test",
-	"version": "1.0",
-	"description": "This is a template",
+	"displayName": "Late Delivery and Penalty",
+	"version": "1.0.0",
+	"description": "This is late delivery and penalty template",
 	"license": "Apache-2",
 	"keywords": [
 		"one",
@@ -160,9 +168,9 @@ Response:
 	],
 	"metadata": {
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
-		"runtime": "TypeScript",
+		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "1.0"
+		"cicero": "0.25.x"
 	},
 	"logo": null,
 	"templateModel": {
@@ -171,13 +179,13 @@ Response:
 		"model": {
 			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
 			"ctoFiles": [
-				"test"
+				"namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}"
 			]
 		}
 	},
 	"text": {
 		"$class": "org.accordproject.protocol@1.0.0.Text",
-		"templateText": "test"
+		"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
 	},
 	"logic": null,
 	"sampleRequest": null
@@ -197,10 +205,10 @@ Response:
 ```json
 {
 	"id": 18,
-	"uri": "apap://dan2",
+	"uri": "resource:org.accordproject.protocol@1.0.0.Template#dan2",
 	"author": "dan",
 	"displayName": "This is a test",
-	"version": "1.0",
+	"version": "1.0.0",
 	"description": "This is a template",
 	"license": "Apache-2",
 	"keywords": [
@@ -209,9 +217,9 @@ Response:
 	],
 	"metadata": {
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
-		"runtime": "TypeScript",
+		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "1.0"
+		"cicero": "0.25.x"
 	},
 	"logo": null,
 	"templateModel": {
@@ -220,13 +228,13 @@ Response:
 		"model": {
 			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
 			"ctoFiles": [
-				"test"
+				"namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}"
 			]
 		}
 	},
 	"text": {
 		"$class": "org.accordproject.protocol@1.0.0.Text",
-		"templateText": "test"
+		"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
 	},
 	"logic": null,
 	"sampleRequest": null
@@ -239,7 +247,7 @@ Getting templates using query parameters:
 
 ```
 curl --request GET \
-  --url 'http://localhost:9000/templates?uri=apap%3A%2F%2Ftest&author=tim' \
+  --url 'http://localhost:9000/templates?author=dan' \
   --header 'Content-Type: application/json'
 ```
 
@@ -249,8 +257,44 @@ Response:
 {
 	"items": [
 		{
-			"id": 11,
-			"uri": "apap://test",
+			"id": 18,
+			"uri": "resource:org.accordproject.protocol@1.0.0.Template#dan2",
+			"author": "dan",
+			"displayName": "This is a test",
+			"version": "1.0.0",
+			"description": "This is a template",
+			"license": "Apache-2",
+			"keywords": [
+				"one",
+				"two"
+			],
+			"metadata": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+				"runtime": "typescript",
+				"template": "clause",
+				"cicero": "0.25.x"
+			},
+			"logo": null,
+			"templateModel": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+				"typeName": "foo",
+				"model": {
+					"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+					"ctoFiles": [
+						"namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}"
+					]
+				}
+			},
+			"text": {
+				"$class": "org.accordproject.protocol@1.0.0.Text",
+				"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
+			},
+			"logic": null,
+			"sampleRequest": null
+		},
+		{
+			"id": 19,
+			"uri": "apap://dan3",
 			"author": "dan",
 			"displayName": "This is a test",
 			"version": "1.0",
@@ -283,9 +327,81 @@ Response:
 			},
 			"logic": null,
 			"sampleRequest": null
+		},
+		{
+			"id": 21,
+			"uri": "apap://dan4",
+			"author": "dan",
+			"displayName": "This is a test",
+			"version": "1.0",
+			"description": "This is a template",
+			"license": "Apache-2",
+			"keywords": [
+				"one",
+				"two"
+			],
+			"metadata": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+				"runtime": "TypeScript",
+				"template": "clause",
+				"cicero": "1.0"
+			},
+			"logo": null,
+			"templateModel": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+				"typeName": "foo",
+				"model": {
+					"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+					"ctoFiles": [
+						"test"
+					]
+				}
+			},
+			"text": {
+				"$class": "org.accordproject.protocol@1.0.0.Text",
+				"templateText": "test"
+			},
+			"logic": null,
+			"sampleRequest": null
+		},
+		{
+			"id": 25,
+			"uri": "resource:org.accordproject.protocol@1.0.0.Template#dan",
+			"author": "dan",
+			"displayName": "Late Delivery and Penalty",
+			"version": "1.0.0",
+			"description": "This is late delivery and penalty template",
+			"license": "Apache-2",
+			"keywords": [
+				"one",
+				"two"
+			],
+			"metadata": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+				"runtime": "typescript",
+				"template": "clause",
+				"cicero": "0.25.x"
+			},
+			"logo": null,
+			"templateModel": {
+				"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+				"typeName": "foo",
+				"model": {
+					"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+					"ctoFiles": [
+						"namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}"
+					]
+				}
+			},
+			"text": {
+				"$class": "org.accordproject.protocol@1.0.0.Text",
+				"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
+			},
+			"logic": null,
+			"sampleRequest": null
 		}
 	],
-	"total": 1,
+	"total": 4,
 	"page": 1,
 	"limit": 100,
 	"totalPages": 1
@@ -307,10 +423,11 @@ curl --request GET \
 
 ```bash
 curl --request PUT \
-  --url http://localhost:9000/templates/8 \
+  --url http://localhost:9000/templates/18 \
   --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.0.2' \
   --data '{
-    "author" : "dan"
+	"author": "matt"
 }'
 ```
 
@@ -319,10 +436,10 @@ Response:
 ```json
 {
 	"id": 18,
-	"uri": "apap://dan2",
-	"author": "dan",
+	"uri": "resource:org.accordproject.protocol@1.0.0.Template#dan2",
+	"author": "matt",
 	"displayName": "This is a test",
-	"version": "1.0",
+	"version": "1.0.0",
 	"description": "This is a template",
 	"license": "Apache-2",
 	"keywords": [
@@ -331,9 +448,9 @@ Response:
 	],
 	"metadata": {
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
-		"runtime": "TypeScript",
+		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "1.0"
+		"cicero": "0.25.x"
 	},
 	"logo": null,
 	"templateModel": {
@@ -342,13 +459,13 @@ Response:
 		"model": {
 			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
 			"ctoFiles": [
-				"test"
+				"namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}"
 			]
 		}
 	},
 	"text": {
 		"$class": "org.accordproject.protocol@1.0.0.Text",
-		"templateText": "test"
+		"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
 	},
 	"logic": null,
 	"sampleRequest": null

@@ -21,6 +21,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@accordproject/cicero-core": "0.25.1-20250328175253",
+    "@accordproject/concerto-core": "^3.21.0",
+    "@accordproject/concerto-util": "^3.20.4",
+    "@accordproject/template-engine": "^2.6.7",
+    "adm-zip": "^0.5.16",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.42.0",
     "drizzle-zod": "^0.7.1",
@@ -32,8 +37,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@accordproject/concerto-core": "^3.21.0",
-    "@accordproject/concerto-util": "^3.20.4",
+    "@types/adm-zip": "^0.5.7",
     "@types/express": "^4.17.13",
     "@types/jest": "^29.2.5",
     "@types/morgan": "^1.7.35",

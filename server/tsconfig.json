@@ -1,11 +1,8 @@
 {
     "compilerOptions": {
-      "target": "es2017",
+      "target": "es2021",
       "module": "commonjs",
       "moduleResolution": "node",
-      "lib": ["es7", "esnext.asynciterable", "dom"],
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
       "esModuleInterop": true,
       "noImplicitAny": true,
       "noUnusedLocals": false,
