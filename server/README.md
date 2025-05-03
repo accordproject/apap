@@ -488,6 +488,107 @@ Response:
 }
 ```
 
+## Creating an Agreement
+
+```bash
+curl --request POST \
+  --url http://localhost:9000/agreements \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.0.2' \
+  --data '{
+	"uri": "apap://agreement2",
+	"data": {
+		"$class": "io.clause.latedeliveryandpenalty@0.1.0.TemplateModel",
+		"forceMajeure": true,
+		"penaltyDuration": {
+			"$class": "org.accordproject.time@0.3.0.Duration",
+			"amount": 2,
+			"unit": "days"
+		},
+		"penaltyPercentage": 10.5,
+		"capPercentage": 55,
+		"termination": {
+			"$class": "org.accordproject.time@0.3.0.Duration",
+			"amount": 15,
+			"unit": "days"
+		},
+		"fractionalPart": "days",
+		"clauseId": "c88e5ed7-c3e0-4249-a99c-ce9278684ac8",
+		"$identifier": "c88e5ed7-c3e0-4249-a99c-ce9278684ac8"
+	},
+	"template": "resource:org.accordproject.protocol@1.0.0.Template#dan2",
+	"agreementStatus": "DRAFT"
+}'
+```
+
+Response:
+
+```
+{
+	"id": 4,
+	"uri": "apap://agreement2",
+	"data": {
+		"$class": "io.clause.latedeliveryandpenalty@0.1.0.TemplateModel",
+		"forceMajeure": true,
+		"penaltyDuration": {
+			"$class": "org.accordproject.time@0.3.0.Duration",
+			"amount": 2,
+			"unit": "days"
+		},
+		"penaltyPercentage": 10.5,
+		"capPercentage": 55,
+		"termination": {
+			"$class": "org.accordproject.time@0.3.0.Duration",
+			"amount": 15,
+			"unit": "days"
+		},
+		"fractionalPart": "days",
+		"clauseId": "c88e5ed7-c3e0-4249-a99c-ce9278684ac8",
+		"$identifier": "c88e5ed7-c3e0-4249-a99c-ce9278684ac8"
+	},
+	"template": "resource:org.accordproject.protocol@1.0.0.Template#dan2",
+	"state": null,
+	"agreementStatus": "DRAFT",
+	"agreementParties": null,
+	"signatures": null,
+	"historyEntries": null,
+	"attachments": null,
+	"references": null,
+	"metadata": null
+}
+```
+
+## Converting an agreement to HTML
+
+```bash
+curl --request GET \
+  --url http://localhost:9000/agreements/1/convert/html \
+  --header 'Content-Type: application/json'
+```
+
+Reponse:
+
+```
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
+<div class="document">
+<div class="clause" name="top" elementType="io.clause.latedeliveryandpenalty@0.1.0.TemplateModel">
+<h2>Late Delivery and Penalty – Sat, 03 May 2025 08:09:25 GMT</h2>
+<p>In case of delayed delivery<span class="conditional" name="forceMajeure" whenTrue=", except for Force Majeure cases," whenFalse="">, except for Force Majeure cases,</span> the Seller shall pay to the Buyer for every <em>2 days of delay</em> <em><strong>Penalty</strong></em> amounting to 10.5% of the total value of the Equipment whose delivery has been delayed.</p>
+
+<ol delimiter=period start=1 tight=true>
+<li><p>Any fractional part of a <span class="variable" name="fractionalPart" enumValues="%5B%22seconds%22%2C%22minutes%22%2C%22hours%22%2C%22days%22%2C%22weeks%22%5D" elementType="org.accordproject.time@0.3.0.TemporalUnit">days</span> is to be considered a full <span class="variable" name="fractionalPart" enumValues="%5B%22seconds%22%2C%22minutes%22%2C%22hours%22%2C%22days%22%2C%22weeks%22%5D" elementType="org.accordproject.time@0.3.0.TemporalUnit">days</span>.</p>
+</li>
+<li><p>The total amount of penalty shall not however, exceed 55.0% of the total value of the Equipment involved in late delivery.</p>
+</li>
+<li><p>If the delay is more than 15 days, the Buyer is entitled to terminate this Contract.</p>
+</li></ol></div>
+</div>
+</body>
+</html>
+```
+
 # Updating RI When Protocol Changes
 
 When the protocol (model) changes we need to regenerate the Drizzle ORM code (under `./db/schema.ts`) that is used for persistence and then push the modified database schema to
