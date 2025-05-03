@@ -4,7 +4,7 @@ import { Factory, ModelManager, Serializer } from '@accordproject/concerto-core'
 
 let MODEL_MANAGER:ModelManager = undefined; 
 
-export async function ModelValidator(typeName: string, body: any): Promise<ValidationResult> {
+export async function concertoValidation(typeName: string, body: any): Promise<ValidationResult> {
     if(!MODEL_MANAGER) {
         MODEL_MANAGER = new ModelManager({ strict: true, addMetamodel: true });
         MODEL_MANAGER.addCTOModel(Buffer.from(MODEL, 'base64').toString(), 'protocol.cto', true);

@@ -1,7 +1,7 @@
 import express from 'express'
 import { Agreement, AgreementInsertSchema, Template } from '../db/schema';
 import { buildCrudRouter } from './crud';
-import { ModelValidator } from './modelvalidator';
+import { concertoValidation } from './concertovalidation';
 import { templateFromDatabase } from './templatebuilder';
 import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
@@ -11,7 +11,8 @@ const router = express.Router();
 const crudRouter = buildCrudRouter({
     table: Agreement,
     typeName: 'Agreement',
-    validateBody: { schema: AgreementInsertSchema, custom: (body) => ModelValidator('Agreement', body) }
+    // TODO, validate that body is an instance of the template model for the agreement
+    validateBody: { schema: AgreementInsertSchema, custom: (body) => concertoValidation('Agreement', body) }
 });
 
 crudRouter.get('/:id/convert/html', async function (req, res) {

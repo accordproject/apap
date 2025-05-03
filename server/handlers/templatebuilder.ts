@@ -5,8 +5,12 @@ import { Template, } from '../db/schema';
 
 export async function templateFromDatabase(db: typeof Template): Promise<ApTemplate> {
     const zip = new AdmZip();
+    const name = URL.parse(db.uri.toString()).hash;
+    if(name.length === 0) {
+        throw new Error(`Invalid template URI: ${db.uri}`);
+    }
     const packageJson = {
-        name: db.id,
+        name: name.substring(1),
         version: db.version,
         author: db.author,
         license: db.license,
