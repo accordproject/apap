@@ -120,16 +120,16 @@ enum AgreementStatusType {
 @description("An Accord Project Agreement, an instance of a template")
 concept Agreement identified by uri {
     o URI uri
-    o JSON data                             // Data for the agreement (an instance of the data for its template)
-    o JSON state optional                   // Runtime state of the agreement
-    --> Template template                   // Template for the the agreement
-    o AgreementParty[] agreementParties     // Parties to the agreement
-    o Signature[] signatures                // Signatures of the parties to the agreement
-    o AgreementStatusType agreementStatus   // Current status of agreement
-    o HistoryEntry[] historyEntries         // History of document state and details.
-    o Blob[] attachments                    // Pdfs, images, multimedia, etc. that form part of the agreement
-    o String[] references                   // uri/urls to external references relevant to agreement
-    o Metadata metadata                     // Additional data that may be relevant to the agreement
+    o JSON data
+    --> Template template                            // Template for the the agreement                                  // Data for the agreement (an instance of the data for its template)
+    o JSON state optional                            // Runtime state of the agreement
+    o AgreementStatusType agreementStatus            // Current status of agreement
+    o AgreementParty[] agreementParties optional     // Parties to the agreement
+    o Signature[] signatures optional                // Signatures of the parties to the agreement
+    o HistoryEntry[] historyEntries optional         // History of document state and details.
+    o Blob[] attachments optional                    // Pdfs, images, multimedia, etc. that form part of the agreement
+    o String[] references optional                   // uri/urls to external references relevant to agreement
+    o Metadata metadata optional                     // Additional data that may be relevant to the agreement
 }
 
 @description("A Party to an Agreement")
@@ -192,7 +192,7 @@ enum FeatureType {
     o AGREEMENT_MANAGE             // crud operations on agreements
     o AGREEMENT_TRIGGER            // trigger agreements
     o AGREEMENT_STATE              // get the state of an agreement
-    o AGREEMENT_DRAFT              // draft an agreement to an output format
+    o AGREEMENT_CONVERT_HTML       // draft an agreement to an output format
 
     // send an agreement for signature
     o AGREEMENT_SIGNING

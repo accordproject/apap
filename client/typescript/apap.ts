@@ -17,7 +17,7 @@ export interface paths {
      */
     post: operations["createSharedmodel"];
   };
-  "/sharedmodels/{id}": {
+  "/sharedmodels/{uri}": {
     /**
      * Get a sharedmodel 
      * @description Gets the details of a single instance of a `sharedmodel`.
@@ -36,7 +36,7 @@ export interface paths {
     parameters: {
         /** @description A unique identifier for a `SharedModel`. */
       path: {
-        id: string;
+        uri: string;
       };
     };
   };
@@ -52,7 +52,7 @@ export interface paths {
      */
     post: operations["createTemplate"];
   };
-  "/templates/{id}": {
+  "/templates/{uri}": {
     /**
      * Get a template 
      * @description Gets the details of a single instance of a `template`.
@@ -71,7 +71,7 @@ export interface paths {
     parameters: {
         /** @description A unique identifier for a `Template`. */
       path: {
-        id: string;
+        uri: string;
       };
     };
   };
@@ -87,7 +87,7 @@ export interface paths {
      */
     post: operations["createAgreement"];
   };
-  "/agreements/{id}": {
+  "/agreements/{uri}": {
     /**
      * Get a agreement 
      * @description Gets the details of a single instance of a `agreement`.
@@ -106,7 +106,7 @@ export interface paths {
     parameters: {
         /** @description A unique identifier for a `Agreement`. */
       path: {
-        id: string;
+        uri: string;
       };
     };
   };
@@ -149,6 +149,7 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    "org.accordproject.protocol@1.0.0.URI": string;
     "org.accordproject.protocol@1.0.0.JSON": string;
     "org.accordproject.protocol@1.0.0.CTO": string;
     "org.accordproject.protocol@1.0.0.FullyQualifiedTypeName": string;
@@ -239,7 +240,7 @@ export interface components {
        */
       $class: string;
       /** @description The instance identifier for this type */
-      id: string;
+      uri: string;
       model: components["schemas"]["org.accordproject.protocol@1.0.0.DomainModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.CtoModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.JsonModel"];
     };
     /**
@@ -307,15 +308,15 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.Template
        */
       $class: string;
-      metadata: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateMetadata"];
       /** @description The instance identifier for this type */
-      id: string;
+      uri: string;
       author: string;
       displayName?: string;
       version: string;
       description?: string;
       license: string;
       keywords?: (string)[];
+      metadata: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateMetadata"];
       logo?: components["schemas"]["org.accordproject.protocol@1.0.0.Blob"];
       templateModel: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateModel"];
       text: components["schemas"]["org.accordproject.protocol@1.0.0.Text"];
@@ -364,18 +365,18 @@ export interface components {
        */
       $class: string;
       /** @description The instance identifier for this type */
-      id: string;
+      uri: string;
       data: string;
-      state?: string;
       /** @description The identifier of an instance of org.accordproject.protocol@1.0.0.Template */
       template: string;
-      agreementParties: (components["schemas"]["org.accordproject.protocol@1.0.0.AgreementParty"])[];
-      signatures: (components["schemas"]["org.accordproject.protocol@1.0.0.Signature"])[];
+      state?: string;
       agreementStatus: components["schemas"]["org.accordproject.protocol@1.0.0.AgreementStatusType"];
-      historyEntries: (components["schemas"]["org.accordproject.protocol@1.0.0.HistoryEntry"])[];
-      attachments: (components["schemas"]["org.accordproject.protocol@1.0.0.Blob"])[];
-      references: (string)[];
-      metadata: components["schemas"]["org.accordproject.protocol@1.0.0.Metadata"];
+      agreementParties?: (components["schemas"]["org.accordproject.protocol@1.0.0.AgreementParty"])[];
+      signatures?: (components["schemas"]["org.accordproject.protocol@1.0.0.Signature"])[];
+      historyEntries?: (components["schemas"]["org.accordproject.protocol@1.0.0.HistoryEntry"])[];
+      attachments?: (components["schemas"]["org.accordproject.protocol@1.0.0.Blob"])[];
+      references?: (string)[];
+      metadata?: components["schemas"]["org.accordproject.protocol@1.0.0.Metadata"];
     };
     /**
      * AgreementParty 
@@ -471,7 +472,7 @@ export interface components {
      * @description An instance of org.accordproject.protocol@1.0.0.FeatureType 
      * @enum {unknown}
      */
-    "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "LOGIC_WASM" | "LOGIC_ES2015" | "LOGIC_TYPESCRIPT" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_DRAFT" | "AGREEMENT_SIGNING" | "SHARED_MODEL_MANAGE";
+    "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_MANAGE" | "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "LOGIC_WASM" | "LOGIC_ES2015" | "LOGIC_TYPESCRIPT" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_CONVERT_HTML" | "AGREEMENT_SIGNING" | "SHARED_MODEL_MANAGE";
     /**
      * Capabilities 
      * @description An instance of org.accordproject.protocol@1.0.0.Capabilities
@@ -512,17 +513,453 @@ export interface components {
       errorDetails?: string;
     };
     /**
-     * Party 
-     * @description An instance of org.accordproject.party@0.2.0.Party
+     * Node 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Node
      */
-    "org.accordproject.party@0.2.0.Party": {
+    "org.accordproject.commonmark@0.5.0.Node": {
       /**
-       * @description The class identifier for org.accordproject.party@0.2.0.Party 
-       * @default org.accordproject.party@0.2.0.Party
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Node 
+       * @default org.accordproject.commonmark@0.5.0.Node
        */
       $class: string;
-      /** @description The instance identifier for this type */
-      partyId: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Root 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Root
+     */
+    "org.accordproject.commonmark@0.5.0.Root": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Root 
+       * @default org.accordproject.commonmark@0.5.0.Root
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Child 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Child
+     */
+    "org.accordproject.commonmark@0.5.0.Child": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Child 
+       * @default org.accordproject.commonmark@0.5.0.Child
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Text 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Text
+     */
+    "org.accordproject.commonmark@0.5.0.Text": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Text 
+       * @default org.accordproject.commonmark@0.5.0.Text
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Attribute 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Attribute
+     */
+    "org.accordproject.commonmark@0.5.0.Attribute": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Attribute 
+       * @default org.accordproject.commonmark@0.5.0.Attribute
+       */
+      $class: string;
+      name: string;
+      value: string;
+    };
+    /**
+     * TagInfo 
+     * @description An instance of org.accordproject.commonmark@0.5.0.TagInfo
+     */
+    "org.accordproject.commonmark@0.5.0.TagInfo": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TagInfo 
+       * @default org.accordproject.commonmark@0.5.0.TagInfo
+       */
+      $class: string;
+      tagName: string;
+      attributeString: string;
+      attributes: (components["schemas"]["org.accordproject.commonmark@0.5.0.Attribute"])[];
+      content: string;
+      closed: boolean;
+    };
+    /**
+     * CodeBlock 
+     * @description An instance of org.accordproject.commonmark@0.5.0.CodeBlock
+     */
+    "org.accordproject.commonmark@0.5.0.CodeBlock": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock 
+       * @default org.accordproject.commonmark@0.5.0.CodeBlock
+       */
+      $class: string;
+      info?: string;
+      tag?: components["schemas"]["org.accordproject.commonmark@0.5.0.TagInfo"];
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Code 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Code
+     */
+    "org.accordproject.commonmark@0.5.0.Code": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Code 
+       * @default org.accordproject.commonmark@0.5.0.Code
+       */
+      $class: string;
+      info?: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * HtmlInline 
+     * @description An instance of org.accordproject.commonmark@0.5.0.HtmlInline
+     */
+    "org.accordproject.commonmark@0.5.0.HtmlInline": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline 
+       * @default org.accordproject.commonmark@0.5.0.HtmlInline
+       */
+      $class: string;
+      tag?: components["schemas"]["org.accordproject.commonmark@0.5.0.TagInfo"];
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * HtmlBlock 
+     * @description An instance of org.accordproject.commonmark@0.5.0.HtmlBlock
+     */
+    "org.accordproject.commonmark@0.5.0.HtmlBlock": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock 
+       * @default org.accordproject.commonmark@0.5.0.HtmlBlock
+       */
+      $class: string;
+      tag?: components["schemas"]["org.accordproject.commonmark@0.5.0.TagInfo"];
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Emph 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Emph
+     */
+    "org.accordproject.commonmark@0.5.0.Emph": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Emph 
+       * @default org.accordproject.commonmark@0.5.0.Emph
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Strong 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Strong
+     */
+    "org.accordproject.commonmark@0.5.0.Strong": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Strong 
+       * @default org.accordproject.commonmark@0.5.0.Strong
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * BlockQuote 
+     * @description An instance of org.accordproject.commonmark@0.5.0.BlockQuote
+     */
+    "org.accordproject.commonmark@0.5.0.BlockQuote": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote 
+       * @default org.accordproject.commonmark@0.5.0.BlockQuote
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Heading 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Heading
+     */
+    "org.accordproject.commonmark@0.5.0.Heading": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Heading 
+       * @default org.accordproject.commonmark@0.5.0.Heading
+       */
+      $class: string;
+      level: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * ThematicBreak 
+     * @description An instance of org.accordproject.commonmark@0.5.0.ThematicBreak
+     */
+    "org.accordproject.commonmark@0.5.0.ThematicBreak": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak 
+       * @default org.accordproject.commonmark@0.5.0.ThematicBreak
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Softbreak 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Softbreak
+     */
+    "org.accordproject.commonmark@0.5.0.Softbreak": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Softbreak 
+       * @default org.accordproject.commonmark@0.5.0.Softbreak
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Linebreak 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Linebreak
+     */
+    "org.accordproject.commonmark@0.5.0.Linebreak": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Linebreak 
+       * @default org.accordproject.commonmark@0.5.0.Linebreak
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Link 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Link
+     */
+    "org.accordproject.commonmark@0.5.0.Link": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Link 
+       * @default org.accordproject.commonmark@0.5.0.Link
+       */
+      $class: string;
+      destination: string;
+      title: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Image 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Image
+     */
+    "org.accordproject.commonmark@0.5.0.Image": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Image 
+       * @default org.accordproject.commonmark@0.5.0.Image
+       */
+      $class: string;
+      destination: string;
+      title: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Paragraph 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Paragraph
+     */
+    "org.accordproject.commonmark@0.5.0.Paragraph": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Paragraph 
+       * @default org.accordproject.commonmark@0.5.0.Paragraph
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * List 
+     * @description An instance of org.accordproject.commonmark@0.5.0.List
+     */
+    "org.accordproject.commonmark@0.5.0.List": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.List 
+       * @default org.accordproject.commonmark@0.5.0.List
+       */
+      $class: string;
+      type: string;
+      start?: string;
+      tight: string;
+      delimiter?: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Item 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Item
+     */
+    "org.accordproject.commonmark@0.5.0.Item": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Item 
+       * @default org.accordproject.commonmark@0.5.0.Item
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Document 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Document
+     */
+    "org.accordproject.commonmark@0.5.0.Document": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Document 
+       * @default org.accordproject.commonmark@0.5.0.Document
+       */
+      $class: string;
+      xmlns: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * Table 
+     * @description An instance of org.accordproject.commonmark@0.5.0.Table
+     */
+    "org.accordproject.commonmark@0.5.0.Table": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Table 
+       * @default org.accordproject.commonmark@0.5.0.Table
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * TableHead 
+     * @description An instance of org.accordproject.commonmark@0.5.0.TableHead
+     */
+    "org.accordproject.commonmark@0.5.0.TableHead": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableHead 
+       * @default org.accordproject.commonmark@0.5.0.TableHead
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * TableBody 
+     * @description An instance of org.accordproject.commonmark@0.5.0.TableBody
+     */
+    "org.accordproject.commonmark@0.5.0.TableBody": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableBody 
+       * @default org.accordproject.commonmark@0.5.0.TableBody
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * TableRow 
+     * @description An instance of org.accordproject.commonmark@0.5.0.TableRow
+     */
+    "org.accordproject.commonmark@0.5.0.TableRow": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableRow 
+       * @default org.accordproject.commonmark@0.5.0.TableRow
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * HeaderCell 
+     * @description An instance of org.accordproject.commonmark@0.5.0.HeaderCell
+     */
+    "org.accordproject.commonmark@0.5.0.HeaderCell": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell 
+       * @default org.accordproject.commonmark@0.5.0.HeaderCell
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
+    };
+    /**
+     * TableCell 
+     * @description An instance of org.accordproject.commonmark@0.5.0.TableCell
+     */
+    "org.accordproject.commonmark@0.5.0.TableCell": {
+      /**
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableCell 
+       * @default org.accordproject.commonmark@0.5.0.TableCell
+       */
+      $class: string;
+      text?: string;
+      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
+      startLine?: number;
+      endLine?: number;
     };
     /**
      * Position 
@@ -1101,453 +1538,17 @@ export interface components {
       models: (components["schemas"]["concerto.metamodel@0.4.0.Model"])[];
     };
     /**
-     * Node 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Node
+     * Party 
+     * @description An instance of org.accordproject.party@0.2.0.Party
      */
-    "org.accordproject.commonmark@0.5.0.Node": {
+    "org.accordproject.party@0.2.0.Party": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Node 
-       * @default org.accordproject.commonmark@0.5.0.Node
+       * @description The class identifier for org.accordproject.party@0.2.0.Party 
+       * @default org.accordproject.party@0.2.0.Party
        */
       $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Root 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Root
-     */
-    "org.accordproject.commonmark@0.5.0.Root": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Root 
-       * @default org.accordproject.commonmark@0.5.0.Root
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Child 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Child
-     */
-    "org.accordproject.commonmark@0.5.0.Child": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Child 
-       * @default org.accordproject.commonmark@0.5.0.Child
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Text 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Text
-     */
-    "org.accordproject.commonmark@0.5.0.Text": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Text 
-       * @default org.accordproject.commonmark@0.5.0.Text
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Attribute 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Attribute
-     */
-    "org.accordproject.commonmark@0.5.0.Attribute": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Attribute 
-       * @default org.accordproject.commonmark@0.5.0.Attribute
-       */
-      $class: string;
-      name: string;
-      value: string;
-    };
-    /**
-     * TagInfo 
-     * @description An instance of org.accordproject.commonmark@0.5.0.TagInfo
-     */
-    "org.accordproject.commonmark@0.5.0.TagInfo": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TagInfo 
-       * @default org.accordproject.commonmark@0.5.0.TagInfo
-       */
-      $class: string;
-      tagName: string;
-      attributeString: string;
-      attributes: (components["schemas"]["org.accordproject.commonmark@0.5.0.Attribute"])[];
-      content: string;
-      closed: boolean;
-    };
-    /**
-     * CodeBlock 
-     * @description An instance of org.accordproject.commonmark@0.5.0.CodeBlock
-     */
-    "org.accordproject.commonmark@0.5.0.CodeBlock": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock 
-       * @default org.accordproject.commonmark@0.5.0.CodeBlock
-       */
-      $class: string;
-      info?: string;
-      tag?: components["schemas"]["org.accordproject.commonmark@0.5.0.TagInfo"];
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Code 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Code
-     */
-    "org.accordproject.commonmark@0.5.0.Code": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Code 
-       * @default org.accordproject.commonmark@0.5.0.Code
-       */
-      $class: string;
-      info?: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * HtmlInline 
-     * @description An instance of org.accordproject.commonmark@0.5.0.HtmlInline
-     */
-    "org.accordproject.commonmark@0.5.0.HtmlInline": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline 
-       * @default org.accordproject.commonmark@0.5.0.HtmlInline
-       */
-      $class: string;
-      tag?: components["schemas"]["org.accordproject.commonmark@0.5.0.TagInfo"];
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * HtmlBlock 
-     * @description An instance of org.accordproject.commonmark@0.5.0.HtmlBlock
-     */
-    "org.accordproject.commonmark@0.5.0.HtmlBlock": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock 
-       * @default org.accordproject.commonmark@0.5.0.HtmlBlock
-       */
-      $class: string;
-      tag?: components["schemas"]["org.accordproject.commonmark@0.5.0.TagInfo"];
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Emph 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Emph
-     */
-    "org.accordproject.commonmark@0.5.0.Emph": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Emph 
-       * @default org.accordproject.commonmark@0.5.0.Emph
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Strong 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Strong
-     */
-    "org.accordproject.commonmark@0.5.0.Strong": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Strong 
-       * @default org.accordproject.commonmark@0.5.0.Strong
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * BlockQuote 
-     * @description An instance of org.accordproject.commonmark@0.5.0.BlockQuote
-     */
-    "org.accordproject.commonmark@0.5.0.BlockQuote": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote 
-       * @default org.accordproject.commonmark@0.5.0.BlockQuote
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Heading 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Heading
-     */
-    "org.accordproject.commonmark@0.5.0.Heading": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Heading 
-       * @default org.accordproject.commonmark@0.5.0.Heading
-       */
-      $class: string;
-      level: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * ThematicBreak 
-     * @description An instance of org.accordproject.commonmark@0.5.0.ThematicBreak
-     */
-    "org.accordproject.commonmark@0.5.0.ThematicBreak": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak 
-       * @default org.accordproject.commonmark@0.5.0.ThematicBreak
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Softbreak 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Softbreak
-     */
-    "org.accordproject.commonmark@0.5.0.Softbreak": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Softbreak 
-       * @default org.accordproject.commonmark@0.5.0.Softbreak
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Linebreak 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Linebreak
-     */
-    "org.accordproject.commonmark@0.5.0.Linebreak": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Linebreak 
-       * @default org.accordproject.commonmark@0.5.0.Linebreak
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Link 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Link
-     */
-    "org.accordproject.commonmark@0.5.0.Link": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Link 
-       * @default org.accordproject.commonmark@0.5.0.Link
-       */
-      $class: string;
-      destination: string;
-      title: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Image 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Image
-     */
-    "org.accordproject.commonmark@0.5.0.Image": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Image 
-       * @default org.accordproject.commonmark@0.5.0.Image
-       */
-      $class: string;
-      destination: string;
-      title: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Paragraph 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Paragraph
-     */
-    "org.accordproject.commonmark@0.5.0.Paragraph": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Paragraph 
-       * @default org.accordproject.commonmark@0.5.0.Paragraph
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * List 
-     * @description An instance of org.accordproject.commonmark@0.5.0.List
-     */
-    "org.accordproject.commonmark@0.5.0.List": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.List 
-       * @default org.accordproject.commonmark@0.5.0.List
-       */
-      $class: string;
-      type: string;
-      start?: string;
-      tight: string;
-      delimiter?: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Item 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Item
-     */
-    "org.accordproject.commonmark@0.5.0.Item": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Item 
-       * @default org.accordproject.commonmark@0.5.0.Item
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Document 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Document
-     */
-    "org.accordproject.commonmark@0.5.0.Document": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Document 
-       * @default org.accordproject.commonmark@0.5.0.Document
-       */
-      $class: string;
-      xmlns: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * Table 
-     * @description An instance of org.accordproject.commonmark@0.5.0.Table
-     */
-    "org.accordproject.commonmark@0.5.0.Table": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Table 
-       * @default org.accordproject.commonmark@0.5.0.Table
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * TableHead 
-     * @description An instance of org.accordproject.commonmark@0.5.0.TableHead
-     */
-    "org.accordproject.commonmark@0.5.0.TableHead": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableHead 
-       * @default org.accordproject.commonmark@0.5.0.TableHead
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * TableBody 
-     * @description An instance of org.accordproject.commonmark@0.5.0.TableBody
-     */
-    "org.accordproject.commonmark@0.5.0.TableBody": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableBody 
-       * @default org.accordproject.commonmark@0.5.0.TableBody
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * TableRow 
-     * @description An instance of org.accordproject.commonmark@0.5.0.TableRow
-     */
-    "org.accordproject.commonmark@0.5.0.TableRow": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableRow 
-       * @default org.accordproject.commonmark@0.5.0.TableRow
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * HeaderCell 
-     * @description An instance of org.accordproject.commonmark@0.5.0.HeaderCell
-     */
-    "org.accordproject.commonmark@0.5.0.HeaderCell": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell 
-       * @default org.accordproject.commonmark@0.5.0.HeaderCell
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
-    };
-    /**
-     * TableCell 
-     * @description An instance of org.accordproject.commonmark@0.5.0.TableCell
-     */
-    "org.accordproject.commonmark@0.5.0.TableCell": {
-      /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableCell 
-       * @default org.accordproject.commonmark@0.5.0.TableCell
-       */
-      $class: string;
-      text?: string;
-      nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
-      startLine?: number;
-      endLine?: number;
+      /** @description The instance identifier for this type */
+      partyId: string;
     };
   };
   responses: never;
