@@ -1,14 +1,14 @@
 # Accord Project Agreement Protocol
 
-The Accord Project Agreement Protocol (APAP) defines the protocol used between a document generation engine or contract management platform and an agreement server that provides agreement features like template management, document generation, format conversion etc.
+The Accord Project Agreement Protocol (APAP) defines the protocol used between a document generation engine or contract management platform and an agreement server that provides agreement features such as: template management, document generation, format conversion etc.
 
 ## What is the Agreement Protocol?
 
 Adding features like document generation, data format conversion for a document generation template language takes significant effort. Traditionally this work had to be repeated for each template format, as each format provides different APIs for implementing the same feature.
 
-An Agreement Server is meant to provide the template-specific smarts and communicate with agreement tools over a protocol that enables inter-process communication.
+The APAP Agreement Server provides the template-specific smarts and communicate with agreement tools over a protocol that enables inter-process communication.
 
-The idea behind the Agreement Protocol (APAP) is to standardize the protocol for how such servers and agreement tools communicate. This way, a single Agreement Server can be re-used in multiple agreement tools, which in turn can support multiple templates with minimal effort.
+The Agreement Protocol (APAP) standardizes the protocol for how such servers and agreement tools communicate. This way, a single Agreement Server can be re-used in multiple agreement tools, which in turn can support multiple templates with minimal effort.
 
 APAP is a win for both template providers and agreement tooling vendors!
 
@@ -24,8 +24,8 @@ sequenceDiagram
     S->>T: Template ID
     T->>S: Create Agreement with Data
     S->>T: Agreement ID
-    T->>S: Convert Agreement to PDF
-    S->>T: PDF Bytes
+    T->>S: Convert Agreement to HTML
+    S->>T: HTML String
     T->>S: Destroy Agreement
     S->>T: ACK
 ```
@@ -39,7 +39,7 @@ Notice the actual integration of an agreement server into a particular tool is n
 
 To simplify the implementation of agreement servers and clients, there are libraries or SDKs:
 
-Development tool SDKs each development tool typically provides a library for integrating agreement servers. Generated client code for various platforms is available in the [client](./client/) directory.
+Generated client code for various platforms is available in the [client](./client/) directory.
 
 ## Reference Implementation
 
