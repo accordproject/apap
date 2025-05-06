@@ -595,6 +595,23 @@ Reponse:
 </html>
 ```
 
+# Model Context Protocol (MCP) Support (experimental)
+
+RI has **experimental** MCP support. We will be adding new resources and tools and the format of existing resources and tools may change.
+
+To connect RI to Claude, follow the following steps:
+1. Start RI
+2. Open your user profile settings in Claude (a paid Max plan is currently required)
+3. Add a new custom Integration, with integration name APAP and the integration URL set to the URL of your RI server plus `/sse`. Note that your RI server must be reachable from the Internet, so if you are running locally you will need
+to run ngrok (or similar) to tunnel Internet traffic.
+4. Sign-up for a new account in the login/authentication window
+5. Once connected you should see "1 tool, 2 resources" printed beneath the integration name in Claude settings
+6. Press the + button to start a new chat
+7. Press the + button inside the chat and select "Add from APAP", selecting either templates or agreements to be added to the chat context.
+8. Ask questions about your templates or agreements
+9. Type, "convert agreement X to markdown" to convert a loaded agreement to markdown
+
+
 # Updating RI When Protocol Changes
 
 When the protocol (model) changes we need to regenerate the Drizzle ORM code (under `./db/schema.ts`) that is used for persistence and then push the modified database schema to

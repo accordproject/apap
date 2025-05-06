@@ -15,9 +15,9 @@ const crudRouter = buildCrudRouter({
     validateBody: { schema: AgreementInsertSchema, custom: (body) => concertoValidation('Agreement', body) }
 });
 
-crudRouter.get('/:id/convert/html', async function (req, res) {
+crudRouter.get('/:id/convert/:format', async function (req, res) {
     try {
-        console.log('Getting agreement' + req.params.id);
+        console.log('Getting agreement: ' + req.params.id);
         const result = await res.locals.db
             .select()
             .from(Agreement)
@@ -43,8 +43,9 @@ crudRouter.get('/:id/convert/html', async function (req, res) {
 
         const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
         const options = {};
-        const draftResult = await templateArchiveProcessor.draft(agreement.data, 'html', options);
-        res.setHeader("Content-Type", "text/html")
+        const draftResult = await templateArchiveProcessor.draft(agreement.data, req.params.format, options);
+        console.log(draftResult);
+        res.setHeader("Content-Type", `text/${req.params.format}`) // todo
         res.send(draftResult)
     }
     catch (error) {

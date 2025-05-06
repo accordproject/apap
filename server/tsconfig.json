@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
       "target": "es2021",
+      "types": [ "node", "mocha", "jest" ],
       "module": "commonjs",
       "moduleResolution": "node",
       "esModuleInterop": true,
