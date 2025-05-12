@@ -14,7 +14,7 @@ services:
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
-      POSTGRES_HOST: ${POSTGRES_HOST} # Docker Compose mounts the db service under this DNS name
+      POSTGRES_HOST: ${POSTGRES_HOST}
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -25,5 +25,3 @@ services:
       - ./htpasswd:/etc/nginx/.htpasswd:ro
     depends_on:
       - apap_ri
-volumes:
-  db-data:

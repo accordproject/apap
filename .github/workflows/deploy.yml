@@ -21,8 +21,8 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        touch ./server/.env
-        docker build -t apap ./server
+        cd ./server
+        docker build -t apap ./
         docker tag apap accordproject/apap:latest
         docker push accordproject/apap:latest
 
@@ -43,8 +43,8 @@ jobs:
         # Bash commands you want to execute
         command: |
           echo "${{ secrets.HTPASSWD_CONTENT }}" > ./htpasswd
-          sudo docker-compose -f ./compose-aws.yaml stop  
-          sudo docker-compose -f ./compose-aws.yaml rm -f
-          sudo docker-compose -f ./compose-aws.yaml pull
-          POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} sudo docker-compose -f ./compose-aws.yaml up -d
+          sudo docker-compose stop  
+          sudo docker-compose rm -f
+          sudo docker-compose pull
+          POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} sudo docker-compose up -d
           sudo docker image prune -af
