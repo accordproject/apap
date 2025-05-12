@@ -21,6 +21,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
+        touch ./server/.env
         docker build -t apap ./server
         docker tag apap accordproject/apap:latest
         docker push accordproject/apap:latest
