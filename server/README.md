@@ -611,6 +611,17 @@ to run ngrok (or similar) to tunnel Internet traffic.
 8. Ask questions about your templates or agreements
 9. Type, "convert agreement X to markdown" to convert a loaded agreement to markdown
 
+To connect RI to MCP Inspector, follow the following steps:
+1. Start RI
+2. install and run the MCP Inspector debugging tool
+```bash
+npx @modelcontextprotocol/inspector
+```
+3. Open a http://127.0.0.1:6274 (this is the default MCP Inspector address and port)
+4. Select SSE from the Transport Type dropdown
+5. replace the url with http://localhost:9000/sse (the default RI port)
+6. click Connect
+7. explore the available Resources, Prompts, Tools & Resource templates
 
 # Updating RI When Protocol Changes
 
