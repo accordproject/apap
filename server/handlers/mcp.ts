@@ -24,11 +24,33 @@ async function getTemplate(uri: URL, { templateId }: { templateId: string }) {
     }
 }
 
+async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
+    console.log(`Fetching agreement with ID: ${agreementId}`);
+    const url = new URL(uri);
+    const result = await fetch(`http://localhost:9000/agreements/${agreementId}`);
+    if (result.ok) {
+        const agreement = await result.json();
+        console.log(`Successfully fetched agreement: ${JSON.stringify(agreement)}`);
+        return {
+            contents: [{
+                uri: url.toString(),
+                mimeType: "application/json",
+                text: JSON.stringify(agreement)
+            }]
+        };
+    }
+    else {
+        console.error(`Failed to load agreement with ID: ${agreementId}`);
+        throw new Error('Failed to load agreement');
+    }
+}
+
 async function getTemplates(uri: URL) {
     console.log('getTemplates: ' + uri);
     const result = await fetch(`http://localhost:9000/templates`);
     if (result.ok) {
         const templates = await result.json();
+        console.log(`Successfully fetched templates: ${JSON.stringify(templates)}`);
         return {
             contents: templates.items.map((t: typeof Template) => {
                 return {
@@ -40,6 +62,7 @@ async function getTemplates(uri: URL) {
         }
     }
     else {
+        console.error('Failed to load templates');
         throw new Error('Failed to load template');
     }
 }
@@ -49,6 +72,7 @@ async function getAgreements(uri: URL) {
     const result = await fetch(`http://localhost:9000/agreements`);
     if (result.ok) {
         const agreements = await result.json();
+        console.log(`Successfully fetched agreements: ${JSON.stringify(agreements)}`);
         return {
             contents: agreements.items.map((a: typeof Agreement) => {
                 return {
@@ -61,6 +85,7 @@ async function getAgreements(uri: URL) {
         }
     }
     else {
+        console.error('Failed to load agreements');
         throw new Error('Failed to load agreement');
     }
 }
@@ -89,30 +114,32 @@ const getServer = () => {
     // register the agreements
     server.resource('agreements', "apap://agreements", getAgreements);
 
-    // // register the agreements resource
-    // server.resource(
-    //     "agreement",
-    //     new ResourceTemplate("resource://agreements/{agreementId}", {
-    //         list: async () => {
-    //             const result = await fetch('/agreements');
-    //             if (result.ok) {
-    //                 const agreements = await result.json();
-    //                 return {
-    //                     resources: agreements.items.map((a: typeof Agreement) => {
-    //                         return {
-    //                             ...a,
-    //                             uri: `resource://agreements/${a.id}`
-    //                         }
-    //                     })
-    //                 }
-    //             }
-    //             else {
-    //                 return { resources: [] };
-    //             }
-    //         }
-    //     }),
-    //     getAgreement
-    // );
+    server.resource(
+        "agreement",
+        new ResourceTemplate("apap://agreements/{agreementId}", {
+            list: async () => {
+                const result = await fetch('http://localhost:9000/agreements');
+                if (result.ok) {
+                    const agreements = await result.json();
+                    return {
+                        resources: agreements.items.map((a: typeof Agreement) => {
+                            return {
+                                ...a,
+                                uri: `apap://agreements/${a.id}`
+                            }
+                        })
+                    }
+                }
+                else {
+                    return { resources: [] };
+                }
+            }
+        }),
+        async (uri: URL, variables: any) => {
+            const agreementId = variables.agreementId;
+            return await getAgreement(uri.toString(), { agreementId });
+        }
+    );
 
     // register a tool that can convert an agreement to HTML
     // server.tool(
@@ -137,6 +164,32 @@ const getServer = () => {
             };
         }
     );
+
+    server.tool(
+        'getTemplate',
+        'Retrieve a template by ID',
+        {
+            templateId: z.string(),
+        },
+        {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false,
+        },
+        async ({ templateId }): Promise<CallToolResult> => {
+            const result = await fetch(`http://localhost:9000/templates/${templateId}`);
+            if (result.ok) {
+                const template = await result.json();
+                return {
+                    content: [{ type: "text", text: JSON.stringify(template) }]
+                };
+            } else {
+                throw new Error('Failed to load template');
+            }
+        }
+    );
+
     return server;
 };
 
@@ -274,5 +327,35 @@ router.post("/messages", async (req: Request, res: Response) => {
         res.status(400).send('No transport found for sessionId');
     }
 });
+
+// New function to register a resource with the MCP server
+function registerResource({ name, description, parameters, handler }: { name: string; description: string; parameters: z.ZodObject<any>; handler: (params: any) => Promise<any> }) {
+    const server = getServer();
+    server.resource(name, `apap://${name}`, async (uri: URL) => {
+        const params = parameters.parse(uri.searchParams);
+        return await handler(params);
+    });
+}
+
+// Example usage of registerResource to register an 'agreement' resource
+// registerResource({
+//   name: 'agreement',
+//   description: 'Retrieve a smart legal agreement by ID',
+//   parameters: z.object({ id: z.string() }),
+//   handler: async ({ id }) => {
+//     // Fetch agreement from APAP
+//     const result = await fetch(`http://localhost:9000/agreements/${id}`);
+//     if (result.ok) {
+//       const agreement = await result.json();
+//       return {
+//         uri: `apap://agreement/${id}`,
+//         mimeType: "application/json",
+//         text: JSON.stringify(agreement)
+//       };
+//     } else {
+//       throw new Error('Failed to load agreement');
+//     }
+//   }
+// });
 
 export default router;
