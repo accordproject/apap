@@ -7,138 +7,138 @@
 export interface paths {
   "/sharedmodels": {
     /**
-     * List All Sharedmodels 
+     * List All Sharedmodels
      * @description Gets a list of all `sharedmodel` entities.
      */
     get: operations["listSharedmodels"];
     /**
-     * Create a Sharedmodel 
+     * Create a Sharedmodel
      * @description Creates a new instance of a `sharedmodel`.
      */
     post: operations["createSharedmodel"];
   };
   "/sharedmodels/{uri}": {
     /**
-     * Get a sharedmodel 
+     * Get a sharedmodel
      * @description Gets the details of a single instance of a `sharedmodel`.
      */
     get: operations["getSharedmodel"];
     /**
-     * Update a sharedmodel 
+     * Update a sharedmodel
      * @description Updates an existing `sharedmodel`.
      */
     put: operations["replaceSharedmodel"];
     /**
-     * Delete a sharedmodel 
+     * Delete a sharedmodel
      * @description Deletes an existing `sharedmodel`.
      */
     delete: operations["deleteSharedmodel"];
     parameters: {
-        /** @description A unique identifier for a `SharedModel`. */
       path: {
+        /** @description A unique identifier for a `SharedModel`. */
         uri: string;
       };
     };
   };
   "/templates": {
     /**
-     * List All Templates 
+     * List All Templates
      * @description Gets a list of all `template` entities.
      */
     get: operations["listTemplates"];
     /**
-     * Create a Template 
+     * Create a Template
      * @description Creates a new instance of a `template`.
      */
     post: operations["createTemplate"];
   };
   "/templates/{uri}": {
     /**
-     * Get a template 
+     * Get a template
      * @description Gets the details of a single instance of a `template`.
      */
     get: operations["getTemplate"];
     /**
-     * Update a template 
+     * Update a template
      * @description Updates an existing `template`.
      */
     put: operations["replaceTemplate"];
     /**
-     * Delete a template 
+     * Delete a template
      * @description Deletes an existing `template`.
      */
     delete: operations["deleteTemplate"];
     parameters: {
-        /** @description A unique identifier for a `Template`. */
       path: {
+        /** @description A unique identifier for a `Template`. */
         uri: string;
       };
     };
   };
   "/agreements": {
     /**
-     * List All Agreements 
+     * List All Agreements
      * @description Gets a list of all `agreement` entities.
      */
     get: operations["listAgreements"];
     /**
-     * Create a Agreement 
+     * Create a Agreement
      * @description Creates a new instance of a `agreement`.
      */
     post: operations["createAgreement"];
   };
   "/agreements/{uri}": {
     /**
-     * Get a agreement 
+     * Get a agreement
      * @description Gets the details of a single instance of a `agreement`.
      */
     get: operations["getAgreement"];
     /**
-     * Update a agreement 
+     * Update a agreement
      * @description Updates an existing `agreement`.
      */
     put: operations["replaceAgreement"];
     /**
-     * Delete a agreement 
+     * Delete a agreement
      * @description Deletes an existing `agreement`.
      */
     delete: operations["deleteAgreement"];
     parameters: {
-        /** @description A unique identifier for a `Agreement`. */
       path: {
+        /** @description A unique identifier for a `Agreement`. */
         uri: string;
       };
     };
   };
   "/agreements/{agreementId}/convert/html": {
     /**
-     * Convert agreement to HTML 
+     * Convert agreement to HTML
      * @description Converts an existing `agreement` to HTML.
      */
     post: operations["convertAgreementHtml"];
     parameters: {
-        /** @description A unique identifier for a `Agreement`. */
       path: {
+        /** @description A unique identifier for a `Agreement`. */
         agreementId: string;
       };
     };
   };
   "/agreements/{agreementId}/trigger": {
     /**
-     * Trigger an agreement 
+     * Trigger an agreement
      * @description Sends data to an existing agreement.
      */
     post: operations["triggerAgreement"];
     parameters: {
-        /** @description A unique identifier for a `Agreement`. */
       path: {
+        /** @description A unique identifier for a `Agreement`. */
         agreementId: string;
       };
     };
   };
   "/capabilities": {
     /**
-     * Get server capabilities 
+     * Get server capabilities
      * @description Retrieve the supported features of the server.
      */
     get: operations["getCapabilities"];
@@ -154,12 +154,12 @@ export interface components {
     "org.accordproject.protocol@1.0.0.CTO": string;
     "org.accordproject.protocol@1.0.0.FullyQualifiedTypeName": string;
     /**
-     * Blob 
+     * Blob
      * @description An instance of org.accordproject.protocol@1.0.0.Blob
      */
     "org.accordproject.protocol@1.0.0.Blob": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Blob 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Blob
        * @default org.accordproject.protocol@1.0.0.Blob
        */
       $class: string;
@@ -167,12 +167,12 @@ export interface components {
       mimeType: string;
     };
     /**
-     * Text 
+     * Text
      * @description An instance of org.accordproject.protocol@1.0.0.Text
      */
     "org.accordproject.protocol@1.0.0.Text": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Text 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Text
        * @default org.accordproject.protocol@1.0.0.Text
        */
       $class: string;
@@ -180,47 +180,47 @@ export interface components {
       templateText?: string;
     };
     /**
-     * DomainModel 
+     * DomainModel
      * @description An instance of org.accordproject.protocol@1.0.0.DomainModel
      */
     "org.accordproject.protocol@1.0.0.DomainModel": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.DomainModel 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.DomainModel
        * @default org.accordproject.protocol@1.0.0.DomainModel
        */
       $class: string;
     };
     /**
-     * CtoModel 
+     * CtoModel
      * @description An instance of org.accordproject.protocol@1.0.0.CtoModel
      */
     "org.accordproject.protocol@1.0.0.CtoModel": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.CtoModel 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.CtoModel
        * @default org.accordproject.protocol@1.0.0.CtoModel
        */
       $class: string;
-      ctoFiles: (string)[];
+      ctoFiles: string[];
     };
     /**
-     * JsonModel 
+     * JsonModel
      * @description An instance of org.accordproject.protocol@1.0.0.JsonModel
      */
     "org.accordproject.protocol@1.0.0.JsonModel": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.JsonModel 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.JsonModel
        * @default org.accordproject.protocol@1.0.0.JsonModel
        */
       $class: string;
       model?: components["schemas"]["concerto.metamodel@0.4.0.Model"];
     };
     /**
-     * TemplateModel 
+     * TemplateModel
      * @description An instance of org.accordproject.protocol@1.0.0.TemplateModel
      */
     "org.accordproject.protocol@1.0.0.TemplateModel": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.TemplateModel 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.TemplateModel
        * @default org.accordproject.protocol@1.0.0.TemplateModel
        */
       $class: string;
@@ -230,12 +230,12 @@ export interface components {
       model?: components["schemas"]["org.accordproject.protocol@1.0.0.DomainModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.CtoModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.JsonModel"];
     };
     /**
-     * SharedModel 
+     * SharedModel
      * @description An instance of org.accordproject.protocol@1.0.0.SharedModel
      */
     "org.accordproject.protocol@1.0.0.SharedModel": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.SharedModel 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.SharedModel
        * @default org.accordproject.protocol@1.0.0.SharedModel
        */
       $class: string;
@@ -244,24 +244,24 @@ export interface components {
       model: components["schemas"]["org.accordproject.protocol@1.0.0.DomainModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.CtoModel"] | components["schemas"]["org.accordproject.protocol@1.0.0.JsonModel"];
     };
     /**
-     * CodeType 
-     * @description An instance of org.accordproject.protocol@1.0.0.CodeType 
+     * CodeType
+     * @description An instance of org.accordproject.protocol@1.0.0.CodeType
      * @enum {unknown}
      */
     "org.accordproject.protocol@1.0.0.CodeType": "ES2015" | "WASM_BYTES" | "TYPESCRIPT";
     /**
-     * CodeEncodingType 
-     * @description An instance of org.accordproject.protocol@1.0.0.CodeEncodingType 
+     * CodeEncodingType
+     * @description An instance of org.accordproject.protocol@1.0.0.CodeEncodingType
      * @enum {unknown}
      */
     "org.accordproject.protocol@1.0.0.CodeEncodingType": "PLAIN_TEXT" | "BASE64";
     /**
-     * Code 
+     * Code
      * @description An instance of org.accordproject.protocol@1.0.0.Code
      */
     "org.accordproject.protocol@1.0.0.Code": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Code 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Code
        * @default org.accordproject.protocol@1.0.0.Code
        */
       $class: string;
@@ -272,25 +272,25 @@ export interface components {
       value: string;
     };
     /**
-     * Logic 
+     * Logic
      * @description An instance of org.accordproject.protocol@1.0.0.Logic
      */
     "org.accordproject.protocol@1.0.0.Logic": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Logic 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Logic
        * @default org.accordproject.protocol@1.0.0.Logic
        */
       $class: string;
       stateType?: string;
-      codes: (components["schemas"]["org.accordproject.protocol@1.0.0.Code"])[];
+      codes: components["schemas"]["org.accordproject.protocol@1.0.0.Code"][];
     };
     /**
-     * TemplateMetadata 
+     * TemplateMetadata
      * @description An instance of org.accordproject.protocol@1.0.0.TemplateMetadata
      */
     "org.accordproject.protocol@1.0.0.TemplateMetadata": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.TemplateMetadata 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.TemplateMetadata
        * @default org.accordproject.protocol@1.0.0.TemplateMetadata
        */
       $class: string;
@@ -299,12 +299,12 @@ export interface components {
       cicero: string;
     };
     /**
-     * Template 
+     * Template
      * @description An instance of org.accordproject.protocol@1.0.0.Template
      */
     "org.accordproject.protocol@1.0.0.Template": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Template 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Template
        * @default org.accordproject.protocol@1.0.0.Template
        */
       $class: string;
@@ -315,7 +315,7 @@ export interface components {
       version: string;
       description?: string;
       license: string;
-      keywords?: (string)[];
+      keywords?: string[];
       metadata: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateMetadata"];
       logo?: components["schemas"]["org.accordproject.protocol@1.0.0.Blob"];
       templateModel: components["schemas"]["org.accordproject.protocol@1.0.0.TemplateModel"];
@@ -324,12 +324,12 @@ export interface components {
       sampleRequest?: string;
     };
     /**
-     * KeyValue 
+     * KeyValue
      * @description An instance of org.accordproject.protocol@1.0.0.KeyValue
      */
     "org.accordproject.protocol@1.0.0.KeyValue": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.KeyValue 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.KeyValue
        * @default org.accordproject.protocol@1.0.0.KeyValue
        */
       $class: string;
@@ -337,30 +337,30 @@ export interface components {
       value: string;
     };
     /**
-     * Metadata 
+     * Metadata
      * @description An instance of org.accordproject.protocol@1.0.0.Metadata
      */
     "org.accordproject.protocol@1.0.0.Metadata": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Metadata 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Metadata
        * @default org.accordproject.protocol@1.0.0.Metadata
        */
       $class: string;
-      values: (components["schemas"]["org.accordproject.protocol@1.0.0.KeyValue"])[];
+      values: components["schemas"]["org.accordproject.protocol@1.0.0.KeyValue"][];
     };
     /**
-     * AgreementStatusType 
-     * @description An instance of org.accordproject.protocol@1.0.0.AgreementStatusType 
+     * AgreementStatusType
+     * @description An instance of org.accordproject.protocol@1.0.0.AgreementStatusType
      * @enum {unknown}
      */
     "org.accordproject.protocol@1.0.0.AgreementStatusType": "DRAFT" | "SIGNNG" | "COMPLETED" | "SUPERSEDED";
     /**
-     * Agreement 
+     * Agreement
      * @description An instance of org.accordproject.protocol@1.0.0.Agreement
      */
     "org.accordproject.protocol@1.0.0.Agreement": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Agreement 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Agreement
        * @default org.accordproject.protocol@1.0.0.Agreement
        */
       $class: string;
@@ -371,20 +371,20 @@ export interface components {
       template: string;
       state?: string;
       agreementStatus: components["schemas"]["org.accordproject.protocol@1.0.0.AgreementStatusType"];
-      agreementParties?: (components["schemas"]["org.accordproject.protocol@1.0.0.AgreementParty"])[];
-      signatures?: (components["schemas"]["org.accordproject.protocol@1.0.0.Signature"])[];
-      historyEntries?: (components["schemas"]["org.accordproject.protocol@1.0.0.HistoryEntry"])[];
-      attachments?: (components["schemas"]["org.accordproject.protocol@1.0.0.Blob"])[];
-      references?: (string)[];
+      agreementParties?: components["schemas"]["org.accordproject.protocol@1.0.0.AgreementParty"][];
+      signatures?: components["schemas"]["org.accordproject.protocol@1.0.0.Signature"][];
+      historyEntries?: components["schemas"]["org.accordproject.protocol@1.0.0.HistoryEntry"][];
+      attachments?: components["schemas"]["org.accordproject.protocol@1.0.0.Blob"][];
+      references?: string[];
       metadata?: components["schemas"]["org.accordproject.protocol@1.0.0.Metadata"];
     };
     /**
-     * AgreementParty 
+     * AgreementParty
      * @description An instance of org.accordproject.protocol@1.0.0.AgreementParty
      */
     "org.accordproject.protocol@1.0.0.AgreementParty": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.AgreementParty 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.AgreementParty
        * @default org.accordproject.protocol@1.0.0.AgreementParty
        */
       $class: string;
@@ -400,28 +400,28 @@ export interface components {
       partyId: string;
     };
     /**
-     * Address 
+     * Address
      * @description An instance of org.accordproject.protocol@1.0.0.Address
      */
     "org.accordproject.protocol@1.0.0.Address": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Address 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Address
        * @default org.accordproject.protocol@1.0.0.Address
        */
       $class: string;
-      streetRoad: (string)[];
+      streetRoad: string[];
       suburbTownCity?: string;
       stateTerritoryRegion?: string;
       postalCode?: string;
       country?: string;
     };
     /**
-     * HistoryEntry 
+     * HistoryEntry
      * @description An instance of org.accordproject.protocol@1.0.0.HistoryEntry
      */
     "org.accordproject.protocol@1.0.0.HistoryEntry": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.HistoryEntry 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.HistoryEntry
        * @default org.accordproject.protocol@1.0.0.HistoryEntry
        */
       $class: string;
@@ -430,12 +430,12 @@ export interface components {
       metadata: components["schemas"]["org.accordproject.protocol@1.0.0.Metadata"];
     };
     /**
-     * Signature 
+     * Signature
      * @description An instance of org.accordproject.protocol@1.0.0.Signature
      */
     "org.accordproject.protocol@1.0.0.Signature": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Signature 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Signature
        * @default org.accordproject.protocol@1.0.0.Signature
        */
       $class: string;
@@ -443,67 +443,67 @@ export interface components {
       /** Format: date-time */
       signedAt?: string;
       metadata: components["schemas"]["org.accordproject.protocol@1.0.0.Metadata"];
-      signatureImage: (components["schemas"]["org.accordproject.protocol@1.0.0.Blob"])[];
+      signatureImage: components["schemas"]["org.accordproject.protocol@1.0.0.Blob"][];
     };
     /**
-     * ConversionOptions 
+     * ConversionOptions
      * @description An instance of org.accordproject.protocol@1.0.0.ConversionOptions
      */
     "org.accordproject.protocol@1.0.0.ConversionOptions": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.ConversionOptions 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.ConversionOptions
        * @default org.accordproject.protocol@1.0.0.ConversionOptions
        */
       $class: string;
     };
     /**
-     * HtmlConversionOptions 
+     * HtmlConversionOptions
      * @description An instance of org.accordproject.protocol@1.0.0.HtmlConversionOptions
      */
     "org.accordproject.protocol@1.0.0.HtmlConversionOptions": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.HtmlConversionOptions 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.HtmlConversionOptions
        * @default org.accordproject.protocol@1.0.0.HtmlConversionOptions
        */
       $class: string;
     };
     /**
-     * FeatureType 
-     * @description An instance of org.accordproject.protocol@1.0.0.FeatureType 
+     * FeatureType
+     * @description An instance of org.accordproject.protocol@1.0.0.FeatureType
      * @enum {unknown}
      */
     "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_MANAGE" | "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "LOGIC_WASM" | "LOGIC_ES2015" | "LOGIC_TYPESCRIPT" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_CONVERT_HTML" | "AGREEMENT_SIGNING" | "SHARED_MODEL_MANAGE";
     /**
-     * Capabilities 
+     * Capabilities
      * @description An instance of org.accordproject.protocol@1.0.0.Capabilities
      */
     "org.accordproject.protocol@1.0.0.Capabilities": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.Capabilities 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.Capabilities
        * @default org.accordproject.protocol@1.0.0.Capabilities
        */
       $class: string;
-      features: (components["schemas"]["org.accordproject.protocol@1.0.0.FeatureType"])[];
+      features: components["schemas"]["org.accordproject.protocol@1.0.0.FeatureType"][];
     };
     /**
-     * TriggerRequest 
+     * TriggerRequest
      * @description An instance of org.accordproject.protocol@1.0.0.TriggerRequest
      */
     "org.accordproject.protocol@1.0.0.TriggerRequest": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.TriggerRequest 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.TriggerRequest
        * @default org.accordproject.protocol@1.0.0.TriggerRequest
        */
       $class: string;
       payload: string;
     };
     /**
-     * TriggerResponse 
+     * TriggerResponse
      * @description An instance of org.accordproject.protocol@1.0.0.TriggerResponse
      */
     "org.accordproject.protocol@1.0.0.TriggerResponse": {
       /**
-       * @description The class identifier for org.accordproject.protocol@1.0.0.TriggerResponse 
+       * @description The class identifier for org.accordproject.protocol@1.0.0.TriggerResponse
        * @default org.accordproject.protocol@1.0.0.TriggerResponse
        */
       $class: string;
@@ -513,12 +513,25 @@ export interface components {
       errorDetails?: string;
     };
     /**
-     * Node 
+     * Party
+     * @description An instance of org.accordproject.party@0.2.0.Party
+     */
+    "org.accordproject.party@0.2.0.Party": {
+      /**
+       * @description The class identifier for org.accordproject.party@0.2.0.Party
+       * @default org.accordproject.party@0.2.0.Party
+       */
+      $class: string;
+      /** @description The instance identifier for this type */
+      partyId: string;
+    };
+    /**
+     * Node
      * @description An instance of org.accordproject.commonmark@0.5.0.Node
      */
     "org.accordproject.commonmark@0.5.0.Node": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Node 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Node
        * @default org.accordproject.commonmark@0.5.0.Node
        */
       $class: string;
@@ -528,12 +541,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Root 
+     * Root
      * @description An instance of org.accordproject.commonmark@0.5.0.Root
      */
     "org.accordproject.commonmark@0.5.0.Root": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Root 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Root
        * @default org.accordproject.commonmark@0.5.0.Root
        */
       $class: string;
@@ -543,12 +556,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Child 
+     * Child
      * @description An instance of org.accordproject.commonmark@0.5.0.Child
      */
     "org.accordproject.commonmark@0.5.0.Child": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Child 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Child
        * @default org.accordproject.commonmark@0.5.0.Child
        */
       $class: string;
@@ -558,12 +571,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Text 
+     * Text
      * @description An instance of org.accordproject.commonmark@0.5.0.Text
      */
     "org.accordproject.commonmark@0.5.0.Text": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Text 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Text
        * @default org.accordproject.commonmark@0.5.0.Text
        */
       $class: string;
@@ -573,12 +586,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Attribute 
+     * Attribute
      * @description An instance of org.accordproject.commonmark@0.5.0.Attribute
      */
     "org.accordproject.commonmark@0.5.0.Attribute": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Attribute 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Attribute
        * @default org.accordproject.commonmark@0.5.0.Attribute
        */
       $class: string;
@@ -586,28 +599,28 @@ export interface components {
       value: string;
     };
     /**
-     * TagInfo 
+     * TagInfo
      * @description An instance of org.accordproject.commonmark@0.5.0.TagInfo
      */
     "org.accordproject.commonmark@0.5.0.TagInfo": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TagInfo 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TagInfo
        * @default org.accordproject.commonmark@0.5.0.TagInfo
        */
       $class: string;
       tagName: string;
       attributeString: string;
-      attributes: (components["schemas"]["org.accordproject.commonmark@0.5.0.Attribute"])[];
+      attributes: components["schemas"]["org.accordproject.commonmark@0.5.0.Attribute"][];
       content: string;
       closed: boolean;
     };
     /**
-     * CodeBlock 
+     * CodeBlock
      * @description An instance of org.accordproject.commonmark@0.5.0.CodeBlock
      */
     "org.accordproject.commonmark@0.5.0.CodeBlock": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.CodeBlock
        * @default org.accordproject.commonmark@0.5.0.CodeBlock
        */
       $class: string;
@@ -619,12 +632,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Code 
+     * Code
      * @description An instance of org.accordproject.commonmark@0.5.0.Code
      */
     "org.accordproject.commonmark@0.5.0.Code": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Code 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Code
        * @default org.accordproject.commonmark@0.5.0.Code
        */
       $class: string;
@@ -635,12 +648,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * HtmlInline 
+     * HtmlInline
      * @description An instance of org.accordproject.commonmark@0.5.0.HtmlInline
      */
     "org.accordproject.commonmark@0.5.0.HtmlInline": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlInline
        * @default org.accordproject.commonmark@0.5.0.HtmlInline
        */
       $class: string;
@@ -651,12 +664,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * HtmlBlock 
+     * HtmlBlock
      * @description An instance of org.accordproject.commonmark@0.5.0.HtmlBlock
      */
     "org.accordproject.commonmark@0.5.0.HtmlBlock": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.HtmlBlock
        * @default org.accordproject.commonmark@0.5.0.HtmlBlock
        */
       $class: string;
@@ -667,12 +680,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Emph 
+     * Emph
      * @description An instance of org.accordproject.commonmark@0.5.0.Emph
      */
     "org.accordproject.commonmark@0.5.0.Emph": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Emph 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Emph
        * @default org.accordproject.commonmark@0.5.0.Emph
        */
       $class: string;
@@ -682,12 +695,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Strong 
+     * Strong
      * @description An instance of org.accordproject.commonmark@0.5.0.Strong
      */
     "org.accordproject.commonmark@0.5.0.Strong": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Strong 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Strong
        * @default org.accordproject.commonmark@0.5.0.Strong
        */
       $class: string;
@@ -697,12 +710,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * BlockQuote 
+     * BlockQuote
      * @description An instance of org.accordproject.commonmark@0.5.0.BlockQuote
      */
     "org.accordproject.commonmark@0.5.0.BlockQuote": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.BlockQuote
        * @default org.accordproject.commonmark@0.5.0.BlockQuote
        */
       $class: string;
@@ -712,12 +725,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Heading 
+     * Heading
      * @description An instance of org.accordproject.commonmark@0.5.0.Heading
      */
     "org.accordproject.commonmark@0.5.0.Heading": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Heading 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Heading
        * @default org.accordproject.commonmark@0.5.0.Heading
        */
       $class: string;
@@ -728,12 +741,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * ThematicBreak 
+     * ThematicBreak
      * @description An instance of org.accordproject.commonmark@0.5.0.ThematicBreak
      */
     "org.accordproject.commonmark@0.5.0.ThematicBreak": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.ThematicBreak
        * @default org.accordproject.commonmark@0.5.0.ThematicBreak
        */
       $class: string;
@@ -743,12 +756,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Softbreak 
+     * Softbreak
      * @description An instance of org.accordproject.commonmark@0.5.0.Softbreak
      */
     "org.accordproject.commonmark@0.5.0.Softbreak": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Softbreak 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Softbreak
        * @default org.accordproject.commonmark@0.5.0.Softbreak
        */
       $class: string;
@@ -758,12 +771,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Linebreak 
+     * Linebreak
      * @description An instance of org.accordproject.commonmark@0.5.0.Linebreak
      */
     "org.accordproject.commonmark@0.5.0.Linebreak": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Linebreak 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Linebreak
        * @default org.accordproject.commonmark@0.5.0.Linebreak
        */
       $class: string;
@@ -773,12 +786,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Link 
+     * Link
      * @description An instance of org.accordproject.commonmark@0.5.0.Link
      */
     "org.accordproject.commonmark@0.5.0.Link": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Link 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Link
        * @default org.accordproject.commonmark@0.5.0.Link
        */
       $class: string;
@@ -790,12 +803,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Image 
+     * Image
      * @description An instance of org.accordproject.commonmark@0.5.0.Image
      */
     "org.accordproject.commonmark@0.5.0.Image": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Image 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Image
        * @default org.accordproject.commonmark@0.5.0.Image
        */
       $class: string;
@@ -807,12 +820,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Paragraph 
+     * Paragraph
      * @description An instance of org.accordproject.commonmark@0.5.0.Paragraph
      */
     "org.accordproject.commonmark@0.5.0.Paragraph": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Paragraph 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Paragraph
        * @default org.accordproject.commonmark@0.5.0.Paragraph
        */
       $class: string;
@@ -822,12 +835,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * List 
+     * List
      * @description An instance of org.accordproject.commonmark@0.5.0.List
      */
     "org.accordproject.commonmark@0.5.0.List": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.List 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.List
        * @default org.accordproject.commonmark@0.5.0.List
        */
       $class: string;
@@ -841,12 +854,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Item 
+     * Item
      * @description An instance of org.accordproject.commonmark@0.5.0.Item
      */
     "org.accordproject.commonmark@0.5.0.Item": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Item 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Item
        * @default org.accordproject.commonmark@0.5.0.Item
        */
       $class: string;
@@ -856,12 +869,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Document 
+     * Document
      * @description An instance of org.accordproject.commonmark@0.5.0.Document
      */
     "org.accordproject.commonmark@0.5.0.Document": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Document 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Document
        * @default org.accordproject.commonmark@0.5.0.Document
        */
       $class: string;
@@ -872,12 +885,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Table 
+     * Table
      * @description An instance of org.accordproject.commonmark@0.5.0.Table
      */
     "org.accordproject.commonmark@0.5.0.Table": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.Table 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.Table
        * @default org.accordproject.commonmark@0.5.0.Table
        */
       $class: string;
@@ -887,12 +900,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * TableHead 
+     * TableHead
      * @description An instance of org.accordproject.commonmark@0.5.0.TableHead
      */
     "org.accordproject.commonmark@0.5.0.TableHead": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableHead 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableHead
        * @default org.accordproject.commonmark@0.5.0.TableHead
        */
       $class: string;
@@ -902,12 +915,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * TableBody 
+     * TableBody
      * @description An instance of org.accordproject.commonmark@0.5.0.TableBody
      */
     "org.accordproject.commonmark@0.5.0.TableBody": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableBody 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableBody
        * @default org.accordproject.commonmark@0.5.0.TableBody
        */
       $class: string;
@@ -917,12 +930,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * TableRow 
+     * TableRow
      * @description An instance of org.accordproject.commonmark@0.5.0.TableRow
      */
     "org.accordproject.commonmark@0.5.0.TableRow": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableRow 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableRow
        * @default org.accordproject.commonmark@0.5.0.TableRow
        */
       $class: string;
@@ -932,12 +945,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * HeaderCell 
+     * HeaderCell
      * @description An instance of org.accordproject.commonmark@0.5.0.HeaderCell
      */
     "org.accordproject.commonmark@0.5.0.HeaderCell": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.HeaderCell
        * @default org.accordproject.commonmark@0.5.0.HeaderCell
        */
       $class: string;
@@ -947,12 +960,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * TableCell 
+     * TableCell
      * @description An instance of org.accordproject.commonmark@0.5.0.TableCell
      */
     "org.accordproject.commonmark@0.5.0.TableCell": {
       /**
-       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableCell 
+       * @description The class identifier for org.accordproject.commonmark@0.5.0.TableCell
        * @default org.accordproject.commonmark@0.5.0.TableCell
        */
       $class: string;
@@ -962,12 +975,12 @@ export interface components {
       endLine?: number;
     };
     /**
-     * Position 
+     * Position
      * @description An instance of concerto.metamodel@0.4.0.Position
      */
     "concerto.metamodel@0.4.0.Position": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Position 
+       * @description The class identifier for concerto.metamodel@0.4.0.Position
        * @default concerto.metamodel@0.4.0.Position
        */
       $class: string;
@@ -976,12 +989,12 @@ export interface components {
       offset: number;
     };
     /**
-     * Range 
+     * Range
      * @description An instance of concerto.metamodel@0.4.0.Range
      */
     "concerto.metamodel@0.4.0.Range": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Range 
+       * @description The class identifier for concerto.metamodel@0.4.0.Range
        * @default concerto.metamodel@0.4.0.Range
        */
       $class: string;
@@ -990,12 +1003,12 @@ export interface components {
       source?: string;
     };
     /**
-     * TypeIdentifier 
+     * TypeIdentifier
      * @description An instance of concerto.metamodel@0.4.0.TypeIdentifier
      */
     "concerto.metamodel@0.4.0.TypeIdentifier": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.TypeIdentifier 
+       * @description The class identifier for concerto.metamodel@0.4.0.TypeIdentifier
        * @default concerto.metamodel@0.4.0.TypeIdentifier
        */
       $class: string;
@@ -1003,24 +1016,24 @@ export interface components {
       namespace?: string;
     };
     /**
-     * DecoratorLiteral 
+     * DecoratorLiteral
      * @description An instance of concerto.metamodel@0.4.0.DecoratorLiteral
      */
     "concerto.metamodel@0.4.0.DecoratorLiteral": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral 
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral
        * @default concerto.metamodel@0.4.0.DecoratorLiteral
        */
       $class: string;
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * DecoratorString 
+     * DecoratorString
      * @description An instance of concerto.metamodel@0.4.0.DecoratorString
      */
     "concerto.metamodel@0.4.0.DecoratorString": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorString 
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorString
        * @default concerto.metamodel@0.4.0.DecoratorString
        */
       $class: string;
@@ -1028,12 +1041,12 @@ export interface components {
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * DecoratorNumber 
+     * DecoratorNumber
      * @description An instance of concerto.metamodel@0.4.0.DecoratorNumber
      */
     "concerto.metamodel@0.4.0.DecoratorNumber": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorNumber 
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorNumber
        * @default concerto.metamodel@0.4.0.DecoratorNumber
        */
       $class: string;
@@ -1041,12 +1054,12 @@ export interface components {
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * DecoratorBoolean 
+     * DecoratorBoolean
      * @description An instance of concerto.metamodel@0.4.0.DecoratorBoolean
      */
     "concerto.metamodel@0.4.0.DecoratorBoolean": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean 
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean
        * @default concerto.metamodel@0.4.0.DecoratorBoolean
        */
       $class: string;
@@ -1054,12 +1067,12 @@ export interface components {
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * DecoratorTypeReference 
+     * DecoratorTypeReference
      * @description An instance of concerto.metamodel@0.4.0.DecoratorTypeReference
      */
     "concerto.metamodel@0.4.0.DecoratorTypeReference": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference 
+       * @description The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference
        * @default concerto.metamodel@0.4.0.DecoratorTypeReference
        */
       $class: string;
@@ -1069,12 +1082,12 @@ export interface components {
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * Decorator 
+     * Decorator
      * @description An instance of concerto.metamodel@0.4.0.Decorator
      */
     "concerto.metamodel@0.4.0.Decorator": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Decorator 
+       * @description The class identifier for concerto.metamodel@0.4.0.Decorator
        * @default concerto.metamodel@0.4.0.Decorator
        */
       $class: string;
@@ -1083,78 +1096,78 @@ export interface components {
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * Identified 
+     * Identified
      * @description An instance of concerto.metamodel@0.4.0.Identified
      */
     "concerto.metamodel@0.4.0.Identified": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Identified 
+       * @description The class identifier for concerto.metamodel@0.4.0.Identified
        * @default concerto.metamodel@0.4.0.Identified
        */
       $class: string;
     };
     /**
-     * IdentifiedBy 
+     * IdentifiedBy
      * @description An instance of concerto.metamodel@0.4.0.IdentifiedBy
      */
     "concerto.metamodel@0.4.0.IdentifiedBy": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.IdentifiedBy 
+       * @description The class identifier for concerto.metamodel@0.4.0.IdentifiedBy
        * @default concerto.metamodel@0.4.0.IdentifiedBy
        */
       $class: string;
       name: string;
     };
     /**
-     * Declaration 
+     * Declaration
      * @description An instance of concerto.metamodel@0.4.0.Declaration
      */
     "concerto.metamodel@0.4.0.Declaration": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Declaration 
+       * @description The class identifier for concerto.metamodel@0.4.0.Declaration
        * @default concerto.metamodel@0.4.0.Declaration
        */
       $class: string;
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * EnumDeclaration 
+     * EnumDeclaration
      * @description An instance of concerto.metamodel@0.4.0.EnumDeclaration
      */
     "concerto.metamodel@0.4.0.EnumDeclaration": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.EnumDeclaration 
+       * @description The class identifier for concerto.metamodel@0.4.0.EnumDeclaration
        * @default concerto.metamodel@0.4.0.EnumDeclaration
        */
       $class: string;
-      properties: (components["schemas"]["concerto.metamodel@0.4.0.EnumProperty"])[];
+      properties: components["schemas"]["concerto.metamodel@0.4.0.EnumProperty"][];
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * EnumProperty 
+     * EnumProperty
      * @description An instance of concerto.metamodel@0.4.0.EnumProperty
      */
     "concerto.metamodel@0.4.0.EnumProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.EnumProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.EnumProperty
        * @default concerto.metamodel@0.4.0.EnumProperty
        */
       $class: string;
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * ConceptDeclaration 
+     * ConceptDeclaration
      * @description An instance of concerto.metamodel@0.4.0.ConceptDeclaration
      */
     "concerto.metamodel@0.4.0.ConceptDeclaration": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration 
+       * @description The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration
        * @default concerto.metamodel@0.4.0.ConceptDeclaration
        */
       $class: string;
@@ -1164,16 +1177,16 @@ export interface components {
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
       properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * AssetDeclaration 
+     * AssetDeclaration
      * @description An instance of concerto.metamodel@0.4.0.AssetDeclaration
      */
     "concerto.metamodel@0.4.0.AssetDeclaration": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.AssetDeclaration 
+       * @description The class identifier for concerto.metamodel@0.4.0.AssetDeclaration
        * @default concerto.metamodel@0.4.0.AssetDeclaration
        */
       $class: string;
@@ -1183,16 +1196,16 @@ export interface components {
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
       properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * ParticipantDeclaration 
+     * ParticipantDeclaration
      * @description An instance of concerto.metamodel@0.4.0.ParticipantDeclaration
      */
     "concerto.metamodel@0.4.0.ParticipantDeclaration": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration 
+       * @description The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration
        * @default concerto.metamodel@0.4.0.ParticipantDeclaration
        */
       $class: string;
@@ -1202,16 +1215,16 @@ export interface components {
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
       properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * TransactionDeclaration 
+     * TransactionDeclaration
      * @description An instance of concerto.metamodel@0.4.0.TransactionDeclaration
      */
     "concerto.metamodel@0.4.0.TransactionDeclaration": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration 
+       * @description The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration
        * @default concerto.metamodel@0.4.0.TransactionDeclaration
        */
       $class: string;
@@ -1221,16 +1234,16 @@ export interface components {
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
       properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * EventDeclaration 
+     * EventDeclaration
      * @description An instance of concerto.metamodel@0.4.0.EventDeclaration
      */
     "concerto.metamodel@0.4.0.EventDeclaration": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.EventDeclaration 
+       * @description The class identifier for concerto.metamodel@0.4.0.EventDeclaration
        * @default concerto.metamodel@0.4.0.EventDeclaration
        */
       $class: string;
@@ -1240,16 +1253,16 @@ export interface components {
       superType?: components["schemas"]["concerto.metamodel@0.4.0.TypeIdentifier"];
       properties: (components["schemas"]["concerto.metamodel@0.4.0.Property"] | components["schemas"]["concerto.metamodel@0.4.0.RelationshipProperty"] | components["schemas"]["concerto.metamodel@0.4.0.ObjectProperty"] | components["schemas"]["concerto.metamodel@0.4.0.BooleanProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DateTimeProperty"] | components["schemas"]["concerto.metamodel@0.4.0.StringProperty"] | components["schemas"]["concerto.metamodel@0.4.0.DoubleProperty"] | components["schemas"]["concerto.metamodel@0.4.0.IntegerProperty"] | components["schemas"]["concerto.metamodel@0.4.0.LongProperty"])[];
       name: string;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * Property 
+     * Property
      * @description An instance of concerto.metamodel@0.4.0.Property
      */
     "concerto.metamodel@0.4.0.Property": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Property 
+       * @description The class identifier for concerto.metamodel@0.4.0.Property
        * @default concerto.metamodel@0.4.0.Property
        */
       $class: string;
@@ -1258,16 +1271,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * RelationshipProperty 
+     * RelationshipProperty
      * @description An instance of concerto.metamodel@0.4.0.RelationshipProperty
      */
     "concerto.metamodel@0.4.0.RelationshipProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.RelationshipProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.RelationshipProperty
        * @default concerto.metamodel@0.4.0.RelationshipProperty
        */
       $class: string;
@@ -1277,16 +1290,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * ObjectProperty 
+     * ObjectProperty
      * @description An instance of concerto.metamodel@0.4.0.ObjectProperty
      */
     "concerto.metamodel@0.4.0.ObjectProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ObjectProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.ObjectProperty
        * @default concerto.metamodel@0.4.0.ObjectProperty
        */
       $class: string;
@@ -1297,16 +1310,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * BooleanProperty 
+     * BooleanProperty
      * @description An instance of concerto.metamodel@0.4.0.BooleanProperty
      */
     "concerto.metamodel@0.4.0.BooleanProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.BooleanProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.BooleanProperty
        * @default concerto.metamodel@0.4.0.BooleanProperty
        */
       $class: string;
@@ -1316,16 +1329,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * DateTimeProperty 
+     * DateTimeProperty
      * @description An instance of concerto.metamodel@0.4.0.DateTimeProperty
      */
     "concerto.metamodel@0.4.0.DateTimeProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DateTimeProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.DateTimeProperty
        * @default concerto.metamodel@0.4.0.DateTimeProperty
        */
       $class: string;
@@ -1334,16 +1347,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * StringProperty 
+     * StringProperty
      * @description An instance of concerto.metamodel@0.4.0.StringProperty
      */
     "concerto.metamodel@0.4.0.StringProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.StringProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.StringProperty
        * @default concerto.metamodel@0.4.0.StringProperty
        */
       $class: string;
@@ -1354,16 +1367,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * StringRegexValidator 
+     * StringRegexValidator
      * @description An instance of concerto.metamodel@0.4.0.StringRegexValidator
      */
     "concerto.metamodel@0.4.0.StringRegexValidator": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.StringRegexValidator 
+       * @description The class identifier for concerto.metamodel@0.4.0.StringRegexValidator
        * @default concerto.metamodel@0.4.0.StringRegexValidator
        */
       $class: string;
@@ -1371,12 +1384,12 @@ export interface components {
       flags: string;
     };
     /**
-     * DoubleProperty 
+     * DoubleProperty
      * @description An instance of concerto.metamodel@0.4.0.DoubleProperty
      */
     "concerto.metamodel@0.4.0.DoubleProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DoubleProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.DoubleProperty
        * @default concerto.metamodel@0.4.0.DoubleProperty
        */
       $class: string;
@@ -1387,16 +1400,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * DoubleDomainValidator 
+     * DoubleDomainValidator
      * @description An instance of concerto.metamodel@0.4.0.DoubleDomainValidator
      */
     "concerto.metamodel@0.4.0.DoubleDomainValidator": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator 
+       * @description The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator
        * @default concerto.metamodel@0.4.0.DoubleDomainValidator
        */
       $class: string;
@@ -1404,12 +1417,12 @@ export interface components {
       upper?: number;
     };
     /**
-     * IntegerProperty 
+     * IntegerProperty
      * @description An instance of concerto.metamodel@0.4.0.IntegerProperty
      */
     "concerto.metamodel@0.4.0.IntegerProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.IntegerProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.IntegerProperty
        * @default concerto.metamodel@0.4.0.IntegerProperty
        */
       $class: string;
@@ -1420,16 +1433,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * IntegerDomainValidator 
+     * IntegerDomainValidator
      * @description An instance of concerto.metamodel@0.4.0.IntegerDomainValidator
      */
     "concerto.metamodel@0.4.0.IntegerDomainValidator": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator 
+       * @description The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator
        * @default concerto.metamodel@0.4.0.IntegerDomainValidator
        */
       $class: string;
@@ -1437,12 +1450,12 @@ export interface components {
       upper?: number;
     };
     /**
-     * LongProperty 
+     * LongProperty
      * @description An instance of concerto.metamodel@0.4.0.LongProperty
      */
     "concerto.metamodel@0.4.0.LongProperty": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.LongProperty 
+       * @description The class identifier for concerto.metamodel@0.4.0.LongProperty
        * @default concerto.metamodel@0.4.0.LongProperty
        */
       $class: string;
@@ -1453,16 +1466,16 @@ export interface components {
       isArray: boolean;
       /** @default false */
       isOptional: boolean;
-      decorators?: (components["schemas"]["concerto.metamodel@0.4.0.Decorator"])[];
+      decorators?: components["schemas"]["concerto.metamodel@0.4.0.Decorator"][];
       location?: components["schemas"]["concerto.metamodel@0.4.0.Range"];
     };
     /**
-     * LongDomainValidator 
+     * LongDomainValidator
      * @description An instance of concerto.metamodel@0.4.0.LongDomainValidator
      */
     "concerto.metamodel@0.4.0.LongDomainValidator": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.LongDomainValidator 
+       * @description The class identifier for concerto.metamodel@0.4.0.LongDomainValidator
        * @default concerto.metamodel@0.4.0.LongDomainValidator
        */
       $class: string;
@@ -1470,12 +1483,12 @@ export interface components {
       upper?: number;
     };
     /**
-     * Import 
+     * Import
      * @description An instance of concerto.metamodel@0.4.0.Import
      */
     "concerto.metamodel@0.4.0.Import": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Import 
+       * @description The class identifier for concerto.metamodel@0.4.0.Import
        * @default concerto.metamodel@0.4.0.Import
        */
       $class: string;
@@ -1483,12 +1496,12 @@ export interface components {
       uri?: string;
     };
     /**
-     * ImportAll 
+     * ImportAll
      * @description An instance of concerto.metamodel@0.4.0.ImportAll
      */
     "concerto.metamodel@0.4.0.ImportAll": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ImportAll 
+       * @description The class identifier for concerto.metamodel@0.4.0.ImportAll
        * @default concerto.metamodel@0.4.0.ImportAll
        */
       $class: string;
@@ -1496,12 +1509,12 @@ export interface components {
       uri?: string;
     };
     /**
-     * ImportType 
+     * ImportType
      * @description An instance of concerto.metamodel@0.4.0.ImportType
      */
     "concerto.metamodel@0.4.0.ImportType": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.ImportType 
+       * @description The class identifier for concerto.metamodel@0.4.0.ImportType
        * @default concerto.metamodel@0.4.0.ImportType
        */
       $class: string;
@@ -1510,12 +1523,12 @@ export interface components {
       uri?: string;
     };
     /**
-     * Model 
+     * Model
      * @description An instance of concerto.metamodel@0.4.0.Model
      */
     "concerto.metamodel@0.4.0.Model": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Model 
+       * @description The class identifier for concerto.metamodel@0.4.0.Model
        * @default concerto.metamodel@0.4.0.Model
        */
       $class: string;
@@ -1526,29 +1539,16 @@ export interface components {
       declarations?: (components["schemas"]["concerto.metamodel@0.4.0.Declaration"] | components["schemas"]["concerto.metamodel@0.4.0.EnumDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.ConceptDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.AssetDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.ParticipantDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.TransactionDeclaration"] | components["schemas"]["concerto.metamodel@0.4.0.EventDeclaration"])[];
     };
     /**
-     * Models 
+     * Models
      * @description An instance of concerto.metamodel@0.4.0.Models
      */
     "concerto.metamodel@0.4.0.Models": {
       /**
-       * @description The class identifier for concerto.metamodel@0.4.0.Models 
+       * @description The class identifier for concerto.metamodel@0.4.0.Models
        * @default concerto.metamodel@0.4.0.Models
        */
       $class: string;
-      models: (components["schemas"]["concerto.metamodel@0.4.0.Model"])[];
-    };
-    /**
-     * Party 
-     * @description An instance of org.accordproject.party@0.2.0.Party
-     */
-    "org.accordproject.party@0.2.0.Party": {
-      /**
-       * @description The class identifier for org.accordproject.party@0.2.0.Party 
-       * @default org.accordproject.party@0.2.0.Party
-       */
-      $class: string;
-      /** @description The instance identifier for this type */
-      partyId: string;
+      models: components["schemas"]["concerto.metamodel@0.4.0.Model"][];
     };
   };
   responses: never;
@@ -1558,29 +1558,31 @@ export interface components {
   pathItems: never;
 }
 
+export type $defs = Record<string, never>;
+
 export type external = Record<string, never>;
 
 export interface operations {
 
+  /**
+   * List All Sharedmodels
+   * @description Gets a list of all `sharedmodel` entities.
+   */
   listSharedmodels: {
-    /**
-     * List All Sharedmodels 
-     * @description Gets a list of all `sharedmodel` entities.
-     */
     responses: {
       /** @description Successful response - returns an array of `sharedmodel` entities. */
       200: {
         content: {
-          "application/json": (components["schemas"]["org.accordproject.protocol@1.0.0.SharedModel"])[];
+          "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.SharedModel"][];
         };
       };
     };
   };
+  /**
+   * Create a Sharedmodel
+   * @description Creates a new instance of a `sharedmodel`.
+   */
   createSharedmodel: {
-    /**
-     * Create a Sharedmodel 
-     * @description Creates a new instance of a `sharedmodel`.
-     */
     /** @description A new `sharedmodel` to be created. */
     requestBody: {
       content: {
@@ -1589,14 +1591,22 @@ export interface operations {
     };
     responses: {
       /** @description Successful response. */
-      201: never;
+      201: {
+        content: never;
+      };
     };
   };
+  /**
+   * Get a sharedmodel
+   * @description Gets the details of a single instance of a `sharedmodel`.
+   */
   getSharedmodel: {
-    /**
-     * Get a sharedmodel 
-     * @description Gets the details of a single instance of a `sharedmodel`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `SharedModel`. */
+        uri: string;
+      };
+    };
     responses: {
       /** @description Successful response - returns a single `sharedmodel`. */
       200: {
@@ -1606,11 +1616,17 @@ export interface operations {
       };
     };
   };
+  /**
+   * Update a sharedmodel
+   * @description Updates an existing `sharedmodel`.
+   */
   replaceSharedmodel: {
-    /**
-     * Update a sharedmodel 
-     * @description Updates an existing `sharedmodel`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `SharedModel`. */
+        uri: string;
+      };
+    };
     /** @description Updated `sharedmodel` information. */
     requestBody: {
       content: {
@@ -1619,38 +1635,48 @@ export interface operations {
     };
     responses: {
       /** @description Successful response. */
-      202: never;
+      202: {
+        content: never;
+      };
     };
   };
+  /**
+   * Delete a sharedmodel
+   * @description Deletes an existing `sharedmodel`.
+   */
   deleteSharedmodel: {
-    /**
-     * Delete a sharedmodel 
-     * @description Deletes an existing `sharedmodel`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `SharedModel`. */
+        uri: string;
+      };
+    };
     responses: {
       /** @description Successful response. */
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
+  /**
+   * List All Templates
+   * @description Gets a list of all `template` entities.
+   */
   listTemplates: {
-    /**
-     * List All Templates 
-     * @description Gets a list of all `template` entities.
-     */
     responses: {
       /** @description Successful response - returns an array of `template` entities. */
       200: {
         content: {
-          "application/json": (components["schemas"]["org.accordproject.protocol@1.0.0.Template"])[];
+          "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.Template"][];
         };
       };
     };
   };
+  /**
+   * Create a Template
+   * @description Creates a new instance of a `template`.
+   */
   createTemplate: {
-    /**
-     * Create a Template 
-     * @description Creates a new instance of a `template`.
-     */
     /** @description A new `template` to be created. */
     requestBody: {
       content: {
@@ -1659,14 +1685,22 @@ export interface operations {
     };
     responses: {
       /** @description Successful response. */
-      201: never;
+      201: {
+        content: never;
+      };
     };
   };
+  /**
+   * Get a template
+   * @description Gets the details of a single instance of a `template`.
+   */
   getTemplate: {
-    /**
-     * Get a template 
-     * @description Gets the details of a single instance of a `template`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Template`. */
+        uri: string;
+      };
+    };
     responses: {
       /** @description Successful response - returns a single `template`. */
       200: {
@@ -1676,11 +1710,17 @@ export interface operations {
       };
     };
   };
+  /**
+   * Update a template
+   * @description Updates an existing `template`.
+   */
   replaceTemplate: {
-    /**
-     * Update a template 
-     * @description Updates an existing `template`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Template`. */
+        uri: string;
+      };
+    };
     /** @description Updated `template` information. */
     requestBody: {
       content: {
@@ -1689,38 +1729,48 @@ export interface operations {
     };
     responses: {
       /** @description Successful response. */
-      202: never;
+      202: {
+        content: never;
+      };
     };
   };
+  /**
+   * Delete a template
+   * @description Deletes an existing `template`.
+   */
   deleteTemplate: {
-    /**
-     * Delete a template 
-     * @description Deletes an existing `template`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Template`. */
+        uri: string;
+      };
+    };
     responses: {
       /** @description Successful response. */
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
+  /**
+   * List All Agreements
+   * @description Gets a list of all `agreement` entities.
+   */
   listAgreements: {
-    /**
-     * List All Agreements 
-     * @description Gets a list of all `agreement` entities.
-     */
     responses: {
       /** @description Successful response - returns an array of `agreement` entities. */
       200: {
         content: {
-          "application/json": (components["schemas"]["org.accordproject.protocol@1.0.0.Agreement"])[];
+          "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.Agreement"][];
         };
       };
     };
   };
+  /**
+   * Create a Agreement
+   * @description Creates a new instance of a `agreement`.
+   */
   createAgreement: {
-    /**
-     * Create a Agreement 
-     * @description Creates a new instance of a `agreement`.
-     */
     /** @description A new `agreement` to be created. */
     requestBody: {
       content: {
@@ -1729,14 +1779,22 @@ export interface operations {
     };
     responses: {
       /** @description Successful response. */
-      201: never;
+      201: {
+        content: never;
+      };
     };
   };
+  /**
+   * Get a agreement
+   * @description Gets the details of a single instance of a `agreement`.
+   */
   getAgreement: {
-    /**
-     * Get a agreement 
-     * @description Gets the details of a single instance of a `agreement`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Agreement`. */
+        uri: string;
+      };
+    };
     responses: {
       /** @description Successful response - returns a single `agreement`. */
       200: {
@@ -1746,11 +1804,17 @@ export interface operations {
       };
     };
   };
+  /**
+   * Update a agreement
+   * @description Updates an existing `agreement`.
+   */
   replaceAgreement: {
-    /**
-     * Update a agreement 
-     * @description Updates an existing `agreement`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Agreement`. */
+        uri: string;
+      };
+    };
     /** @description Updated `agreement` information. */
     requestBody: {
       content: {
@@ -1759,24 +1823,40 @@ export interface operations {
     };
     responses: {
       /** @description Successful response. */
-      202: never;
+      202: {
+        content: never;
+      };
     };
   };
+  /**
+   * Delete a agreement
+   * @description Deletes an existing `agreement`.
+   */
   deleteAgreement: {
-    /**
-     * Delete a agreement 
-     * @description Deletes an existing `agreement`.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Agreement`. */
+        uri: string;
+      };
+    };
     responses: {
       /** @description Successful response. */
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
+  /**
+   * Convert agreement to HTML
+   * @description Converts an existing `agreement` to HTML.
+   */
   convertAgreementHtml: {
-    /**
-     * Convert agreement to HTML 
-     * @description Converts an existing `agreement` to HTML.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Agreement`. */
+        agreementId: string;
+      };
+    };
     /** @description HTML conversion options. */
     requestBody: {
       content: {
@@ -1792,11 +1872,17 @@ export interface operations {
       };
     };
   };
+  /**
+   * Trigger an agreement
+   * @description Sends data to an existing agreement.
+   */
   triggerAgreement: {
-    /**
-     * Trigger an agreement 
-     * @description Sends data to an existing agreement.
-     */
+    parameters: {
+      path: {
+        /** @description A unique identifier for a `Agreement`. */
+        agreementId: string;
+      };
+    };
     /** @description Incoming data — a JSON serialized Concerto type */
     requestBody: {
       content: {
@@ -1812,11 +1898,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get server capabilities
+   * @description Retrieve the supported features of the server.
+   */
   getCapabilities: {
-    /**
-     * Get server capabilities 
-     * @description Retrieve the supported features of the server.
-     */
     responses: {
       /** @description Successful response - returns `capabilities` for the server. */
       200: {

@@ -879,6 +879,27 @@
           ]
         }
       },
+      "org.accordproject.party@0.2.0.Party": {
+        "title": "Party",
+        "description": "An instance of org.accordproject.party@0.2.0.Party",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.party@0.2.0.Party",
+            "pattern": "^org\\.accordproject\\.party@0\\.2\\.0\\.Party$",
+            "description": "The class identifier for org.accordproject.party@0.2.0.Party"
+          },
+          "partyId": {
+            "type": "string",
+            "description": "The instance identifier for this type"
+          }
+        },
+        "required": [
+          "$class",
+          "partyId"
+        ]
+      },
       "org.accordproject.commonmark@0.5.0.Node": {
         "title": "Node",
         "description": "An instance of org.accordproject.commonmark@0.5.0.Node",
@@ -5485,27 +5506,6 @@
         "required": [
           "$class",
           "models"
-        ]
-      },
-      "org.accordproject.party@0.2.0.Party": {
-        "title": "Party",
-        "description": "An instance of org.accordproject.party@0.2.0.Party",
-        "type": "object",
-        "properties": {
-          "$class": {
-            "type": "string",
-            "default": "org.accordproject.party@0.2.0.Party",
-            "pattern": "^org\\.accordproject\\.party@0\\.2\\.0\\.Party$",
-            "description": "The class identifier for org.accordproject.party@0.2.0.Party"
-          },
-          "partyId": {
-            "type": "string",
-            "description": "The instance identifier for this type"
-          }
-        },
-        "required": [
-          "$class",
-          "partyId"
         ]
       }
     }
