@@ -879,6 +879,51 @@
           ]
         }
       },
+      "org.accordproject.protocol@1.0.0.TemplateQuery": {
+        "title": "TemplateQuery",
+        "description": "An instance of org.accordproject.protocol@1.0.0.TemplateQuery",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.TemplateQuery",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.TemplateQuery$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.TemplateQuery"
+          },
+          "keywords": {
+            "type": "string",
+            "$decorators": {
+              "description": [
+                "Comma-separated list of keywords to filter templates"
+              ]
+            }
+          },
+          "limit": {
+            "type": "integer",
+            "$decorators": {
+              "description": [
+                "Number of templates per page"
+              ]
+            }
+          },
+          "page": {
+            "type": "integer",
+            "$decorators": {
+              "description": [
+                "Page number"
+              ]
+            }
+          }
+        },
+        "required": [
+          "$class"
+        ],
+        "$decorators": {
+          "description": [
+            "Query parameters for retrieving templates"
+          ]
+        }
+      },
       "org.accordproject.party@0.2.0.Party": {
         "title": "Party",
         "description": "An instance of org.accordproject.party@0.2.0.Party",
@@ -5635,51 +5680,48 @@
       ]
     },
     "/templates": {
-      "summary": "Path used to manage the list of templates.",
-      "description": "The REST endpoint/path used to list and create zero or more `template` entities.  This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively.",
       "get": {
+        "summary": "Retrieve templates with optional keyword filtering",
+        "description": "The REST endpoint to retrieve templates, optionally filtered by keywords, with pagination support.",
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "description": "Comma-separated list of keywords to filter templates",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of templates per page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
         "responses": {
           "200": {
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
-                  }
+                  "$ref": "#/components/schemas/PaginatedResponse"
                 }
               }
-            },
-            "description": "Successful response - returns an array of `template` entities."
-          }
-        },
-        "operationId": "listTemplates",
-        "summary": "List All Templates",
-        "description": "Gets a list of all `template` entities.",
-        "tags": [
-          "templates"
-        ]
-      },
-      "post": {
-        "requestBody": {
-          "description": "A new `template` to be created.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
-              }
             }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Successful response."
           }
         },
-        "operationId": "createTemplate",
-        "summary": "Create a Template",
-        "description": "Creates a new instance of a `template`.",
+        "operationId": "getTemplates",
         "tags": [
           "templates"
         ]

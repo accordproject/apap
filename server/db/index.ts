@@ -1,6 +1,6 @@
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 
 // Construct database URL
 const dbUrl =
@@ -11,7 +11,7 @@ const dbUrl =
 const queryClient = postgres(dbUrl);
 export const db = drizzle({
   client: queryClient,
-  casing: "snake_case",
+  casing: 'snake_case',
 });
 
-console.log("Initialized database connection");
+console.log('Initialized database connection');

@@ -10,23 +10,18 @@ import { count } from 'drizzle-orm';
 import escapeString from '../db/escape';
 // import { getUserRoles } from '../auth0/client';
 
-// function defaultWhereClause<T extends PgTable<any>>(req: Request, queryParams: QueryParams) : SQL | undefined {
-//     const conditions = queryParams.filters ? Object.keys(queryParams.filters).map(key => {
-//         const value = queryParams.filters[key];
-//         // TODO, only works for string cols as we use "=" to compare LHS and RHS
-//         return sql.raw(`"${toSnakeCase(key)}"=${escapeString(value.toString())}`);
-//     }) : [];
-//     return conditions.length > 0 ? and(...conditions) : undefined;
-// }
+
 
 // Types for query parameters
 export interface QueryParams {
-    page: number;
-    limit: number;
-    sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
-    filters?: Record<string, any>;
-    arrayFilters?: Record<string, { values: string[]; match: 'any' | 'all' }>;
+  page: number;
+  limit: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  filters?: Record<
+    string,
+    { value: any; isArray?: boolean; match?: 'any' | 'all' }
+  >;
 }
 
 interface PaginatedResponse<T> {
@@ -72,76 +67,71 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
 }
 
 // Parse and validate query parameters
-function parseQueryParams(req: Request): QueryParams {
-    const {
-      page = "1",
-      limit = "10000",
-      sortBy,
-      sortOrder = "asc",
-      keywords,
-      ...filters
-    } = req.query;
+export function parseQueryParams(req: Request): QueryParams {
+  const {
+    page = '1',
+    limit = '10000',
+    sortBy,
+    sortOrder = 'asc',
+    ...filters
+  } = req.query;
 
-    // return {
-    //     page: Math.max(1, parseInt(page as string)),
-    //     limit: Math.min(100, Math.max(1, parseInt(limit as string))),
-    //     sortBy: sortBy as string,
-    //     sortOrder: (sortOrder as string).toLowerCase() === 'desc' ? 'desc' : 'asc',
-    //     filters
-    // };
+  const queryParams: QueryParams = {
+    page: Math.max(1, parseInt(page as string)),
+    limit: Math.min(100, Math.max(1, parseInt(limit as string))),
+    sortBy: sortBy as string,
+    sortOrder: (sortOrder as string).toLowerCase() === 'desc' ? 'desc' : 'asc',
+    filters: {},
+  };
 
-
-    const queryParams: QueryParams = {
-        page: Math.max(1, parseInt(page as string)),
-        limit: Math.min(100, Math.max(1, parseInt(limit as string))),
-        sortBy: sortBy as string,
-        sortOrder: (sortOrder as string).toLowerCase() === 'desc' ? 'desc' : 'asc',
-        filters,
-        arrayFilters: {}
+  Object.keys(filters).forEach((key) => {
+    const value = filters[key];
+    const isArray = typeof value === 'string' && value.includes(',');
+    queryParams.filters![key] = {
+      value: isArray
+        ? value
+            .split(',')
+            .map((v) => v.trim())
+            .filter((v) => v)
+        : value,
+      isArray,
+      match: isArray ? 'any' : undefined,
     };
+  });
 
-    // Convert keywords to arrayFilters
-    if (keywords) {
-        queryParams.arrayFilters!.keywords = {
-            values: (keywords as string).split(',').map(k => k.trim()).filter(k => k),
-            match: 'any' // Default to 'any'; could extend to support 'all' via query param
-        };
-    }
-
-    return queryParams;
+  return queryParams;
 }
 
 // Enhanced where clause to handle array filters
-function defaultWhereClause<T extends PgTable<any>>(req: Request, queryParams: QueryParams): SQL | undefined {
-    const conditions: SQL[] = [];
+export function defaultWhereClause<T extends PgTable<any>>(
+  req: Request,
+  queryParams: QueryParams
+): SQL | undefined {
+  const conditions: SQL[] = [];
 
-    // Handle regular filters (equality)
-    if (queryParams.filters) {
-        conditions.push(...Object.keys(queryParams.filters).map(key => {
-            const value = queryParams.filters![key];
-            return sql.raw(`"${toSnakeCase(key)}"=${escapeString(value.toString())}`);
-        }));
-    }
+  if (queryParams.filters) {
+    Object.keys(queryParams.filters).forEach((key) => {
+      const { value, isArray, match } = queryParams.filters![key];
+      const column = req.res?.locals.db[req.path][
+        toSnakeCase(key)
+      ] as AnyColumn;
 
-    // Handle array filters (e.g., keywords, references)
-    if (queryParams.arrayFilters) {
-        Object.keys(queryParams.arrayFilters).forEach(key => {
-            const { values, match } = queryParams.arrayFilters![key];
-            if (values.length === 0) return; // Skip empty arrays
-            const escapedValues = values.map(v => escapeString(v));
-            const column = toSnakeCase(key);
-            if (match === 'any') {
-                // Use PostgreSQL && (array overlap) for "contains one"
-                conditions.push(sql.raw(`"${column}" && ARRAY[${escapedValues.join(',')}]::text[]`));
-            } else if (match === 'all') {
-                // Use PostgreSQL @> (contains all) for "contains all"
-                conditions.push(sql.raw(`"${column}" @> ARRAY[${escapedValues.join(',')}]::text[]`));
-            }
-        });
-    }
+      if (!column) return;
 
-    return conditions.length > 0 ? and(...conditions) : undefined;
+      if (isArray) {
+        if (value.length === 0) return;
+        if (match === 'all') {
+          conditions.push(sql`${column} @> ${value}`);
+        } else {
+          conditions.push(sql`${column} && ${value}`);
+        }
+      } else {
+        conditions.push(eq(column, value));
+      }
+    });
+  }
 
+  return conditions.length ? and(...conditions) : undefined;
 }
 
 // Build order by clause
