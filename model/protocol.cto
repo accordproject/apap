@@ -218,3 +218,13 @@ concept TriggerResponse {
     o String errorMessage optional
     o String errorDetails optional
 }
+
+@description("Query parameters for retrieving templates")
+concept TemplateQuery {
+    @description("Comma-separated list of keywords to filter templates")
+    o String keywords optional
+    @description("Number of templates per page")
+    o Integer limit optional
+    @description("Page number")
+    o Integer page optional
+}

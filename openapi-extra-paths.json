@@ -1,5 +1,45 @@
 {
   "paths": {
+    "/templates": {
+      "get": {
+        "summary": "Retrieve templates with optional keyword filtering",
+        "description": "The REST endpoint to retrieve templates, optionally filtered by keywords, with pagination support.",
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "description": "Comma-separated list of keywords to filter templates",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of templates per page",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getTemplates",
+        "tags": ["templates"]
+      }
+    },
     "/agreements/{agreementId}/convert/html": {
       "summary": "Path used to convert an agreeement to HTML format.",
       "description": "The REST endpoint/path used convert or render an `agreement` to HTML format.",
@@ -18,10 +58,10 @@
         "responses": {
           "202": {
             "description": "A HTML file",
-            "content" : {
-              "application/pdf:" : {
-                "schema" : {
-                  "type" : "string",
+            "content": {
+              "application/pdf:": {
+                "schema": {
+                  "type": "string",
                   "format": "binary"
                 }
               }
