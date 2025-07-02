@@ -13,6 +13,26 @@ const router = express.Router();
 // Get API base URL from environment variable, default to localhost:9000
 const API_BASE_URL = process.env.APAP_API_BASE_URL || 'http://localhost:9000';
 
+// Get API authorization header from environment variable (optional)
+const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
+
+// Helper function to make authenticated API requests
+async function makeApiRequest(url: string, options: RequestInit = {}) {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(options.headers as Record<string, string> || {}),
+    };
+    
+    if (API_AUTH_HEADER) {
+        headers['Authorization'] = API_AUTH_HEADER;
+    }
+    
+    return fetch(url, {
+        ...options,
+        headers,
+    });
+}
+
 async function getTemplate(uri: URL, { templateId }: { templateId: string }) {
     const result = await fetch(`/templates/${templateId}`);
     if (result.ok) {
@@ -30,7 +50,7 @@ async function getTemplate(uri: URL, { templateId }: { templateId: string }) {
 async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
     console.log(`Fetching agreement with ID: ${agreementId}`);
     const url = new URL(uri);
-    const result = await fetch(`${API_BASE_URL}/agreements/${agreementId}`);
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);
     if (result.ok) {
         const agreement = await result.json();
         console.log(`Successfully fetched agreement: ${JSON.stringify(agreement)}`);
@@ -50,7 +70,7 @@ async function getAgreement(uri: string, { agreementId }: { agreementId: string 
 
 async function getTemplates(uri: URL) {
     console.log('getTemplates: ' + uri);
-    const result = await fetch(`${API_BASE_URL}/templates`);
+    const result = await makeApiRequest(`${API_BASE_URL}/templates`);
     if (result.ok) {
         const templates = await result.json();
         console.log(`Successfully fetched templates: ${JSON.stringify(templates)}`);
@@ -72,7 +92,7 @@ async function getTemplates(uri: URL) {
 
 async function getAgreements(uri: URL) {
     console.log('getAgreements: ' + uri);
-    const result = await fetch(`${API_BASE_URL}/agreements`);
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements`);
     if (result.ok) {
         const agreements = await result.json();
         console.log(`Successfully fetched agreements: ${JSON.stringify(agreements)}`);
@@ -95,7 +115,7 @@ async function getAgreements(uri: URL) {
 
 async function draftAgreement(agreementId: string, format: string) : Promise<string> {
     console.log('draftAgreement: ' + agreementId);
-    const result = await fetch(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
     if (result.ok) {
         const html = await result.text();
         return html;
@@ -121,7 +141,7 @@ const getServer = () => {
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
             list: async () => {
-                const result = await fetch(`${API_BASE_URL}/agreements`);
+                const result = await makeApiRequest(`${API_BASE_URL}/agreements`);
                 if (result.ok) {
                     const agreements = await result.json();
                     return {
@@ -181,7 +201,7 @@ const getServer = () => {
             openWorldHint: false,
         },
         async ({ templateId }): Promise<CallToolResult> => {
-            const result = await fetch(`${API_BASE_URL}/templates/${templateId}`);
+            const result = await makeApiRequest(`${API_BASE_URL}/templates/${templateId}`);
             if (result.ok) {
                 const template = await result.json();
                 return {
@@ -206,7 +226,7 @@ const getServer = () => {
             openWorldHint: false,
         },
         async ({ agreementId }): Promise<CallToolResult> => {
-            const result = await fetch(`${API_BASE_URL}/agreements/${agreementId}`);
+            const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);
             if (result.ok) {
                 const agreement = await result.json();
                 return {
