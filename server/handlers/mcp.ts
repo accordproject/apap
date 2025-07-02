@@ -10,6 +10,9 @@ import { Agreement, Template } from '../db/schema';
 
 const router = express.Router();
 
+// Get API base URL from environment variable, default to localhost:9000
+const API_BASE_URL = process.env.APAP_API_BASE_URL || 'http://localhost:9000';
+
 async function getTemplate(uri: URL, { templateId }: { templateId: string }) {
     const result = await fetch(`/templates/${templateId}`);
     if (result.ok) {
@@ -27,7 +30,7 @@ async function getTemplate(uri: URL, { templateId }: { templateId: string }) {
 async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
     console.log(`Fetching agreement with ID: ${agreementId}`);
     const url = new URL(uri);
-    const result = await fetch(`http://localhost:9000/agreements/${agreementId}`);
+    const result = await fetch(`${API_BASE_URL}/agreements/${agreementId}`);
     if (result.ok) {
         const agreement = await result.json();
         console.log(`Successfully fetched agreement: ${JSON.stringify(agreement)}`);
@@ -47,7 +50,7 @@ async function getAgreement(uri: string, { agreementId }: { agreementId: string 
 
 async function getTemplates(uri: URL) {
     console.log('getTemplates: ' + uri);
-    const result = await fetch(`http://localhost:9000/templates`);
+    const result = await fetch(`${API_BASE_URL}/templates`);
     if (result.ok) {
         const templates = await result.json();
         console.log(`Successfully fetched templates: ${JSON.stringify(templates)}`);
@@ -69,7 +72,7 @@ async function getTemplates(uri: URL) {
 
 async function getAgreements(uri: URL) {
     console.log('getAgreements: ' + uri);
-    const result = await fetch(`http://localhost:9000/agreements`);
+    const result = await fetch(`${API_BASE_URL}/agreements`);
     if (result.ok) {
         const agreements = await result.json();
         console.log(`Successfully fetched agreements: ${JSON.stringify(agreements)}`);
@@ -92,7 +95,7 @@ async function getAgreements(uri: URL) {
 
 async function draftAgreement(agreementId: string, format: string) : Promise<string> {
     console.log('draftAgreement: ' + agreementId);
-    const result = await fetch(`http://localhost:9000/agreements/${agreementId}/convert/${format}`);
+    const result = await fetch(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
     if (result.ok) {
         const html = await result.text();
         return html;
@@ -118,7 +121,7 @@ const getServer = () => {
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
             list: async () => {
-                const result = await fetch('http://localhost:9000/agreements');
+                const result = await fetch(`${API_BASE_URL}/agreements`);
                 if (result.ok) {
                     const agreements = await result.json();
                     return {
@@ -178,7 +181,7 @@ const getServer = () => {
             openWorldHint: false,
         },
         async ({ templateId }): Promise<CallToolResult> => {
-            const result = await fetch(`http://localhost:9000/templates/${templateId}`);
+            const result = await fetch(`${API_BASE_URL}/templates/${templateId}`);
             if (result.ok) {
                 const template = await result.json();
                 return {
@@ -186,6 +189,31 @@ const getServer = () => {
                 };
             } else {
                 throw new Error('Failed to load template');
+            }
+        }
+    );
+
+    server.tool(
+        'getAgreement',
+        'Retrieve an agreement by ID',
+        {
+            agreementId: z.string(),
+        },
+        {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false,
+        },
+        async ({ agreementId }): Promise<CallToolResult> => {
+            const result = await fetch(`${API_BASE_URL}/agreements/${agreementId}`);
+            if (result.ok) {
+                const agreement = await result.json();
+                return {
+                    content: [{ type: "text", text: JSON.stringify(agreement) }]
+                };
+            } else {
+                throw new Error('Failed to load agreement');
             }
         }
     );
