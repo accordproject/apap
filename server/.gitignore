@@ -1,2 +1,3 @@
 .env
 scripts/drizzle-gen.js
+htpasswd
