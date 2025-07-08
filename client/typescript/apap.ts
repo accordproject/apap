@@ -151,7 +151,6 @@ export interface components {
   schemas: {
     "org.accordproject.protocol@1.0.0.URI": string;
     "org.accordproject.protocol@1.0.0.JSON": string;
-    "org.accordproject.protocol@1.0.0.CTO": string;
     "org.accordproject.protocol@1.0.0.FullyQualifiedTypeName": string;
     /**
      * Blob 
@@ -191,6 +190,19 @@ export interface components {
       $class: string;
     };
     /**
+     * CtoFile 
+     * @description An instance of org.accordproject.protocol@1.0.0.CtoFile
+     */
+    "org.accordproject.protocol@1.0.0.CtoFile": {
+      /**
+       * @description The class identifier for org.accordproject.protocol@1.0.0.CtoFile 
+       * @default org.accordproject.protocol@1.0.0.CtoFile
+       */
+      $class: string;
+      contents: string;
+      filename: string;
+    };
+    /**
      * CtoModel 
      * @description An instance of org.accordproject.protocol@1.0.0.CtoModel
      */
@@ -200,7 +212,7 @@ export interface components {
        * @default org.accordproject.protocol@1.0.0.CtoModel
        */
       $class: string;
-      ctoFiles: (string)[];
+      ctoFiles: (components["schemas"]["org.accordproject.protocol@1.0.0.CtoFile"])[];
     };
     /**
      * JsonModel 
