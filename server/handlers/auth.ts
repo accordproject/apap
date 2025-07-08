@@ -3,7 +3,6 @@ import express from 'express'
 const router = express.Router();
 
 router.get('/.well-known/oauth-authorization-server', function (req, res) {
-    console.log('well known...');
     const result = {
         "issuer": "https://accordproject.us.auth0.com/",
         "authorization_endpoint": "https://accordproject.us.auth0.com/authorize",

@@ -599,6 +599,8 @@ Reponse:
 
 RI has **experimental** MCP support. We will be adding new resources and tools and the format of existing resources and tools may change.
 
+To configure the location of the APAP server set the `APAP_SERVER` environment variable (defaults to http://localhost:9000).
+
 To connect RI to Claude, follow the following steps:
 1. Start RI
 2. Open your user profile settings in Claude (a paid Max plan is currently required)

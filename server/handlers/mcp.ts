@@ -8,25 +8,15 @@ import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, Template } from '../db/schema';
 
-const router = express.Router();
+const HOST = process.env.HOST || 'localhost';
+const PORT = parseInt(process.env.PORT || '9000', 10);
+const APAP_SERVER = process.env.APAP_SERVER || `http://${HOST}:${PORT}`
 
-async function getTemplate(uri: URL, { templateId }: { templateId: string }) {
-    const result = await fetch(`/templates/${templateId}`);
-    if (result.ok) {
-        const template = result.json();
-        return {
-            ...template,
-            uri
-        }
-    }
-    else {
-        throw new Error('Failed to load template');
-    }
-}
+const router = express.Router();
 
 async function getTemplates(uri: URL) {
     console.log('getTemplates: ' + uri);
-    const result = await fetch(`http://localhost:9000/templates`);
+    const result = await fetch(`${APAP_SERVER}/templates`);
     if (result.ok) {
         const templates = await result.json();
         return {
@@ -46,7 +36,7 @@ async function getTemplates(uri: URL) {
 
 async function getAgreements(uri: URL) {
     console.log('getAgreements: ' + uri);
-    const result = await fetch(`http://localhost:9000/agreements`);
+    const result = await fetch(`${APAP_SERVER}/agreements`);
     if (result.ok) {
         const agreements = await result.json();
         return {
@@ -67,7 +57,7 @@ async function getAgreements(uri: URL) {
 
 async function draftAgreement(agreementId: string, format: string) : Promise<string> {
     console.log('draftAgreement: ' + agreementId);
-    const result = await fetch(`http://localhost:9000/agreements/${agreementId}/convert/${format}`);
+    const result = await fetch(`${APAP_SERVER}/agreements/${agreementId}/convert/${format}`);
     if (result.ok) {
         const html = await result.text();
         return html;
@@ -89,44 +79,6 @@ const getServer = () => {
     // register the agreements
     server.resource('agreements', "apap://agreements", getAgreements);
 
-    // // register the agreements resource
-    // server.resource(
-    //     "agreement",
-    //     new ResourceTemplate("resource://agreements/{agreementId}", {
-    //         list: async () => {
-    //             const result = await fetch('/agreements');
-    //             if (result.ok) {
-    //                 const agreements = await result.json();
-    //                 return {
-    //                     resources: agreements.items.map((a: typeof Agreement) => {
-    //                         return {
-    //                             ...a,
-    //                             uri: `resource://agreements/${a.id}`
-    //                         }
-    //                     })
-    //                 }
-    //             }
-    //             else {
-    //                 return { resources: [] };
-    //             }
-    //         }
-    //     }),
-    //     getAgreement
-    // );
-
-    // register a tool that can convert an agreement to HTML
-    // server.tool(
-    //     'convert-agreement-to-html',
-    //     'Converts an existing agreement to HTML',
-    //     {
-    //         agreementId: z.string(),
-    //         readOnlyHint: true,
-    //         destructiveHint: false,
-    //         idempotentHint: true,
-    //         openWorldHint: false,
-    //     },
-    //     async ({ agreementId }): Promise<CallToolResult> => draftAgreement(agreementId)
-    // );
     server.tool(
         "convert-agreement-to-format",
         { agreementId: z.string(), format: z.enum(['html', 'markdown']) },
