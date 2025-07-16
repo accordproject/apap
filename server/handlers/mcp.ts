@@ -80,8 +80,7 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
         });
     if (result.ok) {
         const json = await result.json();
-        console.log(`Got result: ${JSON.stringify(json, null, 2)}`);
-        return JSON.stringify({text: json});
+        return JSON.stringify(json);
     }
     else {
         throw new Error(`Failed to trigger agreement ${agreementId}.`);
@@ -100,6 +99,7 @@ const getServer = () => {
     // register the agreements
     server.resource('agreements', "apap://agreements", getAgreements);
 
+    // register the draft tool
     server.tool(
         "convert-agreement-to-format",
         "Converts an existing agreement to an output format",
@@ -112,6 +112,7 @@ const getServer = () => {
         }
     );
 
+    // register the trigger tool
     server.tool(
         "trigger-agreement",
         `Sends JSON data (as a string) to an existing agreement, evaluating the logic of the agreement against the input data. 

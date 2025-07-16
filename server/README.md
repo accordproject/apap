@@ -638,6 +638,7 @@ to run ngrok (or similar) to tunnel Internet traffic.
 7. Press the + button inside the chat and select "Add from APAP", selecting either templates or agreements to be added to the chat context.
 8. Ask questions about your templates or agreements
 9. Type, "convert agreement X to markdown" to convert a loaded agreement to markdown
+10. Type "trigger agreement X with goods value 100" to trigger an agreement
 
 To connect RI to MCP Inspector, follow the following steps:
 1. Start RI
