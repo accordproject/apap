@@ -64,7 +64,7 @@ crudRouter.get('/:id/convert/:format', async function (req, res) {
     }
 });
 
-crudRouter.get('/:id/trigger', async function (req, res) {
+crudRouter.post('/:id/trigger', async function (req, res) {
     try {
         const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
         const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);

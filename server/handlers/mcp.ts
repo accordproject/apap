@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -14,8 +14,8 @@ const APAP_SERVER = process.env.APAP_SERVER || `http://${HOST}:${PORT}`
 
 const router = express.Router();
 
-async function getTemplates(uri: URL) {
-    console.log('getTemplates: ' + uri);
+async function getTemplates() {
+    console.log('getTemplates');
     const result = await fetch(`${APAP_SERVER}/templates`);
     if (result.ok) {
         const templates = await result.json();
@@ -34,8 +34,8 @@ async function getTemplates(uri: URL) {
     }
 }
 
-async function getAgreements(uri: URL) {
-    console.log('getAgreements: ' + uri);
+async function getAgreements() {
+    console.log('getAgreements');
     const result = await fetch(`${APAP_SERVER}/agreements`);
     if (result.ok) {
         const agreements = await result.json();
@@ -59,11 +59,32 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
     console.log('draftAgreement: ' + agreementId);
     const result = await fetch(`${APAP_SERVER}/agreements/${agreementId}/convert/${format}`);
     if (result.ok) {
-        const html = await result.text();
-        return html;
+        const text = await result.text();
+        return text;
     }
     else {
-        throw new Error('Failed to convert agreement to html');
+        throw new Error(`Failed to convert agreement to ${format}`);
+    }
+}
+
+async function triggerAgreement(agreementId: string, body: string) : Promise<string> {
+    console.log('triggerAgreement: ' + agreementId);
+    console.log('body: ' + body);
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    const result = await fetch(`${APAP_SERVER}/agreements/${agreementId}/trigger`,
+        {
+            method: "POST",
+            headers,
+            body
+        });
+    if (result.ok) {
+        const json = await result.json();
+        console.log(`Got result: ${JSON.stringify(json, null, 2)}`);
+        return JSON.stringify({text: json});
+    }
+    else {
+        throw new Error(`Failed to trigger agreement ${agreementId}.`);
     }
 }
 
@@ -81,6 +102,7 @@ const getServer = () => {
 
     server.tool(
         "convert-agreement-to-format",
+        "Converts an existing agreement to an output format",
         { agreementId: z.string(), format: z.enum(['html', 'markdown']) },
         async ({ agreementId, format }) => {
             const text = await draftAgreement(agreementId, format);
@@ -89,6 +111,21 @@ const getServer = () => {
             };
         }
     );
+
+    server.tool(
+        "trigger-agreement",
+        `Sends JSON data (as a string) to an existing agreement, evaluating the logic of the agreement against the input data. 
+The schema for the JSON object must be one of the transaction types which extend 'Request' defined in the model for the agreement's template.
+Refer to the agreement's template model to determine which fields are required or optional.`,
+        { agreementId: z.string(), payload: z.string() },
+        async ({ agreementId, payload }) => {
+            const result = await triggerAgreement(agreementId, payload);
+            return {
+                content: [{ type: "text", text: result }]
+            };
+        }
+    );
+
     return server;
 };
 
