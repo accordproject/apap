@@ -51,7 +51,7 @@ docker-compose build
 
 # Running Locally without Docker
 
-The RI uses a Postgres database for persistence. Set the DATABASE_URL environment variable to a Postgres connection string. If you are running
+The RI uses a Postgres database for persistence. Set the POSTGRES_URL environment variable to a Postgres connection string. If you are running
 a developer server you can create a file called `.env` in the root of the server directory to store this value.
 
 Example for a neon.tech hosted Postgres server:
