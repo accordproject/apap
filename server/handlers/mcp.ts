@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -10,15 +10,55 @@ import { Agreement, Template } from '../db/schema';
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
-const APAP_SERVER = process.env.APAP_SERVER || `http://${HOST}:${PORT}`
+const API_BASE_URL = process.env.API_BASE_URL || `http://${HOST}:${PORT}`
 
-const router = express.Router();
+// Get API authorization header from environment variable (optional)
+const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
 
-async function getTemplates() {
-    console.log('getTemplates');
-    const result = await fetch(`${APAP_SERVER}/templates`);
+// Helper function to make authenticated API requests
+async function makeApiRequest(url: string, options: RequestInit = {}) {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(options.headers as Record<string, string> || {}),
+    };
+
+    if (API_AUTH_HEADER) {
+        headers['Authorization'] = API_AUTH_HEADER;
+    }
+
+    return fetch(url, {
+        ...options,
+        headers,
+    });
+}
+
+async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
+    console.log(`Fetching agreement with ID: ${agreementId}`);
+    const url = new URL(uri);
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);
+    if (result.ok) {
+        const agreement = await result.json();
+        console.log(`Successfully fetched agreement: ${JSON.stringify(agreement)}`);
+        return {
+            contents: [{
+                uri: url.toString(),
+                mimeType: "application/json",
+                text: JSON.stringify(agreement)
+            }]
+        };
+    }
+    else {
+        console.error(`Failed to load agreement with ID: ${agreementId}`);
+        throw new Error('Failed to load agreement');
+    }
+}
+
+async function getTemplates(uri: URL) {
+    console.log('getTemplates: ' + uri);
+    const result = await makeApiRequest(`${API_BASE_URL}/templates`);
     if (result.ok) {
         const templates = await result.json();
+        console.log(`Successfully fetched templates: ${JSON.stringify(templates)}`);
         return {
             contents: templates.items.map((t: typeof Template) => {
                 return {
@@ -30,15 +70,17 @@ async function getTemplates() {
         }
     }
     else {
+        console.error('Failed to load templates');
         throw new Error('Failed to load template');
     }
 }
 
-async function getAgreements() {
-    console.log('getAgreements');
-    const result = await fetch(`${APAP_SERVER}/agreements`);
+async function getAgreements(uri: URL) {
+    console.log('getAgreements: ' + uri);
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements`);
     if (result.ok) {
         const agreements = await result.json();
+        console.log(`Successfully fetched agreements: ${JSON.stringify(agreements)}`);
         return {
             contents: agreements.items.map((a: typeof Agreement) => {
                 return {
@@ -51,13 +93,14 @@ async function getAgreements() {
         }
     }
     else {
+        console.error('Failed to load agreements');
         throw new Error('Failed to load agreement');
     }
 }
 
 async function draftAgreement(agreementId: string, format: string) : Promise<string> {
     console.log('draftAgreement: ' + agreementId);
-    const result = await fetch(`${APAP_SERVER}/agreements/${agreementId}/convert/${format}`);
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
     if (result.ok) {
         const text = await result.text();
         return text;
@@ -72,7 +115,7 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
     console.log('body: ' + body);
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
-    const result = await fetch(`${APAP_SERVER}/agreements/${agreementId}/trigger`,
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/trigger`,
         {
             method: "POST",
             headers,
@@ -99,7 +142,63 @@ const getServer = () => {
     // register the agreements
     server.resource('agreements', "apap://agreements", getAgreements);
 
-    // register the draft tool
+    // register resource template for agreements
+    server.resource(
+        "agreement",
+        new ResourceTemplate("apap://agreements/{agreementId}", {
+            list: async () => {
+                const result = await makeApiRequest(`${API_BASE_URL}/agreements`);
+                if (result.ok) {
+                    const agreements = await result.json();
+                    return {
+                        resources: agreements.items.map((a: typeof Agreement) => {
+                            return {
+                                ...a,
+                                uri: `apap://agreements/${a.id}`
+                            }
+                        })
+                    }
+                }
+                else {
+                    return { resources: [] };
+                }
+            }
+        }),
+        async (uri: URL, variables: any) => {
+            const agreementId = variables.agreementId;
+            return await getAgreement(uri.toString(), { agreementId });
+        }
+    );
+
+    // register resource template for templates
+    server.resource(
+        "template",
+        new ResourceTemplate("apap://templates/{templateId}", {
+            list: async () => {
+                const result = await makeApiRequest(`${API_BASE_URL}/templates`);
+                if (result.ok) {
+                    const agreements = await result.json();
+                    return {
+                        resources: agreements.items.map((a: typeof Agreement) => {
+                            return {
+                                ...a,
+                                uri: `apap://templates/${a.id}`
+                            }
+                        })
+                    }
+                }
+                else {
+                    return { resources: [] };
+                }
+            }
+        }),
+        async (uri: URL, variables: any) => {
+            const agreementId = variables.agreementId;
+            return await getAgreement(uri.toString(), { agreementId });
+        }
+    );
+
+    // register the format conversion tool
     server.tool(
         "convert-agreement-to-format",
         "Converts an existing agreement to an output format",
@@ -115,7 +214,7 @@ const getServer = () => {
     // register the trigger tool
     server.tool(
         "trigger-agreement",
-        `Sends JSON data (as a string) to an existing agreement, evaluating the logic of the agreement against the input data. 
+        `Sends JSON data (as a string) to an existing agreement, evaluating the logic of the agreement against the input data.
 The schema for the JSON object must be one of the transaction types which extend 'Request' defined in the model for the agreement's template.
 Refer to the agreement's template model to determine which fields are required or optional.`,
         { agreementId: z.string(), payload: z.string() },
@@ -124,6 +223,58 @@ Refer to the agreement's template model to determine which fields are required o
             return {
                 content: [{ type: "text", text: result }]
             };
+        }
+    );
+
+    // register the getTemplate tool
+    server.tool(
+        'getTemplate',
+        'Retrieve a template by ID',
+        {
+            templateId: z.string(),
+        },
+        {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false,
+        },
+        async ({ templateId }): Promise<CallToolResult> => {
+            const result = await makeApiRequest(`${API_BASE_URL}/templates/${templateId}`);
+            if (result.ok) {
+                const template = await result.json();
+                return {
+                    content: [{ type: "text", text: JSON.stringify(template) }]
+                };
+            } else {
+                throw new Error('Failed to load template');
+            }
+        }
+    );
+
+    // register the getAgreement tool
+    server.tool(
+        'getAgreement',
+        'Retrieve an agreement by ID',
+        {
+            agreementId: z.string(),
+        },
+        {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false,
+        },
+        async ({ agreementId }): Promise<CallToolResult> => {
+            const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);
+            if (result.ok) {
+                const agreement = await result.json();
+                return {
+                    content: [{ type: "text", text: JSON.stringify(agreement) }]
+                };
+            } else {
+                throw new Error('Failed to load agreement');
+            }
         }
     );
 
@@ -138,6 +289,8 @@ const transports: Record<string, StreamableHTTPServerTransport | SSEServerTransp
 //=============================================================================
 // STREAMABLE HTTP TRANSPORT (PROTOCOL VERSION 2025-03-26)
 //=============================================================================
+
+const router = express.Router();
 
 // Handle all MCP Streamable HTTP requests (GET, POST, DELETE) on a single endpoint
 router.all('/mcp', async (req: Request, res: Response) => {
