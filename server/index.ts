@@ -58,41 +58,8 @@ app.use('/capabilities', capabilitiesRouter);
 app.use('/', mcpRouter);
 app.use('/', authRouter);
 
-// app.oauth = new OAuthServer({
-//     model: {}, // See https://github.com/oauthjs/node-oauth2-server for specification
-//   });
-  
-// app.use(app.oauth.authorize());
-
-
-// const openApiPath = path.join(__dirname, '..', '..', 'openapi.json');
-// console.log(openApiPath);
-
-// // define api
-// const api = new OpenAPIBackend({
-//     quick: true, // disabled validation of OpenAPI on load
-//     definition: openApiPath,
-//     handlers: {
-//         validationFail: async (c: Context, req: ExpressReq, res: ExpressRes) => res.status(400).json({ err: c.validation.errors }),
-//         notFound: async (c: Context, req: ExpressReq, res: ExpressRes) => res.status(404).json({ err: 'not found' }),
-//         notImplemented: async (c: Context, req: ExpressReq, res: ExpressRes) => {
-//             const { status, mock } = c.api.mockResponseForOperation(c.operation.operationId);
-//             return res.status(status).json(mock);
-//         },
-//     },
-// });
-
-// api.init();
-
 // logging
 app.use(morgan('combined'));
-
-// use as express middleware
-// app.use((req: Express.Request, res: Express.Response) => api.handleRequest(req as Request, req, res));
-
-// app.get('/', function (req, res) {
-//     res.json({ status: 'running' });
-// });
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);

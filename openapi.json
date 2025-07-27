@@ -14,9 +14,6 @@
       "org.accordproject.protocol@1.0.0.JSON": {
         "type": "string"
       },
-      "org.accordproject.protocol@1.0.0.CTO": {
-        "type": "string"
-      },
       "org.accordproject.protocol@1.0.0.FullyQualifiedTypeName": {
         "type": "string"
       },
@@ -92,6 +89,30 @@
           "$class"
         ]
       },
+      "org.accordproject.protocol@1.0.0.CtoFile": {
+        "title": "CtoFile",
+        "description": "An instance of org.accordproject.protocol@1.0.0.CtoFile",
+        "type": "object",
+        "properties": {
+          "$class": {
+            "type": "string",
+            "default": "org.accordproject.protocol@1.0.0.CtoFile",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.CtoFile$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.CtoFile"
+          },
+          "contents": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "$class",
+          "contents",
+          "filename"
+        ]
+      },
       "org.accordproject.protocol@1.0.0.CtoModel": {
         "title": "CtoModel",
         "description": "An instance of org.accordproject.protocol@1.0.0.CtoModel",
@@ -106,7 +127,7 @@
           "ctoFiles": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.CtoFile"
             }
           }
         },

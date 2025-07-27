@@ -223,7 +223,11 @@ Status Code **200**
 |---|---|---|---|---|
 |»»» *anonymous*|[org.accordproject.protocol@1.0.0.CtoModel](#schemaorg.accordproject.protocol@1.0.0.ctomodel)|false|none|An instance of org.accordproject.protocol@1.0.0.CtoModel|
 |»»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.CtoModel|
-|»»»» ctoFiles|[string]|true|none|none|
+|»»»» ctoFiles|[[org.accordproject.protocol@1.0.0.CtoFile](#schemaorg.accordproject.protocol@1.0.0.ctofile)]|true|none|[An instance of org.accordproject.protocol@1.0.0.CtoFile]|
+|»»»»» CtoFile|[org.accordproject.protocol@1.0.0.CtoFile](#schemaorg.accordproject.protocol@1.0.0.ctofile)|false|none|An instance of org.accordproject.protocol@1.0.0.CtoFile|
+|»»»»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.CtoFile|
+|»»»»»» contents|string|true|none|none|
+|»»»»»» filename|string|true|none|none|
 
 *or*
 
@@ -1876,7 +1880,11 @@ Status Code **200**
 |---|---|---|---|---|
 |»»»» *anonymous*|[org.accordproject.protocol@1.0.0.CtoModel](#schemaorg.accordproject.protocol@1.0.0.ctomodel)|false|none|An instance of org.accordproject.protocol@1.0.0.CtoModel|
 |»»»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.CtoModel|
-|»»»»» ctoFiles|[string]|true|none|none|
+|»»»»» ctoFiles|[[org.accordproject.protocol@1.0.0.CtoFile](#schemaorg.accordproject.protocol@1.0.0.ctofile)]|true|none|[An instance of org.accordproject.protocol@1.0.0.CtoFile]|
+|»»»»»» CtoFile|[org.accordproject.protocol@1.0.0.CtoFile](#schemaorg.accordproject.protocol@1.0.0.ctofile)|false|none|An instance of org.accordproject.protocol@1.0.0.CtoFile|
+|»»»»»»» $class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.CtoFile|
+|»»»»»»» contents|string|true|none|none|
+|»»»»»»» filename|string|true|none|none|
 
 *or*
 
@@ -10584,24 +10592,6 @@ This operation does not require authentication
 |---|---|---|---|---|
 |*anonymous*|string|false|none|none|
 
-<h2 id="tocS_org.accordproject.protocol@1.0.0.CTO">org.accordproject.protocol@1.0.0.CTO</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.protocol@1.0.0.cto"></a>
-<a id="schema_org.accordproject.protocol@1.0.0.CTO"></a>
-<a id="tocSorg.accordproject.protocol@1.0.0.cto"></a>
-<a id="tocsorg.accordproject.protocol@1.0.0.cto"></a>
-
-```json
-"string"
-
-```
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|*anonymous*|string|false|none|none|
-
 <h2 id="tocS_org.accordproject.protocol@1.0.0.FullyQualifiedTypeName">org.accordproject.protocol@1.0.0.FullyQualifiedTypeName</h2>
 <!-- backwards compatibility -->
 <a id="schemaorg.accordproject.protocol@1.0.0.fullyqualifiedtypename"></a>
@@ -10717,6 +10707,32 @@ DomainModel
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.DomainModel|
 
+<h2 id="tocS_org.accordproject.protocol@1.0.0.CtoFile">org.accordproject.protocol@1.0.0.CtoFile</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.ctofile"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.CtoFile"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.ctofile"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.ctofile"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.CtoFile",
+  "contents": "string",
+  "filename": "string"
+}
+
+```
+
+CtoFile
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.CtoFile|
+|contents|string|true|none|none|
+|filename|string|true|none|none|
+
 <h2 id="tocS_org.accordproject.protocol@1.0.0.CtoModel">org.accordproject.protocol@1.0.0.CtoModel</h2>
 <!-- backwards compatibility -->
 <a id="schemaorg.accordproject.protocol@1.0.0.ctomodel"></a>
@@ -10728,7 +10744,11 @@ DomainModel
 {
   "$class": "org.accordproject.protocol@1.0.0.CtoModel",
   "ctoFiles": [
-    "string"
+    {
+      "$class": "org.accordproject.protocol@1.0.0.CtoFile",
+      "contents": "string",
+      "filename": "string"
+    }
   ]
 }
 
@@ -10741,7 +10761,7 @@ CtoModel
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.CtoModel|
-|ctoFiles|[string]|true|none|none|
+|ctoFiles|[[org.accordproject.protocol@1.0.0.CtoFile](#schemaorg.accordproject.protocol@1.0.0.ctofile)]|true|none|[An instance of org.accordproject.protocol@1.0.0.CtoFile]|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.JsonModel">org.accordproject.protocol@1.0.0.JsonModel</h2>
 <!-- backwards compatibility -->

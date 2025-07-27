@@ -8,10 +8,9 @@ import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, Template } from '../db/schema';
 
-const router = express.Router();
-
-// Get API base URL from environment variable, default to localhost:9000
-const API_BASE_URL = process.env.APAP_API_BASE_URL || 'http://localhost:9000';
+const HOST = process.env.HOST || 'localhost';
+const PORT = parseInt(process.env.PORT || '9000', 10);
+const API_BASE_URL = process.env.API_BASE_URL || `http://${HOST}:${PORT}`
 
 // Get API authorization header from environment variable (optional)
 const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
@@ -22,29 +21,15 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
         'Content-Type': 'application/json',
         ...(options.headers as Record<string, string> || {}),
     };
-    
+
     if (API_AUTH_HEADER) {
         headers['Authorization'] = API_AUTH_HEADER;
     }
-    
+
     return fetch(url, {
         ...options,
         headers,
     });
-}
-
-async function getTemplate(uri: URL, { templateId }: { templateId: string }) {
-    const result = await fetch(`/templates/${templateId}`);
-    if (result.ok) {
-        const template = result.json();
-        return {
-            ...template,
-            uri
-        }
-    }
-    else {
-        throw new Error('Failed to load template');
-    }
 }
 
 async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
@@ -117,11 +102,31 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
     console.log('draftAgreement: ' + agreementId);
     const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
     if (result.ok) {
-        const html = await result.text();
-        return html;
+        const text = await result.text();
+        return text;
     }
     else {
-        throw new Error('Failed to convert agreement to html');
+        throw new Error(`Failed to convert agreement to ${format}`);
+    }
+}
+
+async function triggerAgreement(agreementId: string, body: string) : Promise<string> {
+    console.log('triggerAgreement: ' + agreementId);
+    console.log('body: ' + body);
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/trigger`,
+        {
+            method: "POST",
+            headers,
+            body
+        });
+    if (result.ok) {
+        const json = await result.json();
+        return JSON.stringify(json);
+    }
+    else {
+        throw new Error(`Failed to trigger agreement ${agreementId}.`);
     }
 }
 
@@ -137,6 +142,7 @@ const getServer = () => {
     // register the agreements
     server.resource('agreements', "apap://agreements", getAgreements);
 
+    // register resource template for agreements
     server.resource(
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
@@ -164,21 +170,38 @@ const getServer = () => {
         }
     );
 
-    // register a tool that can convert an agreement to HTML
-    // server.tool(
-    //     'convert-agreement-to-html',
-    //     'Converts an existing agreement to HTML',
-    //     {
-    //         agreementId: z.string(),
-    //         readOnlyHint: true,
-    //         destructiveHint: false,
-    //         idempotentHint: true,
-    //         openWorldHint: false,
-    //     },
-    //     async ({ agreementId }): Promise<CallToolResult> => draftAgreement(agreementId)
-    // );
+    // register resource template for templates
+    server.resource(
+        "template",
+        new ResourceTemplate("apap://templates/{templateId}", {
+            list: async () => {
+                const result = await makeApiRequest(`${API_BASE_URL}/templates`);
+                if (result.ok) {
+                    const agreements = await result.json();
+                    return {
+                        resources: agreements.items.map((a: typeof Agreement) => {
+                            return {
+                                ...a,
+                                uri: `apap://templates/${a.id}`
+                            }
+                        })
+                    }
+                }
+                else {
+                    return { resources: [] };
+                }
+            }
+        }),
+        async (uri: URL, variables: any) => {
+            const agreementId = variables.agreementId;
+            return await getAgreement(uri.toString(), { agreementId });
+        }
+    );
+
+    // register the format conversion tool
     server.tool(
         "convert-agreement-to-format",
+        "Converts an existing agreement to an output format",
         { agreementId: z.string(), format: z.enum(['html', 'markdown']) },
         async ({ agreementId, format }) => {
             const text = await draftAgreement(agreementId, format);
@@ -188,6 +211,22 @@ const getServer = () => {
         }
     );
 
+    // register the trigger tool
+    server.tool(
+        "trigger-agreement",
+        `Sends JSON data (as a string) to an existing agreement, evaluating the logic of the agreement against the input data.
+The schema for the JSON object must be one of the transaction types which extend 'Request' defined in the model for the agreement's template.
+Refer to the agreement's template model to determine which fields are required or optional.`,
+        { agreementId: z.string(), payload: z.string() },
+        async ({ agreementId, payload }) => {
+            const result = await triggerAgreement(agreementId, payload);
+            return {
+                content: [{ type: "text", text: result }]
+            };
+        }
+    );
+
+    // register the getTemplate tool
     server.tool(
         'getTemplate',
         'Retrieve a template by ID',
@@ -213,6 +252,7 @@ const getServer = () => {
         }
     );
 
+    // register the getAgreement tool
     server.tool(
         'getAgreement',
         'Retrieve an agreement by ID',
@@ -249,6 +289,8 @@ const transports: Record<string, StreamableHTTPServerTransport | SSEServerTransp
 //=============================================================================
 // STREAMABLE HTTP TRANSPORT (PROTOCOL VERSION 2025-03-26)
 //=============================================================================
+
+const router = express.Router();
 
 // Handle all MCP Streamable HTTP requests (GET, POST, DELETE) on a single endpoint
 router.all('/mcp', async (req: Request, res: Response) => {
@@ -375,35 +417,5 @@ router.post("/messages", async (req: Request, res: Response) => {
         res.status(400).send('No transport found for sessionId');
     }
 });
-
-// New function to register a resource with the MCP server
-function registerResource({ name, description, parameters, handler }: { name: string; description: string; parameters: z.ZodObject<any>; handler: (params: any) => Promise<any> }) {
-    const server = getServer();
-    server.resource(name, `apap://${name}`, async (uri: URL) => {
-        const params = parameters.parse(uri.searchParams);
-        return await handler(params);
-    });
-}
-
-// Example usage of registerResource to register an 'agreement' resource
-// registerResource({
-//   name: 'agreement',
-//   description: 'Retrieve a smart legal agreement by ID',
-//   parameters: z.object({ id: z.string() }),
-//   handler: async ({ id }) => {
-//     // Fetch agreement from APAP
-//     const result = await fetch(`http://localhost:9000/agreements/${id}`);
-//     if (result.ok) {
-//       const agreement = await result.json();
-//       return {
-//         uri: `apap://agreement/${id}`,
-//         mimeType: "application/json",
-//         text: JSON.stringify(agreement)
-//       };
-//     } else {
-//       throw new Error('Failed to load agreement');
-//     }
-//   }
-// });
 
 export default router;

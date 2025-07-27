@@ -7,7 +7,6 @@ import org.accordproject.party@0.2.0.{Party} from https://models.accordproject.o
 
 scalar URI extends String
 scalar JSON extends String
-scalar CTO extends String
 scalar FullyQualifiedTypeName extends String
 
 @description("Bytes and mime type for a blob of data, such as images, files, etc.")
@@ -24,8 +23,13 @@ concept Text {
 
 abstract concept DomainModel {}
 
+concept CtoFile {
+    o String contents
+    o String filename
+}
+
 concept CtoModel extends DomainModel {
-    o CTO[] ctoFiles
+    o CtoFile[] ctoFiles
 }
 
 concept JsonModel extends DomainModel {

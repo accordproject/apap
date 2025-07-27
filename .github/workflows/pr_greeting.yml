@@ -1,0 +1,43 @@
+name: PR Merge Greeting
+
+on:
+  pull_request_target:
+    types: [closed]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Add greeting comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Create a personalized thank you message
+            const message = `
+            # 🎉 Thank you for your contribution! 🎉
+            
+            Dear @${pr.user.login},
+            
+            Your pull request has been successfully merged into the project! We greatly appreciate your efforts and the time you've dedicated to improving our repository.
+            
+            ## What happens next?
+            - Your changes will be included in the next release
+            - Your name will be added to our contributors list
+            - Feel free to take on another issue or suggest new features
+            
+            Once again, thank you for being part of our community!
+            
+            Best regards,
+            The APAP Team
+            `;
+            
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: message
+            });

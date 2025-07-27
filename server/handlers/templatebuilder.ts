@@ -28,13 +28,29 @@ export async function templateFromDatabase(db: typeof Template): Promise<ApTempl
     const templateModel:Record<string,any> = db.templateModel;
     const domainModel:Record<string,any> = templateModel.model;
     if(domainModel.$class === 'org.accordproject.protocol@1.0.0.CtoModel') {
-        domainModel.ctoFiles.forEach((file:string, index:number) => {
-            zip.addFile(`/model/model${index}.cto`, Buffer.from(file, 'utf8'));
+        domainModel.ctoFiles.forEach((data:any, index:number) => {
+            if(typeof data === 'string') {
+                // for backwards compat with data in db
+                zip.addFile(`/model/model${index}.cto`, Buffer.from(data, 'utf8'));
+            }
+            else {
+                zip.addFile(`/model/model${data.filename}`, Buffer.from(data.contents, 'utf8'));
+            }
         });
     }
     else {
         throw new Error('Model type is not supported')
     }
+
+    // logic
+    const logic:Record<string,any> = db.logic;
+    if(logic && logic.codes) {
+        logic.codes.forEach((code:any) => {
+            console.log(`/logic/${code.id}:\n${code.value}`);
+           zip.addFile(`/logic/${code.id}`, Buffer.from(code.value, 'utf8'));
+        });
+    }
+
     const buffer = zip.toBuffer();
     const template = await ApTemplate.fromArchive(buffer);
     // HACK, due to bug in template loader
