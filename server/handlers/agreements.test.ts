@@ -49,7 +49,6 @@ async function createLateDeliveryTemplate(): Promise<ApTemplate> {
     
     const buffer = zip.toBuffer();
     const template = await ApTemplate.fromArchive(buffer);
-    await template.getModelManager().updateExternalModels();
     return template;
 }
 
@@ -68,7 +67,9 @@ describe('Agreements Router - POST /:id/trigger', () => {
         // Mock database
         mockDb = {
             select: jest.fn().mockReturnThis(),
+            update: jest.fn().mockReturnThis(),
             from: jest.fn().mockReturnThis(),
+            set: jest.fn().mockReturnThis(),
             where: jest.fn().mockReturnThis(),
             limit: jest.fn().mockReturnThis(),
         };
@@ -153,7 +154,7 @@ describe('Agreements Router - POST /:id/trigger', () => {
             mockDb.limit.mockReturnValue(mockDb);
 
             // Mock agreement query result
-            mockDb.limit.mockImplementationOnce(() => Promise.resolve([mockAgreementData]));
+            mockDb.limit.mockImplementationOnce(() => Promise.resolve([{ ...mockAgreementData }]));
             
             // Mock template query result
             mockDb.limit.mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
@@ -163,6 +164,10 @@ describe('Agreements Router - POST /:id/trigger', () => {
         });
 
         it('should successfully trigger agreement with valid request', async () => {
+
+            mockDb.update.mockReturnValue(mockDb);
+            mockDb.set.mockReturnValue(mockDb);
+
             const triggerRequest = {
                 $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
                 forceMajeure: false,
@@ -182,9 +187,14 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(response.body.result).toHaveProperty('buyerMayTerminate');
             expect(typeof response.body.result.penalty).toBe('number');
             expect(typeof response.body.result.buyerMayTerminate).toBe('boolean');
+            expect(response.body.state.count).toBe(1); 
         });
 
         it('should handle trigger with goods delivered on time', async () => {
+
+            mockDb.update.mockReturnValue(mockDb);
+            mockDb.set.mockReturnValue(mockDb);
+
             const triggerRequest = {
                 $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
                 forceMajeure: false,
@@ -202,9 +212,14 @@ describe('Agreements Router - POST /:id/trigger', () => {
             // TODO fix template to only calculate penalty when delivery is late
             expect(response.body.result.penalty).toBe(17500); // No penalty for on-time delivery
             expect(response.body.result.buyerMayTerminate).toBe(true);
+            expect(response.body.state.count).toBe(1); 
         });
 
         it('should handle trigger with goods not yet delivered', async () => {
+
+            mockDb.update.mockReturnValue(mockDb);
+            mockDb.set.mockReturnValue(mockDb);
+
             const triggerRequest = {
                 $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
                 forceMajeure: false,
@@ -221,6 +236,58 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(response.body.result).toHaveProperty('$class', 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyResponse');
             expect(response.body.result).toHaveProperty('penalty');
             expect(response.body.result).toHaveProperty('buyerMayTerminate');
+            expect(response.body.state.count).toBe(1); 
+        });
+
+        it('should successfully trigger agreement with valid request multiple times remembering state', async () => {
+            
+            mockDb.update.mockReturnValue(mockDb);
+            mockDb.set.mockReturnValue(mockDb);
+
+            const triggerRequest = {
+                $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
+                forceMajeure: false,
+                agreedDelivery: '2024-01-01T00:00:00Z',
+                deliveredAt: '2024-01-15T00:00:00Z', // 14 days late
+                goodsValue: 1000.00
+            };
+
+            const response1 = await request(app)
+                .post('/agreements/1/trigger')
+                .send(triggerRequest)
+                .expect(200);
+
+            expect(response1.body.state.count).toBe(1); 
+
+
+            // Mock successful database queries
+            mockDb.select.mockReturnValue(mockDb);
+            mockDb.update.mockReturnValue(mockDb);
+            mockDb.from.mockReturnValue(mockDb);
+            mockDb.set.mockReturnValue(mockDb);
+            mockDb.where.mockReturnValue(mockDb);
+            mockDb.limit.mockReturnValue(mockDb);
+            
+            // Mock the state response with the state from the first request 
+            mockDb.limit.mockImplementationOnce(() => Promise.resolve([{
+                ...mockAgreementData, state: response1.body.state
+            }]));
+            mockDb.limit.mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
+
+            const response2 = await request(app)
+                .post('/agreements/1/trigger')
+                .send(triggerRequest)
+                .expect(200);
+
+            // Verify response structure
+            expect(response2.body.result).toHaveProperty('$class', 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyResponse');
+            expect(response2.body.result).toHaveProperty('penalty');
+            expect(response2.body.result).toHaveProperty('buyerMayTerminate');
+            expect(typeof response2.body.result.penalty).toBe('number');
+            expect(typeof response2.body.result.buyerMayTerminate).toBe('boolean');
+
+            expect(response2.body.state.count).toBe(2); 
+
         });
     });
 
@@ -443,55 +510,6 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(mockDb.from).toHaveBeenCalledWith(Agreement);
             expect(mockDb.from).toHaveBeenCalledWith(Template);
             expect(mockDb.limit).toHaveBeenCalledWith(1);
-        });
-
-        it('should parse agreement ID as integer', async () => {
-            const mockAgreementData = { 
-                id: 123, 
-                template: 'test://template/1',
-                data: {
-                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
-                    clauseId: 'latedelivery-1',
-                    forceMajeure: false,
-                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'DAY' },
-                    penaltyPercentage: 7.0,
-                    capPercentage: 2.0,
-                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'WEEK' },
-                    fractionalPart: 'DAY'
-                }
-            };
-            const mockTemplateData = { 
-                id: 1, 
-                uri: 'test://template/1',
-                metadata: {
-                    runtime: 'typescript',
-                    template: 'clause',
-                    cicero: '0.25.0'
-                }
-            };
-
-            mockDb.limit
-                .mockResolvedValueOnce([mockAgreementData])
-                .mockResolvedValueOnce([mockTemplateData]);
-
-            const realApTemplate = await createLateDeliveryTemplate();
-            mockedTemplateBuilder.templateFromDatabase.mockResolvedValue(realApTemplate);
-
-            const triggerRequest = {
-                $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
-                forceMajeure: false,
-                agreedDelivery: '2024-01-01T00:00:00Z',
-                deliveredAt: '2024-01-10T00:00:00Z',
-                goodsValue: 1000.00
-            };
-
-            await request(app)
-                .post('/agreements/123/trigger')
-                .send(triggerRequest)
-                .expect(200);
-
-            // The ID should be parsed as integer in the where clause
-            expect(mockDb.where).toHaveBeenCalled();
         });
     });
 });

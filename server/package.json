@@ -27,7 +27,7 @@
     "@accordproject/cicero-core": "0.25.1-20250328175253",
     "@accordproject/concerto-core": "^3.21.0",
     "@accordproject/concerto-util": "^3.20.4",
-    "@accordproject/template-engine": "^2.7.0",
+    "@accordproject/template-engine": "^2.7.1",
     "@modelcontextprotocol/sdk": "^1.15.1",
     "adm-zip": "^0.5.16",
     "crypto": "^1.0.1",
