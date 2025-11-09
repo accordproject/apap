@@ -71,12 +71,39 @@ crudRouter.post('/:id/trigger', async function (req, res) {
         try {
             console.log(JSON.stringify(req.body));
             console.log(JSON.stringify(agreement.data));
-            const triggerResult = await templateArchiveProcessor.trigger(agreement.data, req.body);
+            console.log(JSON.stringify(agreement.state));
+
+            const requestSchema = apTemplate.getRequestTypes().find(rt => rt === req.body.$class);
+            if (!requestSchema) {
+                throw new Error(`Invalid request type: ${req.body.$class}`);
+            }
+            // TODO validate request body against apTemplate
+            const { success, error } = await concertoValidation(req.body.$class, req.body, apTemplate.getModelManager());
+
+            if (!success){
+                res.json({
+                    isError: true,
+                    errorMessage: "Trigger request validation failed",
+                    errorDetails: error.errors[0].message
+                });
+                return;
+            }
+
+            // TODO allow state to be passed in as a parameter
+            if (agreement.state == null){
+                const state = await templateArchiveProcessor.init(agreement.data);
+                agreement.state = state.state;
+            }
+            const triggerResult = await templateArchiveProcessor.trigger(agreement.data, req.body, agreement.state);
             console.log(JSON.stringify(triggerResult));
+            
+            // TODO persist updated state.
+
             res.json(triggerResult);
         }
         catch(err) {
-            res.json( {
+            console.error(err);
+            res.json({
                 isError: true,
                 errorMessage: err.message,
                 errorDetails: err.toString()
