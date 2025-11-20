@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type*/
+/* eslint-disable @typescript-eslint/no-empty-interface */
 // Generated code for namespace: concerto
 
 // imports
@@ -21,3 +21,4 @@ export interface ITransaction extends IConcept {
 
 export interface IEvent extends IConcept {
 }
+

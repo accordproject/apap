@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type*/
+/* eslint-disable @typescript-eslint/no-empty-interface */
 // Generated code for namespace: org.accordproject.runtime@0.2.0
 
 // imports
@@ -36,3 +36,4 @@ export interface IObligation extends IEvent {
 
 export interface IState extends IAsset {
 }
+
