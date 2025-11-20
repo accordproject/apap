@@ -40,7 +40,7 @@ class LateDeliveryLogic extends TemplateLogic<ITemplateModel, ILateDeliveryAndPe
 
     /**
      * Convert Duration to milliseconds
-     * Manual conversion without requiring dayjs duration plugin
+     * Manual conversion without requiring dayjs duration plugin, note that this is simplified and will likely break with daylight savings time changes and leap years
      */
     private convertDurationToMilliseconds(duration: IDuration): number {
         const amount = duration.amount;
