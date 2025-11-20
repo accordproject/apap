@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type*/
+/* eslint-disable @typescript-eslint/no-empty-interface */
 // Generated code for namespace: io.clause.latedeliveryandpenalty@0.1.0
 
 // imports
@@ -36,4 +36,7 @@ export interface ILateDeliveryAndPenaltyEvent extends IEvent {
 export interface ILateDeliveryAndPenaltyState extends IConcept {
    $identifier: string;
    count: number;
+   lateDeliveryProcessed: boolean;
+   totalPenalties: number;
 }
+

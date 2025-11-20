@@ -96,4 +96,6 @@ event LateDeliveryAndPenaltyEvent {
  */
 concept LateDeliveryAndPenaltyState identified {
   o Integer count
+  o Boolean lateDeliveryProcessed default=false
+  o Double totalPenalties default=0.0
 }
