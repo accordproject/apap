@@ -23,7 +23,7 @@ interface LateDeliveryContractResponse extends EngineResponse<ILateDeliveryAndPe
     events: object[];
 }
 
-// @ts-expect-error TemplateLogic is imported by the runtime
+// @ts-ignore TemplateLogic is imported by the runtime
 class LateDeliveryLogic extends TemplateLogic<ITemplateModel, ILateDeliveryAndPenaltyState>  {
     // @ts-expect-error InitResponse is imported by the runtime
     async init(data: ITemplateModel) : Promise<InitResponse<ILateDeliveryAndPenaltyState>> {
@@ -84,7 +84,10 @@ class LateDeliveryLogic extends TemplateLogic<ITemplateModel, ILateDeliveryAndPe
         let buyerMayTerminate = false;
 
         // Ergo-style force majeure: only if both contract and request have force majeure
-        if (!(data.forceMajeure && request.forceMajeure)) {
+        if (data.forceMajeure && request.forceMajeure) {
+            // Force majeure applies - no penalty, but buyer may terminate
+            buyerMayTerminate = true;
+        } else {
             // Calculate the time difference between effective delivery and agreed delivery
             const delayMs = effectiveDelivery.getTime() - agreedDelivery.getTime();
             const penaltyDurationMs = this.convertDurationToMilliseconds(data.penaltyDuration);
