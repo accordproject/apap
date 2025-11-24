@@ -92,11 +92,11 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
                 clauseId: 'latedelivery-1',
                 forceMajeure: false,
-                penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'DAY' },
+                penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
                 penaltyPercentage: 7.0,
                 capPercentage: 2.0,
-                termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'WEEK' },
-                fractionalPart: 'DAY',
+                termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                fractionalPart: 'days',
                 $identifier: "c88e5ed7-c3e0-4249-a99c-ce9278684ac8"
             },
             template: 'test://template/latedelivery',
@@ -208,11 +208,10 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 .send(triggerRequest)
                 .expect(200);
 
-            expect(response.body.result).toHaveProperty('$class', 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyResponse');
-            // TODO fix template to only calculate penalty when delivery is late
-            expect(response.body.result.penalty).toBe(17500); // No penalty for on-time delivery
-            expect(response.body.result.buyerMayTerminate).toBe(true);
-            expect(response.body.state.count).toBe(1); 
+            expect(response.body).toHaveProperty('isError', true);
+            expect(response.body).toHaveProperty('errorMessage');
+            expect(response.body).toHaveProperty('errorDetails');
+            expect(response.body.errorMessage).toBe('Cannot exercise late delivery before delivery date')
         });
 
         it('should handle trigger with goods not yet delivered', async () => {
@@ -371,11 +370,11 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
                 clauseId: 'latedelivery-1',
                 forceMajeure: false,
-                penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'DAY' },
+                penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
                 penaltyPercentage: 7.0,
                 capPercentage: 2.0,
-                termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'WEEK' },
-                fractionalPart: 'DAY'
+                termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                fractionalPart: 'days'
             },
             template: 'test://template/1'
         };
@@ -468,11 +467,11 @@ describe('Agreements Router - POST /:id/trigger', () => {
                     $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
                     clauseId: 'latedelivery-1',
                     forceMajeure: false,
-                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'DAY' },
+                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
                     penaltyPercentage: 7.0,
                     capPercentage: 2.0,
-                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'WEEK' },
-                    fractionalPart: 'DAY'
+                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                    fractionalPart: 'days'
                 }
             };
             const mockTemplateData = { 

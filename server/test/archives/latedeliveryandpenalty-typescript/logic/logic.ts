@@ -1,6 +1,7 @@
 // import { EngineResponse, TemplateLogic } from "../../../../src/slc/SmartLegalContract";
 import { ILateDeliveryAndPenaltyState, ILateDeliveryAndPenaltyRequest, ILateDeliveryAndPenaltyResponse, ILateDeliveryAndPenaltyEvent, ITemplateModel } from "./generated/io.clause.latedeliveryandpenalty@0.1.0";
 
+// TODO: come up with an automated solution to generated files being available at runtime.
 // Inline types from org.accordproject.time@0.3.0 since generated files may not be available at runtime
 // These types are needed for duration conversion
 enum TemporalUnit {
