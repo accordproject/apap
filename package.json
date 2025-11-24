@@ -10,7 +10,7 @@
     "build-api-docs": "widdershins openapi.json -o index.md",
     "build": "npm run merge && npm run build-api-docs && npx openapi-typescript openapi.json --output ./client/typescript/apap.ts && npx reslate build",
     "prebuild": "npm run gen",
-    "lint": "int-openapi openapi.json",
+    "lint": "lint-openapi openapi.json && exit 0",
     "serve": "npx reslate serve"
   },
   "author": "",
@@ -19,7 +19,7 @@
     "@accordproject/concerto-cli": "^3.4.0",
     "@ibm-cloud/openapi-ruleset": "^0.44.3",
     "@types/dotenv": "^6.1.1",
-    "ibm-openapi-validator": "^0.96.4",
+    "ibm-openapi-validator": "^1.37.5",
     "openapi-typescript": "^6.1.0",
     "reslate": "^3.0.0-5",
     "swagger-combine": "^1.4.0",

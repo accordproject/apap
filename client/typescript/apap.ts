@@ -974,6 +974,19 @@ export interface components {
       endLine?: number;
     };
     /**
+     * Party 
+     * @description An instance of org.accordproject.party@0.2.0.Party
+     */
+    "org.accordproject.party@0.2.0.Party": {
+      /**
+       * @description The class identifier for org.accordproject.party@0.2.0.Party 
+       * @default org.accordproject.party@0.2.0.Party
+       */
+      $class: string;
+      /** @description The instance identifier for this type */
+      partyId: string;
+    };
+    /**
      * Position 
      * @description An instance of concerto.metamodel@0.4.0.Position
      */
@@ -1548,19 +1561,6 @@ export interface components {
        */
       $class: string;
       models: (components["schemas"]["concerto.metamodel@0.4.0.Model"])[];
-    };
-    /**
-     * Party 
-     * @description An instance of org.accordproject.party@0.2.0.Party
-     */
-    "org.accordproject.party@0.2.0.Party": {
-      /**
-       * @description The class identifier for org.accordproject.party@0.2.0.Party 
-       * @default org.accordproject.party@0.2.0.Party
-       */
-      $class: string;
-      /** @description The instance identifier for this type */
-      partyId: string;
     };
   };
   responses: never;
