@@ -17660,6 +17660,30 @@ continued
 |startLine|integer|false|none|none|
 |endLine|integer|false|none|none|
 
+<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.party@0.2.0.party"></a>
+<a id="schema_org.accordproject.party@0.2.0.Party"></a>
+<a id="tocSorg.accordproject.party@0.2.0.party"></a>
+<a id="tocsorg.accordproject.party@0.2.0.party"></a>
+
+```json
+{
+  "$class": "org.accordproject.party@0.2.0.Party",
+  "partyId": "string"
+}
+
+```
+
+Party
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
+|partyId|string|true|none|The instance identifier for this type|
+
 <h2 id="tocS_concerto.metamodel@0.4.0.Position">concerto.metamodel@0.4.0.Position</h2>
 <!-- backwards compatibility -->
 <a id="schemaconcerto.metamodel@0.4.0.position"></a>
@@ -20923,28 +20947,4 @@ Models
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Models|
 |models|[[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)]|true|none|[An instance of concerto.metamodel@0.4.0.Model]|
-
-<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.party@0.2.0.party"></a>
-<a id="schema_org.accordproject.party@0.2.0.Party"></a>
-<a id="tocSorg.accordproject.party@0.2.0.party"></a>
-<a id="tocsorg.accordproject.party@0.2.0.party"></a>
-
-```json
-{
-  "$class": "org.accordproject.party@0.2.0.Party",
-  "partyId": "string"
-}
-
-```
-
-Party
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
-|partyId|string|true|none|The instance identifier for this type|
 
