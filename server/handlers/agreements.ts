@@ -1,12 +1,13 @@
-import express from 'express'
+import express from 'express';
 import { Agreement, AgreementInsertSchema, Template } from '../db/schema';
 import { buildCrudRouter } from './crud';
 import { concertoValidation } from './concertovalidation';
 import { templateFromDatabase } from './templatebuilder';
 import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
+import * as TemplateEngine from '@accordproject/template-engine';
 
-async function resolveAgreement(db:any, agreementId:string) {
+async function resolveAgreement(db: any, agreementId: string) {
     console.log('Getting agreement: ' + agreementId);
     const result = await db
         .select()
@@ -19,23 +20,54 @@ async function resolveAgreement(db:any, agreementId:string) {
     }
     console.log('Got agreement');
     const agreement = result[0];
-    const result2 = await db
-        .select()
-        .from(Template)
-        .where(eq(Template.uri, agreement.template))
-        .limit(1);
+    
+    let apTemplate;
+    let templateRow = null;
 
-    if (!result2.length) {
-        throw new Error(`Template with uri ${agreement.template} referenced by agreement ${agreementId} does not exist`);
+    if (agreement.template && (agreement.template.startsWith('http://') || agreement.template.startsWith('https://'))) {
+        console.log(`Fetching external template from: ${agreement.template}`);
+        
+        try {
+            const response = await fetch(agreement.template);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch external template: ${response.statusText} (${response.status})`);
+            }
+
+            const arrayBuffer = await response.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            // Access the Template class dynamically to bypass type definition issues
+            const EngineTemplate = (TemplateEngine as any).Template;
+            apTemplate = await EngineTemplate.fromArchive(buffer);
+            
+            templateRow = { uri: agreement.template };
+            
+        } catch (error: any) {
+            throw new Error(`External template loading failed: ${error.message}`);
+        }
+
+    } else {
+        console.log(`Looking up local template: ${agreement.template}`);
+        const result2 = await db
+            .select()
+            .from(Template)
+            .where(eq(Template.uri, agreement.template))
+            .limit(1);
+
+        if (!result2.length) {
+            throw new Error(`Template with uri ${agreement.template} referenced by agreement ${agreementId} does not exist`);
+        }
+        
+        templateRow = result2[0];
+        apTemplate = await templateFromDatabase(templateRow);
     }
-    const template = result2[0];
-    const apTemplate = await templateFromDatabase(template);
 
     return {
         agreement,
-        template,
+        template: templateRow,
         apTemplate
-    }
+    };
 }
 
 const router = express.Router();
@@ -49,13 +81,13 @@ const crudRouter = buildCrudRouter({
 
 crudRouter.get('/:id/convert/:format', async function (req, res) {
     try {
-        const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
+        const { agreement, apTemplate } = await resolveAgreement(res.locals.db, req.params.id);
         const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
         const options = {};
         const draftResult = await templateArchiveProcessor.draft(agreement.data, req.params.format, options);
         console.log(draftResult);
-        res.setHeader("Content-Type", `text/${req.params.format}`)
-        res.send(draftResult)
+        res.setHeader("Content-Type", `text/${req.params.format}`);
+        res.send(draftResult);
     }
     catch (error) {
         console.log(error);
@@ -66,20 +98,20 @@ crudRouter.get('/:id/convert/:format', async function (req, res) {
 
 crudRouter.post('/:id/trigger', async function (req, res) {
     try {
-        const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
+        const { agreement, apTemplate } = await resolveAgreement(res.locals.db, req.params.id);
         const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
         try {
             console.log(JSON.stringify(req.body));
             console.log(JSON.stringify(agreement.data));
             console.log(JSON.stringify(agreement.state));
 
-            const requestSchema = apTemplate.getRequestTypes().find(rt => rt === req.body.$class);
+            const requestSchema = apTemplate.getRequestTypes().find((rt: any) => rt === req.body.$class);
             if (!requestSchema) {
                 throw new Error(`Invalid request type: ${req.body.$class}`);
             }
             const { success, error } = await concertoValidation(req.body.$class, req.body, apTemplate.getModelManager());
 
-            if (!success){
+            if (!success) {
                 res.json({
                     isError: true,
                     errorMessage: "Trigger request validation failed",
@@ -89,14 +121,14 @@ crudRouter.post('/:id/trigger', async function (req, res) {
             }
 
             // TODO allow state to be passed in as a parameter
-            if (agreement.state == null){
+            if (agreement.state == null) {
                 const state = await templateArchiveProcessor.init(agreement.data);
                 agreement.state = state.state;
             }
             const triggerResult = await templateArchiveProcessor.trigger(agreement.data, req.body, agreement.state);
             agreement.state = triggerResult.state;
             console.log(JSON.stringify(triggerResult));
-            
+
             // Persist updated state.
             await res.locals.db
                 .update(Agreement)
@@ -105,13 +137,13 @@ crudRouter.post('/:id/trigger', async function (req, res) {
 
             res.json(triggerResult);
         }
-        catch(err) {
+        catch (err: any) {
             console.error(err);
             res.json({
                 isError: true,
                 errorMessage: err.message,
                 errorDetails: err.toString()
-            })
+            });
         }
     }
     catch (error) {
