@@ -177,12 +177,12 @@ const getServer = () => {
             list: async () => {
                 const result = await makeApiRequest(`${API_BASE_URL}/templates`);
                 if (result.ok) {
-                    const agreements = await result.json();
+                    const templates = await result.json();
                     return {
-                        resources: agreements.items.map((a: typeof Agreement) => {
+                        resources: templates.items.map((t: typeof Template) => {
                             return {
-                                ...a,
-                                uri: `apap://templates/${a.id}`
+                                ...t,
+                                uri: `apap://templates/${t.id}`
                             }
                         })
                     }
@@ -193,8 +193,21 @@ const getServer = () => {
             }
         }),
         async (uri: URL, variables: any) => {
-            const agreementId = variables.agreementId;
-            return await getAgreement(uri.toString(), { agreementId });
+            const templateId = variables.templateId;
+            const result = await makeApiRequest(`${API_BASE_URL}/templates/${templateId}`);
+            if (result.ok) {
+                const template = await result.json();
+                return {
+                    contents: [{
+                        uri: uri.toString(),
+                        mimeType: "application/json",
+                        text: JSON.stringify(template)
+                    }]
+                };
+            }
+            else {
+                throw new Error('Failed to load template');
+            }
         }
     );
 
