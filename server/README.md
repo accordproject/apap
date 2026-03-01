@@ -379,7 +379,8 @@ Response:
 	},
 	"logic": null,
 	"sampleRequest": null
-}```
+}
+```
 
 ## Deleting a Single Resource
 
