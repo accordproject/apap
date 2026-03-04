@@ -1,0 +1,323 @@
+{
+  "id": "bac484a3-fa45-45ea-a9ae-222276cc52bd",
+  "prevId": "feba7b85-89bc-4fce-bf2b-7b2fa3a876f4",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Agreement": {
+      "name": "Agreement",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uri": {
+          "name": "uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "template": {
+          "name": "template",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "template_hash": {
+          "name": "template_hash",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "agreement_status": {
+          "name": "agreement_status",
+          "type": "AgreementStatusType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "agreement_parties": {
+          "name": "agreement_parties",
+          "type": "json[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "signatures": {
+          "name": "signatures",
+          "type": "json[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "history_entries": {
+          "name": "history_entries",
+          "type": "json[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attachments": {
+          "name": "attachments",
+          "type": "json[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "references": {
+          "name": "references",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Agreement_uri_unique": {
+          "name": "Agreement_uri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uri"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.SharedModel": {
+      "name": "SharedModel",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uri": {
+          "name": "uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "SharedModel_uri_unique": {
+          "name": "SharedModel_uri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uri"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Template": {
+      "name": "Template",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uri": {
+          "name": "uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author": {
+          "name": "author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash": {
+          "name": "hash",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "license": {
+          "name": "license",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "keywords": {
+          "name": "keywords",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logo": {
+          "name": "logo",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "template_model": {
+          "name": "template_model",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logic": {
+          "name": "logic",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sample_request": {
+          "name": "sample_request",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Template_uri_unique": {
+          "name": "Template_uri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uri"
+          ]
+        },
+        "Template_hash_unique": {
+          "name": "Template_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "hash"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.AgreementStatusType": {
+      "name": "AgreementStatusType",
+      "schema": "public",
+      "values": [
+        "DRAFT",
+        "SIGNNG",
+        "COMPLETED",
+        "SUPERSEDED"
+      ]
+    },
+    "public.CodeEncodingType": {
+      "name": "CodeEncodingType",
+      "schema": "public",
+      "values": [
+        "PLAIN_TEXT",
+        "BASE64"
+      ]
+    },
+    "public.CodeType": {
+      "name": "CodeType",
+      "schema": "public",
+      "values": [
+        "ES2015",
+        "WASM_BYTES",
+        "TYPESCRIPT"
+      ]
+    },
+    "public.FeatureType": {
+      "name": "FeatureType",
+      "schema": "public",
+      "values": [
+        "TEMPLATE_MANAGE",
+        "TEMPLATE_VERIFY_SIGNATURES",
+        "TEMPLATE_LOGIC",
+        "TEMPLATE_STATEFUL",
+        "LOGIC_WASM",
+        "LOGIC_ES2015",
+        "LOGIC_TYPESCRIPT",
+        "AGREEMENT_MANAGE",
+        "AGREEMENT_TRIGGER",
+        "AGREEMENT_STATE",
+        "AGREEMENT_CONVERT_HTML",
+        "AGREEMENT_SIGNING",
+        "SHARED_MODEL_MANAGE"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
