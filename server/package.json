@@ -24,7 +24,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
-    "@accordproject/cicero-core": "0.25.1-20250328175253",
+    "@accordproject/cicero-core": "^0.25.1-20250328175253",
     "@accordproject/concerto-core": "3.21.0",
     "@accordproject/concerto-util": "3.20.4",
     "@accordproject/template-engine": "2.7.1",
