@@ -21,7 +21,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres
+    image: postgres:17-alpine
     restart: always
     user: postgres
     volumes:
