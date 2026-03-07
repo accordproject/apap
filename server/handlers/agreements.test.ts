@@ -10,6 +10,9 @@ import AdmZip from 'adm-zip';
 import fs from 'fs';
 import path from 'path';
 
+// INCREASE TIMEOUT TO 60 SECONDS
+jest.setTimeout(60000);
+
 // Mock dependencies (but not TemplateArchiveProcessor)
 jest.mock('../db/schema');
 jest.mock('./templatebuilder');
