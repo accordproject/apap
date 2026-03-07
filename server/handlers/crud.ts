@@ -10,13 +10,70 @@ import { count } from 'drizzle-orm';
 import escapeString from '../db/escape';
 // import { getUserRoles } from '../auth0/client';
 
-function defaultWhereClause<T extends PgTable<any>>(req: Request, queryParams: QueryParams) : SQL | undefined {
-    const conditions = queryParams.filters ? Object.keys(queryParams.filters).map(key => {
-        const value = queryParams.filters[key];
-        // TODO, only works for string cols as we use "=" to compare LHS and RHS
-        return sql.raw(`"${toSnakeCase(key)}"=${escapeString(value.toString())}`);
-    }) : [];
-    return conditions.length > 0 ? and(...conditions) : undefined;
+function defaultWhereClause<T extends PgTable<any>>(
+	req: Request,
+	queryParams: QueryParams,
+	table?: T
+): SQL | undefined {
+	const filters = queryParams.filters;
+	if (!filters || Object.keys(filters).length === 0) {
+		// no filters -> no "where" clause
+		return undefined;
+	}
+
+	const conditions: SQL[] = [];
+
+	for (const key of Object.keys(filters)) {
+		let value = filters[key];
+
+		if (table && !(key in table)) {
+			// if table is given we check if key exists in it
+			continue;
+		}
+
+		const column = sql.raw(`"${toSnakeCase(key)}"`);
+
+		if (value === null || value === 'null') {
+			// NULL handling
+			conditions.push(sql`${column} IS NULL`);
+			continue;
+		}
+
+		// detect operator inside value (no naming convention needed)
+		if (typeof value === 'string') {
+			const trimmed = value.trim();
+			const opMatch = trimmed.match(/^(>=|<=|<>|!=|>|<)\s*(.+)$/);
+			if (opMatch) {
+				const operator = opMatch[1];
+				const operandRaw = opMatch[2];
+				const operand = parseValue(operandRaw);
+				conditions.push(sql`${column} ${sql.raw(operator)} ${operand}`);
+				continue;
+			}
+		}
+
+		// default equality
+		conditions.push(sql`${column} = ${value}`);
+	}
+
+	if (conditions.length === 0)
+		return undefined;
+	if (conditions.length === 1)
+		return conditions[0];
+
+	return sql.join(conditions, sql` AND `);
+}
+
+function parseValue(v: any) {
+  const s = String(v).trim();
+
+  if (s.toLowerCase() === 'true') return true;
+  if (s.toLowerCase() === 'false') return false;
+  
+  const n = Number(s);
+  if (!isNaN(n)) return n;
+
+  return v;
 }
 
 // Types for query parameters
@@ -148,7 +205,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 const queryParams = parseQueryParams(req);
                 const { page, limit, sortBy, sortOrder } = queryParams;
                 const whereClause = buildWhereClause ? buildWhereClause(req, queryParams) : 
-                    defaultWhereClause(req, queryParams);
+                    defaultWhereClause(req, queryParams, table);
                 const orderClause = buildOrderClause(table, sortBy, sortOrder);
 
                 // Log the generated SQL
