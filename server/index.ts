@@ -22,33 +22,41 @@ const app = Express();
 app.use(Express.json());
 
 // Database middleware
+const requiredPostgresEnvVars = [
+  'POSTGRES_USER',
+  'POSTGRES_PASSWORD',
+  'POSTGRES_HOST',
+  'POSTGRES_PORT',
+  'POSTGRES_DATABASE',
+];
+
+let dbUrl: string;
+
+if (process.env.POSTGRES_URL) {
+  dbUrl = process.env.POSTGRES_URL;
+} else {
+  const missingVars = requiredPostgresEnvVars.filter((name) => !process.env[name]);
+  if (missingVars.length > 0) {
+    throw new Error(
+      `PostgreSQL configuration error: missing required environment variable(s): ${missingVars.join(
+        ', ',
+      )}. Either set POSTGRES_URL, or provide all of: ${requiredPostgresEnvVars.join(', ')}.`,
+    );
+  }
+  dbUrl = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}` +
+    `@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DATABASE}`;
+}
+
+// create one shared postgres-js client
+const queryClient = postgres(dbUrl);
+const db = drizzle({
+  client: queryClient,
+  casing: 'snake_case',
+});
+
 app.use((req, res, next) => {
-    try {
-        console.log('Connecting to database with configuration:');
-        console.log(`POSTGRES_URL: ${process.env.POSTGRES_URL}`);
-        console.log(`POSTGRES_USER: ${process.env.POSTGRES_USER}`);
-        console.log(`POSTGRES_PASSWORD: ${process.env.POSTGRES_PASSWORD}`);
-        console.log(`POSTGRES_HOST: ${process.env.POSTGRES_HOST}`);
-        console.log(`POSTGRES_PORT: ${process.env.POSTGRES_PORT}`);
-        console.log(`POSTGRES_DATABASE: ${process.env.POSTGRES_DATABASE}`);
-        
-        const dbUrl = process.env.POSTGRES_URL ? process.env.POSTGRES_URL :
-            `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DATABASE}`;
-
-        console.log(`URL: ${dbUrl}`);
-
-        const queryClient = postgres(dbUrl);
-        const db = drizzle({
-            client: queryClient,
-            casing: 'snake_case',
-        });
-        res.locals.db = db;
-        console.log('Setup database driver.');    
-    }
-    catch (err) {
-        console.log(`Failed to setup database driver: ${err}`);
-    }
-    next();
+  res.locals.db = db;
+  next();
 });
 
 app.use('/templates', templatesRouter);
@@ -63,8 +71,22 @@ app.use(morgan('combined'));
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
-
-// start REST server
-app.listen(PORT, HOST, () => {
-    console.info(`API listening at http://${HOST}:${PORT}`);
+const server = app.listen(PORT, HOST, () => {
+  console.info(`API listening at http://${HOST}:${PORT}`);
 });
+
+
+const shutdown = async () => {
+  console.info('Shutting down server...');
+  server.close(() => console.info('HTTP server closed.'));
+  try {
+    await queryClient.end({ timeout: 5000 }); // closes pool connections
+    console.info('Postgres client closed.');
+  } catch (err) {
+    console.error('Error closing Postgres client', err);
+  }
+  process.exit(0);
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
