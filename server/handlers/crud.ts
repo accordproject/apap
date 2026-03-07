@@ -266,7 +266,15 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 }
 
                 res.json(inserted[0]);
-            } catch (error) {
+            } catch (error: any) {
+                // Handle Unique Constraint Violation (Duplicate URI)
+                if (error?.code === '23505') {
+                    return res.status(409).json({
+                        error: 'Conflict',
+                        details: `A resource with this unique identifier already exists for ${typeName}.`
+                    });
+                }
+
                 const message = error instanceof Error ? error.message : 'Unknown error';
                 res.status(500).json({ error: message });
             }
@@ -348,7 +356,15 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 }
 
                 res.json(updated[0]);
-            } catch (error) {
+            } catch (error: any) {
+                // FIXED: Handle Unique Constraint Violation (Duplicate URI during Update)
+                if (error?.code === '23505') {
+                    return res.status(409).json({
+                        error: 'Conflict',
+                        details: `A resource with this unique identifier already exists for ${typeName}.`
+                    });
+                }
+
                 const message = error instanceof Error ? error.message : 'Unknown error';
                 res.status(500).json({ error: message });
             }
