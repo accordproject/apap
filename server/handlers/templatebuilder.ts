@@ -1,4 +1,3 @@
-import { Response } from 'express';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import AdmZip from "adm-zip";
 import { Template } from '../db/schema';
