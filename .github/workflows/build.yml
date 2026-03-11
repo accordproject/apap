@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-      - v4.0.0 # Temporary, while we prepare for merge to main
+      - v4.0.0
 
 jobs:
   build:
@@ -19,8 +19,6 @@ jobs:
           - 18.x
           - 20.x
         os:
-          - windows-latest
-          - macos-latest
           - ubuntu-latest
 
     runs-on: ${{ matrix.os }}
@@ -33,24 +31,31 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - run: npm ci
       - run: npm run build --if-present
-      - env:
+
+      - name: Install Server Dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run Server Tests
+        working-directory: ./server
+        env:
           NODE_OPTIONS: "--max_old_space_size=4096"
-        run: npm test || echo "No tests configured"
+        run: npm test -- --testTimeout=60000
 
       - name: Archive npm failure logs
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: npm-logs
-          path: C:\npm\cache\_logs\
+          path: ~/.npm/_logs
 
   publish:
     needs:
       - build
-      - notify
 
     name: Publish to npm
     if: ${{ success() && github.event_name == 'push' && github.repository_owner == 'accordproject' }}
@@ -63,10 +68,11 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 18.x
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
+          cache: 'npm'
 
       - run: npm ci
       - run: npm run build --if-present
