@@ -153,6 +153,7 @@ const getServer = () => {
                     return {
                         resources: agreements.items.map((a: typeof Agreement) => {
                             return {
+                                name: `agreement-${a.id}`,
                                 ...a,
                                 uri: `apap://agreements/${a.id}`
                             }
@@ -181,6 +182,7 @@ const getServer = () => {
                     return {
                         resources: templates.items.map((t: typeof Template) => {
                             return {
+                                name: `template-${t.id}`,
                                 ...t,
                                 uri: `apap://templates/${t.id}`
                             }
