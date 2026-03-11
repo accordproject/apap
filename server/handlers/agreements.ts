@@ -88,7 +88,7 @@ router.post('/', async (req, res) => {
         const insertData = {
             ...req.body,
             templateHash: currentHash,
-            organization: res.locals.orgId
+            organization: res.locals.orgId !== undefined ? res.locals.orgId : req.body.organization
         };
 
         const inserted = await db.insert(Agreement).values(insertData).returning();
