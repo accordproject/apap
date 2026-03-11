@@ -3,12 +3,11 @@ import { Template as ApTemplate } from '@accordproject/cicero-core';
 import AdmZip from "adm-zip";
 import { Template } from '../db/schema';
 
-// --- STRICT TYPESCRIPT INTERFACES BASED ON ACCORD PROJECT SOURCE CODE ---
 interface ApModelFile {
-    namespace: string;
-    fileName?: string;
-    content?: string;
+    getNamespace?(): string;
+    getDefinitions?(): string;
     definitions?: string;
+    content?: string;
 }
 
 interface ApScript {
@@ -23,13 +22,12 @@ interface ApTemplateInstance {
     getTemplate(): string | null;
     getModelManager(): {
         getModels(): ApModelFile[];
-        updateExternalModels(): Promise<void>;
+        updateExternalModels?(): Promise<void>;
     };
     getScriptManager(): {
         getScripts(): ApScript[];
     };
 }
-// ------------------------------------------------------------------------
 
 export async function templateFromDatabase(db: typeof Template | any): Promise<ApTemplate> {
     const zip = new AdmZip();
@@ -54,14 +52,15 @@ export async function templateFromDatabase(db: typeof Template | any): Promise<A
     
     zip.addFile("package.json", Buffer.from(JSON.stringify(packageJson), 'utf8'));
 
-    const text:any = db.text;
+    const text: Record<string, any> = db.text;
     zip.addFile("/text/grammar.tem.md", Buffer.from(text.templateText || '', 'utf8'));
     
-    const templateModel:Record<string,any> = db.templateModel;
-    const domainModel:Record<string,any> = templateModel.model;
-    if(domainModel.$class === 'org.accordproject.protocol@1.0.0.CtoModel') {
-        domainModel.ctoFiles.forEach((data:any, index:number) => {
-            if(typeof data === 'string') {
+    const templateModel: Record<string, any> = db.templateModel;
+    const domainModel: Record<string, any> = templateModel.model;
+    
+    if (domainModel.$class === 'org.accordproject.protocol@1.0.0.CtoModel') {
+        domainModel.ctoFiles.forEach((data: any, index: number) => {
+            if (typeof data === 'string') {
                 zip.addFile(`/model/model${index}.cto`, Buffer.from(data, 'utf8'));
             } else {
                 const filename = data.filename || `model${index}.cto`;
@@ -72,10 +71,9 @@ export async function templateFromDatabase(db: typeof Template | any): Promise<A
         throw new Error('Model type is not supported');
     }
 
-const logic:Record<string,any> = db.logic;
-    if(logic && logic.codes) {
-        logic.codes.forEach((code:any) => {
-           // FIXED: Prevent the double "logic/logic/" nested folder bug!
+    const logic: Record<string, any> = db.logic;
+    if (logic && logic.codes) {
+        logic.codes.forEach((code: any) => {
            const filePath = code.id.startsWith('logic/') ? code.id : `logic/${code.id}`;
            zip.addFile(filePath, Buffer.from(code.value || '', 'utf8'));
         });
@@ -87,28 +85,27 @@ const logic:Record<string,any> = db.logic;
     return template;
 }
 
-export function extractTemplateForDatabase(apTemplate: any, uri: string, hash: string) {
+export function extractTemplateForDatabase(apTemplate: ApTemplateInstance, uri: string, hash: string) {
     const packageJson = apTemplate.getMetadata().getPackageJson();
     const templateText = apTemplate.getTemplate() || '';
 
-    // Extract Models using the verified ModelFile.js methods
-    const ctoFiles = apTemplate.getModelManager().getModels().map((file: any, index: number) => {
-        let filename = `model${index}.cto`; // Safe fallback
+    const ctoFiles = apTemplate.getModelManager().getModels().map((file: ApModelFile, index: number) => {
+        let filename = `model${index}.cto`; 
+        
         if (typeof file.getNamespace === 'function' && file.getNamespace()) {
             filename = `${file.getNamespace()}.cto`;
         }
         
         let contents = '';
         if (typeof file.getDefinitions === 'function') {
-            contents = file.getDefinitions();
+            contents = file.getDefinitions() || '';
         } else {
             contents = file.definitions || file.content || '';
         }
         return { filename, contents };
     });
 
-    // Extract Scripts using the verified ScriptManager.js methods
-    const logicCodes = apTemplate.getScriptManager().getScripts().map((file: any) => {
+    const logicCodes = apTemplate.getScriptManager().getScripts().map((file: ApScript) => {
         return {
             id: file.getIdentifier(),
             value: file.contents || ''

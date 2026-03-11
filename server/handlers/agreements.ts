@@ -76,7 +76,9 @@ router.post('/', async (req, res) => {
             
             if (existing.length === 0) {
                 const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                await db.insert(DbTemplate).values(newDbTemplateRow);
+                await db.insert(DbTemplate)
+                    .values(newDbTemplateRow)
+                    .onConflictDoNothing({ target: DbTemplate.hash });
             }
         }
 
