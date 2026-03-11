@@ -10366,6 +10366,13 @@ Sends data to an existing agreement.
 {
   "$class": "org.accordproject.protocol@1.0.0.TriggerResponse",
   "result": "string",
+  "obligations": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.BaseObligation",
+      "status": "ACTIVE",
+      "description": "string"
+    }
+  ],
   "isError": true,
   "errorMessage": "string",
   "errorDetails": "string"
@@ -11765,6 +11772,13 @@ TriggerRequest
 {
   "$class": "org.accordproject.protocol@1.0.0.TriggerResponse",
   "result": "string",
+  "obligations": [
+    {
+      "$class": "org.accordproject.protocol@1.0.0.BaseObligation",
+      "status": "ACTIVE",
+      "description": "string"
+    }
+  ],
   "isError": true,
   "errorMessage": "string",
   "errorDetails": "string"
@@ -11780,9 +11794,3527 @@ TriggerResponse
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.TriggerResponse|
 |result|string|false|none|none|
+|obligations|[anyOf]|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[org.accordproject.protocol@1.0.0.BaseObligation](#schemaorg.accordproject.protocol@1.0.0.baseobligation)|false|none|An instance of org.accordproject.protocol@1.0.0.BaseObligation|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[org.accordproject.protocol@1.0.0.OwnershipTransferObligation](#schemaorg.accordproject.protocol@1.0.0.ownershiptransferobligation)|false|none|An instance of org.accordproject.protocol@1.0.0.OwnershipTransferObligation|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[org.accordproject.protocol@1.0.0.PaymentObligation](#schemaorg.accordproject.protocol@1.0.0.paymentobligation)|false|none|An instance of org.accordproject.protocol@1.0.0.PaymentObligation|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[org.accordproject.protocol@1.0.0.EscrowReleaseObligation](#schemaorg.accordproject.protocol@1.0.0.escrowreleaseobligation)|false|none|An instance of org.accordproject.protocol@1.0.0.EscrowReleaseObligation|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[org.accordproject.protocol@1.0.0.AccessControlObligation](#schemaorg.accordproject.protocol@1.0.0.accesscontrolobligation)|false|none|An instance of org.accordproject.protocol@1.0.0.AccessControlObligation|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
 |isError|boolean|true|none|none|
 |errorMessage|string|false|none|none|
 |errorDetails|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.ObligationStatus">org.accordproject.protocol@1.0.0.ObligationStatus</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.obligationstatus"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.ObligationStatus"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.obligationstatus"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.obligationstatus"></a>
+
+```json
+"ACTIVE"
+
+```
+
+ObligationStatus
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|ObligationStatus|any|false|none|An instance of org.accordproject.protocol@1.0.0.ObligationStatus|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|ObligationStatus|ACTIVE|
+|ObligationStatus|FULFILLED|
+|ObligationStatus|VIOLATED|
+|ObligationStatus|PARTIALLY_FULFILLED|
+|ObligationStatus|DISPUTED|
+|ObligationStatus|UNDER_REVIEW|
+|ObligationStatus|RESOLVED_WITH_ADJUSTMENT|
+|ObligationStatus|CANCELLED|
+|ObligationStatus|SUPERSEDED|
+|ObligationStatus|ERROR|
+|ObligationStatus|OTHER|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.BaseObligation">org.accordproject.protocol@1.0.0.BaseObligation</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.baseobligation"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.BaseObligation"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.baseobligation"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.baseobligation"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.BaseObligation",
+  "status": "ACTIVE",
+  "description": "string"
+}
+
+```
+
+BaseObligation
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.BaseObligation|
+|status|[org.accordproject.protocol@1.0.0.ObligationStatus](#schemaorg.accordproject.protocol@1.0.0.obligationstatus)|true|none|An instance of org.accordproject.protocol@1.0.0.ObligationStatus|
+|description|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.OwnershipTransferObligation">org.accordproject.protocol@1.0.0.OwnershipTransferObligation</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.ownershiptransferobligation"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.OwnershipTransferObligation"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.ownershiptransferobligation"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.ownershiptransferobligation"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.OwnershipTransferObligation",
+  "assetIdentifier": "string",
+  "currentOwner": "string",
+  "newOwner": "string",
+  "status": "ACTIVE",
+  "description": "string"
+}
+
+```
+
+OwnershipTransferObligation
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.OwnershipTransferObligation|
+|assetIdentifier|string|true|none|none|
+|currentOwner|string|true|none|none|
+|newOwner|string|true|none|none|
+|status|[org.accordproject.protocol@1.0.0.ObligationStatus](#schemaorg.accordproject.protocol@1.0.0.obligationstatus)|true|none|An instance of org.accordproject.protocol@1.0.0.ObligationStatus|
+|description|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.PaymentObligation">org.accordproject.protocol@1.0.0.PaymentObligation</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.paymentobligation"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.PaymentObligation"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.paymentobligation"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.paymentobligation"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.PaymentObligation",
+  "debtor": "string",
+  "creditor": "string",
+  "amount": 0,
+  "currency": "string",
+  "status": "ACTIVE",
+  "description": "string"
+}
+
+```
+
+PaymentObligation
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.PaymentObligation|
+|debtor|string|true|none|none|
+|creditor|string|true|none|none|
+|amount|number|true|none|none|
+|currency|string|true|none|none|
+|status|[org.accordproject.protocol@1.0.0.ObligationStatus](#schemaorg.accordproject.protocol@1.0.0.obligationstatus)|true|none|An instance of org.accordproject.protocol@1.0.0.ObligationStatus|
+|description|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.EscrowReleaseObligation">org.accordproject.protocol@1.0.0.EscrowReleaseObligation</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.escrowreleaseobligation"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.EscrowReleaseObligation"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.escrowreleaseobligation"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.escrowreleaseobligation"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.EscrowReleaseObligation",
+  "escrowAgent": "string",
+  "beneficiary": "string",
+  "tokenIdentifier": "string",
+  "amount": 0,
+  "status": "ACTIVE",
+  "description": "string"
+}
+
+```
+
+EscrowReleaseObligation
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.EscrowReleaseObligation|
+|escrowAgent|string|true|none|none|
+|beneficiary|string|true|none|none|
+|tokenIdentifier|string|true|none|none|
+|amount|number|true|none|none|
+|status|[org.accordproject.protocol@1.0.0.ObligationStatus](#schemaorg.accordproject.protocol@1.0.0.obligationstatus)|true|none|An instance of org.accordproject.protocol@1.0.0.ObligationStatus|
+|description|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.AccessControlObligation">org.accordproject.protocol@1.0.0.AccessControlObligation</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.accesscontrolobligation"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.AccessControlObligation"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.accesscontrolobligation"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.accesscontrolobligation"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.AccessControlObligation",
+  "grantee": "string",
+  "resourceIdentifier": "string",
+  "permission": "string",
+  "status": "ACTIVE",
+  "description": "string"
+}
+
+```
+
+AccessControlObligation
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.AccessControlObligation|
+|grantee|string|true|none|none|
+|resourceIdentifier|string|true|none|none|
+|permission|string|true|none|none|
+|status|[org.accordproject.protocol@1.0.0.ObligationStatus](#schemaorg.accordproject.protocol@1.0.0.obligationstatus)|true|none|An instance of org.accordproject.protocol@1.0.0.ObligationStatus|
+|description|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.party@0.2.0.party"></a>
+<a id="schema_org.accordproject.party@0.2.0.Party"></a>
+<a id="tocSorg.accordproject.party@0.2.0.party"></a>
+<a id="tocsorg.accordproject.party@0.2.0.party"></a>
+
+```json
+{
+  "$class": "org.accordproject.party@0.2.0.Party",
+  "partyId": "string"
+}
+
+```
+
+Party
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
+|partyId|string|true|none|The instance identifier for this type|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Position">concerto.metamodel@0.4.0.Position</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.position"></a>
+<a id="schema_concerto.metamodel@0.4.0.Position"></a>
+<a id="tocSconcerto.metamodel@0.4.0.position"></a>
+<a id="tocsconcerto.metamodel@0.4.0.position"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Position",
+  "line": 0,
+  "column": 0,
+  "offset": 0
+}
+
+```
+
+Position
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Position|
+|line|integer|true|none|none|
+|column|integer|true|none|none|
+|offset|integer|true|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Range">concerto.metamodel@0.4.0.Range</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.range"></a>
+<a id="schema_concerto.metamodel@0.4.0.Range"></a>
+<a id="tocSconcerto.metamodel@0.4.0.range"></a>
+<a id="tocsconcerto.metamodel@0.4.0.range"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Range",
+  "start": {
+    "$class": "concerto.metamodel@0.4.0.Position",
+    "line": 0,
+    "column": 0,
+    "offset": 0
+  },
+  "end": {
+    "$class": "concerto.metamodel@0.4.0.Position",
+    "line": 0,
+    "column": 0,
+    "offset": 0
+  },
+  "source": "string"
+}
+
+```
+
+Range
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Range|
+|start|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
+|end|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
+|source|string|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.TypeIdentifier">concerto.metamodel@0.4.0.TypeIdentifier</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.typeidentifier"></a>
+<a id="schema_concerto.metamodel@0.4.0.TypeIdentifier"></a>
+<a id="tocSconcerto.metamodel@0.4.0.typeidentifier"></a>
+<a id="tocsconcerto.metamodel@0.4.0.typeidentifier"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+  "name": "string",
+  "namespace": "string"
+}
+
+```
+
+TypeIdentifier
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TypeIdentifier|
+|name|string|true|none|none|
+|namespace|string|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorLiteral">concerto.metamodel@0.4.0.DecoratorLiteral</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.decoratorliteral"></a>
+<a id="schema_concerto.metamodel@0.4.0.DecoratorLiteral"></a>
+<a id="tocSconcerto.metamodel@0.4.0.decoratorliteral"></a>
+<a id="tocsconcerto.metamodel@0.4.0.decoratorliteral"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+DecoratorLiteral
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorString">concerto.metamodel@0.4.0.DecoratorString</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.decoratorstring"></a>
+<a id="schema_concerto.metamodel@0.4.0.DecoratorString"></a>
+<a id="tocSconcerto.metamodel@0.4.0.decoratorstring"></a>
+<a id="tocsconcerto.metamodel@0.4.0.decoratorstring"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DecoratorString",
+  "value": "string",
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+DecoratorString
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorString|
+|value|string|true|none|none|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorNumber">concerto.metamodel@0.4.0.DecoratorNumber</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.decoratornumber"></a>
+<a id="schema_concerto.metamodel@0.4.0.DecoratorNumber"></a>
+<a id="tocSconcerto.metamodel@0.4.0.decoratornumber"></a>
+<a id="tocsconcerto.metamodel@0.4.0.decoratornumber"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DecoratorNumber",
+  "value": 0,
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+DecoratorNumber
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorNumber|
+|value|number|true|none|none|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorBoolean">concerto.metamodel@0.4.0.DecoratorBoolean</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.decoratorboolean"></a>
+<a id="schema_concerto.metamodel@0.4.0.DecoratorBoolean"></a>
+<a id="tocSconcerto.metamodel@0.4.0.decoratorboolean"></a>
+<a id="tocsconcerto.metamodel@0.4.0.decoratorboolean"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DecoratorBoolean",
+  "value": true,
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+DecoratorBoolean
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean|
+|value|boolean|true|none|none|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorTypeReference">concerto.metamodel@0.4.0.DecoratorTypeReference</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.decoratortypereference"></a>
+<a id="schema_concerto.metamodel@0.4.0.DecoratorTypeReference"></a>
+<a id="tocSconcerto.metamodel@0.4.0.decoratortypereference"></a>
+<a id="tocsconcerto.metamodel@0.4.0.decoratortypereference"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DecoratorTypeReference",
+  "type": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "isArray": false,
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+DecoratorTypeReference
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference|
+|type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|isArray|boolean|true|none|none|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Decorator">concerto.metamodel@0.4.0.Decorator</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.decorator"></a>
+<a id="schema_concerto.metamodel@0.4.0.Decorator"></a>
+<a id="tocSconcerto.metamodel@0.4.0.decorator"></a>
+<a id="tocsconcerto.metamodel@0.4.0.decorator"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Decorator",
+  "name": "string",
+  "arguments": [
+    {
+      "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+Decorator
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Decorator|
+|name|string|true|none|none|
+|arguments|[anyOf]|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorString](#schemaconcerto.metamodel@0.4.0.decoratorstring)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorString|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorNumber](#schemaconcerto.metamodel@0.4.0.decoratornumber)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorNumber|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorBoolean](#schemaconcerto.metamodel@0.4.0.decoratorboolean)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorBoolean|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorTypeReference](#schemaconcerto.metamodel@0.4.0.decoratortypereference)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorTypeReference|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Identified">concerto.metamodel@0.4.0.Identified</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.identified"></a>
+<a id="schema_concerto.metamodel@0.4.0.Identified"></a>
+<a id="tocSconcerto.metamodel@0.4.0.identified"></a>
+<a id="tocsconcerto.metamodel@0.4.0.identified"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Identified"
+}
+
+```
+
+Identified
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Identified|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.IdentifiedBy">concerto.metamodel@0.4.0.IdentifiedBy</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.identifiedby"></a>
+<a id="schema_concerto.metamodel@0.4.0.IdentifiedBy"></a>
+<a id="tocSconcerto.metamodel@0.4.0.identifiedby"></a>
+<a id="tocsconcerto.metamodel@0.4.0.identifiedby"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.IdentifiedBy",
+  "name": "string"
+}
+
+```
+
+IdentifiedBy
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IdentifiedBy|
+|name|string|true|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Declaration">concerto.metamodel@0.4.0.Declaration</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.declaration"></a>
+<a id="schema_concerto.metamodel@0.4.0.Declaration"></a>
+<a id="tocSconcerto.metamodel@0.4.0.declaration"></a>
+<a id="tocsconcerto.metamodel@0.4.0.declaration"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Declaration",
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+Declaration
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Declaration|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.EnumDeclaration">concerto.metamodel@0.4.0.EnumDeclaration</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.enumdeclaration"></a>
+<a id="schema_concerto.metamodel@0.4.0.EnumDeclaration"></a>
+<a id="tocSconcerto.metamodel@0.4.0.enumdeclaration"></a>
+<a id="tocsconcerto.metamodel@0.4.0.enumdeclaration"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.EnumDeclaration",
+  "properties": [
+    {
+      "$class": "concerto.metamodel@0.4.0.EnumProperty",
+      "name": "string",
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+EnumDeclaration
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumDeclaration|
+|properties|[[concerto.metamodel@0.4.0.EnumProperty](#schemaconcerto.metamodel@0.4.0.enumproperty)]|true|none|[An instance of concerto.metamodel@0.4.0.EnumProperty]|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.EnumProperty">concerto.metamodel@0.4.0.EnumProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.enumproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.EnumProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.enumproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.enumproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.EnumProperty",
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+EnumProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumProperty|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.ConceptDeclaration">concerto.metamodel@0.4.0.ConceptDeclaration</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.conceptdeclaration"></a>
+<a id="schema_concerto.metamodel@0.4.0.ConceptDeclaration"></a>
+<a id="tocSconcerto.metamodel@0.4.0.conceptdeclaration"></a>
+<a id="tocsconcerto.metamodel@0.4.0.conceptdeclaration"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.ConceptDeclaration",
+  "isAbstract": false,
+  "identified": {
+    "$class": "concerto.metamodel@0.4.0.Identified"
+  },
+  "superType": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "properties": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Property",
+      "name": "string",
+      "isArray": false,
+      "isOptional": false,
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+ConceptDeclaration
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration|
+|isAbstract|boolean|true|none|none|
+|identified|any|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|properties|[anyOf]|true|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.AssetDeclaration">concerto.metamodel@0.4.0.AssetDeclaration</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.assetdeclaration"></a>
+<a id="schema_concerto.metamodel@0.4.0.AssetDeclaration"></a>
+<a id="tocSconcerto.metamodel@0.4.0.assetdeclaration"></a>
+<a id="tocsconcerto.metamodel@0.4.0.assetdeclaration"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.AssetDeclaration",
+  "isAbstract": false,
+  "identified": {
+    "$class": "concerto.metamodel@0.4.0.Identified"
+  },
+  "superType": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "properties": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Property",
+      "name": "string",
+      "isArray": false,
+      "isOptional": false,
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+AssetDeclaration
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.AssetDeclaration|
+|isAbstract|boolean|true|none|none|
+|identified|any|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|properties|[anyOf]|true|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.ParticipantDeclaration">concerto.metamodel@0.4.0.ParticipantDeclaration</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.participantdeclaration"></a>
+<a id="schema_concerto.metamodel@0.4.0.ParticipantDeclaration"></a>
+<a id="tocSconcerto.metamodel@0.4.0.participantdeclaration"></a>
+<a id="tocsconcerto.metamodel@0.4.0.participantdeclaration"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.ParticipantDeclaration",
+  "isAbstract": false,
+  "identified": {
+    "$class": "concerto.metamodel@0.4.0.Identified"
+  },
+  "superType": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "properties": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Property",
+      "name": "string",
+      "isArray": false,
+      "isOptional": false,
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+ParticipantDeclaration
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration|
+|isAbstract|boolean|true|none|none|
+|identified|any|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|properties|[anyOf]|true|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.TransactionDeclaration">concerto.metamodel@0.4.0.TransactionDeclaration</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.transactiondeclaration"></a>
+<a id="schema_concerto.metamodel@0.4.0.TransactionDeclaration"></a>
+<a id="tocSconcerto.metamodel@0.4.0.transactiondeclaration"></a>
+<a id="tocsconcerto.metamodel@0.4.0.transactiondeclaration"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.TransactionDeclaration",
+  "isAbstract": false,
+  "identified": {
+    "$class": "concerto.metamodel@0.4.0.Identified"
+  },
+  "superType": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "properties": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Property",
+      "name": "string",
+      "isArray": false,
+      "isOptional": false,
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+TransactionDeclaration
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration|
+|isAbstract|boolean|true|none|none|
+|identified|any|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|properties|[anyOf]|true|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.EventDeclaration">concerto.metamodel@0.4.0.EventDeclaration</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.eventdeclaration"></a>
+<a id="schema_concerto.metamodel@0.4.0.EventDeclaration"></a>
+<a id="tocSconcerto.metamodel@0.4.0.eventdeclaration"></a>
+<a id="tocsconcerto.metamodel@0.4.0.eventdeclaration"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.EventDeclaration",
+  "isAbstract": false,
+  "identified": {
+    "$class": "concerto.metamodel@0.4.0.Identified"
+  },
+  "superType": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "properties": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Property",
+      "name": "string",
+      "isArray": false,
+      "isOptional": false,
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "name": "string",
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+EventDeclaration
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EventDeclaration|
+|isAbstract|boolean|true|none|none|
+|identified|any|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|properties|[anyOf]|true|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|name|string|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Property">concerto.metamodel@0.4.0.Property</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.property"></a>
+<a id="schema_concerto.metamodel@0.4.0.Property"></a>
+<a id="tocSconcerto.metamodel@0.4.0.property"></a>
+<a id="tocsconcerto.metamodel@0.4.0.property"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Property",
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+Property
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Property|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.RelationshipProperty">concerto.metamodel@0.4.0.RelationshipProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.relationshipproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.RelationshipProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.relationshipproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.relationshipproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.RelationshipProperty",
+  "type": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+RelationshipProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.RelationshipProperty|
+|type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.ObjectProperty">concerto.metamodel@0.4.0.ObjectProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.objectproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.ObjectProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.objectproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.objectproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.ObjectProperty",
+  "defaultValue": "string",
+  "type": {
+    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
+    "name": "string",
+    "namespace": "string"
+  },
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+ObjectProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ObjectProperty|
+|defaultValue|string|false|none|none|
+|type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.BooleanProperty">concerto.metamodel@0.4.0.BooleanProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.booleanproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.BooleanProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.booleanproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.booleanproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.BooleanProperty",
+  "defaultValue": true,
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+BooleanProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.BooleanProperty|
+|defaultValue|boolean|false|none|none|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DateTimeProperty">concerto.metamodel@0.4.0.DateTimeProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.datetimeproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.DateTimeProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.datetimeproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.datetimeproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DateTimeProperty",
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+DateTimeProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DateTimeProperty|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.StringProperty">concerto.metamodel@0.4.0.StringProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.stringproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.StringProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.stringproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.stringproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.StringProperty",
+  "defaultValue": "string",
+  "validator": {
+    "$class": "concerto.metamodel@0.4.0.StringRegexValidator",
+    "pattern": "string",
+    "flags": "string"
+  },
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+StringProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringProperty|
+|defaultValue|string|false|none|none|
+|validator|[concerto.metamodel@0.4.0.StringRegexValidator](#schemaconcerto.metamodel@0.4.0.stringregexvalidator)|false|none|An instance of concerto.metamodel@0.4.0.StringRegexValidator|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.StringRegexValidator">concerto.metamodel@0.4.0.StringRegexValidator</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.stringregexvalidator"></a>
+<a id="schema_concerto.metamodel@0.4.0.StringRegexValidator"></a>
+<a id="tocSconcerto.metamodel@0.4.0.stringregexvalidator"></a>
+<a id="tocsconcerto.metamodel@0.4.0.stringregexvalidator"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.StringRegexValidator",
+  "pattern": "string",
+  "flags": "string"
+}
+
+```
+
+StringRegexValidator
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringRegexValidator|
+|pattern|string|true|none|none|
+|flags|string|true|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DoubleProperty">concerto.metamodel@0.4.0.DoubleProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.doubleproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.DoubleProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.doubleproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.doubleproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DoubleProperty",
+  "defaultValue": 0,
+  "validator": {
+    "$class": "concerto.metamodel@0.4.0.DoubleDomainValidator",
+    "lower": 0,
+    "upper": 0
+  },
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+DoubleProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleProperty|
+|defaultValue|number|false|none|none|
+|validator|[concerto.metamodel@0.4.0.DoubleDomainValidator](#schemaconcerto.metamodel@0.4.0.doubledomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.DoubleDomainValidator|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.DoubleDomainValidator">concerto.metamodel@0.4.0.DoubleDomainValidator</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.doubledomainvalidator"></a>
+<a id="schema_concerto.metamodel@0.4.0.DoubleDomainValidator"></a>
+<a id="tocSconcerto.metamodel@0.4.0.doubledomainvalidator"></a>
+<a id="tocsconcerto.metamodel@0.4.0.doubledomainvalidator"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.DoubleDomainValidator",
+  "lower": 0,
+  "upper": 0
+}
+
+```
+
+DoubleDomainValidator
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator|
+|lower|number|false|none|none|
+|upper|number|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.IntegerProperty">concerto.metamodel@0.4.0.IntegerProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.integerproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.IntegerProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.integerproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.integerproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.IntegerProperty",
+  "defaultValue": 0,
+  "validator": {
+    "$class": "concerto.metamodel@0.4.0.IntegerDomainValidator",
+    "lower": 0,
+    "upper": 0
+  },
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+IntegerProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerProperty|
+|defaultValue|integer|false|none|none|
+|validator|[concerto.metamodel@0.4.0.IntegerDomainValidator](#schemaconcerto.metamodel@0.4.0.integerdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.IntegerDomainValidator|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.IntegerDomainValidator">concerto.metamodel@0.4.0.IntegerDomainValidator</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.integerdomainvalidator"></a>
+<a id="schema_concerto.metamodel@0.4.0.IntegerDomainValidator"></a>
+<a id="tocSconcerto.metamodel@0.4.0.integerdomainvalidator"></a>
+<a id="tocsconcerto.metamodel@0.4.0.integerdomainvalidator"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.IntegerDomainValidator",
+  "lower": 0,
+  "upper": 0
+}
+
+```
+
+IntegerDomainValidator
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator|
+|lower|integer|false|none|none|
+|upper|integer|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.LongProperty">concerto.metamodel@0.4.0.LongProperty</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.longproperty"></a>
+<a id="schema_concerto.metamodel@0.4.0.LongProperty"></a>
+<a id="tocSconcerto.metamodel@0.4.0.longproperty"></a>
+<a id="tocsconcerto.metamodel@0.4.0.longproperty"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.LongProperty",
+  "defaultValue": 0,
+  "validator": {
+    "$class": "concerto.metamodel@0.4.0.LongDomainValidator",
+    "lower": 0,
+    "upper": 0
+  },
+  "name": "string",
+  "isArray": false,
+  "isOptional": false,
+  "decorators": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Decorator",
+      "name": "string",
+      "arguments": [
+        {
+          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ],
+  "location": {
+    "$class": "concerto.metamodel@0.4.0.Range",
+    "start": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "end": {
+      "$class": "concerto.metamodel@0.4.0.Position",
+      "line": 0,
+      "column": 0,
+      "offset": 0
+    },
+    "source": "string"
+  }
+}
+
+```
+
+LongProperty
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongProperty|
+|defaultValue|integer|false|none|none|
+|validator|[concerto.metamodel@0.4.0.LongDomainValidator](#schemaconcerto.metamodel@0.4.0.longdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.LongDomainValidator|
+|name|string|true|none|none|
+|isArray|boolean|true|none|none|
+|isOptional|boolean|true|none|none|
+|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
+|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.LongDomainValidator">concerto.metamodel@0.4.0.LongDomainValidator</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.longdomainvalidator"></a>
+<a id="schema_concerto.metamodel@0.4.0.LongDomainValidator"></a>
+<a id="tocSconcerto.metamodel@0.4.0.longdomainvalidator"></a>
+<a id="tocsconcerto.metamodel@0.4.0.longdomainvalidator"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.LongDomainValidator",
+  "lower": 0,
+  "upper": 0
+}
+
+```
+
+LongDomainValidator
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongDomainValidator|
+|lower|integer|false|none|none|
+|upper|integer|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Import">concerto.metamodel@0.4.0.Import</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.import"></a>
+<a id="schema_concerto.metamodel@0.4.0.Import"></a>
+<a id="tocSconcerto.metamodel@0.4.0.import"></a>
+<a id="tocsconcerto.metamodel@0.4.0.import"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Import",
+  "namespace": "string",
+  "uri": "string"
+}
+
+```
+
+Import
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Import|
+|namespace|string|true|none|none|
+|uri|string|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.ImportAll">concerto.metamodel@0.4.0.ImportAll</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.importall"></a>
+<a id="schema_concerto.metamodel@0.4.0.ImportAll"></a>
+<a id="tocSconcerto.metamodel@0.4.0.importall"></a>
+<a id="tocsconcerto.metamodel@0.4.0.importall"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.ImportAll",
+  "namespace": "string",
+  "uri": "string"
+}
+
+```
+
+ImportAll
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportAll|
+|namespace|string|true|none|none|
+|uri|string|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.ImportType">concerto.metamodel@0.4.0.ImportType</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.importtype"></a>
+<a id="schema_concerto.metamodel@0.4.0.ImportType"></a>
+<a id="tocSconcerto.metamodel@0.4.0.importtype"></a>
+<a id="tocsconcerto.metamodel@0.4.0.importtype"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.ImportType",
+  "name": "string",
+  "namespace": "string",
+  "uri": "string"
+}
+
+```
+
+ImportType
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportType|
+|name|string|true|none|none|
+|namespace|string|true|none|none|
+|uri|string|false|none|none|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Model">concerto.metamodel@0.4.0.Model</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.model"></a>
+<a id="schema_concerto.metamodel@0.4.0.Model"></a>
+<a id="tocSconcerto.metamodel@0.4.0.model"></a>
+<a id="tocsconcerto.metamodel@0.4.0.model"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Model",
+  "namespace": "string",
+  "sourceUri": "string",
+  "concertoVersion": "string",
+  "imports": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Import",
+      "namespace": "string",
+      "uri": "string"
+    }
+  ],
+  "declarations": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Declaration",
+      "name": "string",
+      "decorators": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Decorator",
+          "name": "string",
+          "arguments": [
+            {
+              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ],
+      "location": {
+        "$class": "concerto.metamodel@0.4.0.Range",
+        "start": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "end": {
+          "$class": "concerto.metamodel@0.4.0.Position",
+          "line": 0,
+          "column": 0,
+          "offset": 0
+        },
+        "source": "string"
+      }
+    }
+  ]
+}
+
+```
+
+Model
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Model|
+|namespace|string|true|none|none|
+|sourceUri|string|false|none|none|
+|concertoVersion|string|false|none|none|
+|imports|[anyOf]|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Import](#schemaconcerto.metamodel@0.4.0.import)|false|none|An instance of concerto.metamodel@0.4.0.Import|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ImportAll](#schemaconcerto.metamodel@0.4.0.importall)|false|none|An instance of concerto.metamodel@0.4.0.ImportAll|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ImportType](#schemaconcerto.metamodel@0.4.0.importtype)|false|none|An instance of concerto.metamodel@0.4.0.ImportType|
+
+continued
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|declarations|[anyOf]|false|none|none|
+
+anyOf
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.Declaration](#schemaconcerto.metamodel@0.4.0.declaration)|false|none|An instance of concerto.metamodel@0.4.0.Declaration|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.EnumDeclaration](#schemaconcerto.metamodel@0.4.0.enumdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EnumDeclaration|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.AssetDeclaration](#schemaconcerto.metamodel@0.4.0.assetdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.AssetDeclaration|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.ParticipantDeclaration](#schemaconcerto.metamodel@0.4.0.participantdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ParticipantDeclaration|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.TransactionDeclaration](#schemaconcerto.metamodel@0.4.0.transactiondeclaration)|false|none|An instance of concerto.metamodel@0.4.0.TransactionDeclaration|
+
+or
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|» *anonymous*|[concerto.metamodel@0.4.0.EventDeclaration](#schemaconcerto.metamodel@0.4.0.eventdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EventDeclaration|
+
+<h2 id="tocS_concerto.metamodel@0.4.0.Models">concerto.metamodel@0.4.0.Models</h2>
+<!-- backwards compatibility -->
+<a id="schemaconcerto.metamodel@0.4.0.models"></a>
+<a id="schema_concerto.metamodel@0.4.0.Models"></a>
+<a id="tocSconcerto.metamodel@0.4.0.models"></a>
+<a id="tocsconcerto.metamodel@0.4.0.models"></a>
+
+```json
+{
+  "$class": "concerto.metamodel@0.4.0.Models",
+  "models": [
+    {
+      "$class": "concerto.metamodel@0.4.0.Model",
+      "namespace": "string",
+      "sourceUri": "string",
+      "concertoVersion": "string",
+      "imports": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Import",
+          "namespace": "string",
+          "uri": "string"
+        }
+      ],
+      "declarations": [
+        {
+          "$class": "concerto.metamodel@0.4.0.Declaration",
+          "name": "string",
+          "decorators": [
+            {
+              "$class": "concerto.metamodel@0.4.0.Decorator",
+              "name": "string",
+              "arguments": [
+                {
+                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
+                  "location": {
+                    "$class": "concerto.metamodel@0.4.0.Range",
+                    "start": {},
+                    "end": {},
+                    "source": "string"
+                  }
+                }
+              ],
+              "location": {
+                "$class": "concerto.metamodel@0.4.0.Range",
+                "start": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "end": {
+                  "$class": "concerto.metamodel@0.4.0.Position",
+                  "line": 0,
+                  "column": 0,
+                  "offset": 0
+                },
+                "source": "string"
+              }
+            }
+          ],
+          "location": {
+            "$class": "concerto.metamodel@0.4.0.Range",
+            "start": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "end": {
+              "$class": "concerto.metamodel@0.4.0.Position",
+              "line": 0,
+              "column": 0,
+              "offset": 0
+            },
+            "source": "string"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+```
+
+Models
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Models|
+|models|[[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)]|true|none|[An instance of concerto.metamodel@0.4.0.Model]|
 
 <h2 id="tocS_org.accordproject.commonmark@0.5.0.Node">org.accordproject.commonmark@0.5.0.Node</h2>
 <!-- backwards compatibility -->
@@ -17659,3292 +21191,4 @@ continued
 |---|---|---|---|---|
 |startLine|integer|false|none|none|
 |endLine|integer|false|none|none|
-
-<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.party@0.2.0.party"></a>
-<a id="schema_org.accordproject.party@0.2.0.Party"></a>
-<a id="tocSorg.accordproject.party@0.2.0.party"></a>
-<a id="tocsorg.accordproject.party@0.2.0.party"></a>
-
-```json
-{
-  "$class": "org.accordproject.party@0.2.0.Party",
-  "partyId": "string"
-}
-
-```
-
-Party
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
-|partyId|string|true|none|The instance identifier for this type|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Position">concerto.metamodel@0.4.0.Position</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.position"></a>
-<a id="schema_concerto.metamodel@0.4.0.Position"></a>
-<a id="tocSconcerto.metamodel@0.4.0.position"></a>
-<a id="tocsconcerto.metamodel@0.4.0.position"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Position",
-  "line": 0,
-  "column": 0,
-  "offset": 0
-}
-
-```
-
-Position
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Position|
-|line|integer|true|none|none|
-|column|integer|true|none|none|
-|offset|integer|true|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Range">concerto.metamodel@0.4.0.Range</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.range"></a>
-<a id="schema_concerto.metamodel@0.4.0.Range"></a>
-<a id="tocSconcerto.metamodel@0.4.0.range"></a>
-<a id="tocsconcerto.metamodel@0.4.0.range"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Range",
-  "start": {
-    "$class": "concerto.metamodel@0.4.0.Position",
-    "line": 0,
-    "column": 0,
-    "offset": 0
-  },
-  "end": {
-    "$class": "concerto.metamodel@0.4.0.Position",
-    "line": 0,
-    "column": 0,
-    "offset": 0
-  },
-  "source": "string"
-}
-
-```
-
-Range
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Range|
-|start|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
-|end|[concerto.metamodel@0.4.0.Position](#schemaconcerto.metamodel@0.4.0.position)|true|none|An instance of concerto.metamodel@0.4.0.Position|
-|source|string|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.TypeIdentifier">concerto.metamodel@0.4.0.TypeIdentifier</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.typeidentifier"></a>
-<a id="schema_concerto.metamodel@0.4.0.TypeIdentifier"></a>
-<a id="tocSconcerto.metamodel@0.4.0.typeidentifier"></a>
-<a id="tocsconcerto.metamodel@0.4.0.typeidentifier"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-  "name": "string",
-  "namespace": "string"
-}
-
-```
-
-TypeIdentifier
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TypeIdentifier|
-|name|string|true|none|none|
-|namespace|string|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorLiteral">concerto.metamodel@0.4.0.DecoratorLiteral</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.decoratorliteral"></a>
-<a id="schema_concerto.metamodel@0.4.0.DecoratorLiteral"></a>
-<a id="tocSconcerto.metamodel@0.4.0.decoratorliteral"></a>
-<a id="tocsconcerto.metamodel@0.4.0.decoratorliteral"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-DecoratorLiteral
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorLiteral|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorString">concerto.metamodel@0.4.0.DecoratorString</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.decoratorstring"></a>
-<a id="schema_concerto.metamodel@0.4.0.DecoratorString"></a>
-<a id="tocSconcerto.metamodel@0.4.0.decoratorstring"></a>
-<a id="tocsconcerto.metamodel@0.4.0.decoratorstring"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DecoratorString",
-  "value": "string",
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-DecoratorString
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorString|
-|value|string|true|none|none|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorNumber">concerto.metamodel@0.4.0.DecoratorNumber</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.decoratornumber"></a>
-<a id="schema_concerto.metamodel@0.4.0.DecoratorNumber"></a>
-<a id="tocSconcerto.metamodel@0.4.0.decoratornumber"></a>
-<a id="tocsconcerto.metamodel@0.4.0.decoratornumber"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DecoratorNumber",
-  "value": 0,
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-DecoratorNumber
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorNumber|
-|value|number|true|none|none|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorBoolean">concerto.metamodel@0.4.0.DecoratorBoolean</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.decoratorboolean"></a>
-<a id="schema_concerto.metamodel@0.4.0.DecoratorBoolean"></a>
-<a id="tocSconcerto.metamodel@0.4.0.decoratorboolean"></a>
-<a id="tocsconcerto.metamodel@0.4.0.decoratorboolean"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DecoratorBoolean",
-  "value": true,
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-DecoratorBoolean
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorBoolean|
-|value|boolean|true|none|none|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DecoratorTypeReference">concerto.metamodel@0.4.0.DecoratorTypeReference</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.decoratortypereference"></a>
-<a id="schema_concerto.metamodel@0.4.0.DecoratorTypeReference"></a>
-<a id="tocSconcerto.metamodel@0.4.0.decoratortypereference"></a>
-<a id="tocsconcerto.metamodel@0.4.0.decoratortypereference"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DecoratorTypeReference",
-  "type": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "isArray": false,
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-DecoratorTypeReference
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DecoratorTypeReference|
-|type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|isArray|boolean|true|none|none|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Decorator">concerto.metamodel@0.4.0.Decorator</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.decorator"></a>
-<a id="schema_concerto.metamodel@0.4.0.Decorator"></a>
-<a id="tocSconcerto.metamodel@0.4.0.decorator"></a>
-<a id="tocsconcerto.metamodel@0.4.0.decorator"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Decorator",
-  "name": "string",
-  "arguments": [
-    {
-      "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-Decorator
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Decorator|
-|name|string|true|none|none|
-|arguments|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorLiteral](#schemaconcerto.metamodel@0.4.0.decoratorliteral)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorLiteral|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorString](#schemaconcerto.metamodel@0.4.0.decoratorstring)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorString|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorNumber](#schemaconcerto.metamodel@0.4.0.decoratornumber)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorNumber|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorBoolean](#schemaconcerto.metamodel@0.4.0.decoratorboolean)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorBoolean|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DecoratorTypeReference](#schemaconcerto.metamodel@0.4.0.decoratortypereference)|false|none|An instance of concerto.metamodel@0.4.0.DecoratorTypeReference|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Identified">concerto.metamodel@0.4.0.Identified</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.identified"></a>
-<a id="schema_concerto.metamodel@0.4.0.Identified"></a>
-<a id="tocSconcerto.metamodel@0.4.0.identified"></a>
-<a id="tocsconcerto.metamodel@0.4.0.identified"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Identified"
-}
-
-```
-
-Identified
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Identified|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.IdentifiedBy">concerto.metamodel@0.4.0.IdentifiedBy</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.identifiedby"></a>
-<a id="schema_concerto.metamodel@0.4.0.IdentifiedBy"></a>
-<a id="tocSconcerto.metamodel@0.4.0.identifiedby"></a>
-<a id="tocsconcerto.metamodel@0.4.0.identifiedby"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.IdentifiedBy",
-  "name": "string"
-}
-
-```
-
-IdentifiedBy
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IdentifiedBy|
-|name|string|true|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Declaration">concerto.metamodel@0.4.0.Declaration</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.declaration"></a>
-<a id="schema_concerto.metamodel@0.4.0.Declaration"></a>
-<a id="tocSconcerto.metamodel@0.4.0.declaration"></a>
-<a id="tocsconcerto.metamodel@0.4.0.declaration"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Declaration",
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-Declaration
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Declaration|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.EnumDeclaration">concerto.metamodel@0.4.0.EnumDeclaration</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.enumdeclaration"></a>
-<a id="schema_concerto.metamodel@0.4.0.EnumDeclaration"></a>
-<a id="tocSconcerto.metamodel@0.4.0.enumdeclaration"></a>
-<a id="tocsconcerto.metamodel@0.4.0.enumdeclaration"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.EnumDeclaration",
-  "properties": [
-    {
-      "$class": "concerto.metamodel@0.4.0.EnumProperty",
-      "name": "string",
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-EnumDeclaration
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumDeclaration|
-|properties|[[concerto.metamodel@0.4.0.EnumProperty](#schemaconcerto.metamodel@0.4.0.enumproperty)]|true|none|[An instance of concerto.metamodel@0.4.0.EnumProperty]|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.EnumProperty">concerto.metamodel@0.4.0.EnumProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.enumproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.EnumProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.enumproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.enumproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.EnumProperty",
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-EnumProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EnumProperty|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.ConceptDeclaration">concerto.metamodel@0.4.0.ConceptDeclaration</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.conceptdeclaration"></a>
-<a id="schema_concerto.metamodel@0.4.0.ConceptDeclaration"></a>
-<a id="tocSconcerto.metamodel@0.4.0.conceptdeclaration"></a>
-<a id="tocsconcerto.metamodel@0.4.0.conceptdeclaration"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.ConceptDeclaration",
-  "isAbstract": false,
-  "identified": {
-    "$class": "concerto.metamodel@0.4.0.Identified"
-  },
-  "superType": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "properties": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Property",
-      "name": "string",
-      "isArray": false,
-      "isOptional": false,
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-ConceptDeclaration
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ConceptDeclaration|
-|isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.AssetDeclaration">concerto.metamodel@0.4.0.AssetDeclaration</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.assetdeclaration"></a>
-<a id="schema_concerto.metamodel@0.4.0.AssetDeclaration"></a>
-<a id="tocSconcerto.metamodel@0.4.0.assetdeclaration"></a>
-<a id="tocsconcerto.metamodel@0.4.0.assetdeclaration"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.AssetDeclaration",
-  "isAbstract": false,
-  "identified": {
-    "$class": "concerto.metamodel@0.4.0.Identified"
-  },
-  "superType": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "properties": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Property",
-      "name": "string",
-      "isArray": false,
-      "isOptional": false,
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-AssetDeclaration
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.AssetDeclaration|
-|isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.ParticipantDeclaration">concerto.metamodel@0.4.0.ParticipantDeclaration</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.participantdeclaration"></a>
-<a id="schema_concerto.metamodel@0.4.0.ParticipantDeclaration"></a>
-<a id="tocSconcerto.metamodel@0.4.0.participantdeclaration"></a>
-<a id="tocsconcerto.metamodel@0.4.0.participantdeclaration"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.ParticipantDeclaration",
-  "isAbstract": false,
-  "identified": {
-    "$class": "concerto.metamodel@0.4.0.Identified"
-  },
-  "superType": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "properties": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Property",
-      "name": "string",
-      "isArray": false,
-      "isOptional": false,
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-ParticipantDeclaration
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ParticipantDeclaration|
-|isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.TransactionDeclaration">concerto.metamodel@0.4.0.TransactionDeclaration</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.transactiondeclaration"></a>
-<a id="schema_concerto.metamodel@0.4.0.TransactionDeclaration"></a>
-<a id="tocSconcerto.metamodel@0.4.0.transactiondeclaration"></a>
-<a id="tocsconcerto.metamodel@0.4.0.transactiondeclaration"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.TransactionDeclaration",
-  "isAbstract": false,
-  "identified": {
-    "$class": "concerto.metamodel@0.4.0.Identified"
-  },
-  "superType": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "properties": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Property",
-      "name": "string",
-      "isArray": false,
-      "isOptional": false,
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-TransactionDeclaration
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.TransactionDeclaration|
-|isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.EventDeclaration">concerto.metamodel@0.4.0.EventDeclaration</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.eventdeclaration"></a>
-<a id="schema_concerto.metamodel@0.4.0.EventDeclaration"></a>
-<a id="tocSconcerto.metamodel@0.4.0.eventdeclaration"></a>
-<a id="tocsconcerto.metamodel@0.4.0.eventdeclaration"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.EventDeclaration",
-  "isAbstract": false,
-  "identified": {
-    "$class": "concerto.metamodel@0.4.0.Identified"
-  },
-  "superType": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "properties": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Property",
-      "name": "string",
-      "isArray": false,
-      "isOptional": false,
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "name": "string",
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-EventDeclaration
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.EventDeclaration|
-|isAbstract|boolean|true|none|none|
-|identified|any|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Identified](#schemaconcerto.metamodel@0.4.0.identified)|false|none|An instance of concerto.metamodel@0.4.0.Identified|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IdentifiedBy](#schemaconcerto.metamodel@0.4.0.identifiedby)|false|none|An instance of concerto.metamodel@0.4.0.IdentifiedBy|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|superType|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|false|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|properties|[anyOf]|true|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Property](#schemaconcerto.metamodel@0.4.0.property)|false|none|An instance of concerto.metamodel@0.4.0.Property|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.RelationshipProperty](#schemaconcerto.metamodel@0.4.0.relationshipproperty)|false|none|An instance of concerto.metamodel@0.4.0.RelationshipProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ObjectProperty](#schemaconcerto.metamodel@0.4.0.objectproperty)|false|none|An instance of concerto.metamodel@0.4.0.ObjectProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.BooleanProperty](#schemaconcerto.metamodel@0.4.0.booleanproperty)|false|none|An instance of concerto.metamodel@0.4.0.BooleanProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DateTimeProperty](#schemaconcerto.metamodel@0.4.0.datetimeproperty)|false|none|An instance of concerto.metamodel@0.4.0.DateTimeProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.StringProperty](#schemaconcerto.metamodel@0.4.0.stringproperty)|false|none|An instance of concerto.metamodel@0.4.0.StringProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.DoubleProperty](#schemaconcerto.metamodel@0.4.0.doubleproperty)|false|none|An instance of concerto.metamodel@0.4.0.DoubleProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.IntegerProperty](#schemaconcerto.metamodel@0.4.0.integerproperty)|false|none|An instance of concerto.metamodel@0.4.0.IntegerProperty|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.LongProperty](#schemaconcerto.metamodel@0.4.0.longproperty)|false|none|An instance of concerto.metamodel@0.4.0.LongProperty|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|name|string|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Property">concerto.metamodel@0.4.0.Property</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.property"></a>
-<a id="schema_concerto.metamodel@0.4.0.Property"></a>
-<a id="tocSconcerto.metamodel@0.4.0.property"></a>
-<a id="tocsconcerto.metamodel@0.4.0.property"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Property",
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-Property
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Property|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.RelationshipProperty">concerto.metamodel@0.4.0.RelationshipProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.relationshipproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.RelationshipProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.relationshipproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.relationshipproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.RelationshipProperty",
-  "type": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-RelationshipProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.RelationshipProperty|
-|type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.ObjectProperty">concerto.metamodel@0.4.0.ObjectProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.objectproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.ObjectProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.objectproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.objectproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.ObjectProperty",
-  "defaultValue": "string",
-  "type": {
-    "$class": "concerto.metamodel@0.4.0.TypeIdentifier",
-    "name": "string",
-    "namespace": "string"
-  },
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-ObjectProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ObjectProperty|
-|defaultValue|string|false|none|none|
-|type|[concerto.metamodel@0.4.0.TypeIdentifier](#schemaconcerto.metamodel@0.4.0.typeidentifier)|true|none|An instance of concerto.metamodel@0.4.0.TypeIdentifier|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.BooleanProperty">concerto.metamodel@0.4.0.BooleanProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.booleanproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.BooleanProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.booleanproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.booleanproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.BooleanProperty",
-  "defaultValue": true,
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-BooleanProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.BooleanProperty|
-|defaultValue|boolean|false|none|none|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DateTimeProperty">concerto.metamodel@0.4.0.DateTimeProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.datetimeproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.DateTimeProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.datetimeproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.datetimeproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DateTimeProperty",
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-DateTimeProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DateTimeProperty|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.StringProperty">concerto.metamodel@0.4.0.StringProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.stringproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.StringProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.stringproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.stringproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.StringProperty",
-  "defaultValue": "string",
-  "validator": {
-    "$class": "concerto.metamodel@0.4.0.StringRegexValidator",
-    "pattern": "string",
-    "flags": "string"
-  },
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-StringProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringProperty|
-|defaultValue|string|false|none|none|
-|validator|[concerto.metamodel@0.4.0.StringRegexValidator](#schemaconcerto.metamodel@0.4.0.stringregexvalidator)|false|none|An instance of concerto.metamodel@0.4.0.StringRegexValidator|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.StringRegexValidator">concerto.metamodel@0.4.0.StringRegexValidator</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.stringregexvalidator"></a>
-<a id="schema_concerto.metamodel@0.4.0.StringRegexValidator"></a>
-<a id="tocSconcerto.metamodel@0.4.0.stringregexvalidator"></a>
-<a id="tocsconcerto.metamodel@0.4.0.stringregexvalidator"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.StringRegexValidator",
-  "pattern": "string",
-  "flags": "string"
-}
-
-```
-
-StringRegexValidator
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.StringRegexValidator|
-|pattern|string|true|none|none|
-|flags|string|true|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DoubleProperty">concerto.metamodel@0.4.0.DoubleProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.doubleproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.DoubleProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.doubleproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.doubleproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DoubleProperty",
-  "defaultValue": 0,
-  "validator": {
-    "$class": "concerto.metamodel@0.4.0.DoubleDomainValidator",
-    "lower": 0,
-    "upper": 0
-  },
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-DoubleProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleProperty|
-|defaultValue|number|false|none|none|
-|validator|[concerto.metamodel@0.4.0.DoubleDomainValidator](#schemaconcerto.metamodel@0.4.0.doubledomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.DoubleDomainValidator|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.DoubleDomainValidator">concerto.metamodel@0.4.0.DoubleDomainValidator</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.doubledomainvalidator"></a>
-<a id="schema_concerto.metamodel@0.4.0.DoubleDomainValidator"></a>
-<a id="tocSconcerto.metamodel@0.4.0.doubledomainvalidator"></a>
-<a id="tocsconcerto.metamodel@0.4.0.doubledomainvalidator"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.DoubleDomainValidator",
-  "lower": 0,
-  "upper": 0
-}
-
-```
-
-DoubleDomainValidator
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.DoubleDomainValidator|
-|lower|number|false|none|none|
-|upper|number|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.IntegerProperty">concerto.metamodel@0.4.0.IntegerProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.integerproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.IntegerProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.integerproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.integerproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.IntegerProperty",
-  "defaultValue": 0,
-  "validator": {
-    "$class": "concerto.metamodel@0.4.0.IntegerDomainValidator",
-    "lower": 0,
-    "upper": 0
-  },
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-IntegerProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerProperty|
-|defaultValue|integer|false|none|none|
-|validator|[concerto.metamodel@0.4.0.IntegerDomainValidator](#schemaconcerto.metamodel@0.4.0.integerdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.IntegerDomainValidator|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.IntegerDomainValidator">concerto.metamodel@0.4.0.IntegerDomainValidator</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.integerdomainvalidator"></a>
-<a id="schema_concerto.metamodel@0.4.0.IntegerDomainValidator"></a>
-<a id="tocSconcerto.metamodel@0.4.0.integerdomainvalidator"></a>
-<a id="tocsconcerto.metamodel@0.4.0.integerdomainvalidator"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.IntegerDomainValidator",
-  "lower": 0,
-  "upper": 0
-}
-
-```
-
-IntegerDomainValidator
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.IntegerDomainValidator|
-|lower|integer|false|none|none|
-|upper|integer|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.LongProperty">concerto.metamodel@0.4.0.LongProperty</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.longproperty"></a>
-<a id="schema_concerto.metamodel@0.4.0.LongProperty"></a>
-<a id="tocSconcerto.metamodel@0.4.0.longproperty"></a>
-<a id="tocsconcerto.metamodel@0.4.0.longproperty"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.LongProperty",
-  "defaultValue": 0,
-  "validator": {
-    "$class": "concerto.metamodel@0.4.0.LongDomainValidator",
-    "lower": 0,
-    "upper": 0
-  },
-  "name": "string",
-  "isArray": false,
-  "isOptional": false,
-  "decorators": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Decorator",
-      "name": "string",
-      "arguments": [
-        {
-          "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ],
-  "location": {
-    "$class": "concerto.metamodel@0.4.0.Range",
-    "start": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "end": {
-      "$class": "concerto.metamodel@0.4.0.Position",
-      "line": 0,
-      "column": 0,
-      "offset": 0
-    },
-    "source": "string"
-  }
-}
-
-```
-
-LongProperty
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongProperty|
-|defaultValue|integer|false|none|none|
-|validator|[concerto.metamodel@0.4.0.LongDomainValidator](#schemaconcerto.metamodel@0.4.0.longdomainvalidator)|false|none|An instance of concerto.metamodel@0.4.0.LongDomainValidator|
-|name|string|true|none|none|
-|isArray|boolean|true|none|none|
-|isOptional|boolean|true|none|none|
-|decorators|[[concerto.metamodel@0.4.0.Decorator](#schemaconcerto.metamodel@0.4.0.decorator)]|false|none|[An instance of concerto.metamodel@0.4.0.Decorator]|
-|location|[concerto.metamodel@0.4.0.Range](#schemaconcerto.metamodel@0.4.0.range)|false|none|An instance of concerto.metamodel@0.4.0.Range|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.LongDomainValidator">concerto.metamodel@0.4.0.LongDomainValidator</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.longdomainvalidator"></a>
-<a id="schema_concerto.metamodel@0.4.0.LongDomainValidator"></a>
-<a id="tocSconcerto.metamodel@0.4.0.longdomainvalidator"></a>
-<a id="tocsconcerto.metamodel@0.4.0.longdomainvalidator"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.LongDomainValidator",
-  "lower": 0,
-  "upper": 0
-}
-
-```
-
-LongDomainValidator
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.LongDomainValidator|
-|lower|integer|false|none|none|
-|upper|integer|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Import">concerto.metamodel@0.4.0.Import</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.import"></a>
-<a id="schema_concerto.metamodel@0.4.0.Import"></a>
-<a id="tocSconcerto.metamodel@0.4.0.import"></a>
-<a id="tocsconcerto.metamodel@0.4.0.import"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Import",
-  "namespace": "string",
-  "uri": "string"
-}
-
-```
-
-Import
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Import|
-|namespace|string|true|none|none|
-|uri|string|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.ImportAll">concerto.metamodel@0.4.0.ImportAll</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.importall"></a>
-<a id="schema_concerto.metamodel@0.4.0.ImportAll"></a>
-<a id="tocSconcerto.metamodel@0.4.0.importall"></a>
-<a id="tocsconcerto.metamodel@0.4.0.importall"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.ImportAll",
-  "namespace": "string",
-  "uri": "string"
-}
-
-```
-
-ImportAll
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportAll|
-|namespace|string|true|none|none|
-|uri|string|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.ImportType">concerto.metamodel@0.4.0.ImportType</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.importtype"></a>
-<a id="schema_concerto.metamodel@0.4.0.ImportType"></a>
-<a id="tocSconcerto.metamodel@0.4.0.importtype"></a>
-<a id="tocsconcerto.metamodel@0.4.0.importtype"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.ImportType",
-  "name": "string",
-  "namespace": "string",
-  "uri": "string"
-}
-
-```
-
-ImportType
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.ImportType|
-|name|string|true|none|none|
-|namespace|string|true|none|none|
-|uri|string|false|none|none|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Model">concerto.metamodel@0.4.0.Model</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.model"></a>
-<a id="schema_concerto.metamodel@0.4.0.Model"></a>
-<a id="tocSconcerto.metamodel@0.4.0.model"></a>
-<a id="tocsconcerto.metamodel@0.4.0.model"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Model",
-  "namespace": "string",
-  "sourceUri": "string",
-  "concertoVersion": "string",
-  "imports": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Import",
-      "namespace": "string",
-      "uri": "string"
-    }
-  ],
-  "declarations": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Declaration",
-      "name": "string",
-      "decorators": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Decorator",
-          "name": "string",
-          "arguments": [
-            {
-              "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ],
-      "location": {
-        "$class": "concerto.metamodel@0.4.0.Range",
-        "start": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "end": {
-          "$class": "concerto.metamodel@0.4.0.Position",
-          "line": 0,
-          "column": 0,
-          "offset": 0
-        },
-        "source": "string"
-      }
-    }
-  ]
-}
-
-```
-
-Model
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Model|
-|namespace|string|true|none|none|
-|sourceUri|string|false|none|none|
-|concertoVersion|string|false|none|none|
-|imports|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Import](#schemaconcerto.metamodel@0.4.0.import)|false|none|An instance of concerto.metamodel@0.4.0.Import|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ImportAll](#schemaconcerto.metamodel@0.4.0.importall)|false|none|An instance of concerto.metamodel@0.4.0.ImportAll|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ImportType](#schemaconcerto.metamodel@0.4.0.importtype)|false|none|An instance of concerto.metamodel@0.4.0.ImportType|
-
-continued
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|declarations|[anyOf]|false|none|none|
-
-anyOf
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.Declaration](#schemaconcerto.metamodel@0.4.0.declaration)|false|none|An instance of concerto.metamodel@0.4.0.Declaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.EnumDeclaration](#schemaconcerto.metamodel@0.4.0.enumdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EnumDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ConceptDeclaration](#schemaconcerto.metamodel@0.4.0.conceptdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ConceptDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.AssetDeclaration](#schemaconcerto.metamodel@0.4.0.assetdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.AssetDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.ParticipantDeclaration](#schemaconcerto.metamodel@0.4.0.participantdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.ParticipantDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.TransactionDeclaration](#schemaconcerto.metamodel@0.4.0.transactiondeclaration)|false|none|An instance of concerto.metamodel@0.4.0.TransactionDeclaration|
-
-or
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|» *anonymous*|[concerto.metamodel@0.4.0.EventDeclaration](#schemaconcerto.metamodel@0.4.0.eventdeclaration)|false|none|An instance of concerto.metamodel@0.4.0.EventDeclaration|
-
-<h2 id="tocS_concerto.metamodel@0.4.0.Models">concerto.metamodel@0.4.0.Models</h2>
-<!-- backwards compatibility -->
-<a id="schemaconcerto.metamodel@0.4.0.models"></a>
-<a id="schema_concerto.metamodel@0.4.0.Models"></a>
-<a id="tocSconcerto.metamodel@0.4.0.models"></a>
-<a id="tocsconcerto.metamodel@0.4.0.models"></a>
-
-```json
-{
-  "$class": "concerto.metamodel@0.4.0.Models",
-  "models": [
-    {
-      "$class": "concerto.metamodel@0.4.0.Model",
-      "namespace": "string",
-      "sourceUri": "string",
-      "concertoVersion": "string",
-      "imports": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Import",
-          "namespace": "string",
-          "uri": "string"
-        }
-      ],
-      "declarations": [
-        {
-          "$class": "concerto.metamodel@0.4.0.Declaration",
-          "name": "string",
-          "decorators": [
-            {
-              "$class": "concerto.metamodel@0.4.0.Decorator",
-              "name": "string",
-              "arguments": [
-                {
-                  "$class": "concerto.metamodel@0.4.0.DecoratorLiteral",
-                  "location": {
-                    "$class": "concerto.metamodel@0.4.0.Range",
-                    "start": {},
-                    "end": {},
-                    "source": "string"
-                  }
-                }
-              ],
-              "location": {
-                "$class": "concerto.metamodel@0.4.0.Range",
-                "start": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "end": {
-                  "$class": "concerto.metamodel@0.4.0.Position",
-                  "line": 0,
-                  "column": 0,
-                  "offset": 0
-                },
-                "source": "string"
-              }
-            }
-          ],
-          "location": {
-            "$class": "concerto.metamodel@0.4.0.Range",
-            "start": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "end": {
-              "$class": "concerto.metamodel@0.4.0.Position",
-              "line": 0,
-              "column": 0,
-              "offset": 0
-            },
-            "source": "string"
-          }
-        }
-      ]
-    }
-  ]
-}
-
-```
-
-Models
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Models|
-|models|[[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)]|true|none|[An instance of concerto.metamodel@0.4.0.Model]|
 

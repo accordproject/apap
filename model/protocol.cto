@@ -218,7 +218,63 @@ concept TriggerRequest {
 @description("Response of triggering a function")
 concept TriggerResponse {
     o JSON result optional
+    o BaseObligation[] obligations optional
     o Boolean isError
     o String errorMessage optional
     o String errorDetails optional
+}
+
+// ============================================================
+// OBLIGATIONS
+// ============================================================
+
+@description("Status of an obligation")
+enum ObligationStatus {
+    o ACTIVE
+    o FULFILLED
+    o VIOLATED
+    o PARTIALLY_FULFILLED
+    o DISPUTED
+    o UNDER_REVIEW
+    o RESOLVED_WITH_ADJUSTMENT
+    o CANCELLED
+    o SUPERSEDED
+    o ERROR
+    o OTHER
+}
+
+@description("Abstract base for all legal obligations")
+abstract concept BaseObligation {
+    o ObligationStatus status
+    o String description optional
+}
+
+@description("Obligation to transfer ownership of an asset")
+concept OwnershipTransferObligation extends BaseObligation {
+    o String assetIdentifier
+    o String currentOwner
+    o String newOwner
+}
+
+@description("Obligation to make a financial payment")
+concept PaymentObligation extends BaseObligation {
+    o String debtor        // The party paying
+    o String creditor      // The party receiving
+    o Double amount
+    o String currency      // e.g. "USD", "EUR"
+}
+
+@description("Obligation to release funds/tokens from escrow")
+concept EscrowReleaseObligation extends BaseObligation {
+    o String escrowAgent
+    o String beneficiary
+    o String tokenIdentifier
+    o Double amount
+}
+
+@description("Obligation to grant access control permissions")
+concept AccessControlObligation extends BaseObligation {
+    o String grantee             // Who gets access?
+    o String resourceIdentifier  // What resource?
+    o String permission          // e.g. "READ", "WRITE"
 }
