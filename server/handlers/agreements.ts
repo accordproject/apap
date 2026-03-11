@@ -19,7 +19,6 @@ async function resolveAgreement(db: any, agreementId: string) {
     let apTemplate;
     let templateRow = null;
 
-    // Phase 1: Try resolving via the new templateHash
     if (agreement.templateHash) {
         const cachedResult = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, agreement.templateHash)).limit(1);
         if (cachedResult.length > 0) {
@@ -30,7 +29,6 @@ async function resolveAgreement(db: any, agreementId: string) {
         throw new Error(`Cached template missing from database.`);
     }
 
-    // Phase 2: Fallback to old URI resolution
     let templateUri = agreement.template;
     if (templateUri && templateUri.startsWith('resource:')) {
         templateUri = templateUri.split('#').slice(1).join('#');
@@ -52,6 +50,11 @@ router.post('/', async (req, res) => {
     try {
         const db = res.locals.db;
         
+        const zodValidation = AgreementInsertSchema.safeParse(req.body);
+        if (!zodValidation.success) {
+            return res.status(400).json({ error: 'Schema validation failed', details: zodValidation.error.errors });
+        }
+
         const { success, error } = await concertoValidation('Agreement', req.body);
         if (!success) {
             return res.status(400).json({ error: 'Invalid request body', details: error.errors });

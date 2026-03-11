@@ -119,6 +119,10 @@ export function extractTemplateForDatabase(apTemplate: ApTemplateInstance, uri: 
         version: packageJson.version || '1.0.0',
         description: packageJson.description || '',
         license: packageJson.license || 'Unknown',
+        displayName: packageJson.displayName || null,
+        keywords: packageJson.keywords || null,
+        logo: packageJson.logo || null,
+        sampleRequest: packageJson.sampleRequest || null,
         metadata: packageJson.accordproject || {},
         templateModel: { 
             model: { 
