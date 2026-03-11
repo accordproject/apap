@@ -52,7 +52,6 @@ router.post('/', async (req, res) => {
     try {
         const db = res.locals.db;
         
-        // 1. Validate the strict Concerto payload FIRST (before adding our hash)
         const { success, error } = await concertoValidation('Agreement', req.body);
         if (!success) {
             return res.status(400).json({ error: 'Invalid request body', details: error.errors });
@@ -65,7 +64,6 @@ router.post('/', async (req, res) => {
 
         let currentHash = null;
 
-        // 2. Fetch and Cache the Template
         if (templateUri && (templateUri.startsWith('http://') || templateUri.startsWith('https://'))) {
             const CiceroCore = require('@accordproject/cicero-core');
             const retriever = new HttpTemplateRetriever();
@@ -82,14 +80,12 @@ router.post('/', async (req, res) => {
             }
         }
 
-        // 3. Prepare the final Database object
         const insertData = {
             ...req.body,
             templateHash: currentHash,
             organization: res.locals.orgId
         };
 
-        // 4. Save to Database and Return
         const inserted = await db.insert(Agreement).values(insertData).returning();
         res.json(inserted[0]);
 
@@ -154,11 +150,9 @@ crudRouter.post('/:id/trigger', async function (req, res) {
             await res.locals.db.update(Agreement).set(agreement).where(eq(Agreement.id, Number.parseInt(agreement.id)));
             res.json(triggerResult);
         } catch (err: any) {
-            // --- OUR NEW LOGGING ---
             console.log("\n=== TRIGGER EXECUTION ERROR ===");
             console.log(err.stack);
             console.log("===============================\n");
-            // -----------------------
             
             res.json({ isError: true, errorMessage: err.message, errorDetails: err.toString() });
         }
