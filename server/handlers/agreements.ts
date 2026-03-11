@@ -6,6 +6,7 @@ import { templateFromDatabase, extractTemplateForDatabase } from './templatebuil
 import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
+import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 
 async function resolveAgreement(db: any, agreementId: string) {
     console.log('Getting agreement: ' + agreementId);
@@ -68,11 +69,10 @@ router.post('/', async (req, res) => {
         let currentHash = null;
 
         if (templateUri && (templateUri.startsWith('http://') || templateUri.startsWith('https://'))) {
-            const CiceroCore = require('@accordproject/cicero-core');
             const retriever = new HttpTemplateRetriever();
             const buffer = await retriever.fetch(templateUri);
             
-            const apTemplate = await CiceroCore.Template.fromArchive(buffer);
+            const apTemplate = await CiceroTemplate.fromArchive(buffer);
             currentHash = apTemplate.getHash();
 
             const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
