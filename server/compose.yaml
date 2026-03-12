@@ -21,11 +21,19 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     restart: always
     user: postgres
+    # NOTE: Postgres 18+ changes the data layout: the image now uses
+    # /var/lib/postgresql/<MAJOR>/docker as the PGDATA location and
+    # defines the VOLUME at /var/lib/postgresql.
+    # If you have an existing db-data volume created with Postgres 17 (which used
+    # /var/lib/postgresql/data), you MUST either:
+    #  - backup and recreate the volume, OR
+    #  - migrate the files inside the volume into the new subdirectory
+    #    (e.g. move existing files into /var/lib/postgresql/18/docker).
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=1baddeed
