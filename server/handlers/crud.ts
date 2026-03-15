@@ -198,79 +198,128 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     });
 
     // GET with pagination, sorting, and filtering
-    router.get('/',
-        // authRequiredPermissions('read:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
-                const queryParams = parseQueryParams(req);
-                const { page, limit, sortBy, sortOrder } = queryParams;
-                const whereClause = buildWhereClause ? buildWhereClause(req, queryParams) : 
-                    defaultWhereClause(req, queryParams, table);
-                const orderClause = buildOrderClause(table, sortBy, sortOrder);
+   // GET with pagination, sorting, and filtering
+router.get('/',
+    // authRequiredPermissions('read:' + typeName),
+    async (req: Request, res: Response) => {
+        try {
 
-                // Log the generated SQL
-                let logQuery = res.locals.db
-                    .select()
-                    .from(table)
-                    .where(whereClause)
-                    .limit(limit)
-                    .offset((page - 1) * limit);
+            const queryParams = parseQueryParams(req);
+            const { page, limit, sortBy, sortOrder } = queryParams;
 
-                if (orderClause !== null) {
-                    logQuery = logQuery.orderBy(orderClause as SQL<unknown>);
-                }
+            let whereClause;
 
-                const sql = logQuery.toSQL();
+            /* 
+               Change :) done by purushotham 
+               
+               Instead of replacing the entire WHERE clause when
+               author exists, we modify the filter value so that
+               the comparison becomes case-insensitive.
+            */
+
+            if (queryParams.filters?.author) {
+
+                const authorValue = queryParams.filters.author;
+
+                // remove author from default filters to avoid duplication
+                delete queryParams.filters.author;
+
                 
-                console.log(`[${typeName}] SQL:`, sql.sql);
-                console.log(`[${typeName}] Params:`, sql.params);
+                const otherFilters = buildWhereClause
+                    ? buildWhereClause(req, queryParams)
+                    : defaultWhereClause(req, queryParams, table);
 
-                // Get total count for pagination
-                const [{ count: total }] = await res.locals.db
-                    .select({ count: count() })
-                    .from(table)
-                    .where(whereClause);
+                // change done here 
+                const authorCondition = sql`LOWER("author") = LOWER(${authorValue})`;
+              
 
-                // Get paginated results
-                let query = res.locals.db
-                    .select()
-                    .from(table)
-                    .where(whereClause)
-                    .limit(limit)
-                    .offset((page - 1) * limit);
+                whereClause = otherFilters
+                    ? sql`${otherFilters} AND ${authorCondition}`
+                    : authorCondition;
 
-                if (orderClause !== null) {
-                    query = query.orderBy(orderClause as SQL<unknown>);
-                }
+            } else {
 
-                const items = await query;
-
-                const response: PaginatedResponse<any> = {
-                    items,
-                    total: total,
-                    page,
-                    limit,
-                    totalPages: Math.ceil(total / limit)
-                };
-
-                // Modify the GET responses to include roles
-                if (typeName === 'users') {
-                    response.items = await Promise.all(items.map(enhanceUserData));
-                } else {
-                    response.items = items;
-                }
-
-                if (transformResponse) {
-                    response.items = response.items.map(transformResponse);
-                }
-
-                res.json(response);
-            } catch (error) {
-                console.log(error);
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
+                // default behaviour when author filter is not used
+                whereClause = buildWhereClause
+                    ? buildWhereClause(req, queryParams)
+                    : defaultWhereClause(req, queryParams, table);
             }
-        });
+
+
+            const orderClause = buildOrderClause(table, sortBy, sortOrder);
+
+            // Log the generated SQL
+            let logQuery = res.locals.db
+                .select()
+                .from(table)
+                .where(whereClause)
+                .limit(limit)
+                .offset((page - 1) * limit);
+
+            if (orderClause !== null) {
+                logQuery = logQuery.orderBy(orderClause as SQL<unknown>);
+            }
+
+            const sqlQuery = logQuery.toSQL();
+
+            console.log(`[${typeName}] SQL:`, sqlQuery.sql);
+            console.log(`[${typeName}] Params:`, sqlQuery.params);
+
+
+            // Get total count for pagination
+            const [{ count: total }] = await res.locals.db
+                .select({ count: count() })
+                .from(table)
+                .where(whereClause);
+
+
+            // Get paginated results
+            let query = res.locals.db
+                .select()
+                .from(table)
+                .where(whereClause)
+                .limit(limit)
+                .offset((page - 1) * limit);
+
+            if (orderClause !== null) {
+                query = query.orderBy(orderClause as SQL<unknown>);
+            }
+
+            const items = await query;
+
+
+            const response: PaginatedResponse<any> = {
+                items,
+                total: total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            };
+
+
+            // Modify the GET responses to include roles
+            if (typeName === 'users') {
+                response.items = await Promise.all(items.map(enhanceUserData));
+            } else {
+                response.items = items;
+            }
+
+
+            if (transformResponse) {
+                response.items = response.items.map(transformResponse);
+            }
+
+            res.json(response);
+
+        } catch (error) {
+
+            console.log(error);
+
+            const message = error instanceof Error ? error.message : 'Unknown error';
+
+            res.status(500).json({ error: message });
+        }
+    });
 
     // POST new item
     router.post('/',
