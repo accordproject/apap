@@ -1,6 +1,10 @@
 import { ITemplateRetriever } from './ITemplateRetriever';
 
 export class HttpTemplateRetriever implements ITemplateRetriever {
+    public getURISchemes(): string[] {
+        return ['http', 'https'];
+    }
+
     async fetch(uri: string): Promise<Buffer> {
         if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
             throw new Error(`Invalid URI scheme. HttpTemplateRetriever only supports http and https. Received: ${uri}`);

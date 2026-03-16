@@ -68,20 +68,29 @@ router.post('/', async (req, res) => {
 
         let currentHash = null;
 
-        if (templateUri && (templateUri.startsWith('http://') || templateUri.startsWith('https://'))) {
-            const retriever = new HttpTemplateRetriever();
-            const buffer = await retriever.fetch(templateUri);
-            
-            const apTemplate = await CiceroTemplate.fromArchive(buffer);
-            currentHash = apTemplate.getHash();
+        const availableRetrievers = [
+            new HttpTemplateRetriever()
+        ];
 
-            const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
-            
-            if (existing.length === 0) {
-                const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                await db.insert(DbTemplate)
-                    .values(newDbTemplateRow)
-                    .onConflictDoNothing({ target: DbTemplate.hash });
+        if (templateUri) {
+            const matchingRetriever = availableRetrievers.find(r => 
+                r.getURISchemes().some(scheme => templateUri.startsWith(`${scheme}:`))
+            );
+
+            if (matchingRetriever) {
+                const buffer = await matchingRetriever.fetch(templateUri);
+                
+                const apTemplate = await CiceroTemplate.fromArchive(buffer);
+                currentHash = apTemplate.getHash();
+
+                const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
+                
+                if (existing.length === 0) {
+                    const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
+                    await db.insert(DbTemplate)
+                        .values(newDbTemplateRow)
+                        .onConflictDoNothing({ target: DbTemplate.hash });
+                }
             }
         }
 

@@ -1,4 +1,6 @@
 export interface ITemplateRetriever {
+    getURISchemes(): string[];
+
     /**
      * Fetches a template archive (.cta) from a given URI.
      * @param uri The external location of the template
