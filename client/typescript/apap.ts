@@ -615,19 +615,6 @@ export interface components {
             errorDetails?: string;
         };
         /**
-         * Party
-         * @description An instance of org.accordproject.party@0.2.0.Party
-         */
-        "org.accordproject.party@0.2.0.Party": {
-            /**
-             * @description The class identifier for org.accordproject.party@0.2.0.Party
-             * @default org.accordproject.party@0.2.0.Party
-             */
-            $class: string;
-            /** @description The instance identifier for this type */
-            partyId: string;
-        };
-        /**
          * Node
          * @description An instance of org.accordproject.commonmark@0.5.0.Node
          */
@@ -1075,6 +1062,19 @@ export interface components {
             nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
             startLine?: number;
             endLine?: number;
+        };
+        /**
+         * Party
+         * @description An instance of org.accordproject.party@0.2.0.Party
+         */
+        "org.accordproject.party@0.2.0.Party": {
+            /**
+             * @description The class identifier for org.accordproject.party@0.2.0.Party
+             * @default org.accordproject.party@0.2.0.Party
+             */
+            $class: string;
+            /** @description The instance identifier for this type */
+            partyId: string;
         };
         /**
          * Position
