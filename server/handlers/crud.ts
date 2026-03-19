@@ -1,14 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { SQLWrapper, AnyColumn, desc, asc, eq, and, sql} from 'drizzle-orm';
 import { toSnakeCase } from 'drizzle-orm/casing';
-// import { eq, and, asc, desc } from 'drizzle-orm/expressions';
 import { PgTable } from 'drizzle-orm/pg-core';
-// import { authCheckJwt, authRequiredPermissions, getOrgIdFromJwt } from './auth';
 import { z } from 'zod';
 import { SQL } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import escapeString from '../db/escape';
-// import { getUserRoles } from '../auth0/client';
 
 function defaultWhereClause<T extends PgTable<any>>(
 	req: Request,
@@ -17,7 +14,6 @@ function defaultWhereClause<T extends PgTable<any>>(
 ): SQL | undefined {
 	const filters = queryParams.filters;
 	if (!filters || Object.keys(filters).length === 0) {
-		// no filters -> no "where" clause
 		return undefined;
 	}
 
@@ -27,19 +23,16 @@ function defaultWhereClause<T extends PgTable<any>>(
 		let value = filters[key];
 
 		if (table && !(key in table)) {
-			// if table is given we check if key exists in it
 			continue;
 		}
 
 		const column = sql.raw(`"${toSnakeCase(key)}"`);
 
 		if (value === null || value === 'null') {
-			// NULL handling
 			conditions.push(sql`${column} IS NULL`);
 			continue;
 		}
 
-		// detect operator inside value (no naming convention needed)
 		if (typeof value === 'string') {
 			const trimmed = value.trim();
 			const opMatch = trimmed.match(/^(>=|<=|<>|!=|>|<)\s*(.+)$/);
@@ -52,7 +45,6 @@ function defaultWhereClause<T extends PgTable<any>>(
 			}
 		}
 
-		// default equality
 		conditions.push(sql`${column} = ${value}`);
 	}
 
@@ -76,7 +68,6 @@ function parseValue(v: any) {
   return v;
 }
 
-// Types for query parameters
 export interface QueryParams {
     page: number;
     limit: number;
@@ -115,7 +106,7 @@ export type ValidationResult = {
 
 export type InsertValidator = {
     schema?: z.ZodSchema,
-    custom?: (body:any) => Promise<ValidationResult>,
+    custom?: (body: any) => Promise<ValidationResult>,
 }
 
 interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
@@ -127,7 +118,6 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     transformRequest?: (req: Request) => any;
 }
 
-// Parse and validate query parameters
 function parseQueryParams(req: Request): QueryParams {
     const {
         page = '1',
@@ -146,7 +136,6 @@ function parseQueryParams(req: Request): QueryParams {
     };
 }
 
-// Build order by clause
 function buildOrderClause<T extends PgTable<any>>(
     table: T,
     sortBy?: string,
@@ -159,296 +148,274 @@ function buildOrderClause<T extends PgTable<any>>(
     return null;
 }
 
-// In buildCrudRouter, add a helper to enhance user data
 async function enhanceUserData(user: any) {
     console.log('user', user);
     if (!user?.email) return user;
-    const roles:Array<string> = []; //await getUserRoles(user.email);
+    const roles: Array<string> = [];
     return { ...user, roles };
+}
+
+// FIX: extracted validateBody logic into a standalone async function
+// so it can safely handle the case where validateBody is undefined (defaults to {})
+async function runValidation(
+    body: any,
+    validateBody: InsertValidator = {}  // default to empty object — safe if not passed
+): Promise<{ success: boolean; data?: any; error?: any }> {
+
+    // No validateBody passed at all — skip validation entirely
+    if (!validateBody.schema && !validateBody.custom) {
+        return { success: true, data: body };
+    }
+
+    // Run Zod schema validation if provided
+    if (validateBody.schema) {
+        const result = validateBody.schema.safeParse(body);
+        if (!result.success) {
+            return { success: false, error: result.error.errors };
+        }
+        body = result.data;
+    }
+
+    // Run custom validation if provided (only reached if schema passed or not present)
+    if (validateBody.custom) {
+        const result = await validateBody.custom(body);
+        if (!result.success) {
+            return { success: false, error: result.error?.errors };
+        }
+        body = result.data;
+    }
+
+    return { success: true, data: body };
 }
 
 export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     table,
     typeName,
     buildWhereClause,
-    validateBody,
+    validateBody,       // still optional in the signature — no runtime assumption
     transformResponse,
     transformRequest
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
-    // router.use(authCheckJwt);
-
-    // Secure middleware to check for org_id
+    // Middleware to set orgId
     router.use(async (req: Request, res: Response, next) => {
-        // if (!req.auth?.payload) {
-        //     return res.status(401).json({ error: 'Unauthorized - Missing or invalid JWT' });
-        // }
-
-        // const orgId = await getOrgIdFromJwt(req);
-        // if (!orgId) {
-        //     return res.status(403).json({ 
-        //         error: 'Forbidden - Organization ID is required',
-        //         details: 'Valid organization membership is required to access this resource'
-        //     });
-        // }
-        
-        res.locals.orgId = undefined; //orgId;
+        res.locals.orgId = undefined;
         next();
     });
 
-    // GET with pagination, sorting, and filtering
-    router.get('/',
-        // authRequiredPermissions('read:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
-                const queryParams = parseQueryParams(req);
-                const { page, limit, sortBy, sortOrder } = queryParams;
-                const whereClause = buildWhereClause ? buildWhereClause(req, queryParams) : 
-                    defaultWhereClause(req, queryParams, table);
-                const orderClause = buildOrderClause(table, sortBy, sortOrder);
+    // GET all — paginated, sorted, filtered
+    router.get('/', async (req: Request, res: Response) => {
+        try {
+            const queryParams = parseQueryParams(req);
+            const { page, limit, sortBy, sortOrder } = queryParams;
+            const whereClause = buildWhereClause
+                ? buildWhereClause(req, queryParams)
+                : defaultWhereClause(req, queryParams, table);
+            const orderClause = buildOrderClause(table, sortBy, sortOrder);
 
-                // Log the generated SQL
-                let logQuery = res.locals.db
-                    .select()
-                    .from(table)
-                    .where(whereClause)
-                    .limit(limit)
-                    .offset((page - 1) * limit);
+            // Build query and log SQL
+            let query = res.locals.db
+                .select()
+                .from(table)
+                .where(whereClause)
+                .limit(limit)
+                .offset((page - 1) * limit);
 
-                if (orderClause !== null) {
-                    logQuery = logQuery.orderBy(orderClause as SQL<unknown>);
-                }
+            if (orderClause !== null) {
+                query = query.orderBy(orderClause as SQL<unknown>);
+            }
 
-                const sql = logQuery.toSQL();
-                
-                console.log(`[${typeName}] SQL:`, sql.sql);
-                console.log(`[${typeName}] Params:`, sql.params);
+            const { sql: sqlStr, params } = query.toSQL();
+            console.log(`[${typeName}] SQL:`, sqlStr);
+            console.log(`[${typeName}] Params:`, params);
 
-                // Get total count for pagination
-                const [{ count: total }] = await res.locals.db
-                    .select({ count: count() })
-                    .from(table)
-                    .where(whereClause);
+            // Get total count
+            const [{ count: total }] = await res.locals.db
+                .select({ count: count() })
+                .from(table)
+                .where(whereClause);
 
-                // Get paginated results
-                let query = res.locals.db
-                    .select()
-                    .from(table)
-                    .where(whereClause)
-                    .limit(limit)
-                    .offset((page - 1) * limit);
+            const items = await query;
 
-                if (orderClause !== null) {
-                    query = query.orderBy(orderClause as SQL<unknown>);
-                }
+            const response: PaginatedResponse<any> = {
+                items,
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            };
 
-                const items = await query;
+            if (typeName === 'users') {
+                response.items = await Promise.all(items.map(enhanceUserData));
+            } else {
+                response.items = items;
+            }
 
-                const response: PaginatedResponse<any> = {
-                    items,
-                    total: total,
-                    page,
-                    limit,
-                    totalPages: Math.ceil(total / limit)
-                };
+            if (transformResponse) {
+                response.items = response.items.map(transformResponse);
+            }
 
-                // Modify the GET responses to include roles
-                if (typeName === 'users') {
-                    response.items = await Promise.all(items.map(enhanceUserData));
-                } else {
-                    response.items = items;
-                }
+            res.json(response);
+        } catch (error) {
+            console.log(error);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            res.status(500).json({ error: message });
+        }
+    });
 
+    // POST — create new item
+    router.post('/', async (req: Request, res: Response) => {
+        try {
+            if (!req.body) {
+                return res.status(400).json({ error: 'Missing request body' });
+            }
+
+            req.body = {
+                ...req.body,
+                organization: res.locals.orgId
+            };
+
+            // FIX: use runValidation() which safely handles undefined validateBody
+            const validation = await runValidation(req.body, validateBody);
+            if (!validation.success) {
+                return res.status(400).json({
+                    error: 'Invalid request body',
+                    details: validation.error
+                });
+            }
+            req.body = validation.data;
+
+            if (transformRequest) {
+                req.body = transformRequest(req);
+            }
+
+            const inserted = await res.locals.db
+                .insert(table)
+                .values(req.body)
+                .returning();
+
+            if (transformResponse) {
+                inserted[0] = transformResponse(inserted[0]);
+            }
+
+            res.json(inserted[0]);
+        } catch (error: any) {
+            if (error?.code === '23505') {
+                return res.status(409).json({
+                    error: 'Conflict',
+                    details: `A resource with this unique identifier already exists for ${typeName}.`
+                });
+            }
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            res.status(500).json({ error: message });
+        }
+    });
+
+    // GET single item by ID
+    router.get('/:id', async (req: Request, res: Response) => {
+        try {
+            const whereConditions = [
+                table.id.columnType === 'PgUUID'
+                    ? eq(table.id, req.params.id)
+                    : eq(table.id, parseInt(req.params.id))
+            ].filter(Boolean);
+
+            const result = await res.locals.db
+                .select()
+                .from(table)
+                .where(and(...whereConditions))
+                .limit(1);
+
+            if (!result.length) {
+                return res.status(404).json({ error: 'Not found' });
+            }
+
+            if (typeName === 'users') {
+                const enhancedUser = await enhanceUserData(result[0]);
                 if (transformResponse) {
-                    response.items = response.items.map(transformResponse);
+                    result[0] = transformResponse(enhancedUser);
                 }
-
-                res.json(response);
-            } catch (error) {
-                console.log(error);
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
+                return res.json(result[0]);
             }
-        });
 
-    // POST new item
-    router.post('/',
-        // authRequiredPermissions('write:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
-                if (!req.body) {
-                    return res.status(400).json({ error: 'Missing request body' });
-                }
-
-                // Add organization to the request body
-                req.body = {
-                    ...req.body,
-                    organization: res.locals.orgId
-                };
-
-                // Validate body if schema provided
-                if (validateBody.schema) {
-                    const result = validateBody.schema.safeParse(req.body);
-                    if (!result.success) {
-                        return res.status(400).json({ 
-                            error: 'Invalid request body',
-                            details: result.error.errors 
-                        });
-                    }
-                    req.body = result.data;  // Use validated data
-                    if(validateBody.custom) {
-                        const result = await validateBody.custom(req.body);
-                        if (!result.success) {
-                            return res.status(400).json({ 
-                                error: 'Invalid request body',
-                                details: result.error.errors 
-                            });
-                        }
-                        req.body = result.data;  // Use validated data        
-                    }
-                }
-
-                if (transformRequest) {
-                    req.body = transformRequest(req);
-                }
-
-                const inserted = await res.locals.db
-                    .insert(table)
-                    .values(req.body)
-                    .returning();
-
-                if (transformResponse) {
-                    inserted[0] = transformResponse(inserted[0]);
-                }
-
-                res.json(inserted[0]);
-            } catch (error: any) {
-                // Handle Unique Constraint Violation (Duplicate URI)
-                if (error?.code === '23505') {
-                    return res.status(409).json({
-                        error: 'Conflict',
-                        details: `A resource with this unique identifier already exists for ${typeName}.`
-                    });
-                }
-
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
+            if (transformResponse) {
+                result[0] = transformResponse(result[0]);
             }
-        });
 
-    // GET single item
-    router.get('/:id',
-        // authRequiredPermissions('read:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
-                const queryParams = parseQueryParams(req);
-                const whereConditions = [
-                    // Check if table has UUID primary key
-                    table.id.columnType === 'PgUUID' ? 
-                        eq(table.id, req.params.id) :
-                        eq(table.id, parseInt(req.params.id))
-                ].filter(Boolean);
+            res.json(result[0]);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            res.status(500).json({ error: message });
+        }
+    });
 
-                const result = await res.locals.db
-                    .select()
-                    .from(table)
-                    .where(and(...whereConditions))
-                    .limit(1);
+    // PUT — full update by ID
+    router.put('/:id', async (req: Request, res: Response) => {
+        try {
+            req.body = {
+                ...req.body,
+                organization: res.locals.orgId
+            };
 
-                if (!result.length) {
-                    return res.status(404).json({ error: 'Not found' });
-                }
+            const whereConditions = [
+                table.id.columnType === 'PgUUID'
+                    ? eq(table.id, req.params.id)
+                    : eq(table.id, parseInt(req.params.id))
+            ].filter(Boolean);
 
-                // Enhance single user response with roles
-                if (typeName === 'users') {
-                    const enhancedUser = await enhanceUserData(result[0]);
-                    if (transformResponse) {
-                        result[0] = transformResponse(enhancedUser);
-                    }
-                    return res.json(result[0]);
-                }
+            const updated = await res.locals.db
+                .update(table)
+                .set(req.body)
+                .where(and(...whereConditions))
+                .returning();
 
-                if (transformResponse) {
-                    result[0] = transformResponse(result[0]);
-                }
-
-                res.json(result[0]);
-            } catch (error) {
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
+            if (!updated.length) {
+                return res.status(404).json({ error: 'Not found' });
             }
-        });
 
-    // PUT update item
-    router.put('/:id',
-        // authRequiredPermissions('write:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
-                // Add organization to the request body
-                req.body = {
-                    ...req.body,
-                    organization: res.locals.orgId
-                };
-
-                const queryParams = parseQueryParams(req);
-                const whereConditions = [
-                    table.id.columnType === 'PgUUID' ? 
-                        eq(table.id, req.params.id) :
-                        eq(table.id, parseInt(req.params.id))
-                ].filter(Boolean);
-
-                const updated = await res.locals.db
-                    .update(table)
-                    .set(req.body)
-                    .where(and(...whereConditions))
-                    .returning();
-
-                if (!updated.length) {
-                    return res.status(404).json({ error: 'Not found' });
-                }
-
-                if (transformResponse) {
-                    updated[0] = transformResponse(updated[0]);
-                }
-
-                res.json(updated[0]);
-            } catch (error: any) {
-                // FIXED: Handle Unique Constraint Violation (Duplicate URI during Update)
-                if (error?.code === '23505') {
-                    return res.status(409).json({
-                        error: 'Conflict',
-                        details: `A resource with this unique identifier already exists for ${typeName}.`
-                    });
-                }
-
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
+            if (transformResponse) {
+                updated[0] = transformResponse(updated[0]);
             }
-        });
 
-    // DELETE item
-    router.delete('/:id',
-        // authRequiredPermissions('write:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
-                const queryParams = parseQueryParams(req);
-                const whereConditions = [
-                    table.id.columnType === 'PgUUID' ? 
-                        eq(table.id, req.params.id) :
-                        eq(table.id, parseInt(req.params.id))
-                ].filter(Boolean);
-
-                await res.locals.db
-                    .delete(table)
-                    .where(and(...whereConditions));
-
-                res.json({ status: 'deleted' });
-            } catch (error) {
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
+            res.json(updated[0]);
+        } catch (error: any) {
+            if (error?.code === '23505') {
+                return res.status(409).json({
+                    error: 'Conflict',
+                    details: `A resource with this unique identifier already exists for ${typeName}.`
+                });
             }
-        });
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            res.status(500).json({ error: message });
+        }
+    });
+
+    // DELETE — remove item by ID
+    router.delete('/:id', async (req: Request, res: Response) => {
+        try {
+            const whereConditions = [
+                table.id.columnType === 'PgUUID'
+                    ? eq(table.id, req.params.id)
+                    : eq(table.id, parseInt(req.params.id))
+            ].filter(Boolean);
+
+            // BONUS FIX: use .returning() to detect if row actually existed
+            const result = await res.locals.db
+                .delete(table)
+                .where(and(...whereConditions))
+                .returning();
+
+            if (!result.length) {
+                return res.status(404).json({ error: 'Not found' });
+            }
+
+            res.json({ status: 'deleted' });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            res.status(500).json({ error: message });
+        }
+    });
 
     return router;
 }
