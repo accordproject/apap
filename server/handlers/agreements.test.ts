@@ -2,17 +2,28 @@ import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
 import agreementsRouter from './agreements';
-import { Agreement, Template } from '../db/schema';
+import { Agreement, Template, AgreementInsertSchema } from '../db/schema';
 import * as templateBuilder from './templatebuilder';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import AdmZip from 'adm-zip';
 import fs from 'fs';
 import path from 'path';
+import * as validationModule from './concertovalidation';
+jest.setTimeout(30000);
 
 // Mock dependencies (but not TemplateArchiveProcessor)
 jest.mock('../db/schema');
 jest.mock('./templatebuilder');
+jest.mock('./concertovalidation', () => {
+    const actualModule = jest.requireActual('./concertovalidation') as any;
+    return {
+        __esModule: true,
+        ...actualModule,
+        concertoValidation: jest.fn().mockImplementation(actualModule.concertoValidation),
+        default: jest.fn().mockImplementation(actualModule.default || actualModule.concertoValidation)
+    };
+});
 
 const mockedTemplateBuilder = templateBuilder as jest.Mocked<typeof templateBuilder>;
 
@@ -72,6 +83,10 @@ describe('Agreements Router - POST /:id/trigger', () => {
             set: jest.fn().mockReturnThis(),
             where: jest.fn().mockReturnThis(),
             limit: jest.fn().mockReturnThis(),
+            insert: jest.fn().mockReturnThis(),
+            values: jest.fn().mockReturnThis(),
+            onConflictDoNothing: jest.fn().mockReturnThis(),
+            returning: jest.fn().mockReturnThis(),
         };
 
         // Add database to locals middleware
@@ -509,6 +524,116 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(mockDb.from).toHaveBeenCalledWith(Agreement);
             expect(mockDb.from).toHaveBeenCalledWith(Template);
             expect(mockDb.limit).toHaveBeenCalledWith(1);
+        });
+    });
+describe('POST / - Agreement Creation with External Template', () => {
+        let realApTemplate: ApTemplate;
+        let templateBuffer: Buffer;
+
+        beforeEach(async () => {
+            realApTemplate = await createLateDeliveryTemplate();
+            templateBuffer = await realApTemplate.toArchive();
+
+            // Save a reference to the real Node.js fetch
+            const originalFetch = (global as any).fetch;
+
+            (global as any).fetch = jest.fn(async (url: any, options: any) => {
+                const urlString = url.toString();
+
+                if (urlString.includes('.cta')) {
+                    return {
+                        ok: true,
+                        arrayBuffer: async () => {
+                            return templateBuffer.buffer.slice(
+                                templateBuffer.byteOffset, 
+                                templateBuffer.byteOffset + templateBuffer.byteLength
+                            );
+                        }
+                    };
+                }
+
+                return originalFetch(url, options);
+            });
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        it('should successfully fetch, extract, and store an external http template', async () => {
+            // Repair the Zod Schema that was erased by the global jest.mock
+            (AgreementInsertSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true });
+
+            // Configure database mock returns for the insertion flow
+            mockDb.insert = jest.fn().mockReturnThis();
+            mockDb.values = jest.fn().mockReturnThis();
+            mockDb.onConflictDoNothing = jest.fn<any>().mockResolvedValue([{ id: 1 }]);
+            mockDb.returning = jest.fn<any>().mockResolvedValue([{ id: 1, status: 'DRAFT' }]);
+
+            mockDb.select.mockReturnValue(mockDb);
+            mockDb.from.mockReturnValue(mockDb);
+            mockDb.where.mockReturnValue(mockDb);
+            mockDb.limit.mockResolvedValueOnce([]); 
+
+            // Utilize actual extraction logic to verify data integrity
+            const actualTemplateBuilder = jest.requireActual('../handlers/templatebuilder') as any;
+            mockedTemplateBuilder.extractTemplateForDatabase.mockImplementation(
+                actualTemplateBuilder.extractTemplateForDatabase
+            );
+
+            // Intercept validation strictly for this isolated request
+            const valModule = require('./concertovalidation');
+            
+            if (valModule.default && valModule.default.mockResolvedValueOnce) {
+                valModule.default.mockResolvedValueOnce({ success: true, error: null });
+            }
+            if (valModule.concertoValidation && valModule.concertoValidation.mockResolvedValueOnce) {
+                valModule.concertoValidation.mockResolvedValueOnce({ success: true, error: null });
+            }
+
+            const creationRequest = {
+                template: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                data: {
+                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                    clauseId: 'latedelivery-1',
+                    forceMajeure: false,
+                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
+                    penaltyPercentage: 7.0,
+                    capPercentage: 2.0,
+                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                    fractionalPart: 'days'
+                }
+            };
+
+            const response = await request(app)
+                .post('/agreements/')
+                .send(creationRequest);
+
+            if (response.status !== 200) {
+                console.error("\n=== SERVER CRASH LOG ===");
+                console.error(response.body);
+                console.error("========================\n");
+            }
+
+            expect(response.status).toBe(200);
+
+            // Verify network interception and payload extraction properties
+            expect((global as any).fetch).toHaveBeenCalledWith(
+                'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                expect.any(Object)
+            );
+
+            expect(mockDb.insert).toHaveBeenCalledWith(Template);
+            
+            const templateInsertPayload = mockDb.values.mock.calls[0][0]; 
+            
+            expect(templateInsertPayload).toHaveProperty('hash');
+            expect(templateInsertPayload).toHaveProperty('uri', 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta');
+            expect(templateInsertPayload).toHaveProperty('templateModel');
+            expect(templateInsertPayload).toHaveProperty('text');
+            expect(templateInsertPayload).toHaveProperty('logic');
+            expect(templateInsertPayload).toHaveProperty('metadata');
+            expect(templateInsertPayload).toHaveProperty('logo'); 
         });
     });
 });
