@@ -50,6 +50,12 @@ function defaultWhereClause<T extends PgTable<any>>(
 				conditions.push(sql`${column} ${sql.raw(operator)} ${operand}`);
 				continue;
 			}
+			
+			// Handle case-insensitive author filtering
+			if (key === 'author') {
+				conditions.push(sql`${column} ILIKE ${value}`);
+				continue;
+			}
 		}
 
 		// default equality
