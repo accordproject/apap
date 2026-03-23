@@ -9,10 +9,10 @@ const router = express.Router();
 async function templateValidation(body:any) : Promise<ValidationResult> {
     try {
         const result = await concertoValidation('Template', body);
-        const template = await templateFromDatabase(body);
         if(!result.success) {
             return result;
         }
+        await templateFromDatabase(body);
         return {
             success: true,
             data: result.data
