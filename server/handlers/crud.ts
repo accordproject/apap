@@ -391,6 +391,32 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     organization: res.locals.orgId
                 };
 
+                // Validate body if schema provided
+                if (validateBody?.schema) {
+                    const result = validateBody.schema.safeParse(req.body);
+                    if (!result.success) {
+                        return res.status(400).json({
+                            error: 'Invalid request body',
+                            details: result.error.errors
+                        });
+                    }
+                    req.body = result.data;
+                    if (validateBody.custom) {
+                        const customResult = await validateBody.custom(req.body);
+                        if (!customResult.success) {
+                            return res.status(400).json({
+                                error: 'Invalid request body',
+                                details: customResult.error.errors
+                            });
+                        }
+                        req.body = customResult.data;
+                    }
+                }
+
+                if (transformRequest) {
+                    req.body = transformRequest(req);
+                }
+
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
                     table.id.columnType === 'PgUUID' ? 
