@@ -7,7 +7,7 @@ import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResul
 import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, Template } from '../db/schema';
-
+import { concertoValidation } from './concertovalidation';
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
 const API_BASE_URL = process.env.API_BASE_URL || `http://${HOST}:${PORT}`
@@ -292,7 +292,21 @@ Refer to the agreement's template model to determine which fields are required o
             }
         }
     );
-
+// register the validation tool (Self-Healing Agent Feature)
+    server.tool(
+        "validate-agreement-data",
+        `Validates JSON data against the Accord Project Concerto schema BEFORE submission. 
+         CRITICAL: Always run this tool before triggering or creating an agreement. 
+         If validation fails, use the exact error messages returned to fix your JSON payload and try again.`,
+        { typeName: z.enum(['Agreement', 'Template', 'TemplateMetadata']), payload: z.string() },
+        async ({ typeName, payload }) => {
+            let body;
+            try { body = JSON.parse(payload); } catch (e: any) { return { content: [{ type: "text", text: `Validation Failed: Invalid JSON format.` }] }; }
+            const result = await concertoValidation(typeName, body);
+            if (result.success) { return { content: [{ type: "text", text: `✅ Validation Passed! The ${typeName} data is perfectly structured and ready to be used.` }] }; } 
+            else { return { content: [{ type: "text", text: `❌ Validation Failed. Errors:\n${JSON.stringify(result.error, null, 2)}` }] }; }
+        }
+    );
     return server;
 };
 
