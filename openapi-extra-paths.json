@@ -1,0 +1,115 @@
+{
+  "paths": {
+    "/agreements/{agreementId}/convert/html": {
+      "summary": "Path used to convert an agreeement to HTML format.",
+      "description": "The REST endpoint/path used convert or render an `agreement` to HTML format.",
+      "post": {
+        "requestBody": {
+          "description": "HTML conversion options.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.HtmlConversionOptions"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "A HTML file",
+            "content" : {
+              "application/pdf:" : {
+                "schema" : {
+                  "type" : "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "convertAgreementHtml",
+        "summary": "Convert agreement to HTML",
+        "description": "Converts an existing `agreement` to HTML.",
+        "tags": ["agreements"]
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/agreements/{agreementId}/trigger": {
+      "summary": "Path used to trigger an agreeement.",
+      "description": "The REST endpoint/path used trigger an `agreement`.",
+      "post": {
+        "requestBody": {
+          "description": "Incoming data — a JSON serialized Concerto type",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.TriggerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.TriggerResponse"
+                }
+              }
+            },
+            "description": "Successful response - returns the result of calling a function."
+          }
+        },
+        "operationId": "triggerAgreement",
+        "summary": "Trigger an agreement",
+        "description": "Sends data to an existing agreement.",
+        "tags": ["agreements"]
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/capabilities": {
+      "summary": "Path used to retrieve server capabilities.",
+      "description": "The REST endpoint used to understand the capabiities of the server.",
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Capabilities"
+                }
+              }
+            },
+            "description": "Successful response - returns `capabilities` for the server."
+          }
+        },
+        "operationId": "getCapabilities",
+        "summary": "Get server capabilities",
+        "description": "Retrieve the supported features of the server.",
+        "tags": ["capabilities"]
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+      "target": "es2021",
+      "types": [ "node", "jest" ],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "noImplicitAny": true,
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "baseUrl": ".",
+      "rootDir": ".",
+      "outDir": "dist",
+      "sourceMap": true,
+      "skipLibCheck": true,
+      "paths": {
+        "*": [
+          "node_modules/*",
+          "types/*"
+        ]
+      }
+    },
+    "include": [
+      "**/*"
+    ],
+  }

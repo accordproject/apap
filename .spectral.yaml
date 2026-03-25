@@ -1,0 +1,8 @@
+extends: '@ibm-cloud/openapi-ruleset'
+rules:
+  request-body-object: off
+  string-boundary: off
+  array-boundary: off
+  operation-tags: off
+  operation-id-case-convention: off
+  property-description: off

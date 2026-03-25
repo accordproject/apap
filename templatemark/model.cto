@@ -1,0 +1,8 @@
+namespace test@1.0.0
+
+@template
+concept TemplateData {
+    o String firstName
+    o String lastName optional
+    o DateTime lastVisit
+}
