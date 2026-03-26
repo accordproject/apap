@@ -8,6 +8,14 @@ import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 
+/**
+ * @param db The database handle stored on `res.locals.db`.
+ * @param agreementId The numeric agreement identifier from the request path.
+ * @return The agreement row, its associated template row, and the reconstructed Cicero template.
+ * @details Loads an agreement from the database, resolves its backing template either
+ * through the cached `templateHash` or the stored template URI, and rebuilds the
+ * runtime template archive needed for draft and trigger operations.
+ */
 async function resolveAgreement(db: any, agreementId: string) {
     console.log('Getting agreement: ' + agreementId);
     const result = await db.select().from(Agreement).where(eq(Agreement.id, Number.parseInt(agreementId))).limit(1);
@@ -47,6 +55,14 @@ async function resolveAgreement(db: any, agreementId: string) {
 
 const router = express.Router();
 
+/**
+ * @param req The Express request containing the agreement payload to create.
+ * @param res The Express response used to return the created agreement or an error.
+ * @return Resolves after the agreement creation response has been written.
+ * @details Validates the incoming agreement body with Zod and Concerto, optionally
+ * resolves and caches a remote template archive when the template URI matches a supported
+ * retriever, and finally inserts the agreement into the database.
+ */
 router.post('/', async (req, res) => {
     try {
         const db = res.locals.db;
@@ -114,6 +130,13 @@ const crudRouter = buildCrudRouter({
     validateBody: { schema: AgreementInsertSchema, custom: (body) => concertoValidation('Agreement', body) }
 });
 
+/**
+ * @param req The Express request containing the agreement id and output format.
+ * @param res The Express response used to return the converted agreement draft.
+ * @return Resolves after the converted agreement text or an error response has been written.
+ * @details Resolves the agreement and its template, creates a `TemplateArchiveProcessor`,
+ * and delegates the conversion to the template engine's draft support for the requested format.
+ */
 crudRouter.get('/:id/convert/:format', async function (req, res) {
     try {
         const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
@@ -129,6 +152,14 @@ crudRouter.get('/:id/convert/:format', async function (req, res) {
     }
 });
 
+/**
+ * @param req The Express request containing the agreement id and trigger payload.
+ * @param res The Express response used to return the trigger result or validation errors.
+ * @return Resolves after the trigger response has been written.
+ * @details Validates the incoming trigger request against the template request types,
+ * initializes agreement state when needed, executes the agreement logic through the
+ * template archive processor, and persists the updated agreement state back to the database.
+ */
 crudRouter.post('/:id/trigger', async function (req, res) {
     try {
         const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
