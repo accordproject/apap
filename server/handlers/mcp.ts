@@ -32,6 +32,14 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
     });
 }
 
+// Builds a meaningful error message from a failed API response so that MCP clients
+// can tell apart a 404 (resource missing) from a 400 (bad input) or a 500 (server issue).
+// Without this, every failure just says "Failed to load ..." which is impossible to debug.
+async function buildApiErrorMessage(result: globalThis.Response, context: string): Promise<string> {
+    const body = await result.text().catch(() => 'No error details available');
+    return `${context} (HTTP ${result.status}): ${body}`;
+}
+
 async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
     console.log(`Fetching agreement with ID: ${agreementId}`);
     const url = new URL(uri);
@@ -48,8 +56,10 @@ async function getAgreement(uri: string, { agreementId }: { agreementId: string 
         };
     }
     else {
-        console.error(`Failed to load agreement with ID: ${agreementId}`);
-        throw new Error('Failed to load agreement');
+        // Surface the actual status code and API response so the client knows what went wrong
+        const errorMsg = await buildApiErrorMessage(result, `Failed to load agreement '${agreementId}'`);
+        console.error(errorMsg);
+        throw new Error(errorMsg);
     }
 }
 
@@ -70,8 +80,10 @@ async function getTemplates(uri: URL) {
         }
     }
     else {
-        console.error('Failed to load templates');
-        throw new Error('Failed to load template');
+        // Previously just threw "Failed to load template" with no status or details
+        const errorMsg = await buildApiErrorMessage(result, 'Failed to load templates');
+        console.error(errorMsg);
+        throw new Error(errorMsg);
     }
 }
 
@@ -82,19 +94,30 @@ async function getAgreements(uri: URL) {
         const agreements = await result.json();
         console.log(`Successfully fetched agreements: ${JSON.stringify(agreements)}`);
         return {
+            // FIX for issue #128: The previous version spread the full agreement object
+            // (...a) after setting the uri field. Because the Agreement row from the
+            // database carries its own `uri` property (e.g. "resource:org.accordproject..."),
+            // the spread overwrote the MCP resource URI ("apap://agreements/{id}") with the
+            // agreement's data URI. MCP clients then failed to resolve the resource because
+            // they tried to use the wrong URI scheme.
+            //
+            // The ReadResourceResult `contents` array only needs { uri, mimeType, text },
+            // so spreading the entire row object onto it was also polluting the content
+            // with unrelated database fields. The agreement payload is already serialized
+            // inside the `text` property as JSON, which is where MCP clients read it from.
             contents: agreements.items.map((a: typeof Agreement) => {
                 return {
-                    uri: `apap://agreements/${a.id}`,
                     mimeType: "application/json",
                     text: JSON.stringify({ ...a.data, $identifier: a.id }, null, 2),
-                    ...a
+                    uri: `apap://agreements/${a.id}`
                 }
             })
         }
     }
     else {
-        console.error('Failed to load agreements');
-        throw new Error('Failed to load agreement');
+        const errorMsg = await buildApiErrorMessage(result, 'Failed to load agreements');
+        console.error(errorMsg);
+        throw new Error(errorMsg);
     }
 }
 
@@ -106,7 +129,10 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
         return text;
     }
     else {
-        throw new Error(`Failed to convert agreement to ${format}`);
+        // Include the agreement ID and target format so the caller knows exactly which conversion failed
+        const errorMsg = await buildApiErrorMessage(result, `Failed to convert agreement '${agreementId}' to ${format}`);
+        console.error(errorMsg);
+        throw new Error(errorMsg);
     }
 }
 
@@ -126,7 +152,11 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
         return JSON.stringify(json);
     }
     else {
-        throw new Error(`Failed to trigger agreement ${agreementId}.`);
+        // Trigger failures are especially important to surface clearly since they often
+        // come from bad payload shapes that don't match the template's request type
+        const errorMsg = await buildApiErrorMessage(result, `Failed to trigger agreement '${agreementId}'`);
+        console.error(errorMsg);
+        throw new Error(errorMsg);
     }
 }
 
@@ -161,6 +191,10 @@ const getServer = () => {
                     }
                 }
                 else {
+                    // List operations return empty rather than throwing, but we still log
+                    // the actual error for debugging
+                    const errorMsg = await buildApiErrorMessage(result, 'Failed to list agreements');
+                    console.error(errorMsg);
                     return { resources: [] };
                 }
             }
@@ -190,6 +224,8 @@ const getServer = () => {
                     }
                 }
                 else {
+                    const errorMsg = await buildApiErrorMessage(result, 'Failed to list templates');
+                    console.error(errorMsg);
                     return { resources: [] };
                 }
             }
@@ -208,7 +244,9 @@ const getServer = () => {
                 };
             }
             else {
-                throw new Error('Failed to load template');
+                const errorMsg = await buildApiErrorMessage(result, `Failed to load template '${templateId}'`);
+                console.error(errorMsg);
+                throw new Error(errorMsg);
             }
         }
     );
@@ -262,7 +300,9 @@ Refer to the agreement's template model to determine which fields are required o
                     content: [{ type: "text", text: JSON.stringify(template) }]
                 };
             } else {
-                throw new Error('Failed to load template');
+                const errorMsg = await buildApiErrorMessage(result, `Failed to load template '${templateId}'`);
+                console.error(errorMsg);
+                throw new Error(errorMsg);
             }
         }
     );
@@ -288,7 +328,9 @@ Refer to the agreement's template model to determine which fields are required o
                     content: [{ type: "text", text: JSON.stringify(agreement) }]
                 };
             } else {
-                throw new Error('Failed to load agreement');
+                const errorMsg = await buildApiErrorMessage(result, `Failed to load agreement '${agreementId}'`);
+                console.error(errorMsg);
+                throw new Error(errorMsg);
             }
         }
     );
