@@ -12,7 +12,11 @@ import pino from 'pino';
 const logger = pino();
 
 // ---- Types ----
-type DB = any; // Replace with proper Drizzle type
+type DB = {
+    select: Function;
+    insert: Function;
+    update: Function;
+};
 
 // ---- Utils ----
 function parseId(id: string): number {
@@ -46,30 +50,37 @@ async function resolveAgreement(db: DB, agreementId: string) {
     const id = parseId(agreementId);
 
     const result = await db.select().from(Agreement).where(eq(Agreement.id, id)).limit(1);
-    if (!result.length) throw new Error('Agreement not found');
+    if (!result.length) throw new Error(`Agreement ${id} not found`);
 
     const agreement = result[0];
     const templateRow = await getTemplate(db, agreement.template, agreement.templateHash);
     const apTemplate = await templateFromDatabase(templateRow);
 
-    return { agreement, templateRow, apTemplate };
+    return { agreement, apTemplate };
 }
 
 // ---- Router ----
 const router = express.Router();
 
+// ---- Create Agreement ----
 router.post('/', async (req, res) => {
     try {
         const db: DB = res.locals.db;
 
         const parsed = AgreementInsertSchema.safeParse(req.body);
         if (!parsed.success) {
-            return res.status(400).json({ error: 'Schema validation failed', details: parsed.error.errors });
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: parsed.error.errors
+            });
         }
 
         const { success, error } = await concertoValidation('Agreement', req.body);
         if (!success) {
-            return res.status(400).json({ error: 'Concerto validation failed', details: error.errors });
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: error.errors
+            });
         }
 
         let templateUri = req.body.template;
@@ -82,15 +93,27 @@ router.post('/', async (req, res) => {
                 templateUri = templateUri.split('#').slice(1).join('#');
             }
 
-            const buffer = await retriever.fetch(templateUri);
+            let buffer;
+            try {
+                buffer = await retriever.fetch(templateUri);
+            } catch (err) {
+                logger.error({ err, templateUri }, 'Template fetch failed');
+                return res.status(500).json({
+                    error: `Failed to fetch template: ${templateUri}`
+                });
+            }
+
             const apTemplate = await CiceroTemplate.fromArchive(buffer);
             currentHash = apTemplate.getHash();
 
-            const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
+            const existing = await db.select().from(DbTemplate)
+                .where(eq(DbTemplate.hash, currentHash)).limit(1);
 
             if (!existing.length) {
                 const newRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                await db.insert(DbTemplate).values(newRow).onConflictDoNothing({ target: DbTemplate.hash });
+                await db.insert(DbTemplate)
+                    .values(newRow)
+                    .onConflictDoNothing({ target: DbTemplate.hash });
             }
         }
 
@@ -104,8 +127,10 @@ router.post('/', async (req, res) => {
         res.json(inserted[0]);
 
     } catch (err: any) {
-        logger.error(err);
-        res.status(500).json({ error: 'Internal Server Error' });
+        logger.error({ err, route: 'POST /agreements' });
+        res.status(500).json({
+            error: err.message || 'Internal Server Error'
+        });
     }
 });
 
@@ -130,8 +155,10 @@ crudRouter.get('/:id/convert/:format', async (req, res) => {
         res.send(result);
 
     } catch (err: any) {
-        logger.error(err);
-        res.status(500).json({ error: err.message });
+        logger.error({ err, route: 'GET /agreements/:id/convert' });
+        res.status(500).json({
+            error: err.message || 'Conversion failed'
+        });
     }
 });
 
@@ -143,13 +170,24 @@ crudRouter.post('/:id/trigger', async (req, res) => {
         const processor = new TemplateArchiveProcessor(apTemplate);
 
         const requestType = req.body.$class;
-        if (!apTemplate.getRequestTypes().includes(requestType)) {
-            return res.status(400).json({ error: 'Invalid request type' });
+
+        if (!requestType || !apTemplate.getRequestTypes().includes(requestType)) {
+            return res.status(400).json({
+                error: 'Invalid request type'
+            });
         }
 
-        const { success, error } = await concertoValidation(requestType, req.body, apTemplate.getModelManager());
+        const { success, error } = await concertoValidation(
+            requestType,
+            req.body,
+            apTemplate.getModelManager()
+        );
+
         if (!success) {
-            return res.status(400).json({ error: 'Validation failed', details: error.errors });
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: error.errors
+            });
         }
 
         if (!agreement.state) {
@@ -157,7 +195,11 @@ crudRouter.post('/:id/trigger', async (req, res) => {
             agreement.state = init.state;
         }
 
-        const result = await processor.trigger(agreement.data, req.body, agreement.state);
+        const result = await processor.trigger(
+            agreement.data,
+            req.body,
+            agreement.state
+        );
 
         await db.update(Agreement)
             .set({ state: result.state })
@@ -166,10 +208,13 @@ crudRouter.post('/:id/trigger', async (req, res) => {
         res.json(result);
 
     } catch (err: any) {
-        logger.error(err);
-        res.status(500).json({ error: 'Trigger failed' });
+        logger.error({ err, route: 'POST /agreements/:id/trigger' });
+        res.status(500).json({
+            error: err.message || 'Trigger failed'
+        });
     }
 });
 
 router.use('/', crudRouter);
+
 export default router;
