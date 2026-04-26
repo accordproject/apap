@@ -32,7 +32,7 @@
     "adm-zip": "0.5.16",
     "crypto": "1.0.1",
     "dotenv": "16.5.0",
-    "drizzle-orm": "0.42.0",
+    "drizzle-orm": "0.45.2",
     "drizzle-zod": "0.7.1",
     "express": "4.22.0",
     "express-oauth-server": "2.0.0",
