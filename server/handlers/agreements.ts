@@ -10,7 +10,11 @@ import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 
 async function resolveAgreement(db: any, agreementId: string) {
     console.log('Getting agreement: ' + agreementId);
-    const result = await db.select().from(Agreement).where(eq(Agreement.id, Number.parseInt(agreementId))).limit(1);
+    const parsedId = Number(agreementId);
+    if (Number.isNaN(parsedId)) {
+        throw new Error(`Invalid agreement ID format`);
+    }
+    const result = await db.select().from(Agreement).where(eq(Agreement.id, parsedId)).limit(1);
     if (!result.length) {
         throw new Error(`Agreement with id ${agreementId} does not exist`);
     }
