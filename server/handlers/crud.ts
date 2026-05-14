@@ -137,9 +137,12 @@ function parseQueryParams(req: Request): QueryParams {
         ...filters
     } = req.query;
 
+    const parsedPage = parseInt(page as string);
+    const parsedLimit = parseInt(limit as string);
+
     return {
-        page: Math.max(1, parseInt(page as string)),
-        limit: Math.min(100, Math.max(1, parseInt(limit as string))),
+        page: Math.max(1, Number.isNaN(parsedPage) ? 1 : parsedPage),
+        limit: Math.min(100, Math.max(1, Number.isNaN(parsedLimit) ? 100 : parsedLimit)),
         sortBy: sortBy as string,
         sortOrder: (sortOrder as string).toLowerCase() === 'desc' ? 'desc' : 'asc',
         filters
