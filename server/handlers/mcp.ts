@@ -62,6 +62,7 @@ async function getTemplates(uri: URL) {
         return {
             contents: templates.items.map((t: typeof Template) => {
                 return {
+                    ...t,
                     uri: `apap://templates/${t.id}`,
                     mimeType: "application/json",
                     text: JSON.stringify(t)
@@ -84,10 +85,10 @@ async function getAgreements(uri: URL) {
         return {
             contents: agreements.items.map((a: typeof Agreement) => {
                 return {
+                    ...a,
                     uri: `apap://agreements/${a.id}`,
                     mimeType: "application/json",
                     text: JSON.stringify({ ...a.data, $identifier: a.id }, null, 2),
-                    ...a
                 }
             })
         }
