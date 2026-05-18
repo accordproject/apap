@@ -9,10 +9,15 @@ const router = express.Router();
 async function templateValidation(body:any) : Promise<ValidationResult> {
     try {
         const result = await concertoValidation('Template', body);
-        const template = await templateFromDatabase(body);
+
+        // Return validation errors before attempting deserialization,
+        // otherwise templateFromDatabase can throw and mask the real failure.
         if(!result.success) {
             return result;
         }
+
+        const template = await templateFromDatabase(body);
+
         return {
             success: true,
             data: result.data
