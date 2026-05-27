@@ -4,6 +4,7 @@ import { jest } from '@jest/globals';
 import templatesRouter from './templates';
 import * as db from './templatebuilder';
 import * as validationModule from './concertovalidation';
+import { TemplateInsertSchema } from '../db/schema';
 
 // Mock dependencies
 jest.mock('../db/schema');
@@ -18,25 +19,12 @@ jest.mock('./concertovalidation', () => {
     };
 });
 
+// Get a reference to the mocked schema so we can control safeParse
+const mockedSchema = TemplateInsertSchema as jest.Mocked<typeof TemplateInsertSchema>;
+
 describe('templateValidation', () => {
   let app: express.Application;
   
-  beforeEach(() => {
-    jest.clearAllMocks();
-    app = express();
-    app.use(express.json());
-    // Create mock DB middleware just like agreements.test.ts if needed
-    app.use((req, res, next) => {
-        res.locals.db = {
-            insert: jest.fn().mockReturnThis(),
-            values: jest.fn().mockReturnThis(),
-            returning: jest.fn<any>().mockResolvedValue([{ id: 1 }])
-        };
-        next();
-    });
-    app.use('/templates', templatesRouter);
-  });
-
   const validTemplateBody = {
     uri: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
     author: 'Accord Project',
@@ -53,7 +41,26 @@ describe('templateValidation', () => {
     logo: ''
   };
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    app = express();
+    app.use(express.json());
+    // Create mock DB middleware just like agreements.test.ts
+    app.use((req, res, next) => {
+        res.locals.db = {
+            insert: jest.fn().mockReturnThis(),
+            values: jest.fn().mockReturnThis(),
+            returning: jest.fn<any>().mockResolvedValue([{ id: 1 }])
+        };
+        next();
+    });
+    app.use('/templates', templatesRouter);
+  });
+
   it('returns 400 with Concerto error when body is missing required fields', async () => {
+    // Zod schema passes (lets body through to custom validation)
+    (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true, data: {} });
+    // Concerto validation fails for the empty body
     const valModule = require('./concertovalidation');
     valModule.concertoValidation.mockResolvedValueOnce({ success: false, error: { errors: [{ message: 'Missing fields' }] } });
 
@@ -65,6 +72,9 @@ describe('templateValidation', () => {
   });
 
   it('does NOT return a 500 deserialization error for invalid body', async () => {
+    // Zod schema passes (lets body through to custom validation)
+    (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true, data: { invalid: 'data' } });
+    // Concerto validation rejects the invalid data
     const valModule = require('./concertovalidation');
     valModule.concertoValidation.mockResolvedValueOnce({ success: false, error: { errors: [{ message: 'Invalid data' }] } });
 
@@ -75,30 +85,43 @@ describe('templateValidation', () => {
   });
 
   it('proceeds to templateFromDatabase when body is valid', async () => {
-    jest.spyOn(db, 'templateFromDatabase').mockResolvedValueOnce({} as any);
+    // Zod schema passes
+    (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true, data: validTemplateBody });
+    // Concerto validation passes
     const valModule = require('./concertovalidation');
     valModule.concertoValidation.mockResolvedValueOnce({ success: true, data: validTemplateBody });
+    // templateFromDatabase succeeds
+    jest.spyOn(db, 'templateFromDatabase').mockResolvedValueOnce({} as any);
 
     const res = await request(app)
       .post('/templates')
-      .send(validTemplateBody); // use a real valid template body from existing tests
+      .send(validTemplateBody);
     expect(res.status).toBe(200);
   });
 
   it('returns templateFromDatabase error when validation passes but DB fails', async () => {
-    // mock templateFromDatabase to throw
-    jest.spyOn(db, 'templateFromDatabase').mockRejectedValueOnce(new Error('DB error'));
+    // Zod schema passes
+    (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true, data: validTemplateBody });
+    // Concerto validation passes
     const valModule = require('./concertovalidation');
     valModule.concertoValidation.mockResolvedValueOnce({ success: true, data: validTemplateBody });
+    // mock templateFromDatabase to throw
+    jest.spyOn(db, 'templateFromDatabase').mockRejectedValueOnce(new Error('DB error'));
 
     const res = await request(app)
       .post('/templates')
       .send(validTemplateBody);
     
-    // We expect 400 if catch block returns success:false, or 500 if crud catches.
-    // The user instruction expects 500, let's see. If it fails, we will adjust the templates.ts to throw.
-    expect(res.status).toBe(500);
-    expect(res.body.error).toMatch(/DB error/);
+    // templateValidation's catch block returns { success: false, error: { errors: [{ message: 'DB error' }] } }
+    // The CRUD handler sees success:false and returns 400 with details containing the error
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+    expect(res.body.details).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ message: 'DB error' })
+      ])
+    );
   });
 
 });
+
