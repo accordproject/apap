@@ -343,11 +343,14 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         async (req: Request, res: Response) => {
             try {
                 const queryParams = parseQueryParams(req);
+                if (table.id.columnType !== 'PgUUID' && isNaN(Number(req.params.id))) {
+                    return res.status(400).json({ error: 'Invalid ID format' });
+                }
                 const whereConditions = [
                     // Check if table has UUID primary key
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
-                        eq(table.id, parseInt(req.params.id))
+                        eq(table.id, Number(req.params.id))
                 ].filter(Boolean);
 
                 const result = await res.locals.db
@@ -392,10 +395,13 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 };
 
                 const queryParams = parseQueryParams(req);
+                if (table.id.columnType !== 'PgUUID' && isNaN(Number(req.params.id))) {
+                    return res.status(400).json({ error: 'Invalid ID format' });
+                }
                 const whereConditions = [
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
-                        eq(table.id, parseInt(req.params.id))
+                        eq(table.id, Number(req.params.id))
                 ].filter(Boolean);
 
                 const updated = await res.locals.db
@@ -433,10 +439,13 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         async (req: Request, res: Response) => {
             try {
                 const queryParams = parseQueryParams(req);
+                if (table.id.columnType !== 'PgUUID' && isNaN(Number(req.params.id))) {
+                    return res.status(400).json({ error: 'Invalid ID format' });
+                }
                 const whereConditions = [
                     table.id.columnType === 'PgUUID' ? 
                         eq(table.id, req.params.id) :
-                        eq(table.id, parseInt(req.params.id))
+                        eq(table.id, Number(req.params.id))
                 ].filter(Boolean);
 
                 await res.locals.db
