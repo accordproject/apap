@@ -87,6 +87,7 @@ concept TemplateMetadata {
 @description("An Accord Project template")
 concept Template identified by uri {
     o URI uri
+    o String hash optional
     o String author
     o String displayName optional
     o String version
@@ -115,7 +116,7 @@ concept Metadata {
 @description("Runtime status of an agreement")
 enum AgreementStatusType {
     o DRAFT         // No signatories have signed yet
-    o SIGNNG        // Signed by some but not all signatories
+    o SIGNING       // Signed by some but not all signatories
     o COMPLETED     // Signing by all signatories completed
     o SUPERSEDED    // Superseded by subsequent agreement
 }
@@ -125,6 +126,7 @@ enum AgreementStatusType {
 concept Agreement identified by uri {
     o URI uri
     o JSON data
+    o String templateHash optional                   // Resolved hash of the template at the time the agreement was created
     --> Template template                            // Template for the the agreement                                  // Data for the agreement (an instance of the data for its template)
     o JSON state optional                            // Runtime state of the agreement
     o AgreementStatusType agreementStatus            // Current status of agreement
@@ -169,7 +171,8 @@ concept Signature {
     o AgreementParty signatory              // The Agreement Party signing the Agreement
     o DateTime signedAt optional            // When the signing occurred
     o Metadata metadata                     // Geolocation data, IP address, etc.
-    o Blob[] signatureImage                 // Selfie, proof-of-id, sign-on-glass image
+    o Blob[] signatureImage optional        // Selfie, proof-of-id, sign-on-glass image
+    o JSON verifiableCredential optional    // W3C Verifiable Credential carrying the cryptographic proof
 }
 
 @description("Abstract conversion options")
