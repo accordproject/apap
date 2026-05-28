@@ -6,6 +6,17 @@ import { templateFromDatabase } from './templatebuilder';
 
 const router = express.Router();
 
+/**
+ * Validates a template body against the Concerto schema and Cicero template compiler.
+ * 
+ * @param body - The request body containing template data to validate
+ * @returns A ValidationResult indicating success or failure with error details
+ * @throws Will not throw — errors are caught and returned as ValidationResult
+ * 
+ * @example
+ * const result = await templateValidation(req.body);
+ * if (!result.success) return res.status(400).json(result.error);
+ */
 async function templateValidation(body:any) : Promise<ValidationResult> {
     try {
         const result = await concertoValidation('Template', body);

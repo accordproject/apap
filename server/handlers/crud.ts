@@ -10,6 +10,15 @@ import { count } from 'drizzle-orm';
 import escapeString from '../db/escape';
 // import { getUserRoles } from '../auth0/client';
 
+/**
+ * Generates a default SQL WHERE clause by parsing the filters supplied in QueryParams.
+ * Supports comparison operators like >=, <=, <>, !=, >, < and null values.
+ * 
+ * @param req - The Express Request object
+ * @param queryParams - The parsed query parameters including filters
+ * @param table - The drizzle-orm table to check filter keys against
+ * @returns A drizzle-orm SQL chunk representing the conditions, or undefined if no filters apply
+ */
 function defaultWhereClause<T extends PgTable<any>>(
 	req: Request,
 	queryParams: QueryParams,
@@ -64,6 +73,13 @@ function defaultWhereClause<T extends PgTable<any>>(
 	return sql.join(conditions, sql` AND `);
 }
 
+/**
+ * Utility to parse simple primitive types from string query values.
+ * Converts 'true'/'false' to boolean, numeric strings to number, and keeps others as-is.
+ * 
+ * @param v - The raw value to parse
+ * @returns The parsed typed value
+ */
 function parseValue(v: any) {
   const s = String(v).trim();
 
@@ -128,6 +144,13 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
 }
 
 // Parse and validate query parameters
+/**
+ * Parses and extracts standard paginated QueryParams (page, limit, sortBy, sortOrder, and filters)
+ * from an incoming Express Request query.
+ * 
+ * @param req - The Express Request object
+ * @returns The structured QueryParams object with sanitized fields
+ */
 function parseQueryParams(req: Request): QueryParams {
     const {
         page = '1',
@@ -147,6 +170,14 @@ function parseQueryParams(req: Request): QueryParams {
 }
 
 // Build order by clause
+/**
+ * Builds a drizzle-orm ORDER BY expression based on the requested column and sort order.
+ * 
+ * @param table - The drizzle-orm table
+ * @param sortBy - The column name to sort by
+ * @param sortOrder - Sort direction: 'asc' or 'desc'
+ * @returns The SQLWrapper order clause or null if the column does not exist on the table
+ */
 function buildOrderClause<T extends PgTable<any>>(
     table: T,
     sortBy?: string,
@@ -160,6 +191,12 @@ function buildOrderClause<T extends PgTable<any>>(
 }
 
 // In buildCrudRouter, add a helper to enhance user data
+/**
+ * Enhances user records with additional roles loaded asynchronously.
+ * 
+ * @param user - The user object to enhance
+ * @returns A Promise resolving to the enhanced user object
+ */
 async function enhanceUserData(user: any) {
     console.log('user', user);
     if (!user?.email) return user;
@@ -167,6 +204,20 @@ async function enhanceUserData(user: any) {
     return { ...user, roles };
 }
 
+/**
+ * Generates an Express Router containing standard, secure CRUD endpoints (GET, POST, GET :id, PUT :id, DELETE :id)
+ * for a given drizzle-orm table with custom schemas/validation support.
+ * 
+ * @param options - Config options including database table, typeName, validation schemas, and hooks
+ * @returns An Express Router pre-configured with CRUD endpoints
+ * 
+ * @example
+ * const router = buildCrudRouter({
+ *     table: Template,
+ *     typeName: 'Template',
+ *     validateBody: { schema: TemplateInsertSchema }
+ * });
+ */
 export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     table,
     typeName,

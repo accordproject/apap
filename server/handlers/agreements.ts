@@ -8,6 +8,17 @@ import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 
+/**
+ * Resolves an agreement from the database by its ID, and fetches/reconstructs its associated Cicero template.
+ * 
+ * @param db - The database client instance
+ * @param agreementId - The ID of the agreement to resolve
+ * @returns An object containing the agreement record, the template row, and the reconstructed Cicero template
+ * @throws {Error} If the agreement or template does not exist
+ * 
+ * @example
+ * const { agreement, template, apTemplate } = await resolveAgreement(db, req.params.id);
+ */
 async function resolveAgreement(db: any, agreementId: string) {
     console.log('Getting agreement: ' + agreementId);
     const result = await db.select().from(Agreement).where(eq(Agreement.id, Number.parseInt(agreementId))).limit(1);

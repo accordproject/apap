@@ -16,6 +16,16 @@ const API_BASE_URL = process.env.API_BASE_URL || `http://${HOST}:${PORT}`
 const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
 
 // Helper function to make authenticated API requests
+/**
+ * Helper function to make authenticated API requests to the APAP local endpoints.
+ * 
+ * @param url - The local API endpoint URL to query
+ * @param options - Standard fetch init options including method, headers, and body
+ * @returns A Promise resolving to the fetch Response
+ * 
+ * @example
+ * const res = await makeApiRequest(`${API_BASE_URL}/templates`);
+ */
 async function makeApiRequest(url: string, options: RequestInit = {}) {
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -32,6 +42,14 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
     });
 }
 
+/**
+ * Fetches an agreement from local API and returns it formatted for MCP resource response.
+ * 
+ * @param uri - The resource URI string
+ * @param variables - Object containing the agreementId parameter
+ * @returns An object containing the contents with the agreement JSON
+ * @throws {Error} If the API request fails
+ */
 async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
     console.log(`Fetching agreement with ID: ${agreementId}`);
     const url = new URL(uri);
@@ -53,6 +71,13 @@ async function getAgreement(uri: string, { agreementId }: { agreementId: string 
     }
 }
 
+/**
+ * Fetches all templates from local API and returns them formatted as MCP resources.
+ * 
+ * @param uri - The resource URL
+ * @returns An object containing the contents array of template resources
+ * @throws {Error} If the API request fails
+ */
 async function getTemplates(uri: URL) {
     console.log('getTemplates: ' + uri);
     const result = await makeApiRequest(`${API_BASE_URL}/templates`);
@@ -75,6 +100,13 @@ async function getTemplates(uri: URL) {
     }
 }
 
+/**
+ * Fetches all agreements from local API and returns them formatted as MCP resources.
+ * 
+ * @param uri - The resource URL
+ * @returns An object containing the contents array of agreement resources
+ * @throws {Error} If the API request fails
+ */
 async function getAgreements(uri: URL) {
     console.log('getAgreements: ' + uri);
     const result = await makeApiRequest(`${API_BASE_URL}/agreements`);
@@ -98,6 +130,14 @@ async function getAgreements(uri: URL) {
     }
 }
 
+/**
+ * Converts an existing agreement to HTML or Markdown format.
+ * 
+ * @param agreementId - The ID of the agreement to draft
+ * @param format - The output format ('html' or 'markdown')
+ * @returns A Promise resolving to the converted text string
+ * @throws {Error} If the API conversion endpoint fails
+ */
 async function draftAgreement(agreementId: string, format: string) : Promise<string> {
     console.log('draftAgreement: ' + agreementId);
     const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
@@ -110,6 +150,14 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
     }
 }
 
+/**
+ * Triggers an agreement evaluation by sending transaction payload JSON.
+ * 
+ * @param agreementId - The ID of the agreement to trigger
+ * @param body - The JSON string representing the request transaction
+ * @returns A Promise resolving to the stringified trigger result JSON
+ * @throws {Error} If the trigger endpoint fails
+ */
 async function triggerAgreement(agreementId: string, body: string) : Promise<string> {
     console.log('triggerAgreement: ' + agreementId);
     console.log('body: ' + body);
@@ -130,6 +178,12 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
     }
 }
 
+/**
+ * Instantiates and configures the Model Context Protocol (MCP) server, registering
+ * templates and agreements resources, as well as tools for conversion and triggering.
+ * 
+ * @returns The configured McpServer instance
+ */
 const getServer = () => {
     const server = new McpServer({
         name: 'apap-mcp-server',
