@@ -121,14 +121,47 @@ describe('PUT /:id validation', () => {
     });
 
     it('runs custom validation even when no schema is configured', async () => {
+        // Build a dedicated app with a router that has ONLY custom validation
+        // no schema key — this proves custom runs independently
+        const customApp = express();
+        customApp.use(express.json());
+        customApp.use((req, res, next) => {
+            res.locals.db = {
+                insert: jest.fn().mockReturnThis(),
+                values: jest.fn().mockReturnThis(),
+                returning: jest.fn<any>().mockResolvedValue([{ id: 1 }]),
+                update: jest.fn().mockReturnThis(),
+                set: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+            };
+            next();
+        });
+
         const valModule = require('./concertovalidation');
         valModule.concertoValidation.mockResolvedValueOnce({
             success: false,
             error: { errors: [{ message: 'Custom validation failed' }] }
         });
-        const res = await request(app)
-            .put('/templates/1')
+
+        // Import buildCrudRouter and DbTemplate directly
+        const { buildCrudRouter } = require('./crud');
+        const { DbTemplate } = require('../db/schema');
+
+        const testRouter = buildCrudRouter({
+            table: DbTemplate,
+            validateBody: {
+                // no schema — only custom
+                custom: (body: any) => valModule.concertoValidation('Template', body)
+            }
+        });
+
+        customApp.use('/test', testRouter);
+
+        const res = await request(customApp)
+            .put('/test/1')
             .send(validTemplateBody);
+
         expect(res.status).toBe(400);
+        expect(res.body.details[0].message).toBe('Custom validation failed');
     });
 });
