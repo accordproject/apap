@@ -386,12 +386,19 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         async (req: Request, res: Response) => {
             try {
                 // Add organization to the request body
+                if (!req.body || Object.keys(req.body).length === 0) {
+                    return res.status(400).json({
+                        error: 'Invalid request body',
+                        details: [{ message: 'Request body cannot be empty' }]
+                    });
+                }
+
                 req.body = {
                     ...req.body,
                     organization: res.locals.orgId
                 };
 
-                // Validate body if schema provided
+                // Run schema validation independently
                 if (validateBody?.schema) {
                     const result = validateBody.schema.safeParse(req.body);
                     if (!result.success) {
@@ -401,16 +408,18 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         });
                     }
                     req.body = result.data;
-                    if (validateBody.custom) {
-                        const customResult = await validateBody.custom(req.body);
-                        if (!customResult.success) {
-                            return res.status(400).json({
-                                error: 'Invalid request body',
-                                details: customResult.error.errors
-                            });
-                        }
-                        req.body = customResult.data;
+                }
+
+                // Run custom validation independently (not nested inside schema check)
+                if (validateBody?.custom) {
+                    const customResult = await validateBody.custom(req.body);
+                    if (!customResult.success) {
+                        return res.status(400).json({
+                            error: 'Invalid request body',
+                            details: customResult.error.errors
+                        });
                     }
+                    req.body = customResult.data;
                 }
 
                 if (transformRequest) {

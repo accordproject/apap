@@ -111,4 +111,24 @@ describe('PUT /:id validation', () => {
             .send({ ...validTemplateBody, model: 'invalid-model' });
         expect(res.status).toBe(400);
     });
+
+    it('rejects empty PUT body with 400', async () => {
+        const res = await request(app)
+            .put('/templates/1')
+            .send({});
+        expect(res.status).toBe(400);
+        expect(res.body.details[0].message).toMatch(/empty/i);
+    });
+
+    it('runs custom validation even when no schema is configured', async () => {
+        const valModule = require('./concertovalidation');
+        valModule.concertoValidation.mockResolvedValueOnce({
+            success: false,
+            error: { errors: [{ message: 'Custom validation failed' }] }
+        });
+        const res = await request(app)
+            .put('/templates/1')
+            .send(validTemplateBody);
+        expect(res.status).toBe(400);
+    });
 });
