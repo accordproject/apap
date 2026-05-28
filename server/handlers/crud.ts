@@ -288,7 +288,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 };
 
                 // Validate body if schema provided
-                if (validateBody.schema) {
+                if (validateBody?.schema) {
                     const result = validateBody.schema.safeParse(req.body);
                     if (!result.success) {
                         return res.status(400).json({ 
@@ -474,10 +474,17 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
 
-                await res.locals.db
+                const result = await res.locals.db
                     .delete(table)
-                    .where(and(...whereConditions));
+                    .where(and(...whereConditions))
+                    .returning();
 
+                if (!result.length) {
+                    return res.status(404).json({ 
+                        error: 'Not found',
+                        details: [{ message: `Resource with id ${req.params.id} does not exist` }]
+                    });
+                }
                 res.json({ status: 'deleted' });
             } catch (error) {
                 const message = error instanceof Error ? error.message : 'Unknown error';
