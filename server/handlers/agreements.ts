@@ -7,175 +7,214 @@ import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
+import pino from 'pino';
 
-async function resolveAgreement(db: any, agreementId: string) {
-    console.log('Getting agreement: ' + agreementId);
-    const result = await db.select().from(Agreement).where(eq(Agreement.id, Number.parseInt(agreementId))).limit(1);
-    if (!result.length) {
-        throw new Error(`Agreement with id ${agreementId} does not exist`);
+const logger = pino();
+
+// ---- Types ----
+type DB = {
+    select: Function;
+    insert: Function;
+    update: Function;
+};
+
+// ---- Utils ----
+function parseId(id: string): number {
+    const parsed = Number(id);
+    if (isNaN(parsed)) {
+        throw new Error('Invalid ID');
     }
-    console.log('Got agreement');
-    
-    const agreement = result[0];
-    let apTemplate;
-    let templateRow = null;
+    return parsed;
+}
 
-    if (agreement.templateHash) {
-        const cachedResult = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, agreement.templateHash)).limit(1);
-        if (cachedResult.length > 0) {
-            templateRow = cachedResult[0];
-            apTemplate = await templateFromDatabase(templateRow);
-            return { agreement, template: templateRow, apTemplate };
-        }
-        throw new Error(`Cached template missing from database.`);
+// ---- Services ----
+async function getTemplate(db: DB, templateUri?: string, templateHash?: string) {
+    if (templateHash) {
+        const cached = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, templateHash)).limit(1);
+        if (!cached.length) throw new Error('Cached template missing');
+        return cached[0];
     }
 
-    let templateUri = agreement.template;
-    if (templateUri && templateUri.startsWith('resource:')) {
+    if (!templateUri) throw new Error('Template URI missing');
+
+    if (templateUri.startsWith('resource:')) {
         templateUri = templateUri.split('#').slice(1).join('#');
     }
 
-    const result2 = await db.select().from(DbTemplate).where(eq(DbTemplate.uri, templateUri)).limit(1);
-    if (!result2.length) {
-        throw new Error(`Template with uri ${templateUri} referenced by agreement ${agreementId} does not exist`);
-    }
-    templateRow = result2[0];
-    apTemplate = await templateFromDatabase(templateRow);
-
-    return { agreement, template: templateRow, apTemplate };
+    const result = await db.select().from(DbTemplate).where(eq(DbTemplate.uri, templateUri)).limit(1);
+    if (!result.length) throw new Error(`Template ${templateUri} not found`);
+    return result[0];
 }
 
+async function resolveAgreement(db: DB, agreementId: string) {
+    const id = parseId(agreementId);
+
+    const result = await db.select().from(Agreement).where(eq(Agreement.id, id)).limit(1);
+    if (!result.length) throw new Error(`Agreement ${id} not found`);
+
+    const agreement = result[0];
+    const templateRow = await getTemplate(db, agreement.template, agreement.templateHash);
+    const apTemplate = await templateFromDatabase(templateRow);
+
+    return { agreement, apTemplate };
+}
+
+// ---- Router ----
 const router = express.Router();
 
+// ---- Create Agreement ----
 router.post('/', async (req, res) => {
     try {
-        const db = res.locals.db;
-        
-        const zodValidation = AgreementInsertSchema.safeParse(req.body);
-        if (!zodValidation.success) {
-            return res.status(400).json({ error: 'Schema validation failed', details: zodValidation.error.errors });
+        const db: DB = res.locals.db;
+
+        const parsed = AgreementInsertSchema.safeParse(req.body);
+        if (!parsed.success) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: parsed.error.errors
+            });
         }
 
         const { success, error } = await concertoValidation('Agreement', req.body);
         if (!success) {
-            return res.status(400).json({ error: 'Invalid request body', details: error.errors });
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: error.errors
+            });
         }
 
         let templateUri = req.body.template;
-        if (templateUri && templateUri.startsWith('resource:')) {
-            templateUri = templateUri.split('#').slice(1).join('#');
-        }
+        let currentHash: string | null = null;
 
-        let currentHash = null;
-
-        const availableRetrievers = [
-            new HttpTemplateRetriever()
-        ];
+        const retriever = new HttpTemplateRetriever();
 
         if (templateUri) {
-            const matchingRetriever = availableRetrievers.find(r => 
-                r.getURISchemes().some(scheme => templateUri.startsWith(`${scheme}:`))
-            );
+            if (templateUri.startsWith('resource:')) {
+                templateUri = templateUri.split('#').slice(1).join('#');
+            }
 
-            if (matchingRetriever) {
-                const buffer = await matchingRetriever.fetch(templateUri);
-                
-                const apTemplate = await CiceroTemplate.fromArchive(buffer);
-                currentHash = apTemplate.getHash();
+            let buffer;
+            try {
+                buffer = await retriever.fetch(templateUri);
+            } catch (err) {
+                logger.error({ err, templateUri }, 'Template fetch failed');
+                return res.status(500).json({
+                    error: `Failed to fetch template: ${templateUri}`
+                });
+            }
 
-                const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
-                
-                if (existing.length === 0) {
-                    const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                    await db.insert(DbTemplate)
-                        .values(newDbTemplateRow)
-                        .onConflictDoNothing({ target: DbTemplate.hash });
-                }
+            const apTemplate = await CiceroTemplate.fromArchive(buffer);
+            currentHash = apTemplate.getHash();
+
+            const existing = await db.select().from(DbTemplate)
+                .where(eq(DbTemplate.hash, currentHash)).limit(1);
+
+            if (!existing.length) {
+                const newRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
+                await db.insert(DbTemplate)
+                    .values(newRow)
+                    .onConflictDoNothing({ target: DbTemplate.hash });
             }
         }
 
         const insertData = {
             ...req.body,
             templateHash: currentHash,
-            organization: res.locals.orgId !== undefined ? res.locals.orgId : req.body.organization
+            organization: res.locals.orgId ?? req.body.organization
         };
 
         const inserted = await db.insert(Agreement).values(insertData).returning();
         res.json(inserted[0]);
 
     } catch (err: any) {
-        res.status(500).json({ error: "Agreement Instantiation Failed", details: err.message });
+        logger.error({ err, route: 'POST /agreements' });
+        res.status(500).json({
+            error: err.message || 'Internal Server Error'
+        });
     }
 });
 
+// ---- CRUD ----
 const crudRouter = buildCrudRouter({
     table: Agreement,
     typeName: 'Agreement',
-    validateBody: { schema: AgreementInsertSchema, custom: (body) => concertoValidation('Agreement', body) }
-});
-
-crudRouter.get('/:id/convert/:format', async function (req, res) {
-    try {
-        const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
-        const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
-        const draftResult = await templateArchiveProcessor.draft(agreement.data, req.params.format, {});
-        console.log(draftResult);
-        res.setHeader("Content-Type", `text/${req.params.format}`);
-        res.send(draftResult);
-    } catch (error) {
-        console.log(error);
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        res.status(500).json({ error: message });
+    validateBody: {
+        schema: AgreementInsertSchema,
+        custom: (body) => concertoValidation('Agreement', body)
     }
 });
 
-crudRouter.post('/:id/trigger', async function (req, res) {
+// ---- Convert ----
+crudRouter.get('/:id/convert/:format', async (req, res) => {
     try {
-        const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
-        const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
-        try {
-            console.log(JSON.stringify(req.body));
-            console.log(JSON.stringify(agreement.data));
-            console.log(JSON.stringify(agreement.state));
+        const { agreement, apTemplate } = await resolveAgreement(res.locals.db, req.params.id);
+        const processor = new TemplateArchiveProcessor(apTemplate);
 
-            const requestSchema = apTemplate.getRequestTypes().find((rt: any) => rt === req.body.$class);
-            if (!requestSchema) {
-                throw new Error(`Invalid request type: ${req.body.$class}. Expected one of: ${apTemplate.getRequestTypes().join(', ')}`);
-            }
-            
-            const { success, error } = await concertoValidation(req.body.$class, req.body, apTemplate.getModelManager());
+        const result = await processor.draft(agreement.data, req.params.format, {});
+        res.setHeader('Content-Type', `text/${req.params.format}`);
+        res.send(result);
 
-            if (!success) {
-                res.json({ isError: true, errorMessage: "Trigger request validation failed", errorDetails: error.errors[0].message });
-                return;
-            }
+    } catch (err: any) {
+        logger.error({ err, route: 'GET /agreements/:id/convert' });
+        res.status(500).json({
+            error: err.message || 'Conversion failed'
+        });
+    }
+});
 
-            // TODO allow state to be passed in as a parameter
-            if (agreement.state == null) {
-                const state = await templateArchiveProcessor.init(agreement.data);
-                agreement.state = state.state;
-            }
-            
-            const triggerResult = await templateArchiveProcessor.trigger(agreement.data, req.body, agreement.state);
-            agreement.state = triggerResult.state;
-            console.log(JSON.stringify(triggerResult));
+// ---- Trigger ----
+crudRouter.post('/:id/trigger', async (req, res) => {
+    try {
+        const db: DB = res.locals.db;
+        const { agreement, apTemplate } = await resolveAgreement(db, req.params.id);
+        const processor = new TemplateArchiveProcessor(apTemplate);
 
-            // Persist updated state.
-            await res.locals.db.update(Agreement).set(agreement).where(eq(Agreement.id, Number.parseInt(agreement.id)));
-            res.json(triggerResult);
-        } catch (err: any) {
-            console.log("\n=== TRIGGER EXECUTION ERROR ===");
-            console.log(err.stack);
-            console.log("===============================\n");
-            
-            res.json({ isError: true, errorMessage: err.message, errorDetails: err.toString() });
+        const requestType = req.body.$class;
+
+        if (!requestType || !apTemplate.getRequestTypes().includes(requestType)) {
+            return res.status(400).json({
+                error: 'Invalid request type'
+            });
         }
-    } catch (error) {
-        console.log(error);
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        res.status(500).json({ error: message });
+
+        const { success, error } = await concertoValidation(
+            requestType,
+            req.body,
+            apTemplate.getModelManager()
+        );
+
+        if (!success) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: error.errors
+            });
+        }
+
+        if (!agreement.state) {
+            const init = await processor.init(agreement.data);
+            agreement.state = init.state;
+        }
+
+        const result = await processor.trigger(
+            agreement.data,
+            req.body,
+            agreement.state
+        );
+
+        await db.update(Agreement)
+            .set({ state: result.state })
+            .where(eq(Agreement.id, parseId(req.params.id)));
+
+        res.json(result);
+
+    } catch (err: any) {
+        logger.error({ err, route: 'POST /agreements/:id/trigger' });
+        res.status(500).json({
+            error: err.message || 'Trigger failed'
+        });
     }
 });
 
 router.use('/', crudRouter);
+
 export default router;
