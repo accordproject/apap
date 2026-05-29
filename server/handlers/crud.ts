@@ -10,6 +10,15 @@ import { count } from 'drizzle-orm';
 import escapeString from '../db/escape';
 // import { getUserRoles } from '../auth0/client';
 
+/**
+ * @param req The current Express request.
+ * @param queryParams Parsed pagination, sorting, and filter parameters.
+ * @param table The optional Drizzle table used to validate filter keys.
+ * @return A SQL `where` clause built from query filters, or `undefined` when no filters are present.
+ * @details Converts query-string filters into a Drizzle SQL fragment. The function
+ * supports equality filters by default, handles explicit `null` values, and also
+ * accepts inline comparison operators such as `>=`, `<=`, `!=`, `>`, and `<`.
+ */
 function defaultWhereClause<T extends PgTable<any>>(
 	req: Request,
 	queryParams: QueryParams,
@@ -64,6 +73,12 @@ function defaultWhereClause<T extends PgTable<any>>(
 	return sql.join(conditions, sql` AND `);
 }
 
+/**
+ * @param v The raw filter operand read from the query string.
+ * @return A normalized primitive value, converted to boolean or number when possible.
+ * @details Used by filter parsing to interpret string operands like `true`, `false`,
+ * or numeric values before they are inserted into a SQL comparison expression.
+ */
 function parseValue(v: any) {
   const s = String(v).trim();
 
@@ -127,7 +142,13 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     transformRequest?: (req: Request) => any;
 }
 
-// Parse and validate query parameters
+/**
+ * @param req The current Express request.
+ * @return A normalized `QueryParams` object with parsed paging, sorting, and filter values.
+ * @details Reads query-string parameters from the request and applies the current
+ * defaults and bounds for `page`, `limit`, and `sortOrder`, leaving all other
+ * query-string keys available as filter values.
+ */
 function parseQueryParams(req: Request): QueryParams {
     const {
         page = '1',
@@ -146,7 +167,14 @@ function parseQueryParams(req: Request): QueryParams {
     };
 }
 
-// Build order by clause
+/**
+ * @param table The Drizzle table being queried.
+ * @param sortBy The optional property name to sort by.
+ * @param sortOrder The requested sort direction, defaulting to ascending.
+ * @return A Drizzle order-by wrapper when the field exists on the table, otherwise `null`.
+ * @details Validates the requested sort field against the table definition and
+ * constructs either an ascending or descending order clause for list queries.
+ */
 function buildOrderClause<T extends PgTable<any>>(
     table: T,
     sortBy?: string,
@@ -159,7 +187,12 @@ function buildOrderClause<T extends PgTable<any>>(
     return null;
 }
 
-// In buildCrudRouter, add a helper to enhance user data
+/**
+ * @param user The user record returned from the database.
+ * @return The original user or a user object extended with a `roles` array.
+ * @details This helper is currently used only for the special `users` type path.
+ * The role lookup is stubbed out in the current code and returns an empty roles array.
+ */
 async function enhanceUserData(user: any) {
     console.log('user', user);
     if (!user?.email) return user;
@@ -167,6 +200,14 @@ async function enhanceUserData(user: any) {
     return { ...user, roles };
 }
 
+/**
+ * @param options The CRUD router configuration, including table metadata, validation hooks,
+ * and optional request/response transformations.
+ * @return An Express router exposing list, get, create, update, and delete routes for the table.
+ * @details Builds the shared CRUD router used by multiple APAP resources. The current
+ * implementation applies optional request validation, pagination, filtering, sorting,
+ * record transformation hooks, and basic database-backed handlers for standard CRUD operations.
+ */
 export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     table,
     typeName,
