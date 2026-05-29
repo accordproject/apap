@@ -123,5 +123,26 @@ describe('templateValidation', () => {
     );
   });
 
+  it('returns concerto error, not DB error, when both would fail', async () => {
+    // Zod schema passes
+    (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true, data: {} });
+
+    // Concerto validation fails
+    const valModule = require('./concertovalidation');
+    valModule.concertoValidation.mockResolvedValueOnce({
+      success: false, error: { errors: [{ message: 'Concerto error' }] }
+    });
+
+    // DB should never be called
+    const dbSpy = jest.spyOn(db, 'templateFromDatabase')
+      .mockRejectedValueOnce(new Error('should not be called'));
+
+    const res = await request(app).post('/templates').send({});
+    
+    expect(res.status).toBe(400);
+    expect(res.body.details[0].message).toBe('Concerto error');
+    expect(dbSpy).not.toHaveBeenCalled(); // proves ordering is correct
+  });
+
 });
 
