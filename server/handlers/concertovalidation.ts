@@ -12,7 +12,6 @@ let DEFAULT_MODEL_MANAGER:ModelManager = undefined;
  * @param body - The object containing the payload to validate
  * @param modelManager - Optional custom ModelManager to use for validation. Defaults to DEFAULT_MODEL_MANAGER
  * @returns A ValidationResult indicating success or failure with error details
- * @throws Will not throw — errors are caught and returned as ValidationResult
  * 
  * @example
  * const result = await concertoValidation('Agreement', req.body);

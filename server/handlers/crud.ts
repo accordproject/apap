@@ -75,7 +75,7 @@ function defaultWhereClause<T extends PgTable<any>>(
 
 /**
  * Utility to parse simple primitive types from string query values.
- * Converts 'true'/'false' to boolean, numeric strings to number, and keeps others as-is.
+ * Converts 'true'/'false' to boolean, and otherwise uses JavaScript `Number()` coercion to parse numbers.
  * 
  * @param v - The raw value to parse
  * @returns The parsed typed value
@@ -192,7 +192,8 @@ function buildOrderClause<T extends PgTable<any>>(
 
 // In buildCrudRouter, add a helper to enhance user data
 /**
- * Enhances user records with additional roles loaded asynchronously.
+ * Enhances user records by adding a `roles` array.
+ * Note: role lookup is currently stubbed/disabled (returns an empty array).
  * 
  * @param user - The user object to enhance
  * @returns A Promise resolving to the enhanced user object
@@ -205,7 +206,7 @@ async function enhanceUserData(user: any) {
 }
 
 /**
- * Generates an Express Router containing standard, secure CRUD endpoints (GET, POST, GET :id, PUT :id, DELETE :id)
+ * Generates an Express Router containing standard CRUD endpoints (GET, POST, GET :id, PUT :id, DELETE :id)
  * for a given drizzle-orm table with custom schemas/validation support.
  * 
  * @param options - Config options including database table, typeName, validation schemas, and hooks

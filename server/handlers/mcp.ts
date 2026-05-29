@@ -50,7 +50,8 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
  * @returns An object containing the contents with the agreement JSON
  * @throws {Error} If the API request fails
  */
-async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
+async function getAgreement(uri: string, variables: { agreementId: string }) {
+    const { agreementId } = variables;
     console.log(`Fetching agreement with ID: ${agreementId}`);
     const url = new URL(uri);
     const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);

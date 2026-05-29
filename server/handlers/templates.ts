@@ -11,7 +11,6 @@ const router = express.Router();
  * 
  * @param body - The request body containing template data to validate
  * @returns A ValidationResult indicating success or failure with error details
- * @throws Will not throw — errors are caught and returned as ValidationResult
  * 
  * @example
  * const result = await templateValidation(req.body);
