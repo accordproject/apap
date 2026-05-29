@@ -11,13 +11,13 @@ import escapeString from '../db/escape';
 // import { getUserRoles } from '../auth0/client';
 
 /**
- * Generates a default SQL WHERE clause by parsing the filters supplied in QueryParams.
- * Supports comparison operators like >=, <=, <>, !=, >, < and null values.
- * 
- * @param req - The Express Request object
- * @param queryParams - The parsed query parameters including filters
- * @param table - The drizzle-orm table to check filter keys against
- * @returns A drizzle-orm SQL chunk representing the conditions, or undefined if no filters apply
+ * @param req The current Express request.
+ * @param queryParams Parsed pagination, sorting, and filter parameters.
+ * @param table The optional Drizzle table used to validate filter keys.
+ * @return A SQL `where` clause built from query filters, or `undefined` when no filters are present.
+ * @details Converts query-string filters into a Drizzle SQL fragment. The function
+ * supports equality filters by default, handles explicit `null` values, and also
+ * accepts inline comparison operators such as `>=`, `<=`, `!=`, `>`, and `<`.
  */
 function defaultWhereClause<T extends PgTable<any>>(
 	req: Request,
@@ -74,11 +74,10 @@ function defaultWhereClause<T extends PgTable<any>>(
 }
 
 /**
- * Utility to parse simple primitive types from string query values.
- * Converts 'true'/'false' to boolean, and otherwise uses JavaScript `Number()` coercion to parse numbers.
- * 
- * @param v - The raw value to parse
- * @returns The parsed typed value
+ * @param v The raw filter operand read from the query string.
+ * @return A normalized primitive value, converted to boolean or number when possible.
+ * @details Used by filter parsing to interpret string operands like `true`, `false`,
+ * or numeric values before they are inserted into a SQL comparison expression.
  */
 function parseValue(v: any) {
   const s = String(v).trim();
@@ -143,13 +142,12 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     transformRequest?: (req: Request) => any;
 }
 
-// Parse and validate query parameters
 /**
- * Parses and extracts standard paginated QueryParams (page, limit, sortBy, sortOrder, and filters)
- * from an incoming Express Request query.
- * 
- * @param req - The Express Request object
- * @returns The structured QueryParams object with sanitized fields
+ * @param req The current Express request.
+ * @return A normalized `QueryParams` object with parsed paging, sorting, and filter values.
+ * @details Reads query-string parameters from the request and applies the current
+ * defaults and bounds for `page`, `limit`, and `sortOrder`, leaving all other
+ * query-string keys available as filter values.
  */
 function parseQueryParams(req: Request): QueryParams {
     const {
@@ -169,14 +167,13 @@ function parseQueryParams(req: Request): QueryParams {
     };
 }
 
-// Build order by clause
 /**
- * Builds a drizzle-orm ORDER BY expression based on the requested column and sort order.
- * 
- * @param table - The drizzle-orm table
- * @param sortBy - The column name to sort by
- * @param sortOrder - Sort direction: 'asc' or 'desc'
- * @returns The SQLWrapper order clause or null if the column does not exist on the table
+ * @param table The Drizzle table being queried.
+ * @param sortBy The optional property name to sort by.
+ * @param sortOrder The requested sort direction, defaulting to ascending.
+ * @return A Drizzle order-by wrapper when the field exists on the table, otherwise `null`.
+ * @details Validates the requested sort field against the table definition and
+ * constructs either an ascending or descending order clause for list queries.
  */
 function buildOrderClause<T extends PgTable<any>>(
     table: T,
@@ -190,13 +187,11 @@ function buildOrderClause<T extends PgTable<any>>(
     return null;
 }
 
-// In buildCrudRouter, add a helper to enhance user data
 /**
- * Enhances user records by adding a `roles` array.
- * Note: role lookup is currently stubbed/disabled (returns an empty array).
- * 
- * @param user - The user object to enhance
- * @returns A Promise resolving to the enhanced user object
+ * @param user The user record returned from the database.
+ * @return The original user or a user object extended with a `roles` array.
+ * @details This helper is currently used only for the special `users` type path.
+ * The role lookup is stubbed out in the current code and returns an empty roles array.
  */
 async function enhanceUserData(user: any) {
     console.log('user', user);
@@ -206,18 +201,12 @@ async function enhanceUserData(user: any) {
 }
 
 /**
- * Generates an Express Router containing standard CRUD endpoints (GET, POST, GET :id, PUT :id, DELETE :id)
- * for a given drizzle-orm table with custom schemas/validation support.
- * 
- * @param options - Config options including database table, typeName, validation schemas, and hooks
- * @returns An Express Router pre-configured with CRUD endpoints
- * 
- * @example
- * const router = buildCrudRouter({
- *     table: Template,
- *     typeName: 'Template',
- *     validateBody: { schema: TemplateInsertSchema }
- * });
+ * @param options The CRUD router configuration, including table metadata, validation hooks,
+ * and optional request/response transformations.
+ * @return An Express router exposing list, get, create, update, and delete routes for the table.
+ * @details Builds the shared CRUD router used by multiple APAP resources. The current
+ * implementation applies optional request validation, pagination, filtering, sorting,
+ * record transformation hooks, and basic database-backed handlers for standard CRUD operations.
  */
 export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     table,
@@ -340,7 +329,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 };
 
                 // Validate body if schema provided
-                if (validateBody.schema) {
+                if (validateBody?.schema) {
                     const result = validateBody.schema.safeParse(req.body);
                     if (!result.success) {
                         return res.status(400).json({ 
@@ -438,10 +427,45 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         async (req: Request, res: Response) => {
             try {
                 // Add organization to the request body
+                if (!req.body || Object.keys(req.body).length === 0) {
+                    return res.status(400).json({
+                        error: 'Invalid request body',
+                        details: [{ message: 'Request body cannot be empty' }]
+                    });
+                }
+
                 req.body = {
                     ...req.body,
                     organization: res.locals.orgId
                 };
+
+                // Run schema validation independently
+                if (validateBody?.schema) {
+                    const result = validateBody.schema.safeParse(req.body);
+                    if (!result.success) {
+                        return res.status(400).json({
+                            error: 'Invalid request body',
+                            details: result.error.errors
+                        });
+                    }
+                    req.body = result.data;
+                }
+
+                // Run custom validation independently (not nested inside schema check)
+                if (validateBody?.custom) {
+                    const customResult = await validateBody.custom(req.body);
+                    if (!customResult.success) {
+                        return res.status(400).json({
+                            error: 'Invalid request body',
+                            details: customResult.error.errors
+                        });
+                    }
+                    req.body = customResult.data;
+                }
+
+                if (transformRequest) {
+                    req.body = transformRequest(req);
+                }
 
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
@@ -491,10 +515,17 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
 
-                await res.locals.db
+                const result = await res.locals.db
                     .delete(table)
-                    .where(and(...whereConditions));
+                    .where(and(...whereConditions))
+                    .returning();
 
+                if (!result.length) {
+                    return res.status(404).json({ 
+                        error: 'Not found',
+                        details: [{ message: `Resource with id ${req.params.id} does not exist` }]
+                    });
+                }
                 res.json({ status: 'deleted' });
             } catch (error) {
                 const message = error instanceof Error ? error.message : 'Unknown error';
