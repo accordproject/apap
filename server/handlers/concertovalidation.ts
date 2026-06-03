@@ -4,6 +4,19 @@ import { Factory, ModelManager, Serializer } from '@accordproject/concerto-core'
 
 let DEFAULT_MODEL_MANAGER:ModelManager = undefined; 
 
+/**
+ * Validates a request body against a specified Concerto model type using the ModelContextProtocol schema.
+ * Stringifies 'data' and 'state' properties of the body to JSON strings to ensure they pass validation.
+ * 
+ * @param typeName - The name of the Concerto type to validate against
+ * @param body - The object containing the payload to validate
+ * @param modelManager - Optional custom ModelManager to use for validation. Defaults to DEFAULT_MODEL_MANAGER
+ * @returns A ValidationResult indicating success or failure with error details
+ * 
+ * @example
+ * const result = await concertoValidation('Agreement', req.body);
+ * if (!result.success) return res.status(400).json(result.error);
+ */
 export async function concertoValidation(typeName: string, body: any, modelManager?: ModelManager): Promise<ValidationResult> {
     if(!DEFAULT_MODEL_MANAGER) {
         DEFAULT_MODEL_MANAGER = new ModelManager({ strict: true, addMetamodel: true });

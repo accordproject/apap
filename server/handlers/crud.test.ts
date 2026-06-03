@@ -165,3 +165,105 @@ describe('PUT /:id validation', () => {
         expect(res.body.details[0].message).toBe('Custom validation failed');
     });
 });
+
+describe('DELETE /:id', () => {
+    let app: express.Application;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        app = express();
+        app.use(express.json());
+        app.use((req, res, next) => {
+            res.locals.db = {
+                delete: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+                returning: jest.fn<any>().mockResolvedValue([{ id: 1 }]),
+                insert: jest.fn().mockReturnThis(),
+                values: jest.fn().mockReturnThis(),
+                update: jest.fn().mockReturnThis(),
+                set: jest.fn().mockReturnThis(),
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnThis(),
+                offset: jest.fn().mockReturnThis(),
+                orderBy: jest.fn().mockReturnThis(),
+            };
+            next();
+        });
+        app.use('/templates', templatesRouter);
+    });
+
+    it('returns 404 when resource does not exist', async () => {
+        // Build app with DB returning empty array for delete
+        const notFoundApp = express();
+        notFoundApp.use(express.json());
+        notFoundApp.use((req, res, next) => {
+            res.locals.db = {
+                delete: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+                returning: jest.fn<any>().mockResolvedValue([]),
+                insert: jest.fn().mockReturnThis(),
+                values: jest.fn().mockReturnThis(),
+                update: jest.fn().mockReturnThis(),
+                set: jest.fn().mockReturnThis(),
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnThis(),
+                offset: jest.fn().mockReturnThis(),
+                orderBy: jest.fn().mockReturnThis(),
+            };
+            next();
+        });
+        notFoundApp.use('/templates', templatesRouter);
+
+        const res = await request(notFoundApp)
+            .delete('/templates/999');
+        expect(res.status).toBe(404);
+        expect(res.body.error).toBe('Not found');
+    });
+
+    it('returns 200 when resource exists and is deleted', async () => {
+        const res = await request(app)
+            .delete('/templates/1');
+        expect(res.status).toBe(200);
+    });
+});
+
+describe('POST without validateBody', () => {
+    it('does not crash when validateBody is not provided', async () => {
+        const noValidateApp = express();
+        noValidateApp.use(express.json());
+        noValidateApp.use((req, res, next) => {
+            res.locals.db = {
+                insert: jest.fn().mockReturnThis(),
+                values: jest.fn().mockReturnThis(),
+                returning: jest.fn<any>().mockResolvedValue([{ id: 1 }]),
+                update: jest.fn().mockReturnThis(),
+                set: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnThis(),
+                offset: jest.fn().mockReturnThis(),
+                orderBy: jest.fn().mockReturnThis(),
+            };
+            next();
+        });
+
+        const { buildCrudRouter } = require('./crud');
+        const { DbTemplate } = require('../db/schema');
+
+        // No validateBody at all
+        const testRouter = buildCrudRouter({
+            table: DbTemplate,
+            typeName: 'templates',
+        });
+
+        noValidateApp.use('/templates', testRouter);
+
+        const res = await request(noValidateApp)
+            .post('/templates')
+            .send(validTemplateBody);
+        expect(res.status).not.toBe(500);
+    });
+});
