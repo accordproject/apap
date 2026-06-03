@@ -40,12 +40,13 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
 
 /**
  * @param uri The MCP resource URI being resolved.
- * @param agreementId The agreement identifier extracted from the resource template variables.
+ * @param variables Object containing the agreementId extracted from the resource template variables.
  * @return A MCP resource payload containing the requested agreement as JSON content.
  * @details Resolves a single agreement by calling the local REST API and converts
  * the REST response into the `contents` structure expected by the MCP SDK.
  */
-async function getAgreement(uri: string, { agreementId }: { agreementId: string }) {
+async function getAgreement(uri: string, variables: { agreementId: string }) {
+    const { agreementId } = variables;
     console.log(`Fetching agreement with ID: ${agreementId}`);
     const url = new URL(uri);
     const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);

@@ -28,6 +28,17 @@ interface ApTemplateInstance {
     };
 }
 
+/**
+ * Reconstructs a Cicero Template instance from a database template record by creating
+ * an in-memory zip archive containing the template's package.json, grammar, models, and logic.
+ * 
+ * @param db - The database template record containing the template's files and metadata
+ * @returns A Promise that resolves to the reconstructed Cicero Template instance
+ * @throws {Error} If the domain model type is not supported
+ * 
+ * @example
+ * const template = await templateFromDatabase(templateRow);
+ */
 export async function templateFromDatabase(db: typeof Template | any): Promise<ApTemplate> {
     const zip = new AdmZip();
     
@@ -84,6 +95,18 @@ export async function templateFromDatabase(db: typeof Template | any): Promise<A
     return template;
 }
 
+/**
+ * Extracts and structures template components (metadata, text, logic, models) from
+ * a Cicero/Accord Project Template instance to prepare it for database storage.
+ * 
+ * @param apTemplate - The Cicero/Accord Project template instance to extract from
+ * @param uri - The identifier URI of the template
+ * @param hash - The cryptographic hash of the template archive
+ * @returns An object formatted for insertion into the database table
+ * 
+ * @example
+ * const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
+ */
 export function extractTemplateForDatabase(apTemplate: ApTemplateInstance, uri: string, hash: string) {
     const packageJson = apTemplate.getMetadata().getPackageJson();
     const templateText = apTemplate.getTemplate() || '';
