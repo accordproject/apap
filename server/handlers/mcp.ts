@@ -176,7 +176,7 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
  * @details Creates a new MCP server and registers the template and agreement
  * resources, resource templates, and tool handlers currently exposed by APAP.
  */
-const getServer = () => {
+export const getServer = () => {
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
@@ -425,6 +425,11 @@ router.all('/mcp', async (req: Request, res: Response) => {
                 id: null,
             });
             return;
+        }
+
+        // Send the session ID back to the client if this is a new session
+        if (!sessionId && transport.sessionId) {
+            res.setHeader('mcp-session-id', transport.sessionId);
         }
 
         // Handle the request with the transport
