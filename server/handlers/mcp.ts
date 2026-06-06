@@ -390,8 +390,9 @@ router.all('/mcp', async (req: Request, res: Response) => {
             }
         } else if (!sessionId && req.method === 'POST' && isInitializeRequest(req.body)) {
             const eventStore = new InMemoryEventStore();
+            const newSessionId = (crypto as any).randomUUID();
             transport = new StreamableHTTPServerTransport({
-                sessionIdGenerator: () => (crypto as any).randomUUID(),
+                sessionIdGenerator: () => newSessionId,
                 eventStore, // Enable resumability
                 onsessioninitialized: (sessionId) => {
                     // Store the transport by session ID when session is initialized
@@ -413,6 +414,9 @@ router.all('/mcp', async (req: Request, res: Response) => {
             const server = getServer();
             await server.connect(transport);
             console.log('Connected server to transport');
+
+            // Send the session ID back to the client for this new session
+            res.setHeader('mcp-session-id', newSessionId);
         } else {
             console.log('Invalid request');
             // Invalid request - no session ID or not initialization request
@@ -425,11 +429,6 @@ router.all('/mcp', async (req: Request, res: Response) => {
                 id: null,
             });
             return;
-        }
-
-        // Send the session ID back to the client if this is a new session
-        if (!sessionId && transport.sessionId) {
-            res.setHeader('mcp-session-id', transport.sessionId);
         }
 
         // Handle the request with the transport

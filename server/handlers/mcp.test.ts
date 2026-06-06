@@ -67,6 +67,24 @@ describe('MCP Handler', () => {
             });
         });
 
+        it('returns mcp-session-id header on initialization response', async () => {
+            const res = await request(app)
+                .post('/mcp/mcp')
+                .send({
+                    jsonrpc: '2.0',
+                    id: 1,
+                    method: 'initialize',
+                    params: {
+                        protocolVersion: '2024-11-05',
+                        capabilities: {},
+                        clientInfo: { name: 'test', version: '1.0' }
+                    }
+                });
+            // The mcp-session-id header must be present on init response
+            // This locks in the bug fix against future regression
+            expect(res.headers['mcp-session-id']).toBeDefined();
+        });
+
         it('GET /mcp/sse returns an SSE stream with the correct content type', async () => {
             const response = await request(app)
                 .get('/mcp/sse')
