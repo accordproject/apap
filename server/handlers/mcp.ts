@@ -387,7 +387,39 @@ Refer to the agreement's template model to determine which fields are required o
 
 // Map to store transports by session ID
 // Store transports by session ID
-const transports: Record<string, StreamableHTTPServerTransport | SSEServerTransport> = {};
+export const transports: Record<string, StreamableHTTPServerTransport | SSEServerTransport> = {};
+
+export const sessionLastActivity: Record<string, number> = {};
+
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Periodically removes MCP sessions that have been 
+ * idle for longer than SESSION_TIMEOUT_MS.
+ * Prevents unbounded memory growth when clients 
+ * disconnect uncleanly without triggering onclose.
+ */
+export const sessionCleanupInterval = setInterval(() => {
+    const now = Date.now();
+    for (const sessionId of Object.keys(transports)) {
+        const lastActivity = sessionLastActivity[sessionId];
+        if (lastActivity && 
+            now - lastActivity > SESSION_TIMEOUT_MS) {
+            console.error({
+                type: 'session_cleanup',
+                sessionId,
+                idleMs: now - lastActivity,
+                reason: 'idle_timeout'
+            });
+            delete transports[sessionId];
+            delete sessionLastActivity[sessionId];
+        }
+    }
+}, CLEANUP_INTERVAL_MS);
+
+// Prevent interval from blocking process exit
+sessionCleanupInterval.unref();
 
 //=============================================================================
 // STREAMABLE HTTP TRANSPORT (PROTOCOL VERSION 2025-03-26)
@@ -418,6 +450,8 @@ router.all('/mcp', async (req: Request, res: Response) => {
             if (existingTransport instanceof StreamableHTTPServerTransport) {
                 // Reuse existing transport
                 transport = existingTransport;
+                // Update last activity on every request
+                sessionLastActivity[sessionId] = Date.now();
             } else {
                 // Transport exists but is not a StreamableHTTPServerTransport (could be SSEServerTransport)
                 res.status(400).json({
@@ -439,16 +473,20 @@ router.all('/mcp', async (req: Request, res: Response) => {
                     // Store the transport by session ID when session is initialized
                     console.log(`StreamableHTTP session initialized with ID: ${sessionId}`);
                     transports[sessionId] = transport;
+                    sessionLastActivity[sessionId] = Date.now();
                 }
             });
 
             // Set up onclose handler to clean up transport when closed
             transport.onclose = () => {
                 const sid = transport.sessionId;
-                if (sid && transports[sid]) {
-                    console.log(`Transport closed for session ${sid}, removing from transports map`);
-                    delete transports[sid];
-                }
+                delete transports[sid];
+                delete sessionLastActivity[sid];
+                console.error({
+                    type: 'session_closed',
+                    sessionId: sid,
+                    reason: 'transport_onclose'
+                });
             };
 
             // Connect the transport to the MCP server
@@ -504,6 +542,7 @@ router.get('/sse', async (req: Request, res: Response) => {
     transports[transport.sessionId] = transport;
     res.on("close", () => {
         delete transports[transport.sessionId];
+        delete sessionLastActivity[transport.sessionId];
     });
     const server = getServer();
     await server.connect(transport);
