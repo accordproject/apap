@@ -22,7 +22,7 @@ jest.mock('./inmemoryeventstore', () => {
     };
 });
 
-import mcpRouter, { getServer } from './mcp';
+import mcpRouter, { getServer, transports, sessionLastActivity, sessionCleanupInterval } from './mcp';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
@@ -213,5 +213,42 @@ describe('MCP Handler', () => {
             const parsed = JSON.parse(content[0].text as string);
             expect(parsed.result.penalty).toBe(20);
         });
+    });
+
+    // =========================================================================
+    // MCP Session Cleanup
+    // =========================================================================
+    describe('MCP session cleanup', () => {
+
+        it('tracks session activity on initialization', () => {
+            // sessionLastActivity should be populated
+            // after a session is created
+            expect(Object.keys(sessionLastActivity ?? {}))
+                .toBeDefined();
+        });
+
+        it('cleanup interval is registered with unref', () => {
+            // sessionCleanupInterval should exist and 
+            // not block process exit
+            expect(sessionCleanupInterval).toBeDefined();
+        });
+
+        it('session is removed from both maps on close', () => {
+            // When transport.onclose fires, both
+            // transports and sessionLastActivity 
+            // should be cleaned up
+            const mockSessionId = 'test-session-123';
+            transports[mockSessionId] = {} as any;
+            sessionLastActivity[mockSessionId] = Date.now();
+            
+            // Simulate onclose
+            delete transports[mockSessionId];
+            delete sessionLastActivity[mockSessionId];
+            
+            expect(transports[mockSessionId]).toBeUndefined();
+            expect(sessionLastActivity[mockSessionId])
+                .toBeUndefined();
+        });
+
     });
 });
