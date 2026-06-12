@@ -125,6 +125,7 @@ This roadmap is intentionally open. If you want to:
 ## References
 
 - [Accord Project GSoC ideas list](https://wiki.accordproject.org/) (Idea #4)
-- [MCP 2026-07-28 RC blog post](https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate)
+- [MCP 2026-07-28 RC blog post (Anthropic)](https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate)
+- [MCP Is Growing Up (Agentic AI Foundation, May 27 2026)](https://aaif.io/blog/mcp-is-growing-up/) - Angie Jones's read on the 2026-07-28 RC, surfaced from the MCP Dev Summit keynote; the article's "what I'd do next" advice maps directly onto the W3-W9 roadmap lanes
 - [accord-project-mcp (Niall's reference repo)](https://github.com/The-Building-Blocks/accord-project-mcp)
 - [apap-mcp-poc (GSoC proof of concept)](https://github.com/JayDS22/apap-mcp-poc)
