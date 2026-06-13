@@ -44,7 +44,9 @@ jobs:
       - name: Build (skip reslate docs on Windows — spawn EINVAL with .cmd files)
         if: runner.os == 'Windows'
         run: npm run build:nodocs --if-present
-      - env:
+      - name: Run tests
+        shell: bash
+        env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: npm test || echo "No tests configured"
 
