@@ -9,7 +9,9 @@
     "merge": "node merge.js",
     "build-api-docs": "widdershins openapi.json -o index.md",
     "build": "npm run merge && npm run build-api-docs && npx openapi-typescript openapi.json --output ./client/typescript/apap.ts && npx reslate build",
+    "build:nodocs": "npm run merge && npm run build-api-docs && npx openapi-typescript openapi.json --output ./client/typescript/apap.ts",
     "prebuild": "npm run gen",
+    "prebuild:nodocs": "npm run gen",
     "lint": "lint-openapi openapi.json || exit 0",
     "serve": "npx reslate serve"
   },
