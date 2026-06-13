@@ -7,6 +7,14 @@ import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
+import {
+    AgreementLite,
+    nextAgreementStatus,
+    SignatureRecord,
+    validateSignatureCredential,
+    VerifiableCredential,
+    verifyAllSignatures,
+} from './signatures';
 
 /**
  * @param db The database handle stored on `res.locals.db`.
@@ -205,6 +213,81 @@ crudRouter.post('/:id/trigger', async function (req, res) {
         console.log(error);
         const message = error instanceof Error ? error.message : 'Unknown error';
         res.status(500).json({ error: message });
+    }
+});
+
+async function loadAgreementRow(db: any, agreementId: string) {
+    const rows = await db.select().from(Agreement).where(eq(Agreement.id, Number.parseInt(agreementId))).limit(1);
+    if (!rows.length) throw new Error(`Agreement with id ${agreementId} does not exist`);
+    return rows[0];
+}
+
+crudRouter.post('/:id/sign', async function (req, res) {
+    try {
+        const agreement = await loadAgreementRow(res.locals.db, req.params.id);
+        const vc = req.body as VerifiableCredential;
+
+        const lite: AgreementLite = {
+            uri: agreement.uri,
+            data: agreement.data,
+            templateHash: agreement.templateHash ?? null,
+            agreementParties: agreement.agreementParties ?? [],
+            signatures: agreement.signatures ?? [],
+        };
+
+        const failure = await validateSignatureCredential(vc, lite);
+        if (failure) {
+            return res.status(400).json({ error: failure.code, message: failure.message });
+        }
+
+        const subject = vc.credentialSubject!;
+        const partyId = subject.signatory!.partyId!;
+        const party = lite.agreementParties!.find((p: any) => p.partyId === partyId || p.id === partyId)!;
+
+        const newSig: SignatureRecord = {
+            signatory: party,
+            signedAt: subject.signedAt ?? new Date().toISOString(),
+            metadata: req.body.metadata ?? { values: [] },
+            verifiableCredential: vc,
+        };
+
+        const updatedSignatures = [...(agreement.signatures ?? []), newSig];
+        const updatedAgreement = {
+            ...agreement,
+            signatures: updatedSignatures,
+            agreementStatus: nextAgreementStatus({ ...lite, signatures: updatedSignatures }),
+            historyEntries: [
+                ...(agreement.historyEntries ?? []),
+                {
+                    $class: 'org.accordproject.protocol@1.0.0.HistoryEntry',
+                    agreementStatus: nextAgreementStatus({ ...lite, signatures: updatedSignatures }),
+                    data: agreement.data,
+                    metadata: { values: [{ key: 'event', value: `signed_by:${partyId}` }] },
+                },
+            ],
+        };
+
+        await res.locals.db.update(Agreement).set(updatedAgreement).where(eq(Agreement.id, Number.parseInt(agreement.id)));
+        res.json(updatedAgreement);
+    } catch (err: any) {
+        res.status(500).json({ error: 'Signing failed', details: err.message });
+    }
+});
+
+crudRouter.post('/:id/verify-signatures', async function (req, res) {
+    try {
+        const agreement = await loadAgreementRow(res.locals.db, req.params.id);
+        const lite: AgreementLite = {
+            uri: agreement.uri,
+            data: agreement.data,
+            templateHash: agreement.templateHash ?? null,
+            agreementParties: agreement.agreementParties ?? [],
+            signatures: agreement.signatures ?? [],
+        };
+        const result = await verifyAllSignatures(lite);
+        res.json(result);
+    } catch (err: any) {
+        res.status(500).json({ error: 'Verification failed', details: err.message });
     }
 });
 
