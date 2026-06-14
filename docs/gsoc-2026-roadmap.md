@@ -1,8 +1,9 @@
 # GSoC 2026 - Hardening APAP / MCP
 
-> **Status (Jun 10, 2026):** W2 day 2 of 12. Service-layer first slice
-> shipped as draft PR #184. OpenAI function-calling spike complete with
-> comparison memo populated. Logistics resolved Jun 9.
+> **Status (Jun 15, 2026):** W3 day 1 of 12. Slice 1 of typed errors
+> merged (#184). Slice 2 opened as draft PR #197 (agreements +
+> templatebuilder). Test-only follow-up #196 opened. Both alternatives
+> evaluation spikes complete with decision memo drafted.
 
 **Project:** Idea #4 - Hardening the APAP / MCP Server
 **Contributor:** Jay Guwalani ([@JayDS22](https://github.com/JayDS22))
@@ -24,10 +25,10 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 
 | # | Workstream | Owner | Current status |
 |---|---|---|---|
-| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | Active (W2); slice 1 shipped via PR #184 |
+| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | Active (W3); slice 1 merged (#184), slice 2 draft (#197), tests follow-up (#196) |
 | 2 | **MCP RC migration** - adopt 2026-07-28 spec via parallel transport | Jay | W4 |
-| 3 | **Agentic Payments** - multi-provider OAuth, privacy boundary, agent-calling-agents demo | Jay (with Niall) | W3 |
-| 4 | **Alternatives Evaluation** - OpenAI fn-calling, LangGraph / CrewAI comparison | Jay | Active (W2); OpenAI spike complete |
+| 3 | **Agentic Payments** - multi-provider OAuth, privacy boundary, agent-calling-agents demo | Jay (with Niall) | W3-W4 |
+| 4 | **Alternatives Evaluation** - OpenAI fn-calling, LangGraph / CrewAI comparison | Jay | Both spikes done; decision memo drafted, target Jun 18-20 send |
 | 5 | **Skills + Ops** - accordproject/skills refresh, dev branch, comms | Jay (with Sanket) | Bonding asks resolved Jun 9; skills refresh next |
 
 ---
@@ -37,9 +38,9 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 | Wk | Dates | Primary focus | Key activities | Status |
 |---|---|---|---|---|
 | Bond. | May 8 - Jun 1 | Setup + study | accord-project-mcp study, MCP RC compat matrix, dev branch + Discord (Sanket), apap/ access + API credits confirmation | Done |
-| 1 | Jun 2 - Jun 8 | Refactor + alternatives | Land service layer + typed errors upstream; begin alternatives evaluation | Done (slice 1 shipped, spike scaffolded) |
-| 2 | Jun 9 - Jun 15 | Refactor + alternatives | Continue service-layer PRs; skills repo refresh starts; alternatives decision memo draft | Active |
-| 3 | Jun 16 - Jun 22 | Tests + OAuth | Unit tests upstream (Vitest, 90% gate); alternatives memo delivered; multi-provider OAuth design | Upcoming |
+| 1 | Jun 2 - Jun 8 | Refactor + alternatives | Land service layer + typed errors upstream; begin alternatives evaluation | Done (slice 1 merged via #184) |
+| 2 | Jun 9 - Jun 15 | Refactor + alternatives | Continue service-layer PRs; skills repo refresh starts; alternatives decision memo draft | Done (slice 2 draft #197, both spikes shipped, memo drafted) |
+| 3 | Jun 16 - Jun 22 | Tests + OAuth | Unit tests upstream (Vitest, 90% gate); alternatives memo delivered; multi-provider OAuth design | Active |
 | 4 | Jun 23 - Jun 29 | Tests + payments | Integration tests (Docker Postgres); begin parallel 2026-07-28 transport; privacy-boundary design | Planned |
 | 5 | Jun 30 - Jul 6 | Contract tests | Contract tests against SEP-2484; continue stateless transport; skills repo updates finalized | Planned |
 | 6 | Jul 7 - Jul 13 | Buffer + midterm | Midterm eval; mentor review; refactor on feedback; stateless transport feature-complete | Planned |
@@ -64,17 +65,25 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 
 ---
 
-## Open decisions (as of Jun 10, 2026)
+## Open decisions (as of Jun 15, 2026)
 
-From Section 6 of the May 20 sync. Two implicitly resolved Jun 9 by Matt and Sanket's responses; three still open.
+From Section 6 of the May 20 sync. Decisions 2 and 4 (partial) resolved; three still open.
 
 | # | Decision | Default proposal | Status |
 |---|---|---|---|
 | 1 | **Scope** - 5 workstreams or proposal-only | 5 workstreams with midterm checkpoint to scope down | Open |
-| 2 | **Alternatives evaluation depth** - light / medium / heavy | Medium (memo + working spike) | **Resolved (implicit)** via AI credit grant Jun 9 |
+| 2 | **Alternatives evaluation depth** - light / medium / heavy | Medium (memo + working spike) | **Resolved** via AI credit grant Jun 9; both spikes shipped, decision memo drafted |
 | 3 | **MCP 2026-07-28 transport strategy** - stay / parallel / migrate-first | Parallel from W4 | Open |
 | 4 | **Comms cadence** - channel + meeting slot | Thursdays 9 AM ET (2 PM UK / 6:30 PM IST) | Channel **resolved**; meeting slot pending |
 | 5 | **accord-project-mcp pair walkthrough** with Niall | After study (now complete) | Open |
+
+New decision surfacing from W2 alternatives memo (will be folded into next mentor sync):
+
+| # | Decision | Default proposal | Status |
+|---|---|---|---|
+| 6 | **MCP Tasks framing for agreement triggers** (per AAIF article) | Evaluate in W9 migration guide; propose as APAP `tasks` extension if compelling | Pending mentor input |
+| 7 | **Function-calling adapter codegen target location** | Script in accordproject/apap next to existing OpenAPI build | Pending mentor input |
+| 8 | **CrewAI as a third alternative spike before W9** | Trust LangGraph data; do CrewAI only if multi-agent design requires it | Pending mentor input |
 
 ---
 
@@ -97,17 +106,21 @@ All three asks from May 20 closed within 24 hours of the Jun 5 sync follow-up em
 | [Issue #152](https://github.com/accordproject/apap/issues/152) | Bug report | MCP error-handling gap across all 8 tools |
 | [Issue #143](https://github.com/accordproject/apap/issues/143) | RFC comment | Architectural input on the service-layer RFC |
 | [Issue #185](https://github.com/accordproject/apap/issues/185) | Discussion | GraphQL-shape semantics of APAP's typed schemas (Dan tagged Jun 5) |
-| [PR #153](https://github.com/accordproject/apap/pull/153) | Fix + tests | `buildApiErrorMessage` helper (closing after #155 merges, replaced by clean test-only PR) |
+| [PR #153](https://github.com/accordproject/apap/pull/153) | Fix + tests | `buildApiErrorMessage` helper (closed Jun 13 per the agreed plan; replaced by #196) |
 | [PR #154](https://github.com/accordproject/apap/pull/154) | Bug fix | Template validation ordering (merged) |
-| [PR #155](https://github.com/accordproject/apap/pull/155) | Bug fix | MCP resource URI overwrite from `Agreement.uri` (maintainer-engaged) |
-| [PR #184](https://github.com/accordproject/apap/pull/184) | Feature (draft) | Typed `ServiceError` hierarchy ported from POC, agreements handler wired |
-| [PR #190](https://github.com/accordproject/apap/pull/190) | Docs | This roadmap |
+| [PR #155](https://github.com/accordproject/apap/pull/155) | Bug fix | MCP resource URI overwrite from `Agreement.uri` (merged Jun 13) |
+| [PR #184](https://github.com/accordproject/apap/pull/184) | Feature | Typed `ServiceError` hierarchy with agreements handler wired (merged Jun 14) |
+| [PR #190](https://github.com/accordproject/apap/pull/190) | Docs | Initial roadmap (merged Jun 13) |
+| [PR #196](https://github.com/accordproject/apap/pull/196) | Tests | Contract tests for `buildApiErrorMessage` helper (open) |
+| [PR #197](https://github.com/accordproject/apap/pull/197) | Feature (draft) | Slice 2 typed errors: agreements + templatebuilder wired (draft, opened Jun 15) |
 
-### W2-specific deliverables (in `JayDS22/apap-mcp-poc`)
+### W1-W2 spike + memo deliverables (in `JayDS22/apap-mcp-poc`)
 
 | Ref | Type | Summary |
 |---|---|---|
-| `alternatives/openai-fn-calling` branch | Spike | OpenAI function-calling against APAP REST. Six tools, six-prompt smoke, 10,436 tokens, memo populated. |
+| [`alternatives/openai-fn-calling` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/openai-fn-calling) | Spike | OpenAI function-calling against APAP REST. Six tools, six-prompt smoke, 10,436 tokens, memo populated. |
+| [`alternatives/langgraph` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/langgraph) | Spike | LangGraph against APAP REST. Same six prompts, 9,276 tokens (~11% less than fn-calling), memo populated. |
+| [`alternatives/decision-memo` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/decision-memo) | Memo | W3 alternatives decision memo. Target send: Jun 18-20. |
 
 ---
 
