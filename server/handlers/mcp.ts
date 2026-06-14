@@ -41,7 +41,7 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
 // Builds a meaningful error message from a failed API response so that MCP clients
 // can tell apart a 404 (resource missing) from a 400 (bad input) or a 500 (server issue).
 // Without this, every failure just says "Failed to load ..." which is impossible to debug.
-async function buildApiErrorMessage(result: globalThis.Response, context: string): Promise<string> {
+export async function buildApiErrorMessage(result: globalThis.Response, context: string): Promise<string> {
     const body = await result.text().catch(() => 'No error details available');
     return `${context} (HTTP ${result.status}): ${body}`;
 }
