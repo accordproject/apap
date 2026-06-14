@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
+import { ServiceError, AgreementNotFoundError } from '../services/errors';
 
 /**
  * @param db The database handle stored on `res.locals.db`.
@@ -20,7 +21,7 @@ async function resolveAgreement(db: any, agreementId: string) {
     console.log('Getting agreement: ' + agreementId);
     const result = await db.select().from(Agreement).where(eq(Agreement.id, Number.parseInt(agreementId))).limit(1);
     if (!result.length) {
-        throw new Error(`Agreement with id ${agreementId} does not exist`);
+        throw new AgreementNotFoundError(agreementId);
     }
     console.log('Got agreement');
     
@@ -147,6 +148,10 @@ crudRouter.get('/:id/convert/:format', async function (req, res) {
         res.send(draftResult);
     } catch (error) {
         console.log(error);
+        if (error instanceof ServiceError) {
+            res.status(error.statusCode).json(error.toJSON());
+            return;
+        }
         const message = error instanceof Error ? error.message : 'Unknown error';
         res.status(500).json({ error: message });
     }
@@ -203,6 +208,10 @@ crudRouter.post('/:id/trigger', async function (req, res) {
         }
     } catch (error) {
         console.log(error);
+        if (error instanceof ServiceError) {
+            res.status(error.statusCode).json(error.toJSON());
+            return;
+        }
         const message = error instanceof Error ? error.message : 'Unknown error';
         res.status(500).json({ error: message });
     }

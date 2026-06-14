@@ -306,17 +306,21 @@ describe('Agreements Router - POST /:id/trigger', () => {
     });
 
     describe('Error scenarios - Agreement resolution', () => {
-        it('should return 500 when agreement does not exist', async () => {
+        it('should return 404 with AGREEMENT_NOT_FOUND when agreement does not exist', async () => {
             // Mock empty agreement query result
             mockDb.limit.mockResolvedValueOnce([]);
 
             const response = await request(app)
                 .post('/agreements/999/trigger')
                 .send({})
-                .expect(500);
+                .expect(404);
 
             expect(response.body).toEqual({
-                error: 'Agreement with id 999 does not exist'
+                error: {
+                    code: 'AGREEMENT_NOT_FOUND',
+                    message: 'Agreement not found: 999',
+                    details: { identifier: '999' },
+                },
             });
         });
 
