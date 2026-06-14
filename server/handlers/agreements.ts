@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
-import { ServiceError, AgreementNotFoundError } from '../services/errors';
+import { ServiceError, AgreementNotFoundError, TemplateNotFoundError, InvalidPayloadError } from '../services/errors';
 
 /**
  * @param db The database handle stored on `res.locals.db`.
@@ -36,7 +36,7 @@ async function resolveAgreement(db: any, agreementId: string) {
             apTemplate = await templateFromDatabase(templateRow);
             return { agreement, template: templateRow, apTemplate };
         }
-        throw new Error(`Cached template missing from database.`);
+        throw new TemplateNotFoundError(`cached hash ${agreement.templateHash}`);
     }
 
     let templateUri = agreement.template;
@@ -46,7 +46,7 @@ async function resolveAgreement(db: any, agreementId: string) {
 
     const result2 = await db.select().from(DbTemplate).where(eq(DbTemplate.uri, templateUri)).limit(1);
     if (!result2.length) {
-        throw new Error(`Template with uri ${templateUri} referenced by agreement ${agreementId} does not exist`);
+        throw new TemplateNotFoundError(templateUri);
     }
     templateRow = result2[0];
     apTemplate = await templateFromDatabase(templateRow);
@@ -174,9 +174,13 @@ crudRouter.post('/:id/trigger', async function (req, res) {
             console.log(JSON.stringify(agreement.data));
             console.log(JSON.stringify(agreement.state));
 
-            const requestSchema = apTemplate.getRequestTypes().find((rt: any) => rt === req.body.$class);
+            const expectedTypes = apTemplate.getRequestTypes();
+            const requestSchema = expectedTypes.find((rt: any) => rt === req.body.$class);
             if (!requestSchema) {
-                throw new Error(`Invalid request type: ${req.body.$class}. Expected one of: ${apTemplate.getRequestTypes().join(', ')}`);
+                throw new InvalidPayloadError(
+                    `Invalid request type: ${req.body.$class}. Expected one of: ${expectedTypes.join(', ')}`,
+                    { received: req.body.$class, expected: expectedTypes },
+                );
             }
             
             const { success, error } = await concertoValidation(req.body.$class, req.body, apTemplate.getModelManager());

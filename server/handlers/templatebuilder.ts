@@ -1,6 +1,7 @@
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import AdmZip from "adm-zip";
 import { Template } from '../db/schema';
+import { InvalidPayloadError } from '../services/errors';
 
 interface ApModelFile {
     getNamespace?(): string;
@@ -78,7 +79,10 @@ export async function templateFromDatabase(db: typeof Template | any): Promise<A
             }
         });
     } else {
-        throw new Error('Model type is not supported');
+        throw new InvalidPayloadError('Model type is not supported', {
+            received: domainModel.$class,
+            expected: 'org.accordproject.protocol@1.0.0.CtoModel',
+        });
     }
 
     const logic: Record<string, any> = db.logic;

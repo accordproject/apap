@@ -324,7 +324,7 @@ describe('Agreements Router - POST /:id/trigger', () => {
             });
         });
 
-        it('should return 500 when template referenced by agreement does not exist', async () => {
+        it('should return 404 with TEMPLATE_NOT_FOUND when template referenced by agreement does not exist', async () => {
             const mockAgreementData = {
                 id: 1,
                 template: 'test://template/nonexistent'
@@ -338,10 +338,14 @@ describe('Agreements Router - POST /:id/trigger', () => {
             const response = await request(app)
                 .post('/agreements/1/trigger')
                 .send({})
-                .expect(500);
+                .expect(404);
 
             expect(response.body).toEqual({
-                error: 'Template with uri test://template/nonexistent referenced by agreement 1 does not exist'
+                error: {
+                    code: 'TEMPLATE_NOT_FOUND',
+                    message: 'Template not found: test://template/nonexistent',
+                    details: { identifier: 'test://template/nonexistent' },
+                },
             });
         });
 
