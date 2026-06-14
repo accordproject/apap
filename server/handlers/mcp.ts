@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { asyncHandler } from '../middleware/errorHandler';
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
@@ -404,8 +405,8 @@ const router = express.Router();
  * a new transport during MCP initialization requests, and rejects invalid session usage.
  */
 router.all('/mcp', async (req: Request, res: Response) => {
-    console.log(`Received ${req.method} request to /mcp`);
-    console.log(JSON.stringify(req.body, null, 2));
+    // Structured log without PII
+    console.log({ type: 'mcp_request', method: req.method, path: '/mcp' });
 
     try {
         // Check for existing session ID
@@ -498,8 +499,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
  * @details Creates a legacy `SSEServerTransport`, stores it by session id, and
  * removes it again when the HTTP connection closes.
  */
-router.get('/sse', async (req: Request, res: Response) => {
-    console.log('Received GET request to /sse (deprecated SSE transport)');
+router.get('/sse', asyncHandler(async (req: Request, res: Response) => {
     const transport = new SSEServerTransport('/messages', res);
     transports[transport.sessionId] = transport;
     res.on("close", () => {
@@ -507,7 +507,7 @@ router.get('/sse', async (req: Request, res: Response) => {
     });
     const server = getServer();
     await server.connect(transport);
-});
+}));
 
 /**
  * @param req The incoming Express request carrying a legacy SSE message.
@@ -517,7 +517,7 @@ router.get('/sse', async (req: Request, res: Response) => {
  * @details Looks up the existing SSE transport by `sessionId`, verifies that the
  * session belongs to the legacy transport type, and forwards the posted MCP message.
  */
-router.post("/messages", async (req: Request, res: Response) => {
+router.post("/messages", asyncHandler(async (req: Request, res: Response) => {
     const sessionId = req.query.sessionId as string;
     let transport: SSEServerTransport;
     const existingTransport = transports[sessionId];
@@ -541,6 +541,6 @@ router.post("/messages", async (req: Request, res: Response) => {
     } else {
         res.status(400).send('No transport found for sessionId');
     }
-});
+}));
 
 export default router;

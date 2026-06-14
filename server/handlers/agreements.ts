@@ -7,7 +7,8 @@ import { eq } from 'drizzle-orm';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
-import { ServiceError, AgreementNotFoundError } from '../services/errors';
+import { AgreementNotFoundError } from '../services/errors';
+import { asyncHandler } from '../middleware/errorHandler';
 
 /**
  * @param db The database handle stored on `res.locals.db`.
@@ -64,8 +65,7 @@ const router = express.Router();
  * resolves and caches a remote template archive when the template URI matches a supported
  * retriever, and finally inserts the agreement into the database.
  */
-router.post('/', async (req, res) => {
-    try {
+router.post('/', asyncHandler(async (req, res) => {
         const db = res.locals.db;
         
         const zodValidation = AgreementInsertSchema.safeParse(req.body);
@@ -119,11 +119,7 @@ router.post('/', async (req, res) => {
 
         const inserted = await db.insert(Agreement).values(insertData).returning();
         res.json(inserted[0]);
-
-    } catch (err: any) {
-        res.status(500).json({ error: "Agreement Instantiation Failed", details: err.message });
-    }
-});
+}));
 
 const crudRouter = buildCrudRouter({
     table: Agreement,
@@ -138,24 +134,12 @@ const crudRouter = buildCrudRouter({
  * @details Resolves the agreement and its template, creates a `TemplateArchiveProcessor`,
  * and delegates the conversion to the template engine's draft support for the requested format.
  */
-crudRouter.get('/:id/convert/:format', async function (req, res) {
-    try {
+crudRouter.get('/:id/convert/:format', asyncHandler(async function (req, res) {
         const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
         const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
         const draftResult = await templateArchiveProcessor.draft(agreement.data, req.params.format, {});
-        console.log(draftResult);
-        res.setHeader("Content-Type", `text/${req.params.format}`);
         res.send(draftResult);
-    } catch (error) {
-        console.log(error);
-        if (error instanceof ServiceError) {
-            res.status(error.statusCode).json(error.toJSON());
-            return;
-        }
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        res.status(500).json({ error: message });
-    }
-});
+}));
 
 /**
  * @param req The Express request containing the agreement id and trigger payload.
@@ -165,14 +149,10 @@ crudRouter.get('/:id/convert/:format', async function (req, res) {
  * initializes agreement state when needed, executes the agreement logic through the
  * template archive processor, and persists the updated agreement state back to the database.
  */
-crudRouter.post('/:id/trigger', async function (req, res) {
-    try {
+crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
         const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
         const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
         try {
-            console.log(JSON.stringify(req.body));
-            console.log(JSON.stringify(agreement.data));
-            console.log(JSON.stringify(agreement.state));
 
             const requestSchema = apTemplate.getRequestTypes().find((rt: any) => rt === req.body.$class);
             if (!requestSchema) {
@@ -194,28 +174,20 @@ crudRouter.post('/:id/trigger', async function (req, res) {
             
             const triggerResult = await templateArchiveProcessor.trigger(agreement.data, req.body, agreement.state);
             agreement.state = triggerResult.state;
-            console.log(JSON.stringify(triggerResult));
 
             // Persist updated state.
             await res.locals.db.update(Agreement).set(agreement).where(eq(Agreement.id, Number.parseInt(agreement.id)));
             res.json(triggerResult);
         } catch (err: any) {
-            console.log("\n=== TRIGGER EXECUTION ERROR ===");
-            console.log(err.stack);
-            console.log("===============================\n");
+            console.error({ 
+                type: 'operation_failed', 
+                operation: 'triggerAgreement',
+                agreementId: req.params.id 
+            });
             
             res.json({ isError: true, errorMessage: err.message, errorDetails: err.toString() });
         }
-    } catch (error) {
-        console.log(error);
-        if (error instanceof ServiceError) {
-            res.status(error.statusCode).json(error.toJSON());
-            return;
-        }
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        res.status(500).json({ error: message });
-    }
-});
+}));
 
 router.use('/', crudRouter);
 export default router;

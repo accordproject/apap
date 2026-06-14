@@ -9,6 +9,7 @@ import { SQL } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import escapeString from '../db/escape';
 // import { getUserRoles } from '../auth0/client';
+import { asyncHandler } from '../middleware/errorHandler';
 
 /**
  * @param req The current Express request.
@@ -241,8 +242,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     // GET with pagination, sorting, and filtering
     router.get('/',
         // authRequiredPermissions('read:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
+        asyncHandler(async (req: Request, res: Response) => {
                 const queryParams = parseQueryParams(req);
                 const { page, limit, sortBy, sortOrder } = queryParams;
                 const whereClause = buildWhereClause ? buildWhereClause(req, queryParams) : 
@@ -261,10 +261,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     logQuery = logQuery.orderBy(orderClause as SQL<unknown>);
                 }
 
-                const sql = logQuery.toSQL();
-                
-                console.log(`[${typeName}] SQL:`, sql.sql);
-                console.log(`[${typeName}] Params:`, sql.params);
+
 
                 // Get total count for pagination
                 const [{ count: total }] = await res.locals.db
@@ -306,18 +303,12 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 }
 
                 res.json(response);
-            } catch (error) {
-                console.log(error);
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
-            }
-        });
+        }));
 
     // POST new item
     router.post('/',
         // authRequiredPermissions('write:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
+        asyncHandler(async (req: Request, res: Response) => {
                 if (!req.body) {
                     return res.status(400).json({ error: 'Missing request body' });
                 }
@@ -364,25 +355,12 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 }
 
                 res.json(inserted[0]);
-            } catch (error: any) {
-                // Handle Unique Constraint Violation (Duplicate URI)
-                if (error?.code === '23505') {
-                    return res.status(409).json({
-                        error: 'Conflict',
-                        details: `A resource with this unique identifier already exists for ${typeName}.`
-                    });
-                }
-
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
-            }
-        });
+        }));
 
     // GET single item
     router.get('/:id',
         // authRequiredPermissions('read:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
+        asyncHandler(async (req: Request, res: Response) => {
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
                     // Check if table has UUID primary key
@@ -415,17 +393,12 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 }
 
                 res.json(result[0]);
-            } catch (error) {
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
-            }
-        });
+        }));
 
     // PUT update item
     router.put('/:id',
         // authRequiredPermissions('write:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
+        asyncHandler(async (req: Request, res: Response) => {
                 // Add organization to the request body
                 if (!req.body || Object.keys(req.body).length === 0) {
                     return res.status(400).json({
@@ -489,25 +462,12 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 }
 
                 res.json(updated[0]);
-            } catch (error: any) {
-                // FIXED: Handle Unique Constraint Violation (Duplicate URI during Update)
-                if (error?.code === '23505') {
-                    return res.status(409).json({
-                        error: 'Conflict',
-                        details: `A resource with this unique identifier already exists for ${typeName}.`
-                    });
-                }
-
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
-            }
-        });
+        }));
 
     // DELETE item
     router.delete('/:id',
         // authRequiredPermissions('write:' + typeName),
-        async (req: Request, res: Response) => {
-            try {
+        asyncHandler(async (req: Request, res: Response) => {
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
                     table.id.columnType === 'PgUUID' ? 
@@ -527,11 +487,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     });
                 }
                 res.json({ status: 'deleted' });
-            } catch (error) {
-                const message = error instanceof Error ? error.message : 'Unknown error';
-                res.status(500).json({ error: message });
-            }
-        });
+        }));
 
     return router;
 }
