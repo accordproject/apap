@@ -23,4 +23,10 @@
     "include": [
       "**/*"
     ],
+    "exclude": [
+      "cypress",
+      "cypress.config.ts",
+      "dist",
+      "node_modules"
+    ]
   }
