@@ -19,6 +19,7 @@ describe('ServiceError', () => {
 
     it('omits details from toJSON when not provided', () => {
         const err = new ServiceError('NO_DETAILS', 500, 'boom');
+        expect(err.details).toBeUndefined();
         expect(err.toJSON()).toEqual({
             error: { code: 'NO_DETAILS', message: 'boom' },
         });
@@ -97,5 +98,6 @@ describe('Generic input errors', () => {
         const err = new ValidationError('schema mismatch');
         expect(err.statusCode).toBe(422);
         expect(err.code).toBe('VALIDATION_ERROR');
+        expect(err.details).toBeUndefined();
     });
 });
