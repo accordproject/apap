@@ -38,12 +38,7 @@ jobs:
         run: npm install -g lockfile-lint syncpack
 
       - run: npm ci
-      - name: Build (with docs)
-        if: runner.os != 'Windows'
-        run: npm run build --if-present
-      - name: Build (skip reslate docs on Windows — spawn EINVAL with .cmd files)
-        if: runner.os == 'Windows'
-        run: npm run build:nodocs --if-present
+      - run: npm run build --if-present
       - name: Run tests
         shell: bash
         env:
