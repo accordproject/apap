@@ -267,3 +267,84 @@ describe('POST without validateBody', () => {
         expect(res.status).not.toBe(500);
     });
 });
+
+describe('SQL injection prevention in defaultWhereClause', () => {
+    let app: express.Application;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        app = express();
+        app.use(express.json());
+        app.use((req, res, next) => {
+            // Mock DB that chains fluently and returns a valid paginated shape.
+            // select().from().where().limit().offset() → items array
+            // select({ count }).from().where() → [{ count: 0 }]
+            const chainable = {
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnThis(),
+                offset: jest.fn().mockReturnThis(),
+                orderBy: jest.fn().mockReturnThis(),
+                toSQL: jest.fn<any>().mockReturnValue({ sql: '', params: [] }),
+                then: jest.fn<any>().mockImplementation(function(this: any, resolve: any) {
+                    // If the select was called with { count }, return count result
+                    // otherwise return empty items array
+                    const selectArgs = (this.select as jest.Mock).mock.calls;
+                    const lastCall = selectArgs.length > 0 ? selectArgs[selectArgs.length - 1][0] as any : null;
+                    if (lastCall?.count) {
+                        return resolve([{ count: 0 }]);
+                    }
+                    return resolve([]);
+                }),
+                insert: jest.fn().mockReturnThis(),
+                values: jest.fn().mockReturnThis(),
+                returning: jest.fn<any>().mockResolvedValue([{ id: 1 }]),
+                update: jest.fn().mockReturnThis(),
+                set: jest.fn().mockReturnThis(),
+                delete: jest.fn().mockReturnThis(),
+            };
+            res.locals.db = chainable;
+            next();
+        });
+        app.use('/templates', templatesRouter);
+    });
+
+    it('rejects prototype pollution keys like toString', async () => {
+        // "toString" exists on Object.prototype and would pass an `in` check
+        // but should be rejected by hasOwnProperty validation
+        const res = await request(app)
+            .get('/templates?toString=1');
+        expect(res.status).not.toBe(500);
+    });
+
+    it('rejects __proto__ key', async () => {
+        const res = await request(app)
+            .get('/templates?__proto__=malicious');
+        expect(res.status).not.toBe(500);
+    });
+
+    it('rejects constructor key', async () => {
+        const res = await request(app)
+            .get('/templates?constructor=malicious');
+        expect(res.status).not.toBe(500);
+    });
+
+    it('rejects keys not present as own properties on table schema', async () => {
+        const res = await request(app)
+            .get('/templates?nonexistentColumn=value');
+        expect(res.status).not.toBe(500);
+    });
+
+    it('handles operator filter syntax without crashing', async () => {
+        const res = await request(app)
+            .get('/templates?version=>=%201.0.0');
+        expect(res.status).not.toBe(500);
+    });
+
+    it('handles null filter value without crashing', async () => {
+        const res = await request(app)
+            .get('/templates?author=null');
+        expect(res.status).not.toBe(500);
+    });
+});
