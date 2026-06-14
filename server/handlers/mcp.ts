@@ -206,7 +206,7 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
  * @details Creates a new MCP server and registers the template and agreement
  * resources, resource templates, and tool handlers currently exposed by APAP.
  */
-const getServer = () => {
+export const getServer = () => {
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
@@ -432,8 +432,9 @@ router.all('/mcp', async (req: Request, res: Response) => {
             }
         } else if (!sessionId && req.method === 'POST' && isInitializeRequest(req.body)) {
             const eventStore = new InMemoryEventStore();
+            const newSessionId = (crypto as any).randomUUID();
             transport = new StreamableHTTPServerTransport({
-                sessionIdGenerator: () => (crypto as any).randomUUID(),
+                sessionIdGenerator: () => newSessionId,
                 eventStore, // Enable resumability
                 onsessioninitialized: (sessionId) => {
                     // Store the transport by session ID when session is initialized
@@ -455,6 +456,9 @@ router.all('/mcp', async (req: Request, res: Response) => {
             const server = getServer();
             await server.connect(transport);
             console.log('Connected server to transport');
+
+            // Send the session ID back to the client for this new session
+            res.setHeader('mcp-session-id', newSessionId);
         } else {
             console.log('Invalid request');
             // Invalid request - no session ID or not initialization request
