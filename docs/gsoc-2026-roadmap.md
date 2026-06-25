@@ -1,9 +1,17 @@
 # GSoC 2026 - Hardening APAP / MCP
 
-> **Status (Jun 15, 2026):** W3 day 1 of 12. Slice 1 of typed errors
-> merged (#184). Slice 2 opened as draft PR #197 (agreements +
-> templatebuilder). Test-only follow-up #196 opened. Both alternatives
-> evaluation spikes complete with decision memo drafted.
+> **Status (Jun 24, 2026):** W4 day 2 of 12. Typed `ServiceError` slice 1
+> merged (#184); slice 2 draft (#197) and contract tests (#196) open.
+> Concerto typed-context (`InitializeResult.instructions` plus the
+> `apap://schema/protocol.cto` resource) shipped as PR #199 with A/B
+> wins of +20pp on Claude Sonnet 4.6 and +38pp on GPT-4o against a fixed
+> query set. POC bench harnesses landed for both the typed-context A/B
+> and a cross-server latency comparison. Blog draft "APAP Enhancements
+> for AI Agents" circulated to mentors; Dan's feedback incorporated.
+> Headroom compression-proxy evaluation requested by Niall on Jun 18 is
+> the W3 carryover for W4; plan drafted, run scheduled. Four open PRs
+> (#196 / #197 / #198 / #199) are blocked on the Windows CI fix in
+> maintainer PR #195.
 
 **Project:** Idea #4 - Hardening the APAP / MCP Server
 **Contributor:** Jay Guwalani ([@JayDS22](https://github.com/JayDS22))
@@ -25,11 +33,12 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 
 | # | Workstream | Owner | Current status |
 |---|---|---|---|
-| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | Active (W3); slice 1 merged (#184), slice 2 draft (#197), tests follow-up (#196) |
-| 2 | **MCP RC migration** - adopt 2026-07-28 spec via parallel transport | Jay | W4 |
-| 3 | **Agentic Payments** - multi-provider OAuth, privacy boundary, agent-calling-agents demo | Jay (with Niall) | W3-W4 |
-| 4 | **Alternatives Evaluation** - OpenAI fn-calling, LangGraph / CrewAI comparison | Jay | Both spikes done; decision memo drafted, target Jun 18-20 send |
-| 5 | **Skills + Ops** - accordproject/skills refresh, dev branch, comms | Jay (with Sanket) | Bonding asks resolved Jun 9; skills refresh next |
+| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | Active (W4); slice 1 merged (#184), slice 2 draft (#197), contract tests (#196) and Concerto typed-context (#199) open |
+| 2 | **MCP RC migration** - adopt 2026-07-28 spec via parallel transport | Jay | Starting W4 |
+| 3 | **Agentic Payments** - multi-provider OAuth, privacy boundary, agent-calling-agents demo | Jay (with Niall) | W9 lane confirmed joint Niall+Jay on Jun 18 call |
+| 4 | **Alternatives Evaluation** - OpenAI fn-calling, LangGraph / CrewAI comparison | Jay | Both spikes done, memo merged; Concerto typed-context A/B shipped (#199, +20pp Sonnet 4.6 / +38pp GPT-4o) |
+| 5 | **Skills + Ops** - accordproject/skills refresh, dev branch, comms | Jay (with Sanket) | Bonding asks resolved Jun 9; blog draft circulated Jun 18, in revision |
+| 6 | **Headroom compression eval** - measure token reduction + fidelity for MCP tool outputs | Jay (Niall ask, Tejas-facing) | W3 carryover; plan drafted Jun 24, run scheduled W4 |
 
 ---
 
@@ -40,8 +49,8 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 | Bond. | May 8 - Jun 1 | Setup + study | accord-project-mcp study, MCP RC compat matrix, dev branch + Discord (Sanket), apap/ access + API credits confirmation | Done |
 | 1 | Jun 2 - Jun 8 | Refactor + alternatives | Land service layer + typed errors upstream; begin alternatives evaluation | Done (slice 1 merged via #184) |
 | 2 | Jun 9 - Jun 15 | Refactor + alternatives | Continue service-layer PRs; skills repo refresh starts; alternatives decision memo draft | Done (slice 2 draft #197, both spikes shipped, memo drafted) |
-| 3 | Jun 16 - Jun 22 | Tests + OAuth | Unit tests upstream (Vitest, 90% gate); alternatives memo delivered; multi-provider OAuth design | Active |
-| 4 | Jun 23 - Jun 29 | Tests + payments | Integration tests (Docker Postgres); begin parallel 2026-07-28 transport; privacy-boundary design | Planned |
+| 3 | Jun 16 - Jun 22 | Tests + OAuth | Unit tests upstream (Vitest, 90% gate); alternatives memo delivered; multi-provider OAuth design; **+ Concerto typed-context A/B shipped (#199); blog draft circulated** | Done with carryover (Headroom eval pending) |
+| 4 | Jun 23 - Jun 29 | Tests + payments + Headroom | Integration tests (Docker Postgres); begin parallel 2026-07-28 transport; privacy-boundary design; Headroom proxy evaluation + report-back to Niall | Active |
 | 5 | Jun 30 - Jul 6 | Contract tests | Contract tests against SEP-2484; continue stateless transport; skills repo updates finalized | Planned |
 | 6 | Jul 7 - Jul 13 | Buffer + midterm | Midterm eval; mentor review; refactor on feedback; stateless transport feature-complete | Planned |
 | 7 | Jul 14 - Jul 20 | Docs + auto-tooling | Claude tutorial; add ttlMs / cacheScope / W3C traceparent; auto-tooling prototype | Planned |
@@ -58,14 +67,14 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 | Date | Milestone | Status |
 |---|---|---|
 | Jun 1 | Bonding ends | Done |
-| Jun 19 (approx.) | Niall's Agents-Calling-Agents call | Scheduled |
+| Jun 18 | Niall's Agents-Calling-Agents call | Done; W9 lane committed as joint Niall+Jay, Headroom eval added |
 | Jul 14 | Midterm evaluation (W6) | Upcoming |
 | Jul 28 | MCP 2026-07-28 spec finalizes | Upcoming |
 | Aug 25 | Final evaluation (W12) | Upcoming |
 
 ---
 
-## Open decisions (as of Jun 15, 2026)
+## Open decisions (as of Jun 24, 2026)
 
 From Section 6 of the May 20 sync. Decisions 2 and 4 (partial) resolved; three still open.
 
@@ -113,14 +122,18 @@ All three asks from May 20 closed within 24 hours of the Jun 5 sync follow-up em
 | [PR #190](https://github.com/accordproject/apap/pull/190) | Docs | Initial roadmap (merged Jun 13) |
 | [PR #196](https://github.com/accordproject/apap/pull/196) | Tests | Contract tests for `buildApiErrorMessage` helper (open) |
 | [PR #197](https://github.com/accordproject/apap/pull/197) | Feature (draft) | Slice 2 typed errors: agreements + templatebuilder wired (draft, opened Jun 15) |
+| [PR #198](https://github.com/accordproject/apap/pull/198) | Docs | Roadmap W3-W4 refresh (this PR) |
+| [PR #199](https://github.com/accordproject/apap/pull/199) | Feature | Concerto typed-context: `InitializeResult.instructions` + `apap://schema/protocol.cto` resource. A/B: Sonnet 4.6 +20pp, GPT-4o +38pp |
 
-### W1-W2 spike + memo deliverables (in `JayDS22/apap-mcp-poc`)
+### W1-W4 deliverables (in `JayDS22/apap-mcp-poc`)
 
 | Ref | Type | Summary |
 |---|---|---|
 | [`alternatives/openai-fn-calling` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/openai-fn-calling) | Spike | OpenAI function-calling against APAP REST. Six tools, six-prompt smoke, 10,436 tokens, memo populated. |
 | [`alternatives/langgraph` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/langgraph) | Spike | LangGraph against APAP REST. Same six prompts, 9,276 tokens (~11% less than fn-calling), memo populated. |
-| [`alternatives/decision-memo` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/decision-memo) | Memo | W3 alternatives decision memo. Target send: Jun 18-20. |
+| [`alternatives/decision-memo` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/decision-memo) | Memo | W3 alternatives decision memo (merged Jun 14 as POC PR #1). |
+| [POC PR #2](https://github.com/JayDS22/apap-mcp-poc/pull/2) | Feature | Concerto typed-context: hint + `protocol.cto` resource on the POC MCP server (mirrors upstream #199). |
+| [POC PR #3](https://github.com/JayDS22/apap-mcp-poc/pull/3) | Bench | Concerto-context A/B harness + cross-provider first run. Adds latency-comparison harness (POC vs RI) to validate the shared-service-layer architectural claim. |
 
 ---
 
