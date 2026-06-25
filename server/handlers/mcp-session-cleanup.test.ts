@@ -2,16 +2,19 @@ import { transports, sessionLastActivity, sessionCleanupInterval } from './mcp';
 
 describe('MCP Session Cleanup Test', () => {
     it('tracks session activity on initialization', () => {
-        // sessionLastActivity should be populated
-        // after a session is created
-        expect(Object.keys(sessionLastActivity ?? {}))
-            .toBeDefined();
+        const testId = 'activity-test-session';
+        sessionLastActivity[testId] = Date.now();
+        expect(typeof sessionLastActivity[testId]).toBe('number');
+        expect(sessionLastActivity[testId]).toBeLessThanOrEqual(Date.now());
+        delete sessionLastActivity[testId]; // cleanup
     });
 
     it('cleanup interval is registered with unref', () => {
         // sessionCleanupInterval should exist and 
         // not block process exit
         expect(sessionCleanupInterval).toBeDefined();
+        expect(typeof (sessionCleanupInterval as any).hasRef).toBe('function');
+        expect((sessionCleanupInterval as any).hasRef()).toBe(false);
     });
 
     it('session is removed from both maps on close', () => {

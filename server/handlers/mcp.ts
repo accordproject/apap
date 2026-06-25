@@ -482,7 +482,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
                 const sid = transport.sessionId;
                 delete transports[sid];
                 delete sessionLastActivity[sid];
-                console.error({
+                console.log({
                     type: 'session_closed',
                     sessionId: sid,
                     reason: 'transport_onclose'
