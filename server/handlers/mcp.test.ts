@@ -1,13 +1,16 @@
 import { jest } from '@jest/globals';
-import { __testables, buildApiErrorMessage } from './mcp';
+import {
+    serviceErrorToCallToolResult,
+    serviceErrorToResourceError,
+    buildApiErrorMessage,
+} from './mcp';
+import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import {
     AgreementConversionError,
     AgreementNotFoundError,
     ServiceError,
     TemplateNotFoundError,
 } from '../services/errors';
-
-const { serviceErrorToCallToolResult, serviceErrorToResourceError } = __testables;
 
 // Helper to create a mock failed Response. Only the fields buildApiErrorMessage
 // actually reads (ok, status, text) need to be present; the cast is safe because
@@ -169,24 +172,41 @@ describe('mcp typed error helpers', () => {
     });
 
     describe('serviceErrorToResourceError', () => {
-        it('returns an Error whose message is the serialized ServiceError payload', () => {
+        it('returns an McpError with InvalidParams code for 404-style ServiceErrors', () => {
             const err = new TemplateNotFoundError('tmpl-1');
             const wrapped = serviceErrorToResourceError(err);
 
-            expect(wrapped).toBeInstanceOf(Error);
-            const parsed = JSON.parse(wrapped.message);
-            expect(parsed.error.code).toBe('TEMPLATE_NOT_FOUND');
-            expect(parsed.error.message).toContain('tmpl-1');
+            expect(wrapped).toBeInstanceOf(McpError);
+            expect(wrapped.code).toBe(ErrorCode.InvalidParams);
+            expect(wrapped.message).toContain('tmpl-1');
+
+            const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
+            expect(data.error.code).toBe('TEMPLATE_NOT_FOUND');
+            expect(data.error.message).toContain('tmpl-1');
         });
 
-        it('round-trips arbitrary ServiceError subclasses', () => {
+        it('uses InternalError code for non-404 ServiceErrors', () => {
+            const err = new ServiceError('CUSTOM', 500, 'kaboom', { reason: 'overflow' });
+            const wrapped = serviceErrorToResourceError(err);
+
+            expect(wrapped).toBeInstanceOf(McpError);
+            expect(wrapped.code).toBe(ErrorCode.InternalError);
+            // McpError prepends "MCP error <code>:" to the constructor message; check substring.
+            expect(wrapped.message).toContain('kaboom');
+
+            const data = wrapped.data as { error: { code: string; details?: unknown } };
+            expect(data.error.code).toBe('CUSTOM');
+            expect(data.error.details).toEqual({ reason: 'overflow' });
+        });
+
+        it('round-trips arbitrary ServiceError subclasses into the McpError data payload', () => {
             const err = new ServiceError('CUSTOM', 418, 'I am a teapot', { teapot: true });
             const wrapped = serviceErrorToResourceError(err);
 
-            const parsed = JSON.parse(wrapped.message);
-            expect(parsed.error.code).toBe('CUSTOM');
-            expect(parsed.error.message).toBe('I am a teapot');
-            expect(parsed.error.details).toEqual({ teapot: true });
+            const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
+            expect(data.error.code).toBe('CUSTOM');
+            expect(data.error.message).toBe('I am a teapot');
+            expect(data.error.details).toEqual({ teapot: true });
         });
     });
 });
