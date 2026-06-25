@@ -53,8 +53,8 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 | 4 | Jun 23 - Jun 29 | Tests + payments + Headroom | Integration tests (Docker Postgres); begin parallel 2026-07-28 transport; privacy-boundary design; Headroom proxy evaluation + report-back to Niall | Active |
 | 5 | Jun 30 - Jul 6 | Contract tests | Contract tests against SEP-2484; continue stateless transport; skills repo updates finalized | Planned |
 | 6 | Jul 7 - Jul 13 | Buffer + midterm | Midterm eval; mentor review; refactor on feedback; stateless transport feature-complete | Planned |
-| 7 | Jul 14 - Jul 20 | Docs + auto-tooling | Claude tutorial; add ttlMs / cacheScope / W3C traceparent; auto-tooling prototype | Planned |
-| 8 | Jul 21 - Jul 27 | Docs + auto-tooling | ChatGPT + Inspector tutorials; auto-tooling integration tests | Planned |
+| 7 | Jul 14 - Jul 20 | Docs + auto-tooling + test rigor | Claude tutorial; add ttlMs / cacheScope / W3C traceparent; auto-tooling prototype; **Stryker mutation-testing pilot on `src/services/errors.ts`**; **prompt versioning: move `SERVER_INSTRUCTIONS` and any future LLM-facing strings into a versioned `prompts/` directory** | Planned |
+| 8 | Jul 21 - Jul 27 | Docs + auto-tooling + observability | ChatGPT + Inspector tutorials; auto-tooling integration tests; **bench rigor in CI (multi-run baseline tracking, cost ledger, model-lockfile)**; **logger refactor to `pino` (replace ~28 `console.log` sites in `handlers/mcp.ts`)** | Planned |
 | 9 | Jul 28 - Aug 3 | Migration guide + demo | Migration guide; agent-calling-agents demo (APAP as service, not agent) | Planned |
 | 10 | Aug 4 - Aug 10 | DX + demo | Pino at 15+ call sites; demo polish; blog draft (alternatives + agents with Accord) | Planned |
 | 11 | Aug 11 - Aug 17 | E2E + blog | E2E in GH Actions; multi-version transport tests; blog draft to mentors for review | Planned |
