@@ -1,4 +1,13 @@
-import { buildApiErrorMessage } from './mcp';
+import { jest } from '@jest/globals';
+import { __testables, buildApiErrorMessage } from './mcp';
+import {
+    AgreementConversionError,
+    AgreementNotFoundError,
+    ServiceError,
+    TemplateNotFoundError,
+} from '../services/errors';
+
+const { serviceErrorToCallToolResult, serviceErrorToResourceError } = __testables;
 
 // Helper to create a mock failed Response. Only the fields buildApiErrorMessage
 // actually reads (ok, status, text) need to be present; the cast is safe because
@@ -115,5 +124,69 @@ describe('MCP Error Handling - error distinctness', () => {
             );
             expect(msg.startsWith(ctx)).toBe(true);
         }
+    });
+});
+
+describe('mcp typed error helpers', () => {
+    describe('serviceErrorToCallToolResult', () => {
+        it('wraps a TemplateNotFoundError in an isError CallToolResult', () => {
+            const err = new TemplateNotFoundError('tmpl-42');
+            const result = serviceErrorToCallToolResult(err);
+
+            expect(result.isError).toBe(true);
+            expect(Array.isArray(result.content)).toBe(true);
+            expect(result.content).toHaveLength(1);
+            const block = (result.content as any[])[0];
+            expect(block.type).toBe('text');
+
+            const parsed = JSON.parse(block.text);
+            expect(parsed.error.code).toBe('TEMPLATE_NOT_FOUND');
+            expect(parsed.error.message).toContain('tmpl-42');
+            expect(parsed.error.details).toEqual({ identifier: 'tmpl-42' });
+        });
+
+        it('preserves the AGREEMENT_NOT_FOUND code and identifier', () => {
+            const err = new AgreementNotFoundError('999');
+            const result = serviceErrorToCallToolResult(err);
+
+            const parsed = JSON.parse((result.content as any[])[0].text);
+            expect(parsed.error.code).toBe('AGREEMENT_NOT_FOUND');
+            expect(parsed.error.details.identifier).toBe('999');
+        });
+
+        it('carries AGREEMENT_CONVERSION_FAILED details through to the wire payload', () => {
+            const err = new AgreementConversionError('7', 'pdf', 'no renderer for pdf');
+            const result = serviceErrorToCallToolResult(err);
+
+            const parsed = JSON.parse((result.content as any[])[0].text);
+            expect(parsed.error.code).toBe('AGREEMENT_CONVERSION_FAILED');
+            expect(parsed.error.details).toEqual({
+                agreementId: '7',
+                format: 'pdf',
+                reason: 'no renderer for pdf',
+            });
+        });
+    });
+
+    describe('serviceErrorToResourceError', () => {
+        it('returns an Error whose message is the serialized ServiceError payload', () => {
+            const err = new TemplateNotFoundError('tmpl-1');
+            const wrapped = serviceErrorToResourceError(err);
+
+            expect(wrapped).toBeInstanceOf(Error);
+            const parsed = JSON.parse(wrapped.message);
+            expect(parsed.error.code).toBe('TEMPLATE_NOT_FOUND');
+            expect(parsed.error.message).toContain('tmpl-1');
+        });
+
+        it('round-trips arbitrary ServiceError subclasses', () => {
+            const err = new ServiceError('CUSTOM', 418, 'I am a teapot', { teapot: true });
+            const wrapped = serviceErrorToResourceError(err);
+
+            const parsed = JSON.parse(wrapped.message);
+            expect(parsed.error.code).toBe('CUSTOM');
+            expect(parsed.error.message).toBe('I am a teapot');
+            expect(parsed.error.details).toEqual({ teapot: true });
+        });
     });
 });

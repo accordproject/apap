@@ -7,6 +7,12 @@ import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResul
 import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, Template } from '../db/schema';
+import {
+    ServiceError,
+    TemplateNotFoundError,
+    AgreementNotFoundError,
+    AgreementConversionError,
+} from '../services/errors';
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
@@ -47,6 +53,39 @@ export async function buildApiErrorMessage(result: globalThis.Response, context:
 }
 
 /**
+ * @param error A `ServiceError` to surface back through the MCP tool protocol.
+ * @return A `CallToolResult` flagged as an error so MCP clients see the structured
+ * `{ code, message, details }` payload instead of a generic SDK error string.
+ * @details The MCP SDK has no native typed-error channel, so we put the JSON payload
+ * from `error.toJSON()` into a single text content block. Clients can parse it to
+ * branch on the machine-readable `code` (e.g. `TEMPLATE_NOT_FOUND`) the same way
+ * the REST clients already do.
+ */
+function serviceErrorToCallToolResult(error: ServiceError): CallToolResult {
+    return {
+        isError: true,
+        content: [
+            {
+                type: 'text',
+                text: JSON.stringify(error.toJSON()),
+            },
+        ],
+    };
+}
+
+/**
+ * @param error A `ServiceError` raised inside an MCP resource handler.
+ * @return An `Error` whose message is the serialized `toJSON()` payload.
+ * @details Resource handlers in the MCP SDK have no `isError` channel, so we
+ * re-throw with the JSON-encoded payload as the message. Clients reading the
+ * SDK error string can `JSON.parse` it to recover the same `{ code, message, details }`
+ * shape returned by REST callers and by the tool path above.
+ */
+function serviceErrorToResourceError(error: ServiceError): Error {
+    return new Error(JSON.stringify(error.toJSON()));
+}
+
+/**
  * @param uri The MCP resource URI being resolved.
  * @param variables Object containing the agreementId extracted from the resource template variables.
  * @return A MCP resource payload containing the requested agreement as JSON content.
@@ -73,6 +112,9 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
         // Surface the actual status code and API response so the client knows what went wrong
         const errorMsg = await buildApiErrorMessage(result, `Failed to load agreement '${agreementId}'`);
         console.error(errorMsg);
+        if (result.status === 404) {
+            throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
+        }
         throw new Error(errorMsg);
     }
 }
@@ -103,6 +145,8 @@ async function getTemplates(uri: URL) {
         // Previously just threw "Failed to load template" with no status or details
         const errorMsg = await buildApiErrorMessage(result, 'Failed to load templates');
         console.error(errorMsg);
+        // TODO: needs new ServiceError subclass (e.g. UpstreamApiError) for collection
+        // fetch failures that do not map to a single resource. Discuss in #143 RFC.
         throw new Error(errorMsg);
     }
 }
@@ -143,6 +187,8 @@ async function getAgreements(uri: URL) {
     else {
         const errorMsg = await buildApiErrorMessage(result, 'Failed to load agreements');
         console.error(errorMsg);
+        // TODO: needs new ServiceError subclass (e.g. UpstreamApiError) for collection
+        // fetch failures that do not map to a single resource. Discuss in #143 RFC.
         throw new Error(errorMsg);
     }
 }
@@ -165,7 +211,10 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
         // Include the agreement ID and target format so the caller knows exactly which conversion failed
         const errorMsg = await buildApiErrorMessage(result, `Failed to convert agreement '${agreementId}' to ${format}`);
         console.error(errorMsg);
-        throw new Error(errorMsg);
+        if (result.status === 404) {
+            throw new AgreementNotFoundError(agreementId);
+        }
+        throw new AgreementConversionError(agreementId, format, errorMsg);
     }
 }
 
@@ -196,6 +245,11 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
         // come from bad payload shapes that don't match the template's request type
         const errorMsg = await buildApiErrorMessage(result, `Failed to trigger agreement '${agreementId}'`);
         console.error(errorMsg);
+        if (result.status === 404) {
+            throw new AgreementNotFoundError(agreementId);
+        }
+        // TODO: needs new ServiceError subclass (e.g. AgreementTriggerError) for non-404
+        // trigger failures (validation, runtime). Discuss in #143 RFC.
         throw new Error(errorMsg);
     }
 }
@@ -292,6 +346,9 @@ const getServer = () => {
             else {
                 const errorMsg = await buildApiErrorMessage(result, `Failed to load template '${templateId}'`);
                 console.error(errorMsg);
+                if (result.status === 404) {
+                    throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
+                }
                 throw new Error(errorMsg);
             }
         }
@@ -302,11 +359,18 @@ const getServer = () => {
         "convert-agreement-to-format",
         "Converts an existing agreement to an output format",
         { agreementId: z.string(), format: z.enum(['html', 'markdown']) },
-        async ({ agreementId, format }) => {
-            const text = await draftAgreement(agreementId, format);
-            return {
-                content: [{ type: "text", text }]
-            };
+        async ({ agreementId, format }): Promise<CallToolResult> => {
+            try {
+                const text = await draftAgreement(agreementId, format);
+                return {
+                    content: [{ type: "text", text }]
+                };
+            } catch (error) {
+                if (error instanceof ServiceError) {
+                    return serviceErrorToCallToolResult(error);
+                }
+                throw error;
+            }
         }
     );
 
@@ -317,11 +381,18 @@ const getServer = () => {
 The schema for the JSON object must be one of the transaction types which extend 'Request' defined in the model for the agreement's template.
 Refer to the agreement's template model to determine which fields are required or optional.`,
         { agreementId: z.string(), payload: z.string() },
-        async ({ agreementId, payload }) => {
-            const result = await triggerAgreement(agreementId, payload);
-            return {
-                content: [{ type: "text", text: result }]
-            };
+        async ({ agreementId, payload }): Promise<CallToolResult> => {
+            try {
+                const result = await triggerAgreement(agreementId, payload);
+                return {
+                    content: [{ type: "text", text: result }]
+                };
+            } catch (error) {
+                if (error instanceof ServiceError) {
+                    return serviceErrorToCallToolResult(error);
+                }
+                throw error;
+            }
         }
     );
 
@@ -348,6 +419,9 @@ Refer to the agreement's template model to determine which fields are required o
             } else {
                 const errorMsg = await buildApiErrorMessage(result, `Failed to load template '${templateId}'`);
                 console.error(errorMsg);
+                if (result.status === 404) {
+                    return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
+                }
                 throw new Error(errorMsg);
             }
         }
@@ -376,6 +450,9 @@ Refer to the agreement's template model to determine which fields are required o
             } else {
                 const errorMsg = await buildApiErrorMessage(result, `Failed to load agreement '${agreementId}'`);
                 console.error(errorMsg);
+                if (result.status === 404) {
+                    return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+                }
                 throw new Error(errorMsg);
             }
         }
@@ -544,3 +621,14 @@ router.post("/messages", async (req: Request, res: Response) => {
 });
 
 export default router;
+
+/**
+ * Internals exposed for testing only. Do not import from production code.
+ * The shapes here are an implementation detail of the MCP handler and are
+ * allowed to change without a semver bump.
+ */
+export const __testables = {
+    serviceErrorToCallToolResult,
+    serviceErrorToResourceError,
+    buildApiErrorMessage,
+};
