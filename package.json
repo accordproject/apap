@@ -8,7 +8,7 @@
     "gen": "concerto compile --model ./model/protocol.cto --target openapi --output ./output",
     "merge": "node merge.js",
     "build-api-docs": "widdershins openapi.json -o index.md",
-    "build": "npm run merge && npm run build-api-docs && npx openapi-typescript openapi.json --output ./client/typescript/apap.ts && npx reslate build",
+    "build": "npm run merge && npm run build-api-docs && npx openapi-typescript openapi.json --output ./client/typescript/apap.ts && node build-reslate.js",
     "prebuild": "npm run gen",
     "lint": "lint-openapi openapi.json || exit 0",
     "serve": "npx reslate serve"

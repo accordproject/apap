@@ -16,8 +16,8 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 18.x
           - 20.x
+          - 22.x
         os:
           - windows-latest
           - macos-latest
@@ -39,7 +39,9 @@ jobs:
 
       - run: npm ci
       - run: npm run build --if-present
-      - env:
+      - name: Run tests
+        shell: bash
+        env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: npm test || echo "No tests configured"
 
