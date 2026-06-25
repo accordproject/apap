@@ -34,7 +34,8 @@ const ALLOWED_OPERATORS = ['>=', '<=', '<>', '!=', '>', '<'] as const;
  * supports equality filters by default, handles explicit `null` values, and also
  * accepts inline comparison operators such as `>=`, `<=`, `!=`, `>`, and `<`.
  *
- * Security: Filter keys are validated against the table's own properties
+ * Security: When a `table` is provided, filter keys are validated against the
+ * table's own properties
  * (preventing prototype-pollution attacks via `toString`, `__proto__`, etc.)
  * and are checked against a safe-identifier regex before being interpolated
  * with `sql.raw()`. Comparison operators are matched against an explicit
@@ -218,7 +219,7 @@ function buildOrderClause<T extends PgTable<any>>(
     sortBy?: string,
     sortOrder: 'asc' | 'desc' = 'asc'
 ): SQLWrapper | null {
-    if (sortBy && sortBy in table) {
+    if (sortBy && Object.prototype.hasOwnProperty.call(table, sortBy)) {
         const col = table[sortBy as keyof T] as AnyColumn;
         return sortOrder === 'desc' ? desc(col) : asc(col);
     }
