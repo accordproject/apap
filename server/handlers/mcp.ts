@@ -3,10 +3,18 @@ import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mc
 import { z } from 'zod';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
+import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResult, McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, Template } from '../db/schema';
+import {
+    ServiceError,
+    TemplateNotFoundError,
+    AgreementNotFoundError,
+    AgreementConversionError,
+    AgreementTriggerError,
+    UpstreamApiError,
+} from '../services/errors';
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
@@ -47,6 +55,40 @@ export async function buildApiErrorMessage(result: globalThis.Response, context:
 }
 
 /**
+ * @param error A `ServiceError` to surface back through the MCP tool protocol.
+ * @return A `CallToolResult` flagged as an error so MCP clients see the structured
+ * `{ code, message, details }` payload instead of a generic SDK error string.
+ * @details The MCP SDK has no native typed-error channel for tool callbacks, so we put
+ * the JSON payload from `error.toJSON()` into a single text content block. Clients can
+ * parse it to branch on the machine-readable `code` (e.g. `TEMPLATE_NOT_FOUND`) the same
+ * way the REST clients already do.
+ */
+export function serviceErrorToCallToolResult(error: ServiceError): CallToolResult {
+    return {
+        isError: true,
+        content: [
+            {
+                type: 'text',
+                text: JSON.stringify(error.toJSON()),
+            },
+        ],
+    };
+}
+
+/**
+ * @param error A `ServiceError` raised inside an MCP resource handler.
+ * @return An `McpError` whose `data` field carries the structured `toJSON()` payload.
+ * @details Resource handlers do not have a `CallToolResult { isError }` channel, but the
+ * SDK ships `McpError` with a typed JSON-RPC error code and a structured `data` field.
+ * Choosing the JSON-RPC code here maps not-found-style cases to `InvalidParams` so the
+ * client sees an actionable code without us inventing a new SDK error string.
+ */
+export function serviceErrorToResourceError(error: ServiceError): McpError {
+    const code = error.statusCode === 404 ? ErrorCode.InvalidParams : ErrorCode.InternalError;
+    return new McpError(code, error.message, error.toJSON());
+}
+
+/**
  * @param uri The MCP resource URI being resolved.
  * @param variables Object containing the agreementId extracted from the resource template variables.
  * @return A MCP resource payload containing the requested agreement as JSON content.
@@ -57,7 +99,8 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
     const { agreementId } = variables;
     console.log(`Fetching agreement with ID: ${agreementId}`);
     const url = new URL(uri);
-    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);
+    const requestUrl = `${API_BASE_URL}/agreements/${agreementId}`;
+    const result = await makeApiRequest(requestUrl);
     if (result.ok) {
         const agreement = await result.json();
         console.log(`Successfully fetched agreement: ${JSON.stringify(agreement)}`);
@@ -71,9 +114,13 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
     }
     else {
         // Surface the actual status code and API response so the client knows what went wrong
-        const errorMsg = await buildApiErrorMessage(result, `Failed to load agreement '${agreementId}'`);
+        const body = await result.text().catch(() => 'No error details available');
+        const errorMsg = `Failed to load agreement '${agreementId}' (HTTP ${result.status}): ${body}`;
         console.error(errorMsg);
-        throw new Error(errorMsg);
+        if (result.status === 404) {
+            throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
+        }
+        throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
     }
 }
 
@@ -85,7 +132,8 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
  */
 async function getTemplates(uri: URL) {
     console.log('getTemplates: ' + uri);
-    const result = await makeApiRequest(`${API_BASE_URL}/templates`);
+    const requestUrl = `${API_BASE_URL}/templates`;
+    const result = await makeApiRequest(requestUrl);
     if (result.ok) {
         const templates = await result.json();
         console.log(`Successfully fetched templates: ${JSON.stringify(templates)}`);
@@ -101,9 +149,9 @@ async function getTemplates(uri: URL) {
     }
     else {
         // Previously just threw "Failed to load template" with no status or details
-        const errorMsg = await buildApiErrorMessage(result, 'Failed to load templates');
-        console.error(errorMsg);
-        throw new Error(errorMsg);
+        const body = await result.text().catch(() => 'No error details available');
+        console.error(`Failed to load templates (HTTP ${result.status}): ${body}`);
+        throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
     }
 }
 
@@ -115,7 +163,8 @@ async function getTemplates(uri: URL) {
  */
 async function getAgreements(uri: URL) {
     console.log('getAgreements: ' + uri);
-    const result = await makeApiRequest(`${API_BASE_URL}/agreements`);
+    const requestUrl = `${API_BASE_URL}/agreements`;
+    const result = await makeApiRequest(requestUrl);
     if (result.ok) {
         const agreements = await result.json();
         console.log(`Successfully fetched agreements: ${JSON.stringify(agreements)}`);
@@ -141,9 +190,9 @@ async function getAgreements(uri: URL) {
         }
     }
     else {
-        const errorMsg = await buildApiErrorMessage(result, 'Failed to load agreements');
-        console.error(errorMsg);
-        throw new Error(errorMsg);
+        const body = await result.text().catch(() => 'No error details available');
+        console.error(`Failed to load agreements (HTTP ${result.status}): ${body}`);
+        throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
     }
 }
 
@@ -165,7 +214,10 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
         // Include the agreement ID and target format so the caller knows exactly which conversion failed
         const errorMsg = await buildApiErrorMessage(result, `Failed to convert agreement '${agreementId}' to ${format}`);
         console.error(errorMsg);
-        throw new Error(errorMsg);
+        if (result.status === 404) {
+            throw new AgreementNotFoundError(agreementId);
+        }
+        throw new AgreementConversionError(agreementId, format, errorMsg);
     }
 }
 
@@ -194,9 +246,12 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
     else {
         // Trigger failures are especially important to surface clearly since they often
         // come from bad payload shapes that don't match the template's request type
-        const errorMsg = await buildApiErrorMessage(result, `Failed to trigger agreement '${agreementId}'`);
-        console.error(errorMsg);
-        throw new Error(errorMsg);
+        const body = await result.text().catch(() => 'No error details available');
+        console.error(`Failed to trigger agreement '${agreementId}' (HTTP ${result.status}): ${body}`);
+        if (result.status === 404) {
+            throw new AgreementNotFoundError(agreementId);
+        }
+        throw new AgreementTriggerError(agreementId, body);
     }
 }
 
@@ -278,7 +333,8 @@ const getServer = () => {
         }),
         async (uri: URL, variables: any) => {
             const templateId = variables.templateId;
-            const result = await makeApiRequest(`${API_BASE_URL}/templates/${templateId}`);
+            const requestUrl = `${API_BASE_URL}/templates/${templateId}`;
+            const result = await makeApiRequest(requestUrl);
             if (result.ok) {
                 const template = await result.json();
                 return {
@@ -290,9 +346,12 @@ const getServer = () => {
                 };
             }
             else {
-                const errorMsg = await buildApiErrorMessage(result, `Failed to load template '${templateId}'`);
-                console.error(errorMsg);
-                throw new Error(errorMsg);
+                const body = await result.text().catch(() => 'No error details available');
+                console.error(`Failed to load template '${templateId}' (HTTP ${result.status}): ${body}`);
+                if (result.status === 404) {
+                    throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
+                }
+                throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
             }
         }
     );
@@ -302,11 +361,18 @@ const getServer = () => {
         "convert-agreement-to-format",
         "Converts an existing agreement to an output format",
         { agreementId: z.string(), format: z.enum(['html', 'markdown']) },
-        async ({ agreementId, format }) => {
-            const text = await draftAgreement(agreementId, format);
-            return {
-                content: [{ type: "text", text }]
-            };
+        async ({ agreementId, format }): Promise<CallToolResult> => {
+            try {
+                const text = await draftAgreement(agreementId, format);
+                return {
+                    content: [{ type: "text", text }]
+                };
+            } catch (error) {
+                if (error instanceof ServiceError) {
+                    return serviceErrorToCallToolResult(error);
+                }
+                throw error;
+            }
         }
     );
 
@@ -317,11 +383,18 @@ const getServer = () => {
 The schema for the JSON object must be one of the transaction types which extend 'Request' defined in the model for the agreement's template.
 Refer to the agreement's template model to determine which fields are required or optional.`,
         { agreementId: z.string(), payload: z.string() },
-        async ({ agreementId, payload }) => {
-            const result = await triggerAgreement(agreementId, payload);
-            return {
-                content: [{ type: "text", text: result }]
-            };
+        async ({ agreementId, payload }): Promise<CallToolResult> => {
+            try {
+                const result = await triggerAgreement(agreementId, payload);
+                return {
+                    content: [{ type: "text", text: result }]
+                };
+            } catch (error) {
+                if (error instanceof ServiceError) {
+                    return serviceErrorToCallToolResult(error);
+                }
+                throw error;
+            }
         }
     );
 
@@ -339,16 +412,20 @@ Refer to the agreement's template model to determine which fields are required o
             openWorldHint: false,
         },
         async ({ templateId }): Promise<CallToolResult> => {
-            const result = await makeApiRequest(`${API_BASE_URL}/templates/${templateId}`);
+            const requestUrl = `${API_BASE_URL}/templates/${templateId}`;
+            const result = await makeApiRequest(requestUrl);
             if (result.ok) {
                 const template = await result.json();
                 return {
                     content: [{ type: "text", text: JSON.stringify(template) }]
                 };
             } else {
-                const errorMsg = await buildApiErrorMessage(result, `Failed to load template '${templateId}'`);
-                console.error(errorMsg);
-                throw new Error(errorMsg);
+                const body = await result.text().catch(() => 'No error details available');
+                console.error(`Failed to load template '${templateId}' (HTTP ${result.status}): ${body}`);
+                if (result.status === 404) {
+                    return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
+                }
+                return serviceErrorToCallToolResult(new UpstreamApiError(requestUrl, result.status, body));
             }
         }
     );
@@ -367,16 +444,20 @@ Refer to the agreement's template model to determine which fields are required o
             openWorldHint: false,
         },
         async ({ agreementId }): Promise<CallToolResult> => {
-            const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}`);
+            const requestUrl = `${API_BASE_URL}/agreements/${agreementId}`;
+            const result = await makeApiRequest(requestUrl);
             if (result.ok) {
                 const agreement = await result.json();
                 return {
                     content: [{ type: "text", text: JSON.stringify(agreement) }]
                 };
             } else {
-                const errorMsg = await buildApiErrorMessage(result, `Failed to load agreement '${agreementId}'`);
-                console.error(errorMsg);
-                throw new Error(errorMsg);
+                const body = await result.text().catch(() => 'No error details available');
+                console.error(`Failed to load agreement '${agreementId}' (HTTP ${result.status}): ${body}`);
+                if (result.status === 404) {
+                    return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+                }
+                return serviceErrorToCallToolResult(new UpstreamApiError(requestUrl, result.status, body));
             }
         }
     );

@@ -6,6 +6,8 @@ import {
     AgreementConversionError,
     InvalidPayloadError,
     ValidationError,
+    UpstreamApiError,
+    AgreementTriggerError,
 } from './errors';
 
 describe('ServiceError', () => {
@@ -99,5 +101,66 @@ describe('Generic input errors', () => {
         expect(err.statusCode).toBe(422);
         expect(err.code).toBe('VALIDATION_ERROR');
         expect(err.details).toBeUndefined();
+    });
+});
+
+describe('Upstream errors', () => {
+    it('UpstreamApiError -> 502 UPSTREAM_API_ERROR carrying url, status, body', () => {
+        const err = new UpstreamApiError('http://localhost:9000/templates', 500, 'boom');
+        expect(err.statusCode).toBe(502);
+        expect(err.code).toBe('UPSTREAM_API_ERROR');
+        expect(err.upstreamUrl).toBe('http://localhost:9000/templates');
+        expect(err.httpStatus).toBe(500);
+        expect(err.upstreamBody).toBe('boom');
+        expect(err.details).toEqual({
+            upstreamUrl: 'http://localhost:9000/templates',
+            httpStatus: 500,
+            upstreamBody: 'boom',
+        });
+        expect(err.message).toContain('http://localhost:9000/templates');
+        expect(err.message).toContain('500');
+    });
+
+    it('UpstreamApiError survives instanceof checks through the ServiceError chain', () => {
+        const err = new UpstreamApiError('http://x/y', 503, '');
+        expect(err).toBeInstanceOf(UpstreamApiError);
+        expect(err).toBeInstanceOf(ServiceError);
+        expect(err).toBeInstanceOf(Error);
+    });
+
+    it('UpstreamApiError serializes through toJSON without dropping fields', () => {
+        const err = new UpstreamApiError('http://localhost:9000/agreements', 502, 'gateway down');
+        expect(err.toJSON()).toEqual({
+            error: {
+                code: 'UPSTREAM_API_ERROR',
+                message: expect.stringContaining('http://localhost:9000/agreements'),
+                details: {
+                    upstreamUrl: 'http://localhost:9000/agreements',
+                    httpStatus: 502,
+                    upstreamBody: 'gateway down',
+                },
+            },
+        });
+    });
+
+    it('AgreementTriggerError -> 502 AGREEMENT_TRIGGER_FAILED with agreement id and upstream message', () => {
+        const err = new AgreementTriggerError('agr-7', 'request did not validate against Request type');
+        expect(err.statusCode).toBe(502);
+        expect(err.code).toBe('AGREEMENT_TRIGGER_FAILED');
+        expect(err.agreementId).toBe('agr-7');
+        expect(err.upstreamMessage).toBe('request did not validate against Request type');
+        expect(err.details).toEqual({
+            agreementId: 'agr-7',
+            upstreamMessage: 'request did not validate against Request type',
+        });
+        expect(err.message).toContain('agr-7');
+        expect(err.message).toContain('request did not validate');
+    });
+
+    it('AgreementTriggerError survives instanceof checks through the ServiceError chain', () => {
+        const err = new AgreementTriggerError('agr-1', 'kaboom');
+        expect(err).toBeInstanceOf(AgreementTriggerError);
+        expect(err).toBeInstanceOf(ServiceError);
+        expect(err).toBeInstanceOf(Error);
     });
 });
