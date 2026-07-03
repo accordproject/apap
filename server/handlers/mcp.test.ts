@@ -3,6 +3,8 @@ import {
     serviceErrorToCallToolResult,
     serviceErrorToResourceError,
     buildApiErrorMessage,
+    PROTOCOL_CTO,
+    SERVER_INSTRUCTIONS,
 } from './mcp';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import {
@@ -207,6 +209,22 @@ describe('mcp typed error helpers', () => {
             expect(data.error.code).toBe('CUSTOM');
             expect(data.error.message).toBe('I am a teapot');
             expect(data.error.details).toEqual({ teapot: true });
+        });
+    });
+});
+
+describe('Concerto typed-context (instructions + schema resource)', () => {
+    describe('SERVER_INSTRUCTIONS', () => {
+        it('mentions Concerto and the schema resource URI', () => {
+            expect(SERVER_INSTRUCTIONS).toMatch(/Concerto/);
+            expect(SERVER_INSTRUCTIONS).toMatch(/apap:\/\/schema\/protocol\.cto/);
+            expect(SERVER_INSTRUCTIONS).toMatch(/\$class/);
+        });
+    });
+
+    describe('PROTOCOL_CTO', () => {
+        it('decodes the embedded MODEL constant to the Concerto source', () => {
+            expect(PROTOCOL_CTO).toContain('namespace org.accordproject.protocol');
         });
     });
 });
