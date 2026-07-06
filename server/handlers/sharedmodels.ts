@@ -8,15 +8,16 @@ import { HttpModelRetriever } from './retrievers/HttpModelRetriever';
 const router = express.Router();
 
 router.post('/', async (req, res, next) => {
-    const { uri } = req.body;
+    const uri: string | undefined = req.body?.uri;
+    const retriever = new HttpModelRetriever();
 
-    if (uri && (uri.startsWith('http://') || uri.startsWith('https://'))) {
+    if (uri && retriever.getURISchemes().some((scheme) => uri.startsWith(`${scheme}://`))) {
         try {
-            const retriever = new HttpModelRetriever();
             const ctoText = await retriever.fetchModel(uri);
 
-            const modelManager = new ModelManager();
-            const modelFile = modelManager.addCTOModel(ctoText, 'external.cto');
+            const modelManager = new ModelManager({ strict: true, addMetamodel: true });
+            const modelFile = modelManager.addCTOModel(ctoText, 'external.cto', true);
+            await modelManager.updateExternalModels();
             
             const namespace = modelFile.getNamespace() || 'external';
 
