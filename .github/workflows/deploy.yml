@@ -12,6 +12,7 @@ jobs:
   deploy:
     if: ${{ github.repository_owner == 'accordproject' }}
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
     - name: Checkout repository
