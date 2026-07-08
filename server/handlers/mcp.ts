@@ -34,7 +34,7 @@ const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
 export const SERVER_INSTRUCTIONS = [
     'Responses from this server are Concerto-serialized objects from the Accord',
     'Project Agreement Protocol (APAP). Each resource carries a `$class`',
-    'discriminator (e.g. "org.accordproject.protocol@1.0.0.Template") identifying',
+    'discriminator (e.g. `org.accordproject.protocol@1.0.0.Template`) identifying',
     'its type and inheritance. The canonical Concerto model is available at',
     '`apap://schema/protocol.cto` and can be read for type definitions.',
 ].join(' ');
