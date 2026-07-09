@@ -6,7 +6,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResult, McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
-import { Agreement, Template } from '../db/schema';
+import { Agreement, MODEL, Template } from '../db/schema';
 import {
     ServiceError,
     TemplateNotFoundError,
@@ -22,6 +22,28 @@ const API_BASE_URL = process.env.API_BASE_URL || `http://${HOST}:${PORT}`
 
 // Get API authorization header from environment variable (optional)
 const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
+
+// Concerto typed-context hint, exposed via MCP `InitializeResult.instructions`
+// and as a readable schema resource. Tells the client (and any LLM behind it)
+// that response payloads are Concerto-serialized so `$class` discriminators
+// can be interpreted directly against the protocol model.
+//
+// See accordproject/apap#185 for the discussion that motivated this. The
+// empirical A/B that produced this came out at Sonnet 4.6 +0.200 / gpt-4o
+// +0.383 mean score on a fixed query set.
+export const SERVER_INSTRUCTIONS = [
+    'Responses from this server are Concerto-serialized objects from the Accord',
+    'Project Agreement Protocol (APAP). Each resource carries a `$class`',
+    'discriminator (e.g. `org.accordproject.protocol@1.0.0.Template`) identifying',
+    'its type and inheritance. The canonical Concerto model is available at',
+    '`apap://schema/protocol.cto` and can be read for type definitions.',
+].join(' ');
+
+// The Concerto model is embedded in db/schema.ts as a base64 constant at
+// drizzle-gen time (same source as `handlers/concertovalidation`), so no
+// filesystem access is needed at runtime and no build-time file copy is
+// required to serve the `apap://schema/protocol.cto` resource.
+export const PROTOCOL_CTO = Buffer.from(MODEL, 'base64').toString('utf-8');
 
 /**
  * @param url The APAP REST endpoint to call.
@@ -265,7 +287,22 @@ const getServer = () => {
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
-    }, { capabilities: { logging: {} } });
+    }, { capabilities: { logging: {} }, instructions: SERVER_INSTRUCTIONS });
+
+    // register the Concerto protocol model as a readable resource so a
+    // client (or any LLM behind it) can resolve `$class` discriminators to
+    // type definitions without external lookup
+    server.resource(
+        'protocol-schema',
+        "apap://schema/protocol.cto",
+        async (uri: URL): Promise<ReadResourceResult> => ({
+            contents: [{
+                uri: uri.toString(),
+                mimeType: "text/x-concerto",
+                text: PROTOCOL_CTO,
+            }],
+        }),
+    );
 
     // register the templates
     server.resource('templates', "apap://templates", getTemplates);
