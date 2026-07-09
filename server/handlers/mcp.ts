@@ -23,6 +23,29 @@ const API_BASE_URL = process.env.API_BASE_URL || `http://${HOST}:${PORT}`
 // Get API authorization header from environment variable (optional)
 const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
 
+// Forward-looking cache hints for MCP `ReadResourceResult.contents[]`, mirroring
+// the shape proposed in SEP-2549 ("CacheableResult") in the MCP 2026-07-28 RC:
+//   https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate
+// Defaults are chosen by mutability of each resource: lists are volatile and
+// per-client (private), single templates are hash-immutable (public, 5min),
+// single agreements are short-lived because the row can be triggered/updated,
+// and the bundled Concerto schema is immutable per deploy (public, 24h).
+// Both fields are emitted alongside `uri`/`mimeType`/`text` so the SEP wire
+// shape lands as-is once the SDK accepts them at the top level; the current
+// SDK's request/response path is pass-through (no schema strip), so caching
+// proxies see them today as forward-compatible hints. The SDK types are
+// augmented in ../types/mcp-augmentation.d.ts so the spread typechecks
+// without per-callsite casts.
+type CacheScope = 'public' | 'private';
+interface CacheHint { ttlMs: number; cacheScope: CacheScope }
+export const CACHE_HINTS = {
+    templateList:   { ttlMs:     60_000, cacheScope: 'private' } as CacheHint,
+    templateItem:   { ttlMs:    300_000, cacheScope: 'public'  } as CacheHint,
+    agreementList:  { ttlMs:     30_000, cacheScope: 'private' } as CacheHint,
+    agreementItem:  { ttlMs:     30_000, cacheScope: 'private' } as CacheHint,
+    schema:         { ttlMs: 86_400_000, cacheScope: 'public'  } as CacheHint,
+} as const;
+
 // Concerto typed-context hint, exposed via MCP `InitializeResult.instructions`
 // and as a readable schema resource. Tells the client (and any LLM behind it)
 // that response payloads are Concerto-serialized so `$class` discriminators
@@ -130,7 +153,8 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
             contents: [{
                 uri: url.toString(),
                 mimeType: "application/json",
-                text: JSON.stringify(agreement)
+                text: JSON.stringify(agreement),
+                ...CACHE_HINTS.agreementItem,
             }]
         };
     }
@@ -164,7 +188,8 @@ async function getTemplates(uri: URL) {
                 return {
                     uri: `apap://templates/${t.id}`,
                     mimeType: "application/json",
-                    text: JSON.stringify(t)
+                    text: JSON.stringify(t),
+                    ...CACHE_HINTS.templateList,
                 }
             })
         }
@@ -206,7 +231,8 @@ async function getAgreements(uri: URL) {
                 return {
                     mimeType: "application/json",
                     text: JSON.stringify({ ...a.data, $identifier: a.id }, null, 2),
-                    uri: `apap://agreements/${a.id}`
+                    uri: `apap://agreements/${a.id}`,
+                    ...CACHE_HINTS.agreementList,
                 }
             })
         }
@@ -300,6 +326,7 @@ const getServer = () => {
                 uri: uri.toString(),
                 mimeType: "text/x-concerto",
                 text: PROTOCOL_CTO,
+                ...CACHE_HINTS.schema,
             }],
         }),
     );
@@ -378,7 +405,8 @@ const getServer = () => {
                     contents: [{
                         uri: uri.toString(),
                         mimeType: "application/json",
-                        text: JSON.stringify(template)
+                        text: JSON.stringify(template),
+                        ...CACHE_HINTS.templateItem,
                     }]
                 };
             }

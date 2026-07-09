@@ -5,6 +5,7 @@ import {
     buildApiErrorMessage,
     PROTOCOL_CTO,
     SERVER_INSTRUCTIONS,
+    CACHE_HINTS,
 } from './mcp';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import {
@@ -226,5 +227,76 @@ describe('Concerto typed-context (instructions + schema resource)', () => {
         it('decodes the embedded MODEL constant to the Concerto source', () => {
             expect(PROTOCOL_CTO).toContain('namespace org.accordproject.protocol');
         });
+    });
+});
+
+// SEP-2549 ("CacheableResult", MCP 2026-07-28 RC) extends MCP
+// ReadResourceResult.contents[] with `ttlMs` (number, milliseconds) and
+// `cacheScope` ('public' | 'private') so caching proxies can honor per-resource
+// freshness without inferring from URI patterns. See:
+//   https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate
+//
+// These tests pin the per-resource defaults that the MCP handler spreads into
+// every contents[] entry it returns. Changing a value here is a wire-format
+// change visible to every MCP client, so the defaults are codified explicitly
+// rather than computed from a config file.
+describe('SEP-2549 cache hints exposed by the MCP handler', () => {
+    it('exports a CACHE_HINTS table keyed by resource kind', () => {
+        // Five resource shapes are registered in mcp.ts: the template list,
+        // single templates, the agreement list, single agreements, and the
+        // bundled Concerto schema resource (apap://schema/protocol.cto).
+        expect(Object.keys(CACHE_HINTS).sort()).toEqual([
+            'agreementItem',
+            'agreementList',
+            'schema',
+            'templateItem',
+            'templateList',
+        ]);
+    });
+
+    it('uses short private cache for the template list', () => {
+        // Lists turn over whenever a new template is uploaded, and the visible
+        // set may vary per-tenant once auth is wired in. 60s + private keeps a
+        // single client snappy without leaking other tenants' rows through a
+        // shared cache.
+        expect(CACHE_HINTS.templateList.ttlMs).toBe(60_000);
+        expect(CACHE_HINTS.templateList.cacheScope).toBe('private');
+    });
+
+    it('uses medium public cache for a single template', () => {
+        // Single-template rows are addressed by id and the underlying .cta is
+        // pinned by hash, so a 5min public TTL is safe across tenants until the
+        // row itself gets a hash-based URI (the larger refactor tracked
+        // separately).
+        expect(CACHE_HINTS.templateItem.ttlMs).toBe(300_000);
+        expect(CACHE_HINTS.templateItem.cacheScope).toBe('public');
+    });
+
+    it('uses short private cache for agreement list and single agreements', () => {
+        // Agreements mutate on every trigger call, so freshness matters more
+        // than reuse. Private scope avoids cross-tenant leakage once auth lands.
+        expect(CACHE_HINTS.agreementList.ttlMs).toBe(30_000);
+        expect(CACHE_HINTS.agreementList.cacheScope).toBe('private');
+        expect(CACHE_HINTS.agreementItem.ttlMs).toBe(30_000);
+        expect(CACHE_HINTS.agreementItem.cacheScope).toBe('private');
+    });
+
+    it('uses long public cache for the bundled Concerto schema resource', () => {
+        // The Concerto model ships with the build via the base64 MODEL constant
+        // in db/schema.ts, so it is identical for every tenant and only turns
+        // over on redeploy. 24h public is safe and lets caching proxies serve
+        // the schema aggressively.
+        expect(CACHE_HINTS.schema.ttlMs).toBe(86_400_000);
+        expect(CACHE_HINTS.schema.cacheScope).toBe('public');
+    });
+
+    it('uses only the SEP-2549 cacheScope vocabulary', () => {
+        // Guard against typos creeping in (e.g. "user", "shared"); the spec
+        // currently defines only two values.
+        for (const hint of Object.values(CACHE_HINTS)) {
+            expect(['public', 'private']).toContain(hint.cacheScope);
+            expect(Number.isFinite(hint.ttlMs)).toBe(true);
+            expect(hint.ttlMs).toBeGreaterThan(0);
+        }
     });
 });
