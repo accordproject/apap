@@ -143,16 +143,18 @@ describe('PUT /:id validation', () => {
             error: { errors: [{ message: 'Custom validation failed' }] }
         });
 
-        // `DbTemplate` is a local alias in agreements.ts (import { Template as DbTemplate }),
-        // not a named export from db/schema. This block previously passed with `table:
-        // undefined` because the custom-validation short-circuit returned before any code
-        // touched `table`. The :id middleware added for #162 accesses `table.id.columnType`
-        // up-front, so the real export name is required now.
+        // `DbTemplate` is not a named export from db/schema. It's a local alias in
+        // agreements.ts (`import { Template as DbTemplate }`). Re-aliasing here keeps
+        // the reader-facing name consistent with agreements.ts while pulling the real
+        // export. The previous direct `DbTemplate` import resolved to `undefined` and
+        // the tests only passed because the custom-validation short-circuit returned
+        // before any code touched `table`. The :id middleware added for #162 accesses
+        // `table.id.columnType` up-front, so a real schema object is required now.
         const { buildCrudRouter } = require('./crud');
-        const { Template } = require('../db/schema');
+        const { Template: DbTemplate } = require('../db/schema');
 
         const testRouter = buildCrudRouter({
-            table: Template,
+            table: DbTemplate,
             validateBody: {
                 // no schema — only custom
                 custom: (body: any) => valModule.concertoValidation('Template', body)
@@ -337,11 +339,11 @@ describe('POST without validateBody', () => {
         });
 
         const { buildCrudRouter } = require('./crud');
-        const { Template } = require('../db/schema');
+        const { Template: DbTemplate } = require('../db/schema');
 
         // No validateBody at all
         const testRouter = buildCrudRouter({
-            table: Template,
+            table: DbTemplate,
             typeName: 'templates',
         });
 
