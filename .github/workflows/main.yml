@@ -24,4 +24,4 @@ jobs:
         cd server && npm ci
 
     - name: Run tests
-      run: npm test || echo "No tests configured"
+      run: npm test
