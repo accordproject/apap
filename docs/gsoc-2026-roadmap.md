@@ -1,17 +1,19 @@
 # GSoC 2026 - Hardening APAP / MCP
 
-> **Status (Jun 24, 2026):** W4 day 2 of 12. Typed `ServiceError` slice 1
-> merged (#184); slice 2 draft (#197) and contract tests (#196) open.
-> Concerto typed-context (`InitializeResult.instructions` plus the
-> `apap://schema/protocol.cto` resource) shipped as PR #199 with A/B
-> wins of +20pp on Claude Sonnet 4.6 and +38pp on GPT-4o against a fixed
-> query set. POC bench harnesses landed for both the typed-context A/B
-> and a cross-server latency comparison. Blog draft "APAP Enhancements
-> for AI Agents" circulated to mentors; Dan's feedback incorporated.
-> Headroom compression-proxy evaluation requested by Niall on Jun 18 is
-> the W3 carryover for W4; plan drafted, run scheduled. Four open PRs
-> (#196 / #197 / #198 / #199) are blocked on the Windows CI fix in
-> maintainer PR #195.
+> **Status (Jul 13, 2026):** W7 start / 12. First-half deliverables all
+> merged upstream: typed `ServiceError` hierarchy (#184, #196, #200),
+> Concerto typed-context via `InitializeResult.instructions` +
+> `apap://schema/protocol.cto` resource (#199, A/B wins of +20pp on Claude
+> Sonnet 4.6 and +38pp on GPT-4o), and SEP-2549 `ttlMs` + `cacheScope`
+> hints on `ReadResourceResult.contents[]` (#201, forward-compatible with
+> the MCP 2026-07-28 RC). Six PRs merged in the first half (#184, #190,
+> #196, #199, #200, #201, #202), one open (#208, community-approved,
+> awaiting maintainer merge). Midterm dispatch published on Medium +
+> LinkedIn (Jul 12). Weekly Thursday sync slot with Niall confirmed
+> (mentor-group Discord, Jul 10). Midterm evaluation submitted. W7
+> beginning today: `subscriptions/listen` slice on the POC (scoped in
+> [`apap-mcp-poc#6`](https://github.com/JayDS22/apap-mcp-poc/issues/6));
+> W8 folds JSON-RPC error code mapping into `-32020..-32099`.
 
 **Project:** Idea #4 - Hardening the APAP / MCP Server
 **Contributor:** Jay Guwalani ([@JayDS22](https://github.com/JayDS22))
@@ -33,12 +35,12 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 
 | # | Workstream | Owner | Current status |
 |---|---|---|---|
-| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | Active (W4); slice 1 merged (#184), slice 2 draft (#197), contract tests (#196) and Concerto typed-context (#199) open |
-| 2 | **MCP RC migration** - adopt 2026-07-28 spec via env-gated stateless rewrite (SEPs 2567/2575/2243/2549) | Jay | Starting W4; sliced across W4-W8 |
-| 3 | **Agentic Payments** - multi-provider OAuth, privacy boundary, agent-calling-agents demo | Jay (with Niall) | W9 lane confirmed joint Niall+Jay on Jun 18 call |
-| 4 | **Alternatives Evaluation** - OpenAI fn-calling, LangGraph / CrewAI comparison | Jay | Both spikes done, memo merged; Concerto typed-context A/B shipped (#199, +20pp Sonnet 4.6 / +38pp GPT-4o) |
-| 5 | **Skills + Ops** - accordproject/skills refresh, dev branch, comms | Jay (with Sanket) | Bonding asks resolved Jun 9; blog draft circulated Jun 18, in revision |
-| 6 | **Headroom compression eval** - measure token reduction + fidelity for MCP tool outputs | Jay (Niall ask, Tejas-facing) | W3 carryover; plan drafted Jun 24, run scheduled W4 |
+| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | First-half complete: slice 1 (#184), contract tests (#196), slice 2 (#200) and Concerto typed-context (#199) all merged upstream. Remaining rollout continues through W7 |
+| 2 | **MCP RC migration** - adopt 2026-07-28 spec via env-gated stateless rewrite (SEPs 2567/2575/2243/2549) | Jay | On track. SEP-2549 (`ttlMs` + `cacheScope`) landed via #201; W7 slice adds `subscriptions/listen` (POC first); W8 folds JSON-RPC error code mapping (`-32020..-32099`) |
+| 3 | **Agentic Payments** - multi-provider OAuth, privacy boundary, agent-calling-agents demo | Jay (with Niall) | Privacy-boundary sketch drafted; W9 lane confirmed joint Niall+Jay on Jun 18 call |
+| 4 | **Alternatives Evaluation** - OpenAI fn-calling, LangGraph / CrewAI comparison | Jay | Complete. Both spikes shipped, decision memo merged, Concerto typed-context A/B shipped (#199). Framework-vs-tool-count finding published on Medium Jul 12 |
+| 5 | **Skills + Ops** - accordproject/skills refresh, dev branch, comms | Jay (with Sanket) | On track. Bonding asks resolved Jun 9; midterm dispatch published Jul 12 (Medium + LinkedIn); weekly reports resumed; Thursday sync slot with Niall confirmed |
+| 6 | **Headroom compression eval** - measure token reduction + fidelity for MCP tool outputs | Jay (Niall ask, Tejas-facing) | Bench methodology sketch complete; three-arm bench (baseline / typed-context / typed + headroom) designed; W10 rerun scheduled |
 
 ---
 
@@ -49,12 +51,12 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 | Bond. | May 8 - Jun 1 | Setup + study | accord-project-mcp study, MCP RC compat matrix, dev branch + Discord (Sanket), apap/ access + API credits confirmation | Done |
 | 1 | Jun 2 - Jun 8 | Refactor + alternatives | Land service layer + typed errors upstream; begin alternatives evaluation | Done (slice 1 merged via #184) |
 | 2 | Jun 9 - Jun 15 | Refactor + alternatives | Continue service-layer PRs; skills repo refresh starts; alternatives decision memo draft | Done (slice 2 draft #197, both spikes shipped, memo drafted) |
-| 3 | Jun 16 - Jun 22 | Tests + OAuth | Unit tests upstream (Vitest, 90% gate); alternatives memo delivered; multi-provider OAuth design; **+ Concerto typed-context A/B shipped (#199); blog draft circulated** | Done with carryover (Headroom eval pending) |
-| 4 | Jun 23 - Jun 29 | Tests + payments + Headroom + RC W4 slice | Integration tests (Docker Postgres); **MCP RC W4 slice: `server/discover` RPC + required `Mcp-Method`/`Mcp-Name` headers (SEP-2243) behind `MCP_PROTOCOL_VERSION=2026-07-28` env gate, POC first**; privacy-boundary design; Headroom proxy evaluation + report-back to Niall | Active |
-| 5 | Jun 30 - Jul 6 | Contract tests + RC W5 slice | Contract tests against SEP-2484; **MCP RC W5 slice: port `server/discover` + headers middleware to upstream RI behind same version gate**; skills repo updates finalized | Planned |
-| 6 | Jul 7 - Jul 13 | Buffer + midterm + RC W6 slice | Midterm eval; mentor review; refactor on feedback; **MCP RC W6 slice: add `ttlMs` + `cacheScope` (SEP-2549) to every Read/List in POC + RI; `apap://schema/protocol.cto` as the unit-test fixture (textbook `cacheScope: "public"`, long TTL)** | Planned |
-| 7 | Jul 14 - Jul 20 | Docs + auto-tooling + test rigor + RC W7 slice | Claude tutorial; auto-tooling prototype; **MCP RC W7 slice: `subscriptions/listen` for `resourcesListChanged` on templates/agreements; delete `inmemoryeventstore.ts` only behind the version gate (SEP-2567 + SEP-2575 stateless rewrite)**; **Stryker mutation-testing pilot on `src/services/errors.ts`**; **prompt versioning: move `SERVER_INSTRUCTIONS` and any future LLM-facing strings into a versioned `prompts/` directory** | Planned |
-| 8 | Jul 21 - Jul 27 | Docs + auto-tooling + observability + RC W8 slice | ChatGPT + Inspector tutorials; auto-tooling integration tests; **MCP RC W8 slice: renumber `ServiceError → JSON-RPC` mapping into `-32020..-32099` reserved range per the new error-code policy**; **bench rigor in CI (multi-run baseline tracking, cost ledger, model-lockfile)**; **logger refactor to `pino` (replace ~28 `console.log` sites in `handlers/mcp.ts`)** | Planned |
+| 3 | Jun 16 - Jun 22 | Tests + OAuth | Unit tests upstream (Vitest, 90% gate); alternatives memo delivered; multi-provider OAuth design; **+ Concerto typed-context A/B shipped (#199); blog draft circulated** | Done |
+| 4 | Jun 23 - Jun 29 | Tests + payments + Headroom + RC W4 slice | Integration tests (Docker Postgres); privacy-boundary design; Headroom proxy methodology; typed-error rollout slice 2 draft (#197 opened, later closed and replaced by #200) | Done |
+| 5 | Jun 30 - Jul 6 | Contract tests + services rollout | Contract tests for `buildApiErrorMessage` helper merged (#196, Jul 1); typed-errors slice 2 replaced #197 with clean rewrite (#200 opened) | Done |
+| 6 | Jul 7 - Jul 13 | Midterm + Concerto typed-context + SEP-2549 | **Midterm evaluation submitted (form)**; **Concerto typed-context merged (#199, Jul 9)**; **typed-errors slice 2 merged (#200, Jul 3)**; **SEP-2549 `ttlMs` + `cacheScope` cache hints merged (#201, Jul 10)**; **CLAUDE.md refresh merged (#202, Jul 9)**; midterm dispatch published on Medium + LinkedIn (Jul 12); community peer review posted on #194 (Satvik's session cleanup) | Done |
+| 7 | Jul 14 - Jul 20 | `subscriptions/listen` slice + docs | **W7 issue scoped in [`apap-mcp-poc#6`](https://github.com/JayDS22/apap-mcp-poc/issues/6)**; **`subscriptions/listen` handler on POC with new `SubscriptionRegistry` service**; notification dispatch hooks in `templateService` + `agreementService` mutation paths; session-close cleanup; fake-timer test coverage; **prompt versioning: move `SERVER_INSTRUCTIONS` and future LLM-facing strings into a versioned `prompts/` directory**; Claude tutorial draft | Active |
+| 8 | Jul 21 - Jul 27 | Upstream port + JSON-RPC error mapping + observability | Port W7 `subscriptions/listen` to upstream RI (`accordproject/apap`); **`ServiceError → JSON-RPC` mapping into `-32020..-32099` reserved range** (`ServiceError.jsonRpcCode` constant table; `serviceErrorToResourceError` + `serviceErrorToCallToolResult` updated); ChatGPT + Inspector tutorials; **logger refactor to `pino` (replace ~28 `console.log` sites in `handlers/mcp.ts`)** | Planned |
 | 9 | Jul 28 - Aug 3 | Migration guide + demo | Migration guide; agent-calling-agents demo (APAP as service, not agent) | Planned |
 | 10 | Aug 4 - Aug 10 | DX + demo | Pino at 15+ call sites; demo polish; blog draft (alternatives + agents with Accord) | Planned |
 | 11 | Aug 11 - Aug 17 | E2E + blog | E2E in GH Actions; multi-version transport tests; blog draft to mentors for review | Planned |
@@ -68,22 +70,23 @@ adjacent tracks surfaced from the May 20 sync with Niall and Sanket.
 |---|---|---|
 | Jun 1 | Bonding ends | Done |
 | Jun 18 | Niall's Agents-Calling-Agents call | Done; W9 lane committed as joint Niall+Jay, Headroom eval added |
-| Jul 14 | Midterm evaluation (W6) | Upcoming |
+| Jul 12 | Midterm dispatch published (Medium + LinkedIn) | Done |
+| Jul 13 | Midterm evaluation submitted | Done |
 | Jul 28 | MCP 2026-07-28 spec finalizes | Upcoming |
 | Aug 25 | Final evaluation (W12) | Upcoming |
 
 ---
 
-## Open decisions (as of Jun 24, 2026)
+## Open decisions (as of Jul 13, 2026)
 
-From Section 6 of the May 20 sync. Decisions 2 and 4 (partial) resolved; three still open.
+From Section 6 of the May 20 sync. Decisions 2, 3, and 4 resolved; two still open.
 
 | # | Decision | Default proposal | Status |
 |---|---|---|---|
-| 1 | **Scope** - 5 workstreams or proposal-only | 5 workstreams with midterm checkpoint to scope down | Open |
-| 2 | **Alternatives evaluation depth** - light / medium / heavy | Medium (memo + working spike) | **Resolved** via AI credit grant Jun 9; both spikes shipped, decision memo drafted |
-| 3 | **MCP 2026-07-28 transport strategy** - stay / parallel / migrate-first | Parallel from W4 | Open |
-| 4 | **Comms cadence** - channel + meeting slot | Thursdays 9 AM ET (2 PM UK / 6:30 PM IST) | Channel **resolved**; meeting slot pending |
+| 1 | **Scope** - 5 workstreams or proposal-only | 5 workstreams with midterm checkpoint to scope down | Open (revisit at Thursday sync now that first-half deliverables are known) |
+| 2 | **Alternatives evaluation depth** - light / medium / heavy | Medium (memo + working spike) | **Resolved** Jun 9; both spikes shipped, decision memo merged, finding published Jul 12 |
+| 3 | **MCP 2026-07-28 transport strategy** - stay / parallel / migrate-first | Parallel from W4 | **Resolved** parallel; SEP-2549 (#201) shipped ahead of the RC as forward-compatible hints |
+| 4 | **Comms cadence** - channel + meeting slot | Thursdays 9 AM ET (2 PM UK / 6:30 PM IST) | **Resolved** Jul 10: Thursday morning slot (Jay's timezone) confirmed with Niall on mentor-group Discord |
 | 5 | **accord-project-mcp pair walkthrough** with Niall | After study (now complete) | Open |
 
 New decision surfacing from W2 alternatives memo (will be folded into next mentor sync):
@@ -120,12 +123,17 @@ All three asks from May 20 closed within 24 hours of the Jun 5 sync follow-up em
 | [PR #155](https://github.com/accordproject/apap/pull/155) | Bug fix | MCP resource URI overwrite from `Agreement.uri` (merged Jun 13) |
 | [PR #184](https://github.com/accordproject/apap/pull/184) | Feature | Typed `ServiceError` hierarchy with agreements handler wired (merged Jun 14) |
 | [PR #190](https://github.com/accordproject/apap/pull/190) | Docs | Initial roadmap (merged Jun 13) |
-| [PR #196](https://github.com/accordproject/apap/pull/196) | Tests | Contract tests for `buildApiErrorMessage` helper (open) |
-| [PR #197](https://github.com/accordproject/apap/pull/197) | Feature (draft) | Slice 2 typed errors: agreements + templatebuilder wired (draft, opened Jun 15) |
-| [PR #198](https://github.com/accordproject/apap/pull/198) | Docs | Roadmap W3-W4 refresh (this PR) |
-| [PR #199](https://github.com/accordproject/apap/pull/199) | Feature | Concerto typed-context: `InitializeResult.instructions` + `apap://schema/protocol.cto` resource. A/B: Sonnet 4.6 +20pp, GPT-4o +38pp |
+| [PR #196](https://github.com/accordproject/apap/pull/196) | Tests | Contract tests for `buildApiErrorMessage` helper (merged Jul 1) |
+| [PR #197](https://github.com/accordproject/apap/pull/197) | Feature (superseded) | Slice 2 typed errors initial draft (closed Jun 25; replaced by #200 with the review feedback folded in) |
+| [PR #198](https://github.com/accordproject/apap/pull/198) | Docs | Roadmap refresh through Jul 13 (this PR) |
+| [PR #199](https://github.com/accordproject/apap/pull/199) | Feature | Concerto typed-context: `InitializeResult.instructions` + `apap://schema/protocol.cto` resource. A/B: Sonnet 4.6 +20pp, GPT-4o +38pp (merged Jul 9) |
+| [PR #200](https://github.com/accordproject/apap/pull/200) | Feature | Typed errors in `mcp.ts` (slice 3): `serviceErrorToCallToolResult` + `serviceErrorToResourceError` map `ServiceError` to typed MCP payloads (merged Jul 3) |
+| [PR #201](https://github.com/accordproject/apap/pull/201) | Feature | SEP-2549 `ttlMs` + `cacheScope` cache hints on `ReadResourceResult.contents[]`, forward-compatible with MCP 2026-07-28 RC (merged Jul 10) |
+| [PR #202](https://github.com/accordproject/apap/pull/202) | Docs | CLAUDE.md refresh documenting the MCP typed-context surface and Docker context invariant (merged Jul 9) |
+| [PR #208](https://github.com/accordproject/apap/pull/208) | Bug fix | Reject non-strict-numeric `:id` in CRUD router up-front (closes #162); community-approved by @apoorv7g, awaiting maintainer merge |
+| Peer review on [#194](https://github.com/accordproject/apap/pull/194) | Review | Comment-style review on Satvik77777's session-cleanup memory-leak fix: flagged module-level `setInterval` side effect, weak test coverage on the cleanup path, and missing `transport.close()` before reference deletion |
 
-### W1-W4 deliverables (in `JayDS22/apap-mcp-poc`)
+### POC deliverables (in `JayDS22/apap-mcp-poc`)
 
 | Ref | Type | Summary |
 |---|---|---|
@@ -134,6 +142,15 @@ All three asks from May 20 closed within 24 hours of the Jun 5 sync follow-up em
 | [`alternatives/decision-memo` branch](https://github.com/JayDS22/apap-mcp-poc/tree/alternatives/decision-memo) | Memo | W3 alternatives decision memo (merged Jun 14 as POC PR #1). |
 | [POC PR #2](https://github.com/JayDS22/apap-mcp-poc/pull/2) | Feature | Concerto typed-context: hint + `protocol.cto` resource on the POC MCP server (mirrors upstream #199). |
 | [POC PR #3](https://github.com/JayDS22/apap-mcp-poc/pull/3) | Bench | Concerto-context A/B harness + cross-provider first run. Adds latency-comparison harness (POC vs RI) to validate the shared-service-layer architectural claim. |
+| [POC issue #6](https://github.com/JayDS22/apap-mcp-poc/issues/6) | Scope | W7 `subscriptions/listen` slice: handler, `SubscriptionRegistry` service, notification dispatch hooks, session-close cleanup. Opened Jul 13 |
+
+### Comms deliverables
+
+| Date | Artifact | Notes |
+|---|---|---|
+| Jul 12 | [Medium article](https://medium.com/@guwalanijj/six-weeks-into-hardening-a-smart-legal-contract-server-for-ai-1435e8cb80f9) | Midterm dispatch: framework-vs-tool-count finding, full technical arc through W6 |
+| Jul 12 | LinkedIn post | Cross-post with the Medium link, technical hook + downstream Accord workstream references |
+| Jul 12 | Accord Discord + GSoC group | Technical shares with peer-review invitation and next-slice signal |
 
 ---
 
