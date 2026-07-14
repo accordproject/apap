@@ -536,8 +536,14 @@ export const transports: Record<string, StreamableHTTPServerTransport | SSEServe
 
 export const sessionLastActivity: Record<string, number> = {};
 
-const SESSION_TIMEOUT_MS = parseInt(process.env.SESSION_TIMEOUT_MS || '', 10) || 30 * 60 * 1000; // 30 minutes
-const CLEANUP_INTERVAL_MS = parseInt(process.env.CLEANUP_INTERVAL_MS || '', 10) || 5 * 60 * 1000; // 5 minutes
+const parseEnvMs = (val: string | undefined, defaultValue: number): number => {
+    if (val === undefined || val === '') return defaultValue;
+    const parsed = parseInt(val, 10);
+    return isNaN(parsed) ? defaultValue : parsed;
+};
+
+const SESSION_TIMEOUT_MS = parseEnvMs(process.env.SESSION_TIMEOUT_MS, 30 * 60 * 1000); // 30 minutes
+const CLEANUP_INTERVAL_MS = parseEnvMs(process.env.CLEANUP_INTERVAL_MS, 5 * 60 * 1000); // 5 minutes
 
 export let sessionCleanupInterval: NodeJS.Timeout | undefined;
 
@@ -639,11 +645,6 @@ router.all('/mcp', async (req: Request, res: Response) => {
             // Set up onclose handler to clean up transport when closed
             transport.onclose = () => {
                 const sid = transport.sessionId;
-                try {
-                    transport.close?.();
-                } catch (err) {
-                    console.error('Error closing transport in onclose handler:', err);
-                }
                 delete transports[sid];
                 delete sessionLastActivity[sid];
                 console.log({
@@ -705,11 +706,6 @@ router.get('/sse', async (req: Request, res: Response) => {
     const transport = new SSEServerTransport('/messages', res);
     transports[transport.sessionId] = transport;
     res.on("close", () => {
-        try {
-            transport.close?.();
-        } catch (err) {
-            console.error('Error closing SSE transport on disconnect:', err);
-        }
         delete transports[transport.sessionId];
         delete sessionLastActivity[transport.sessionId];
     });
