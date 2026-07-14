@@ -639,6 +639,11 @@ router.all('/mcp', async (req: Request, res: Response) => {
             // Set up onclose handler to clean up transport when closed
             transport.onclose = () => {
                 const sid = transport.sessionId;
+                try {
+                    transport.close?.();
+                } catch (err) {
+                    console.error('Error closing transport in onclose handler:', err);
+                }
                 delete transports[sid];
                 delete sessionLastActivity[sid];
                 console.log({
@@ -700,6 +705,11 @@ router.get('/sse', async (req: Request, res: Response) => {
     const transport = new SSEServerTransport('/messages', res);
     transports[transport.sessionId] = transport;
     res.on("close", () => {
+        try {
+            transport.close?.();
+        } catch (err) {
+            console.error('Error closing SSE transport on disconnect:', err);
+        }
         delete transports[transport.sessionId];
         delete sessionLastActivity[transport.sessionId];
     });
