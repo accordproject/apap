@@ -277,6 +277,20 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         next();
     });
 
+    // Reject non-strict-numeric :id early for integer-keyed tables (#162). parseInt('1abc')
+    // returns 1, so without this guard PUT /agreements/1abc with a valid body silently updates
+    // row 1, and DELETE /templates/1abc silently deletes row 1. UUID-keyed tables keep the
+    // existing pass-through; the DB layer surfaces malformed UUIDs.
+    router.param('id', (req: Request, res: Response, next, rawId: string) => {
+        if (table.id.columnType === 'PgUUID') {
+            return next();
+        }
+        if (!/^\d+$/.test(rawId)) {
+            return res.status(404).json({ error: 'Not found' });
+        }
+        next();
+    });
+
     // GET with pagination, sorting, and filtering
     router.get('/',
         // authRequiredPermissions('read:' + typeName),
