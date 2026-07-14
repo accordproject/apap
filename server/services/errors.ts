@@ -103,3 +103,53 @@ export class ValidationError extends ServiceError {
         this.name = 'ValidationError';
     }
 }
+
+// -- Upstream / inter-service errors --
+
+/**
+ * Raised when an MCP handler (or any service) calls into an upstream HTTP
+ * dependency that returns a non-2xx response. Carries the URL, status, and
+ * raw body so route catch blocks can decide whether to surface this as a
+ * 502 to the caller or branch on the upstream status. Discussed in #143.
+ */
+export class UpstreamApiError extends ServiceError {
+    public readonly upstreamUrl: string;
+    public readonly httpStatus: number;
+    public readonly upstreamBody: string;
+
+    constructor(upstreamUrl: string, httpStatus: number, upstreamBody: string) {
+        super(
+            'UPSTREAM_API_ERROR',
+            502,
+            `Upstream API call to ${upstreamUrl} failed with HTTP ${httpStatus}`,
+            { upstreamUrl, httpStatus, upstreamBody },
+        );
+        this.name = 'UpstreamApiError';
+        this.upstreamUrl = upstreamUrl;
+        this.httpStatus = httpStatus;
+        this.upstreamBody = upstreamBody;
+    }
+}
+
+/**
+ * Raised when an agreement trigger fails for any reason other than the
+ * agreement not existing (which is already covered by `AgreementNotFoundError`).
+ * The upstream error text usually contains the Concerto validation failure
+ * or runtime error from the template logic. Discussed in #143.
+ */
+export class AgreementTriggerError extends ServiceError {
+    public readonly agreementId: string;
+    public readonly upstreamMessage: string;
+
+    constructor(agreementId: string, upstreamMessage: string) {
+        super(
+            'AGREEMENT_TRIGGER_FAILED',
+            502,
+            `Failed to trigger agreement ${agreementId}: ${upstreamMessage}`,
+            { agreementId, upstreamMessage },
+        );
+        this.name = 'AgreementTriggerError';
+        this.agreementId = agreementId;
+        this.upstreamMessage = upstreamMessage;
+    }
+}
