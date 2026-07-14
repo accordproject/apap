@@ -531,41 +531,54 @@ Refer to the agreement's template model to determine which fields are required o
 };
 
 
-// Map to store transports by session ID
-// Store transports by session ID
+// Exported for testing purposes
 export const transports: Record<string, StreamableHTTPServerTransport | SSEServerTransport> = {};
 
 export const sessionLastActivity: Record<string, number> = {};
 
-const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-const CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+const SESSION_TIMEOUT_MS = parseInt(process.env.SESSION_TIMEOUT_MS || '', 10) || 30 * 60 * 1000; // 30 minutes
+const CLEANUP_INTERVAL_MS = parseInt(process.env.CLEANUP_INTERVAL_MS || '', 10) || 5 * 60 * 1000; // 5 minutes
+
+export let sessionCleanupInterval: NodeJS.Timeout | undefined;
 
 /**
- * Periodically removes MCP sessions that have been 
- * idle for longer than SESSION_TIMEOUT_MS.
- * Prevents unbounded memory growth when clients 
+ * Starts the periodic cleanup of idle sessions.
+ * Prevents unbounded memory growth when clients
  * disconnect uncleanly without triggering onclose.
  */
-export const sessionCleanupInterval = setInterval(() => {
-    const now = Date.now();
-    for (const sessionId of Object.keys(transports)) {
-        const lastActivity = sessionLastActivity[sessionId];
-        if (lastActivity && 
-            now - lastActivity > SESSION_TIMEOUT_MS) {
-            console.error({
-                type: 'session_cleanup',
-                sessionId,
-                idleMs: now - lastActivity,
-                reason: 'idle_timeout'
-            });
-            delete transports[sessionId];
-            delete sessionLastActivity[sessionId];
-        }
+export function startSessionCleanup(): void {
+    if (sessionCleanupInterval) {
+        clearInterval(sessionCleanupInterval);
     }
-}, CLEANUP_INTERVAL_MS);
+    sessionCleanupInterval = setInterval(() => {
+        const now = Date.now();
+        for (const sessionId of Object.keys(transports)) {
+            const lastActivity = sessionLastActivity[sessionId];
+            if (lastActivity && 
+                now - lastActivity > SESSION_TIMEOUT_MS) {
+                console.log({
+                    type: 'session_cleanup',
+                    sessionId,
+                    idleMs: now - lastActivity,
+                    reason: 'idle_timeout'
+                });
+                const transport = transports[sessionId];
+                if (transport) {
+                    try {
+                        transport.close?.();
+                    } catch (err) {
+                        console.error('Error closing transport during cleanup:', err);
+                    }
+                }
+                delete transports[sessionId];
+                delete sessionLastActivity[sessionId];
+            }
+        }
+    }, CLEANUP_INTERVAL_MS);
 
-// Prevent interval from blocking process exit
-sessionCleanupInterval.unref();
+    // Prevent interval from blocking process exit
+    sessionCleanupInterval.unref();
+}
 
 //=============================================================================
 // STREAMABLE HTTP TRANSPORT (PROTOCOL VERSION 2025-03-26)
