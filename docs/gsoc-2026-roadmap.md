@@ -154,6 +154,23 @@ All three asks from May 20 closed within 24 hours of the Jun 5 sync follow-up em
 
 ---
 
+## Future work (beyond GSoC 2026)
+
+Threads surfaced during GSoC that fell outside the proposal scope but are worth capturing here so they don't get lost during the W12 handoff writeup.
+
+### Tool retrieval layer for APAP MCP
+
+Both the alternatives evaluation (W3-W4) and the midterm dispatch published Jul 12 landed on the same finding: framework choice barely moves the token bill, and the tool-definition floor is where the real cost lives. Selective tool exposure is the actual lever.
+
+A retrieval layer in front of the APAP MCP surface, where the LLM only sees the tool subset relevant to a specific request, would compose naturally with the SEP-2549 cache hints from #201.
+
+- **Peer-reviewed prior art:** [ACE-Router](https://arxiv.org/abs/2601.08276) (ACL 2026, arXiv 2601.08276) — an MCP-native history-aware router trained on MCP-Universe and MCP-Mark benchmarks. Code at [github.com/euyis1019/ACE-Router](https://github.com/euyis1019/ACE-Router).
+- **Ecosystem validation:** Anthropic's Tool Search shipped default in Claude Code (51K to 8.5K main-thread tokens in production per [Arcade's analysis](https://blog.arcade.dev/anthropic-tool-search-claude-mcp-runtime)), Red Hat's ToolScope Tool RAG library on GitHub + PyPI, and MCP community issue [#2808](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/2808) proposing tiered schema detail at the spec level.
+
+Surfaced with Niall on Discord (Jul 14) and parked as "a future work element to explore if it is worthwhile." Captured here so the thread is discoverable after handoff.
+
+---
+
 ## How to contribute
 
 This roadmap is intentionally open. If you want to:
