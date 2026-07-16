@@ -15,7 +15,7 @@ import templatesRouter from './handlers/templates';
 import agreementsRouter from './handlers/agreements';
 import sharedModelsRouter from './handlers/sharedmodels';
 import capabilitiesRouter from './handlers/capabilities';
-import mcpRouter from './handlers/mcp';
+import mcpRouter, { startSessionCleanup } from './handlers/mcp';
 import authRouter from './handlers/auth';
 
 const app = Express();
@@ -65,6 +65,9 @@ app.use('/sharedmodels', sharedModelsRouter);
 app.use('/capabilities', capabilitiesRouter);
 app.use('/', mcpRouter);
 app.use('/', authRouter);
+
+// Start MCP session cleanup
+startSessionCleanup();
 
 // logging
 app.use(morgan('combined'));
