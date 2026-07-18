@@ -398,10 +398,21 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     req.body = transformRequest(req);
                 }
 
-                const inserted = await res.locals.db
-                    .insert(table)
-                    .values(req.body)
-                    .returning();
+                let inserted;
+                try {
+                    inserted = await res.locals.db
+                        .insert(table)
+                        .values(req.body)
+                        .returning();
+                } catch (error: any) {
+                    if (error?.code === '23505') {
+                        const pgError = new Error('Unique constraint violation') as any;
+                        pgError.code = '23505';
+                        pgError.typeName = typeName;
+                        throw pgError;
+                    }
+                    throw error;
+                }
 
                 if (transformResponse) {
                     inserted[0] = transformResponse(inserted[0]);
@@ -500,11 +511,22 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
 
-                const updated = await res.locals.db
-                    .update(table)
-                    .set(req.body)
-                    .where(and(...whereConditions))
-                    .returning();
+                let updated;
+                try {
+                    updated = await res.locals.db
+                        .update(table)
+                        .set(req.body)
+                        .where(and(...whereConditions))
+                        .returning();
+                } catch (error: any) {
+                    if (error?.code === '23505') {
+                        const pgError = new Error('Unique constraint violation') as any;
+                        pgError.code = '23505';
+                        pgError.typeName = typeName;
+                        throw pgError;
+                    }
+                    throw error;
+                }
 
                 if (!updated.length) {
                     return res.status(404).json({ error: 'Not found' });

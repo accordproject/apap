@@ -138,6 +138,7 @@ crudRouter.get('/:id/convert/:format', asyncHandler(async function (req, res) {
         const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
         const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
         const draftResult = await templateArchiveProcessor.draft(agreement.data, req.params.format, {});
+        res.setHeader("Content-Type", `text/${req.params.format}`);
         res.send(draftResult);
 }));
 

@@ -53,7 +53,7 @@ export function globalErrorHandler(
     if (typeof err === 'object' && err !== null && 'code' in err && (err as any).code === '23505') {
         res.status(409).json({
             error: 'Conflict',
-            details: 'A resource with this unique identifier already exists.'
+            details: `A resource with this unique identifier already exists${(err as any).typeName ? ` for ${(err as any).typeName}` : ''}.`
         });
         return;
     }
