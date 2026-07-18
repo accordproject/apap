@@ -1,4 +1,5 @@
 import 'source-map-support/register';
+import { globalErrorHandler } from './middleware/errorHandler';
 import Express from 'express';
 import morgan from 'morgan';
 import path from 'path';
@@ -71,6 +72,9 @@ startSessionCleanup();
 
 // logging
 app.use(morgan('combined'));
+
+// Global error handler — registered AFTER all routes
+app.use(globalErrorHandler);
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
