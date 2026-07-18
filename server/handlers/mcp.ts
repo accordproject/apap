@@ -17,7 +17,7 @@ import {
     UpstreamApiError,
 } from '../services/errors';
 import { listTemplates, getTemplateById } from '../services/templateService';
-import { listAgreements, getAgreementById } from '../services/agreementService';
+import { listAgreements, getAgreementById, convertAgreement } from '../services/agreementService';
 import type { Database } from '../db/client';
 
 const HOST = process.env.HOST || 'localhost';
@@ -227,31 +227,6 @@ async function getAgreements(db: Database, uri: URL) {
 }
 
 /**
- * @param agreementId The agreement identifier to convert.
- * @param format The output format requested by the MCP tool.
- * @return The rendered agreement text produced by the REST conversion endpoint.
- * @details Delegates agreement conversion to the local REST API and returns the
- * raw text body so it can be forwarded directly to the MCP client.
- */
-async function draftAgreement(agreementId: string, format: string) : Promise<string> {
-    console.log({ type: 'draft_agreement_requested', agreementId });
-    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
-    if (result.ok) {
-        const text = await result.text();
-        return text;
-    }
-    else {
-        // Include the agreement ID and target format so the caller knows exactly which conversion failed
-        const errorMsg = await buildApiErrorMessage(result, `Failed to convert agreement '${agreementId}' to ${format}`);
-        console.error({ type: 'api_error', operation: 'draftAgreement', agreementId, format, status: result.status });
-        if (result.status === 404) {
-            throw new AgreementNotFoundError(agreementId);
-        }
-        throw new AgreementConversionError(agreementId, format, errorMsg);
-    }
-}
-
-/**
  * @param agreementId The agreement identifier to trigger.
  * @param body A JSON string representing the trigger request payload.
  * @return The trigger result serialized back into a JSON string.
@@ -387,8 +362,12 @@ const getServer = (db: Database) => {
         "Converts an existing agreement to an output format",
         { agreementId: z.string(), format: z.enum(['html', 'markdown']) },
         async ({ agreementId, format }): Promise<CallToolResult> => {
+            const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
+            if (!Number.isFinite(id)) {
+                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            }
             try {
-                const text = await draftAgreement(agreementId, format);
+                const text = await convertAgreement(db, id, format);
                 return {
                     content: [{ type: "text", text }]
                 };
