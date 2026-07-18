@@ -143,13 +143,13 @@ export function serviceErrorToResourceError(error: ServiceError): McpError {
  */
 async function getAgreement(uri: string, variables: { agreementId: string }) {
     const { agreementId } = variables;
-    console.log(`Fetching agreement with ID: ${agreementId}`);
+    console.log({ type: 'fetching_agreement', agreementId });
     const url = new URL(uri);
     const requestUrl = `${API_BASE_URL}/agreements/${agreementId}`;
     const result = await makeApiRequest(requestUrl);
     if (result.ok) {
         const agreement = await result.json();
-        console.log(`Successfully fetched agreement: ${JSON.stringify(agreement)}`);
+        console.log({ type: 'fetched_agreement_success', agreementId });
         return {
             contents: [{
                 uri: url.toString(),
@@ -163,7 +163,7 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
         // Surface the actual status code and API response so the client knows what went wrong
         const body = await result.text().catch(() => 'No error details available');
         const errorMsg = `Failed to load agreement '${agreementId}' (HTTP ${result.status}): ${body}`;
-        console.error(errorMsg);
+        console.error({ type: 'api_error', operation: 'getAgreement', agreementId, status: result.status });
         if (result.status === 404) {
             throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
         }
@@ -178,12 +178,12 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
  * database row into an MCP `contents` entry with an `apap://templates/{id}` URI.
  */
 async function getTemplates(uri: URL) {
-    console.log('getTemplates: ' + uri);
+    console.log({ type: 'get_templates_requested', uri: uri.toString() });
     const requestUrl = `${API_BASE_URL}/templates`;
     const result = await makeApiRequest(requestUrl);
     if (result.ok) {
         const templates = await result.json();
-        console.log(`Successfully fetched templates: ${JSON.stringify(templates)}`);
+        console.log({ type: 'fetched_templates_success', count: templates.items?.length });
         return {
             contents: templates.items.map((t: typeof Template) => {
                 return {
@@ -198,7 +198,7 @@ async function getTemplates(uri: URL) {
     else {
         // Previously just threw "Failed to load template" with no status or details
         const body = await result.text().catch(() => 'No error details available');
-        console.error(`Failed to load templates (HTTP ${result.status}): ${body}`);
+        console.error({ type: 'api_error', operation: 'getTemplates', status: result.status });
         throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
     }
 }
@@ -210,12 +210,12 @@ async function getTemplates(uri: URL) {
  * each item into the MCP resource format expected by agreement resources.
  */
 async function getAgreements(uri: URL) {
-    console.log('getAgreements: ' + uri);
+    console.log({ type: 'get_agreements_requested', uri: uri.toString() });
     const requestUrl = `${API_BASE_URL}/agreements`;
     const result = await makeApiRequest(requestUrl);
     if (result.ok) {
         const agreements = await result.json();
-        console.log(`Successfully fetched agreements: ${JSON.stringify(agreements)}`);
+        console.log({ type: 'fetched_agreements_success', count: agreements.items?.length });
         return {
             // FIX for issue #128: The previous version spread the full agreement object
             // (...a) after setting the uri field. Because the Agreement row from the
@@ -240,7 +240,7 @@ async function getAgreements(uri: URL) {
     }
     else {
         const body = await result.text().catch(() => 'No error details available');
-        console.error(`Failed to load agreements (HTTP ${result.status}): ${body}`);
+        console.error({ type: 'api_error', operation: 'getAgreements', status: result.status });
         throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
     }
 }
@@ -253,7 +253,7 @@ async function getAgreements(uri: URL) {
  * raw text body so it can be forwarded directly to the MCP client.
  */
 async function draftAgreement(agreementId: string, format: string) : Promise<string> {
-    console.log('draftAgreement: ' + agreementId);
+    console.log({ type: 'draft_agreement_requested', agreementId });
     const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/convert/${format}`);
     if (result.ok) {
         const text = await result.text();
@@ -262,7 +262,7 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
     else {
         // Include the agreement ID and target format so the caller knows exactly which conversion failed
         const errorMsg = await buildApiErrorMessage(result, `Failed to convert agreement '${agreementId}' to ${format}`);
-        console.error(errorMsg);
+        console.error({ type: 'api_error', operation: 'draftAgreement', agreementId, format, status: result.status });
         if (result.status === 404) {
             throw new AgreementNotFoundError(agreementId);
         }
@@ -278,8 +278,7 @@ async function draftAgreement(agreementId: string, format: string) : Promise<str
  * agreement logic to execute, and forwards the JSON response back to the MCP layer.
  */
 async function triggerAgreement(agreementId: string, body: string) : Promise<string> {
-    console.log('triggerAgreement: ' + agreementId);
-    console.log('body: ' + body);
+    console.log({ type: 'trigger_agreement_requested', agreementId });
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/trigger`,
@@ -296,7 +295,7 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
         // Trigger failures are especially important to surface clearly since they often
         // come from bad payload shapes that don't match the template's request type
         const body = await result.text().catch(() => 'No error details available');
-        console.error(`Failed to trigger agreement '${agreementId}' (HTTP ${result.status}): ${body}`);
+        console.error({ type: 'api_error', operation: 'triggerAgreement', agreementId, status: result.status });
         if (result.status === 404) {
             throw new AgreementNotFoundError(agreementId);
         }
@@ -360,7 +359,7 @@ const getServer = () => {
                     // List operations return empty rather than throwing, but we still log
                     // the actual error for debugging
                     const errorMsg = await buildApiErrorMessage(result, 'Failed to list agreements');
-                    console.error(errorMsg);
+                    console.error({ type: 'api_error', operation: 'listAgreements', status: result.status });
                     return { resources: [] };
                 }
             }
@@ -391,7 +390,7 @@ const getServer = () => {
                 }
                 else {
                     const errorMsg = await buildApiErrorMessage(result, 'Failed to list templates');
-                    console.error(errorMsg);
+                    console.error({ type: 'api_error', operation: 'listTemplates', status: result.status });
                     return { resources: [] };
                 }
             }
@@ -413,7 +412,7 @@ const getServer = () => {
             }
             else {
                 const body = await result.text().catch(() => 'No error details available');
-                console.error(`Failed to load template '${templateId}' (HTTP ${result.status}): ${body}`);
+                console.error({ type: 'api_error', operation: 'getTemplate', templateId, status: result.status });
                 if (result.status === 404) {
                     throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
                 }
@@ -487,7 +486,7 @@ Refer to the agreement's template model to determine which fields are required o
                 };
             } else {
                 const body = await result.text().catch(() => 'No error details available');
-                console.error(`Failed to load template '${templateId}' (HTTP ${result.status}): ${body}`);
+                console.error({ type: 'api_error', operation: 'getTemplateTool', templateId, status: result.status });
                 if (result.status === 404) {
                     return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
                 }
@@ -519,7 +518,7 @@ Refer to the agreement's template model to determine which fields are required o
                 };
             } else {
                 const body = await result.text().catch(() => 'No error details available');
-                console.error(`Failed to load agreement '${agreementId}' (HTTP ${result.status}): ${body}`);
+                console.error({ type: 'api_error', operation: 'getAgreementTool', agreementId, status: result.status });
                 if (result.status === 404) {
                     return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
                 }
@@ -574,7 +573,7 @@ export function startSessionCleanup(): void {
                     try {
                         transport.close?.();
                     } catch (err) {
-                        console.error('Error closing transport during cleanup:', err);
+                        console.error({ type: 'transport_close_error', sessionId, error: err instanceof Error ? err.message : String(err) });
                     }
                 }
                 delete transports[sessionId];
@@ -637,7 +636,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
                 eventStore, // Enable resumability
                 onsessioninitialized: (sessionId) => {
                     // Store the transport by session ID when session is initialized
-                    console.log(`StreamableHTTP session initialized with ID: ${sessionId}`);
+                    console.log({ type: 'streamable_http_session_initialized', sessionId });
                     transports[sessionId] = transport;
                     sessionLastActivity[sessionId] = Date.now();
                 }
@@ -658,9 +657,9 @@ router.all('/mcp', async (req: Request, res: Response) => {
             // Connect the transport to the MCP server
             const server = getServer();
             await server.connect(transport);
-            console.log('Connected server to transport');
+            console.log({ type: 'connected_server_to_transport' });
         } else {
-            console.log('Invalid request');
+            console.log({ type: 'invalid_mcp_request' });
             // Invalid request - no session ID or not initialization request
             res.status(400).json({
                 jsonrpc: '2.0',
@@ -675,9 +674,9 @@ router.all('/mcp', async (req: Request, res: Response) => {
 
         // Handle the request with the transport
         await transport.handleRequest(req, res, req.body);
-        console.log('Transport handled request');
+        console.log({ type: 'transport_handled_request' });
     } catch (error) {
-        console.error('Error handling MCP request:', error);
+        console.error({ type: 'mcp_request_failed', error: error instanceof Error ? error.message : String(error) });
         if (!res.headersSent) {
             res.status(500).json({
                 jsonrpc: '2.0',
