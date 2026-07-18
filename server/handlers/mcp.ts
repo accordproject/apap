@@ -17,6 +17,7 @@ import {
     UpstreamApiError,
 } from '../services/errors';
 import { listTemplates, getTemplateById } from '../services/templateService';
+import { listAgreements, getAgreementById } from '../services/agreementService';
 import type { Database } from '../db/client';
 
 const HOST = process.env.HOST || 'localhost';
@@ -143,14 +144,17 @@ export function serviceErrorToResourceError(error: ServiceError): McpError {
  * @details Resolves a single agreement by calling the local REST API and converts
  * the REST response into the `contents` structure expected by the MCP SDK.
  */
-async function getAgreement(uri: string, variables: { agreementId: string }) {
+async function getAgreement(db: Database, uri: string, variables: { agreementId: string }) {
     const { agreementId } = variables;
     console.log({ type: 'fetching_agreement', agreementId });
     const url = new URL(uri);
-    const requestUrl = `${API_BASE_URL}/agreements/${agreementId}`;
-    const result = await makeApiRequest(requestUrl);
-    if (result.ok) {
-        const agreement = await result.json();
+    // Same strict-numeric guard as the REST /agreements/:id route from #208.
+    const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
+    if (!Number.isFinite(id)) {
+        throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
+    }
+    try {
+        const agreement = await getAgreementById(db, id);
         console.log({ type: 'fetched_agreement_success', agreementId });
         return {
             contents: [{
@@ -160,16 +164,11 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
                 ...CACHE_HINTS.agreementItem,
             }]
         };
-    }
-    else {
-        // Surface the actual status code and API response so the client knows what went wrong
-        const body = await result.text().catch(() => 'No error details available');
-        const errorMsg = `Failed to load agreement '${agreementId}' (HTTP ${result.status}): ${body}`;
-        console.error({ type: 'api_error', operation: 'getAgreement', agreementId, status: result.status });
-        if (result.status === 404) {
-            throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
+    } catch (err) {
+        if (err instanceof ServiceError) {
+            throw serviceErrorToResourceError(err);
         }
-        throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
+        throw err;
     }
 }
 
@@ -202,40 +201,29 @@ async function getTemplates(db: Database, uri: URL) {
  * @details Loads the agreement collection from the local REST API and serializes
  * each item into the MCP resource format expected by agreement resources.
  */
-async function getAgreements(uri: URL) {
+async function getAgreements(db: Database, uri: URL) {
     console.log({ type: 'get_agreements_requested', uri: uri.toString() });
-    const requestUrl = `${API_BASE_URL}/agreements`;
-    const result = await makeApiRequest(requestUrl);
-    if (result.ok) {
-        const agreements = await result.json();
-        console.log({ type: 'fetched_agreements_success', count: agreements.items?.length });
-        return {
-            // FIX for issue #128: The previous version spread the full agreement object
-            // (...a) after setting the uri field. Because the Agreement row from the
-            // database carries its own `uri` property (e.g. "resource:org.accordproject..."),
-            // the spread overwrote the MCP resource URI ("apap://agreements/{id}") with the
-            // agreement's data URI. MCP clients then failed to resolve the resource because
-            // they tried to use the wrong URI scheme.
-            //
-            // The ReadResourceResult `contents` array only needs { uri, mimeType, text },
-            // so spreading the entire row object onto it was also polluting the content
-            // with unrelated database fields. The agreement payload is already serialized
-            // inside the `text` property as JSON, which is where MCP clients read it from.
-            contents: agreements.items.map((a: typeof Agreement) => {
-                return {
-                    mimeType: "application/json",
-                    text: JSON.stringify({ ...a.data, $identifier: a.id }, null, 2),
-                    uri: `apap://agreements/${a.id}`,
-                    ...CACHE_HINTS.agreementList,
-                }
-            })
-        }
-    }
-    else {
-        const body = await result.text().catch(() => 'No error details available');
-        console.error({ type: 'api_error', operation: 'getAgreements', status: result.status });
-        throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
-    }
+    const agreements = await listAgreements(db);
+    console.log({ type: 'fetched_agreements_success', count: agreements.length });
+    return {
+        // FIX for issue #128: The previous version spread the full agreement object
+        // (...a) after setting the uri field. Because the Agreement row from the
+        // database carries its own `uri` property (e.g. "resource:org.accordproject..."),
+        // the spread overwrote the MCP resource URI ("apap://agreements/{id}") with the
+        // agreement's data URI. MCP clients then failed to resolve the resource because
+        // they tried to use the wrong URI scheme.
+        //
+        // The ReadResourceResult `contents` array only needs { uri, mimeType, text },
+        // so spreading the entire row object onto it was also polluting the content
+        // with unrelated database fields. The agreement payload is already serialized
+        // inside the `text` property as JSON, which is where MCP clients read it from.
+        contents: agreements.map((a) => ({
+            mimeType: "application/json",
+            text: JSON.stringify({ ...(a.data as Record<string, unknown> ?? {}), $identifier: a.id }, null, 2),
+            uri: `apap://agreements/${a.id}`,
+            ...CACHE_HINTS.agreementList,
+        })),
+    };
 }
 
 /**
@@ -328,38 +316,26 @@ const getServer = (db: Database) => {
     server.resource('templates', "apap://templates", (uri: URL) => getTemplates(db, uri));
 
     // register the agreements
-    server.resource('agreements', "apap://agreements", getAgreements);
+    server.resource('agreements', "apap://agreements", (uri: URL) => getAgreements(db, uri));
 
     // register resource template for agreements
     server.resource(
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
             list: async () => {
-                const result = await makeApiRequest(`${API_BASE_URL}/agreements`);
-                if (result.ok) {
-                    const agreements = await result.json();
-                    return {
-                        resources: agreements.items.map((a: typeof Agreement) => {
-                            return {
-                                name: `agreement-${a.id}`,
-                                ...a,
-                                uri: `apap://agreements/${a.id}`
-                            }
-                        })
-                    }
-                }
-                else {
-                    // List operations return empty rather than throwing, but we still log
-                    // the actual error for debugging
-                    const errorMsg = await buildApiErrorMessage(result, 'Failed to list agreements');
-                    console.error({ type: 'api_error', operation: 'listAgreements', status: result.status });
-                    return { resources: [] };
-                }
+                const agreements = await listAgreements(db);
+                return {
+                    resources: agreements.map((a) => ({
+                        name: `agreement-${a.id}`,
+                        ...a,
+                        uri: `apap://agreements/${a.id}`,
+                    })),
+                };
             }
         }),
         async (uri: URL, variables: any) => {
             const agreementId = variables.agreementId;
-            return await getAgreement(uri.toString(), { agreementId });
+            return await getAgreement(db, uri.toString(), { agreementId });
         }
     );
 
@@ -493,20 +469,20 @@ Refer to the agreement's template model to determine which fields are required o
             openWorldHint: false,
         },
         async ({ agreementId }): Promise<CallToolResult> => {
-            const requestUrl = `${API_BASE_URL}/agreements/${agreementId}`;
-            const result = await makeApiRequest(requestUrl);
-            if (result.ok) {
-                const agreement = await result.json();
+            const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
+            if (!Number.isFinite(id)) {
+                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            }
+            try {
+                const agreement = await getAgreementById(db, id);
                 return {
                     content: [{ type: "text", text: JSON.stringify(agreement) }]
                 };
-            } else {
-                const body = await result.text().catch(() => 'No error details available');
-                console.error({ type: 'api_error', operation: 'getAgreementTool', agreementId, status: result.status });
-                if (result.status === 404) {
-                    return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            } catch (err) {
+                if (err instanceof ServiceError) {
+                    return serviceErrorToCallToolResult(err);
                 }
-                return serviceErrorToCallToolResult(new UpstreamApiError(requestUrl, result.status, body));
+                throw err;
             }
         }
     );
