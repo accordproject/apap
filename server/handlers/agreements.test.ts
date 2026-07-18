@@ -10,6 +10,7 @@ import AdmZip from 'adm-zip';
 import fs from 'fs';
 import path from 'path';
 import * as validationModule from './concertovalidation';
+import { globalErrorHandler } from '../middleware/errorHandler';
 jest.setTimeout(30000);
 
 // Mock dependencies (but not TemplateArchiveProcessor)
@@ -97,6 +98,7 @@ describe('Agreements Router - POST /:id/trigger', () => {
 
         // Add agreements router
         app.use('/agreements', agreementsRouter);
+        app.use(globalErrorHandler);
     });
 
     describe('Success scenarios', () => {
@@ -472,8 +474,9 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 .send('{ invalid json }')
                 .expect(400);
 
-            // Express default error handling for malformed JSON
-            expect(response.text).toContain('SyntaxError');
+            // globalErrorHandler formats the JSON parsing error
+            expect(response.text).toContain('error');
+            expect(response.body.error).toBeDefined();
         });
     });
 
