@@ -16,6 +16,8 @@ import {
     AgreementTriggerError,
     UpstreamApiError,
 } from '../services/errors';
+import { listTemplates, getTemplateById } from '../services/templateService';
+import type { Database } from '../db/client';
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
@@ -177,30 +179,21 @@ async function getAgreement(uri: string, variables: { agreementId: string }) {
  * @details Loads the template collection from the local REST API and maps each
  * database row into an MCP `contents` entry with an `apap://templates/{id}` URI.
  */
-async function getTemplates(uri: URL) {
+// Direct service call, no HTTP loop. This is the slice-1 payoff: a bug fix in
+// `templateService.listTemplates` now propagates to both the MCP resource
+// callback and any future REST caller without going through Express.
+async function getTemplates(db: Database, uri: URL) {
     console.log({ type: 'get_templates_requested', uri: uri.toString() });
-    const requestUrl = `${API_BASE_URL}/templates`;
-    const result = await makeApiRequest(requestUrl);
-    if (result.ok) {
-        const templates = await result.json();
-        console.log({ type: 'fetched_templates_success', count: templates.items?.length });
-        return {
-            contents: templates.items.map((t: typeof Template) => {
-                return {
-                    uri: `apap://templates/${t.id}`,
-                    mimeType: "application/json",
-                    text: JSON.stringify(t),
-                    ...CACHE_HINTS.templateList,
-                }
-            })
-        }
-    }
-    else {
-        // Previously just threw "Failed to load template" with no status or details
-        const body = await result.text().catch(() => 'No error details available');
-        console.error({ type: 'api_error', operation: 'getTemplates', status: result.status });
-        throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
-    }
+    const templates = await listTemplates(db);
+    console.log({ type: 'fetched_templates_success', count: templates.length });
+    return {
+        contents: templates.map((t) => ({
+            uri: `apap://templates/${t.id}`,
+            mimeType: "application/json",
+            text: JSON.stringify(t),
+            ...CACHE_HINTS.templateList,
+        })),
+    };
 }
 
 /**
@@ -309,7 +302,7 @@ async function triggerAgreement(agreementId: string, body: string) : Promise<str
  * @details Creates a new MCP server and registers the template and agreement
  * resources, resource templates, and tool handlers currently exposed by APAP.
  */
-const getServer = () => {
+const getServer = (db: Database) => {
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
@@ -332,7 +325,7 @@ const getServer = () => {
     );
 
     // register the templates
-    server.resource('templates', "apap://templates", getTemplates);
+    server.resource('templates', "apap://templates", (uri: URL) => getTemplates(db, uri));
 
     // register the agreements
     server.resource('agreements', "apap://agreements", getAgreements);
@@ -375,32 +368,26 @@ const getServer = () => {
         "template",
         new ResourceTemplate("apap://templates/{templateId}", {
             list: async () => {
-                const result = await makeApiRequest(`${API_BASE_URL}/templates`);
-                if (result.ok) {
-                    const templates = await result.json();
-                    return {
-                        resources: templates.items.map((t: typeof Template) => {
-                            return {
-                                name: `template-${t.id}`,
-                                ...t,
-                                uri: `apap://templates/${t.id}`
-                            }
-                        })
-                    }
-                }
-                else {
-                    const errorMsg = await buildApiErrorMessage(result, 'Failed to list templates');
-                    console.error({ type: 'api_error', operation: 'listTemplates', status: result.status });
-                    return { resources: [] };
-                }
+                const templates = await listTemplates(db);
+                return {
+                    resources: templates.map((t) => ({
+                        name: `template-${t.id}`,
+                        ...t,
+                        uri: `apap://templates/${t.id}`,
+                    })),
+                };
             }
         }),
         async (uri: URL, variables: any) => {
             const templateId = variables.templateId;
-            const requestUrl = `${API_BASE_URL}/templates/${templateId}`;
-            const result = await makeApiRequest(requestUrl);
-            if (result.ok) {
-                const template = await result.json();
+            // Same strict-numeric guard as the REST /templates/:id route from #208.
+            // Anything not a decimal integer resolves to a not-found, not a NaN.
+            const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
+            if (!Number.isFinite(id)) {
+                throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
+            }
+            try {
+                const template = await getTemplateById(db, id);
                 return {
                     contents: [{
                         uri: uri.toString(),
@@ -409,14 +396,11 @@ const getServer = () => {
                         ...CACHE_HINTS.templateItem,
                     }]
                 };
-            }
-            else {
-                const body = await result.text().catch(() => 'No error details available');
-                console.error({ type: 'api_error', operation: 'getTemplate', templateId, status: result.status });
-                if (result.status === 404) {
-                    throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
+            } catch (err) {
+                if (err instanceof ServiceError) {
+                    throw serviceErrorToResourceError(err);
                 }
-                throw serviceErrorToResourceError(new UpstreamApiError(requestUrl, result.status, body));
+                throw err;
             }
         }
     );
@@ -477,20 +461,20 @@ Refer to the agreement's template model to determine which fields are required o
             openWorldHint: false,
         },
         async ({ templateId }): Promise<CallToolResult> => {
-            const requestUrl = `${API_BASE_URL}/templates/${templateId}`;
-            const result = await makeApiRequest(requestUrl);
-            if (result.ok) {
-                const template = await result.json();
+            const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
+            if (!Number.isFinite(id)) {
+                return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
+            }
+            try {
+                const template = await getTemplateById(db, id);
                 return {
                     content: [{ type: "text", text: JSON.stringify(template) }]
                 };
-            } else {
-                const body = await result.text().catch(() => 'No error details available');
-                console.error({ type: 'api_error', operation: 'getTemplateTool', templateId, status: result.status });
-                if (result.status === 404) {
-                    return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
+            } catch (err) {
+                if (err instanceof ServiceError) {
+                    return serviceErrorToCallToolResult(err);
                 }
-                return serviceErrorToCallToolResult(new UpstreamApiError(requestUrl, result.status, body));
+                throw err;
             }
         }
     );
@@ -656,7 +640,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
             };
 
             // Connect the transport to the MCP server
-            const server = getServer();
+            const server = getServer(res.locals.db);
             await server.connect(transport);
             console.log({ type: 'connected_server_to_transport' });
         } else {
@@ -709,7 +693,7 @@ router.get('/sse', asyncHandler(async (req: Request, res: Response) => {
         delete transports[transport.sessionId];
         delete sessionLastActivity[transport.sessionId];
     });
-    const server = getServer();
+    const server = getServer(res.locals.db);
     await server.connect(transport);
 }));
 
