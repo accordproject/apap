@@ -1,3 +1,5 @@
 .env
 scripts/drizzle-gen.js
 htpasswd
+cypress/videos
+cypress/screenshots
