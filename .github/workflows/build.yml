@@ -37,7 +37,11 @@ jobs:
       - name: Install global tools for strict dependency linting
         run: npm install -g lockfile-lint syncpack
 
-      - run: npm ci
+      - name: Install dependencies (root + server)
+        shell: bash
+        run: |
+          npm ci
+          cd server && npm ci
       - run: npm run build --if-present
       - name: Run tests
         shell: bash
