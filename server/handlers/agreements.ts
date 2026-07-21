@@ -2,59 +2,18 @@ import express from 'express';
 import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
 import { buildCrudRouter } from './crud';
 import { concertoValidation } from './concertovalidation';
-import { templateFromDatabase, extractTemplateForDatabase } from './templatebuilder';
+import { extractTemplateForDatabase } from './templatebuilder';
 import { eq } from 'drizzle-orm';
-import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
-import { AgreementNotFoundError } from '../services/errors';
-import { convertAgreement } from '../services/agreementService';
+import {
+    AgreementNotFoundError,
+    AgreementTriggerError,
+    InvalidPayloadError,
+    ValidationError,
+} from '../services/errors';
+import { convertAgreement, triggerAgreement } from '../services/agreementService';
 import { asyncHandler } from '../middleware/errorHandler';
-
-/**
- * @param db The database handle stored on `res.locals.db`.
- * @param agreementId The numeric agreement identifier from the request path.
- * @return The agreement row, its associated template row, and the reconstructed Cicero template.
- * @details Loads an agreement from the database, resolves its backing template either
- * through the cached `templateHash` or the stored template URI, and rebuilds the
- * runtime template archive needed for draft and trigger operations.
- */
-async function resolveAgreement(db: any, agreementId: string) {
-    console.log('Getting agreement: ' + agreementId);
-    const result = await db.select().from(Agreement).where(eq(Agreement.id, Number.parseInt(agreementId))).limit(1);
-    if (!result.length) {
-        throw new AgreementNotFoundError(agreementId);
-    }
-    console.log('Got agreement');
-    
-    const agreement = result[0];
-    let apTemplate;
-    let templateRow = null;
-
-    if (agreement.templateHash) {
-        const cachedResult = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, agreement.templateHash)).limit(1);
-        if (cachedResult.length > 0) {
-            templateRow = cachedResult[0];
-            apTemplate = await templateFromDatabase(templateRow);
-            return { agreement, template: templateRow, apTemplate };
-        }
-        throw new Error(`Cached template missing from database.`);
-    }
-
-    let templateUri = agreement.template;
-    if (templateUri && templateUri.startsWith('resource:')) {
-        templateUri = templateUri.split('#').slice(1).join('#');
-    }
-
-    const result2 = await db.select().from(DbTemplate).where(eq(DbTemplate.uri, templateUri)).limit(1);
-    if (!result2.length) {
-        throw new Error(`Template with uri ${templateUri} referenced by agreement ${agreementId} does not exist`);
-    }
-    templateRow = result2[0];
-    apTemplate = await templateFromDatabase(templateRow);
-
-    return { agreement, template: templateRow, apTemplate };
-}
 
 const router = express.Router();
 
@@ -154,43 +113,50 @@ crudRouter.get('/:id/convert/:format', asyncHandler(async function (req, res) {
  * template archive processor, and persists the updated agreement state back to the database.
  */
 crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
-        const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
-        const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
-        try {
-
-            const requestSchema = apTemplate.getRequestTypes().find((rt: any) => rt === req.body.$class);
-            if (!requestSchema) {
-                throw new Error(`Invalid request type: ${req.body.$class}. Expected one of: ${apTemplate.getRequestTypes().join(', ')}`);
-            }
-            
-            const { success, error } = await concertoValidation(req.body.$class, req.body, apTemplate.getModelManager());
-
-            if (!success) {
-                res.json({ isError: true, errorMessage: "Trigger request validation failed", errorDetails: error.errors[0].message });
-                return;
-            }
-
-            // TODO allow state to be passed in as a parameter
-            if (agreement.state == null) {
-                const state = await templateArchiveProcessor.init(agreement.data);
-                agreement.state = state.state;
-            }
-            
-            const triggerResult = await templateArchiveProcessor.trigger(agreement.data, req.body, agreement.state);
-            agreement.state = triggerResult.state;
-
-            // Persist updated state.
-            await res.locals.db.update(Agreement).set(agreement).where(eq(Agreement.id, Number.parseInt(agreement.id)));
-            res.json(triggerResult);
-        } catch (err: any) {
-            console.error({ 
-                type: 'operation_failed', 
-                operation: 'triggerAgreement',
-                agreementId: req.params.id 
-            });
-            
-            res.json({ isError: true, errorMessage: err.message, errorDetails: err.toString() });
+    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
+    if (!Number.isFinite(id)) {
+        throw new AgreementNotFoundError(req.params.id);
+    }
+    try {
+        const triggerResult = await triggerAgreement(res.locals.db, id, req.body);
+        res.json(triggerResult);
+    } catch (err: any) {
+        // Preserve the legacy `{ isError: true }` at HTTP 200 for the error
+        // families that used to be caught inline: payload validation (both
+        // `$class` mismatch and Concerto errors) and execution failures. Not-
+        // found + template-resolution errors bubble to globalErrorHandler.
+        //
+        // The specific `errorMessage`/`errorDetails` shape here matches what
+        // the inline REST handler produced pre-slice-2c so existing clients
+        // do not observe a wire change:
+        // - InvalidPayloadError -> full message on both fields (was raw Error.message)
+        // - ValidationError -> hardcoded top-line + first concerto error detail
+        // - AgreementTriggerError -> upstream reason (unwrap the typed prefix)
+        if (err instanceof InvalidPayloadError) {
+            res.json({ isError: true, errorMessage: err.message, errorDetails: err.message });
+            return;
         }
+        if (err instanceof ValidationError) {
+            const firstError = (err.details as any)?.errors?.[0]?.message ?? err.message;
+            res.json({
+                isError: true,
+                errorMessage: 'Trigger request validation failed',
+                errorDetails: firstError,
+            });
+            return;
+        }
+        if (err instanceof AgreementTriggerError) {
+            console.error({
+                type: 'operation_failed',
+                operation: 'triggerAgreement',
+                agreementId: req.params.id,
+            });
+            const upstream = (err as any).upstreamMessage ?? err.message;
+            res.json({ isError: true, errorMessage: upstream, errorDetails: upstream });
+            return;
+        }
+        throw err;
+    }
 }));
 
 router.use('/', crudRouter);

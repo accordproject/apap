@@ -81,6 +81,11 @@ async function resolveAgreementRuntime(db: Database, agreementId: number) {
     }
     const agreement = agreementRows[0];
 
+    // Template-resolution failures are surfaced as plain Errors (not typed
+    // ServiceErrors) so globalErrorHandler renders them as a plain 500 body
+    // `{ error: message }`. Preserves the wire shape existing clients depend
+    // on, which was inherited from the inline `resolveAgreement` helper in
+    // handlers/agreements.ts before slice 2b/2c.
     let templateRow;
     if (agreement.templateHash) {
         const cached = await db
@@ -168,6 +173,17 @@ export async function triggerAgreement(
     // trigger. Both operations are wrapped in the same catch so any runtime
     // failure surfaces as AgreementTriggerError, which the REST handler maps
     // back to the legacy `{ isError: true }` shape for backward compatibility.
+    //
+    // Concurrency note: two triggers arriving on the same never-initialised
+    // agreement both see `agreement.state == null`, so both will run
+    // `processor.init` and then their own `processor.trigger`, and the
+    // targeted `.set({ state })` at the bottom of this function is last-
+    // write-wins. Inherited from the inline REST behaviour pre-slice-2c and
+    // not made worse here; the correct fix is a row-level lock or optimistic
+    // update at the DB layer and belongs in a separate follow-up. Rare in
+    // practice because a single client rarely fires concurrent triggers on
+    // the same agreement.
+    //
     // TODO (existing, not slice 2b): allow state to be passed in as a parameter.
     let triggerResult;
     try {
@@ -182,9 +198,15 @@ export async function triggerAgreement(
         throw new AgreementTriggerError(String(agreementId), reason);
     }
 
+    // Targeted single-column write: only `state` changes on a trigger. Writing
+    // the whole spread `{ ...agreement, state: triggerResult.state }` back was
+    // (a) unnecessary write surface for every other column and (b) a
+    // concurrent-clobber risk — any column that changed between the read and
+    // this write would get overwritten with the stale in-memory value. Per
+    // @niallroche's review on #216.
     await db
         .update(Agreement)
-        .set({ ...agreement, state: triggerResult.state })
+        .set({ state: triggerResult.state })
         .where(eq(Agreement.id, agreementId));
 
     return triggerResult;
