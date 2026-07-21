@@ -187,9 +187,15 @@ export async function triggerAgreement(
         throw new AgreementTriggerError(String(agreementId), reason);
     }
 
+    // Targeted single-column write: only `state` changes on a trigger. Writing
+    // the whole spread `{ ...agreement, state: triggerResult.state }` back was
+    // (a) unnecessary write surface for every other column and (b) a
+    // concurrent-clobber risk — any column that changed between the read and
+    // this write would get overwritten with the stale in-memory value. Per
+    // @niallroche's review on #216.
     await db
         .update(Agreement)
-        .set({ ...agreement, state: triggerResult.state })
+        .set({ state: triggerResult.state })
         .where(eq(Agreement.id, agreementId));
 
     return triggerResult;
