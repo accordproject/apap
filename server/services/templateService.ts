@@ -12,9 +12,22 @@ import { TemplateNotFoundError, TemplateDuplicateError } from './errors';
 type TemplateRow = typeof Template.$inferSelect;
 type TemplateInsert = typeof Template.$inferInsert;
 
-/** Replaces: makeApiRequest(`${API_BASE_URL}/templates`) */
-export async function listTemplates(db: Database): Promise<TemplateRow[]> {
-    return db.select().from(Template);
+/**
+ * Replaces: makeApiRequest(`${API_BASE_URL}/templates`)
+ *
+ * Bounded on the primitive so callers cannot regress into unbounded reads.
+ * Defaults match the ≤100 cap the existing REST `parseQueryParams` already
+ * applies, so the MCP resource path stays token-budget-safe under the
+ * `ttlMs` / `cacheScope` hints from #201. Slice 3 REST unification will
+ * pass `limit` / `offset` through from `parseQueryParams`.
+ */
+export async function listTemplates(
+    db: Database,
+    opts: { limit?: number; offset?: number } = {},
+): Promise<TemplateRow[]> {
+    const limit = Math.min(100, Math.max(1, opts.limit ?? 100));
+    const offset = Math.max(0, opts.offset ?? 0);
+    return db.select().from(Template).limit(limit).offset(offset);
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/templates/${id}`) */

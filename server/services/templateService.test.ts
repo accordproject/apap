@@ -56,17 +56,20 @@ function toTemplateRow(t: TemplateFixture, id: number): any {
 }
 
 // Fluent Drizzle query builder mock. Every chained method returns the mock so
-// db.select().from(Template).where(...).limit(1) resolves to the configured
-// return value.
+// db.select().from(Template).where(...).limit(1) and
+// db.select().from(Template).limit(N).offset(M) both resolve to the configured
+// return value. `limit` and `offset` are both terminal in the sense that they
+// each return a thenable that resolves to `_returnValue`, so either
+// `.limit(N)` alone (single-row lookups) or `.limit(N).offset(M)` (paged list)
+// works without extra ceremony in individual tests.
 function createMockDb() {
     const mock: any = {
         _returnValue: [] as any[],
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
-        limit: jest.fn(function (this: any) {
-            return Promise.resolve(this._returnValue);
-        }),
+        limit: jest.fn().mockReturnThis(),
+        offset: jest.fn().mockReturnThis(),
         insert: jest.fn().mockReturnThis(),
         values: jest.fn().mockReturnThis(),
         returning: jest.fn(function (this: any) {
@@ -75,6 +78,11 @@ function createMockDb() {
         update: jest.fn().mockReturnThis(),
         set: jest.fn().mockReturnThis(),
         delete: jest.fn().mockReturnThis(),
+    };
+    // Make the fluent chain thenable at any terminal-ish stopping point so
+    // callers can `await db.select()...limit(N)` and `await db.select()...limit(N).offset(M)`.
+    mock.then = function (onFulfilled: any, onRejected: any) {
+        return Promise.resolve(this._returnValue).then(onFulfilled, onRejected);
     };
     mock._setReturn = (val: any[]) => { mock._returnValue = val; };
     return mock;
@@ -90,7 +98,7 @@ describe('templateService', () => {
     describe('listTemplates', () => {
         it('returns all templates from the database', async () => {
             const rows = [toTemplateRow(lateDeliveryTemplate, 1), toTemplateRow(helloWorldTemplate, 2)];
-            db.select.mockReturnValue({ from: jest.fn<any>().mockResolvedValue(rows) });
+            db._setReturn(rows);
 
             const result = await listTemplates(db);
             expect(result).toEqual(rows);
@@ -98,10 +106,35 @@ describe('templateService', () => {
         });
 
         it('returns an empty array when no templates exist', async () => {
-            db.select.mockReturnValue({ from: jest.fn<any>().mockResolvedValue([]) });
+            db._setReturn([]);
 
             const result = await listTemplates(db);
             expect(result).toEqual([]);
+        });
+
+        it('clamps limit to 100 when caller requests more', async () => {
+            db._setReturn([]);
+            await listTemplates(db, { limit: 500 });
+            expect(db.limit).toHaveBeenCalledWith(100);
+        });
+
+        it('clamps limit to at least 1 when caller requests less', async () => {
+            db._setReturn([]);
+            await listTemplates(db, { limit: 0 });
+            expect(db.limit).toHaveBeenCalledWith(1);
+        });
+
+        it('clamps offset to at least 0 when caller passes negative', async () => {
+            db._setReturn([]);
+            await listTemplates(db, { offset: -5 });
+            expect(db.offset).toHaveBeenCalledWith(0);
+        });
+
+        it('defaults to limit=100 and offset=0 when no opts provided', async () => {
+            db._setReturn([]);
+            await listTemplates(db);
+            expect(db.limit).toHaveBeenCalledWith(100);
+            expect(db.offset).toHaveBeenCalledWith(0);
         });
     });
 
