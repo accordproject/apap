@@ -8,6 +8,7 @@ import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import { AgreementNotFoundError } from '../services/errors';
+import { convertAgreement } from '../services/agreementService';
 import { asyncHandler } from '../middleware/errorHandler';
 
 /**
@@ -135,11 +136,13 @@ const crudRouter = buildCrudRouter({
  * and delegates the conversion to the template engine's draft support for the requested format.
  */
 crudRouter.get('/:id/convert/:format', asyncHandler(async function (req, res) {
-        const {agreement, apTemplate} = await resolveAgreement(res.locals.db, req.params.id);
-        const templateArchiveProcessor = new TemplateArchiveProcessor(apTemplate);
-        const draftResult = await templateArchiveProcessor.draft(agreement.data, req.params.format, {});
-        res.setHeader("Content-Type", `text/${req.params.format}`);
-        res.send(draftResult);
+    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
+    if (!Number.isFinite(id)) {
+        throw new AgreementNotFoundError(req.params.id);
+    }
+    const draftResult = await convertAgreement(res.locals.db, id, req.params.format);
+    res.setHeader("Content-Type", `text/${req.params.format}`);
+    res.send(draftResult);
 }));
 
 /**
