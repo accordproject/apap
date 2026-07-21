@@ -3,17 +3,20 @@ import { listAgreements, getAgreementById } from './agreementService';
 import { AgreementNotFoundError } from './errors';
 
 // Same Drizzle-mock pattern as templateService.test.ts (see slice 1). The
-// service touches only the fluent select/from/where/limit chain, so a shared
-// mock shape is enough.
+// service touches only the fluent select/from/where/limit(/offset) chain,
+// so a shared mock shape is enough. Both `.limit(N).offset(M)` (paged list)
+// and `.limit(1)` (single-row lookup) resolve via the top-level `then`.
 function createMockDb() {
     const mock: any = {
         _returnValue: [] as any[],
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
-        limit: jest.fn(function (this: any) {
-            return Promise.resolve(this._returnValue);
-        }),
+        limit: jest.fn().mockReturnThis(),
+        offset: jest.fn().mockReturnThis(),
+    };
+    mock.then = function (onFulfilled: any, onRejected: any) {
+        return Promise.resolve(this._returnValue).then(onFulfilled, onRejected);
     };
     mock._setReturn = (val: any[]) => { mock._returnValue = val; };
     return mock;
@@ -47,15 +50,40 @@ describe('agreementService', () => {
     describe('listAgreements', () => {
         it('returns all agreements from the database', async () => {
             const rows = [agreementRow(1), agreementRow(2)];
-            db.select.mockReturnValue({ from: jest.fn<any>().mockResolvedValue(rows) });
+            db._setReturn(rows);
 
             const result = await listAgreements(db);
             expect(result).toEqual(rows);
             expect(result).toHaveLength(2);
         });
 
+        it('clamps limit to 100 when caller requests more', async () => {
+            db._setReturn([]);
+            await listAgreements(db, { limit: 500 });
+            expect(db.limit).toHaveBeenCalledWith(100);
+        });
+
+        it('clamps limit to at least 1 when caller requests less', async () => {
+            db._setReturn([]);
+            await listAgreements(db, { limit: 0 });
+            expect(db.limit).toHaveBeenCalledWith(1);
+        });
+
+        it('clamps offset to at least 0 when caller passes negative', async () => {
+            db._setReturn([]);
+            await listAgreements(db, { offset: -5 });
+            expect(db.offset).toHaveBeenCalledWith(0);
+        });
+
+        it('defaults to limit=100 and offset=0 when no opts provided', async () => {
+            db._setReturn([]);
+            await listAgreements(db);
+            expect(db.limit).toHaveBeenCalledWith(100);
+            expect(db.offset).toHaveBeenCalledWith(0);
+        });
+
         it('returns an empty array when no agreements exist', async () => {
-            db.select.mockReturnValue({ from: jest.fn<any>().mockResolvedValue([]) });
+            db._setReturn([]);
 
             const result = await listAgreements(db);
             expect(result).toEqual([]);

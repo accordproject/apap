@@ -12,9 +12,22 @@ import { AgreementNotFoundError } from './errors';
 
 type AgreementRow = typeof Agreement.$inferSelect;
 
-/** Replaces: makeApiRequest(`${API_BASE_URL}/agreements`) */
-export async function listAgreements(db: Database): Promise<AgreementRow[]> {
-    return db.select().from(Agreement);
+/**
+ * Replaces: makeApiRequest(`${API_BASE_URL}/agreements`)
+ *
+ * Bounded on the primitive so callers cannot regress into unbounded reads.
+ * Defaults match the ≤100 cap the existing REST `parseQueryParams` already
+ * applies, so the `apap://agreements` MCP resource path stays token-budget-
+ * safe under the `ttlMs` / `cacheScope` hints from #201. Slice 3 REST
+ * unification will pass `limit` / `offset` through from `parseQueryParams`.
+ */
+export async function listAgreements(
+    db: Database,
+    opts: { limit?: number; offset?: number } = {},
+): Promise<AgreementRow[]> {
+    const limit = Math.min(100, Math.max(1, opts.limit ?? 100));
+    const offset = Math.max(0, opts.offset ?? 0);
+    return db.select().from(Agreement).limit(limit).offset(offset);
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/agreements/${id}`) */
