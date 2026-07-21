@@ -21,7 +21,7 @@
     "watch-start": "nodemon --delay 2 -w dist/ -x 'npm run start'",
     "dev": "concurrently -k -p '[{name}]' -n 'typescript,api' -c 'yellow.bold,cyan.bold' npm:watch-build npm:watch-start",
     "lint": "tslint --format prose --project .",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "@accordproject/cicero-core": "0.25.1-20250328175253",
