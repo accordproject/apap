@@ -639,6 +639,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
                     console.log({ type: 'streamable_http_session_initialized', sessionId });
                     transports[sessionId] = transport;
                     sessionLastActivity[sessionId] = Date.now();
+                    res.setHeader('mcp-session-id', sessionId);
                 }
             });
 

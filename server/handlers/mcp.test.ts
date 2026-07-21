@@ -1,4 +1,6 @@
 import { jest } from '@jest/globals';
+import request from 'supertest';
+import express from 'express';
 import {
     serviceErrorToCallToolResult,
     serviceErrorToResourceError,
@@ -7,6 +9,7 @@ import {
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
 } from './mcp';
+import mcpRouter from './mcp';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import {
     AgreementConversionError,
@@ -298,5 +301,35 @@ describe('SEP-2549 cache hints exposed by the MCP handler', () => {
             expect(Number.isFinite(hint.ttlMs)).toBe(true);
             expect(hint.ttlMs).toBeGreaterThan(0);
         }
+    });
+});
+
+describe('MCP HTTP Router', () => {
+    let app: express.Application;
+
+    beforeEach(() => {
+        app = express();
+        app.use(express.json());
+        app.use('/', mcpRouter);
+    });
+
+    it('returns mcp-session-id header on initialization response', async () => {
+        const res = await request(app)
+            .post('/mcp')
+            .set('Accept', 'application/json, text/event-stream')
+            .send({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'initialize',
+                params: {
+                    protocolVersion: '2025-03-26',
+                    capabilities: {},
+                    clientInfo: { name: 'test', version: '1.0' }
+                }
+            });
+        expect(res.status).toBe(200);
+        expect(res.headers['mcp-session-id']).toMatch(
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        );
     });
 });
