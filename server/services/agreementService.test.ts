@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { listAgreements, getAgreementById } from './agreementService';
+import { listAgreements, getAgreementById, getAgreementByUri } from './agreementService';
 import { AgreementNotFoundError } from './errors';
 
 // Same Drizzle-mock pattern as templateService.test.ts (see slice 1). The
@@ -108,6 +108,24 @@ describe('agreementService', () => {
                 code: 'AGREEMENT_NOT_FOUND',
                 statusCode: 404,
             });
+        });
+    });
+
+    describe('getAgreementByUri', () => {
+        it('returns the agreement when the URI matches', async () => {
+            const row = agreementRow(2, { uri: 'apap://agreements/2' });
+            db._setReturn([row]);
+
+            const result = await getAgreementByUri(db, 'apap://agreements/2');
+            expect(result).toEqual(row);
+        });
+
+        it('throws AgreementNotFoundError when the URI does not match', async () => {
+            db._setReturn([]);
+
+            await expect(
+                getAgreementByUri(db, 'apap://agreements/ghost'),
+            ).rejects.toThrow(AgreementNotFoundError);
         });
     });
 });

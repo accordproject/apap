@@ -36,3 +36,14 @@ export async function getAgreementById(db: Database, id: number): Promise<Agreem
     if (rows.length === 0) throw new AgreementNotFoundError(String(id));
     return rows[0];
 }
+
+/**
+ * Lookup by URI. Mirrors the getTemplateByUri surface from slice 1 so callers
+ * that hold a resource URI (e.g. `apap://agreements/{id}` clients or a future
+ * REST resource-URI route) do not have to reconstruct the numeric id first.
+ */
+export async function getAgreementByUri(db: Database, uri: string): Promise<AgreementRow> {
+    const rows = await db.select().from(Agreement).where(eq(Agreement.uri, uri)).limit(1);
+    if (rows.length === 0) throw new AgreementNotFoundError(uri);
+    return rows[0];
+}
