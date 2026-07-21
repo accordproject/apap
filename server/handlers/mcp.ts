@@ -17,7 +17,13 @@ import {
     UpstreamApiError,
 } from '../services/errors';
 import { listTemplates, getTemplateById } from '../services/templateService';
-import { listAgreements, getAgreementById, convertAgreement } from '../services/agreementService';
+import {
+    listAgreements,
+    getAgreementById,
+    convertAgreement,
+    triggerAgreement as triggerAgreementService,
+} from '../services/agreementService';
+import { InvalidPayloadError } from '../services/errors';
 import type { Database } from '../db/client';
 
 const HOST = process.env.HOST || 'localhost';
@@ -227,39 +233,6 @@ async function getAgreements(db: Database, uri: URL) {
 }
 
 /**
- * @param agreementId The agreement identifier to trigger.
- * @param body A JSON string representing the trigger request payload.
- * @return The trigger result serialized back into a JSON string.
- * @details Sends the trigger payload to the local REST API, waits for the
- * agreement logic to execute, and forwards the JSON response back to the MCP layer.
- */
-async function triggerAgreement(agreementId: string, body: string) : Promise<string> {
-    console.log({ type: 'trigger_agreement_requested', agreementId });
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    const result = await makeApiRequest(`${API_BASE_URL}/agreements/${agreementId}/trigger`,
-        {
-            method: "POST",
-            headers,
-            body
-        });
-    if (result.ok) {
-        const json = await result.json();
-        return JSON.stringify(json);
-    }
-    else {
-        // Trigger failures are especially important to surface clearly since they often
-        // come from bad payload shapes that don't match the template's request type
-        const body = await result.text().catch(() => 'No error details available');
-        console.error({ type: 'api_error', operation: 'triggerAgreement', agreementId, status: result.status });
-        if (result.status === 404) {
-            throw new AgreementNotFoundError(agreementId);
-        }
-        throw new AgreementTriggerError(agreementId, body);
-    }
-}
-
-/**
  * @return A fully configured MCP server instance with the current resources,
  * tools, and transport-facing capabilities registered.
  * @details Creates a new MCP server and registers the template and agreement
@@ -388,10 +361,22 @@ The schema for the JSON object must be one of the transaction types which extend
 Refer to the agreement's template model to determine which fields are required or optional.`,
         { agreementId: z.string(), payload: z.string() },
         async ({ agreementId, payload }): Promise<CallToolResult> => {
+            const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
+            if (!Number.isFinite(id)) {
+                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            }
+            let parsedPayload: any;
             try {
-                const result = await triggerAgreement(agreementId, payload);
+                parsedPayload = JSON.parse(payload);
+            } catch {
+                return serviceErrorToCallToolResult(
+                    new InvalidPayloadError('Payload must be valid JSON', { agreementId }),
+                );
+            }
+            try {
+                const result = await triggerAgreementService(db, id, parsedPayload);
                 return {
-                    content: [{ type: "text", text: result }]
+                    content: [{ type: "text", text: JSON.stringify(result) }]
                 };
             } catch (error) {
                 if (error instanceof ServiceError) {

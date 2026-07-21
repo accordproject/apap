@@ -81,6 +81,11 @@ async function resolveAgreementRuntime(db: Database, agreementId: number) {
     }
     const agreement = agreementRows[0];
 
+    // Template-resolution failures are surfaced as plain Errors (not typed
+    // ServiceErrors) so globalErrorHandler renders them as a plain 500 body
+    // `{ error: message }`. Preserves the wire shape existing clients depend
+    // on, which was inherited from the inline `resolveAgreement` helper in
+    // handlers/agreements.ts before slice 2b/2c.
     let templateRow;
     if (agreement.templateHash) {
         const cached = await db
