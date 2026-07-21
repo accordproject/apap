@@ -173,6 +173,17 @@ export async function triggerAgreement(
     // trigger. Both operations are wrapped in the same catch so any runtime
     // failure surfaces as AgreementTriggerError, which the REST handler maps
     // back to the legacy `{ isError: true }` shape for backward compatibility.
+    //
+    // Concurrency note: two triggers arriving on the same never-initialised
+    // agreement both see `agreement.state == null`, so both will run
+    // `processor.init` and then their own `processor.trigger`, and the
+    // targeted `.set({ state })` at the bottom of this function is last-
+    // write-wins. Inherited from the inline REST behaviour pre-slice-2c and
+    // not made worse here; the correct fix is a row-level lock or optimistic
+    // update at the DB layer and belongs in a separate follow-up. Rare in
+    // practice because a single client rarely fires concurrent triggers on
+    // the same agreement.
+    //
     // TODO (existing, not slice 2b): allow state to be passed in as a parameter.
     let triggerResult;
     try {
