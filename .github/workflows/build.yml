@@ -60,7 +60,16 @@ jobs:
     needs:
       - build
     name: Publish to npm
-    if: ${{ success() && github.event_name == 'push' && github.repository_owner == 'accordproject' }}
+    # Soft-disabled: this job references `scripts/timestamp.js` and
+    # `scripts/bump_version.js` which do not exist in the repo (never have,
+    # per `git log --all`). It was previously blocked by the matrix failures
+    # #212 fixed, so its own missing-script failure never surfaced. Setting
+    # `if: false` keeps main green while the deployment story is figured out
+    # in a follow-up. To re-enable, restore the two scripts (or drop the
+    # timestamp + bump steps and rely on manual package.json versioning) and
+    # replace this line with the original guard, kept below for reference:
+    # if: ${{ success() && github.event_name == 'push' && github.repository_owner == 'accordproject' }}
+    if: false
     runs-on: ubuntu-latest
 
     outputs:
