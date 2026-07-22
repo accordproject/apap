@@ -182,6 +182,31 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     transformRequest?: (req: Request) => any;
 }
 
+function getSingleQueryParam(value: unknown): string | undefined {
+    if (Array.isArray(value)) {
+        return typeof value[0] === 'string' ? value[0] : undefined;
+    }
+
+    return typeof value === 'string' ? value : undefined;
+}
+
+function parsePositiveIntegerQueryParam(value: unknown, fallback: number): number {
+    const rawValue = getSingleQueryParam(value);
+
+    if (rawValue === undefined) {
+        return fallback;
+    }
+
+    const normalizedValue = rawValue.trim();
+
+    if (!/^\d+$/.test(normalizedValue)) {
+        return fallback;
+    }
+
+    const parsedValue = Number.parseInt(normalizedValue, 10);
+    return Number.isSafeInteger(parsedValue) ? parsedValue : fallback;
+}
+
 /**
  * @param req The current Express request.
  * @return A normalized `QueryParams` object with parsed paging, sorting, and filter values.
@@ -189,20 +214,20 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
  * defaults and bounds for `page`, `limit`, and `sortOrder`, leaving all other
  * query-string keys available as filter values.
  */
-function parseQueryParams(req: Request): QueryParams {
+export function parseQueryParams(req: Request): QueryParams {
     const {
-        page = '1',
-        limit = '10000',
+        page,
+        limit,
         sortBy,
         sortOrder = 'asc',
         ...filters
     } = req.query;
 
     return {
-        page: Math.max(1, parseInt(page as string)),
-        limit: Math.min(100, Math.max(1, parseInt(limit as string))),
-        sortBy: sortBy as string,
-        sortOrder: (sortOrder as string).toLowerCase() === 'desc' ? 'desc' : 'asc',
+        page: Math.max(1, parsePositiveIntegerQueryParam(page, 1)),
+        limit: Math.min(100, Math.max(1, parsePositiveIntegerQueryParam(limit, 100))),
+        sortBy: getSingleQueryParam(sortBy),
+        sortOrder: getSingleQueryParam(sortOrder)?.toLowerCase() === 'desc' ? 'desc' : 'asc',
         filters
     };
 }
