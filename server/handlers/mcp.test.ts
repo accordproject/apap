@@ -1,7 +1,28 @@
-import { jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
-import {
+import { jest } from '@jest/globals';
+
+// Mock crypto.randomUUID
+jest.mock('crypto', () => {
+    const actualCrypto = jest.requireActual('crypto') as any;
+    return {
+        ...actualCrypto,
+        randomUUID: jest.fn().mockReturnValue('test-session-123')
+    };
+});
+
+// Mock the InMemoryEventStore before importing the router
+jest.mock('./inmemoryeventstore', () => {
+    return {
+        InMemoryEventStore: jest.fn().mockImplementation(() => ({
+            storeEvent: jest.fn<any>().mockResolvedValue('event-1'),
+            replayEventsAfter: jest.fn<any>().mockResolvedValue(undefined),
+        })),
+    };
+});
+
+import mcpRouter, {
+    getServer,
     serviceErrorToCallToolResult,
     serviceErrorToResourceError,
     buildApiErrorMessage,
@@ -9,7 +30,6 @@ import {
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
 } from './mcp';
-import mcpRouter from './mcp';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import {
     AgreementConversionError,
@@ -17,6 +37,32 @@ import {
     ServiceError,
     TemplateNotFoundError,
 } from '../services/errors';
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+
+function createMockDb() {
+    const mock: any = {
+        _returnValue: [] as any[],
+        select: jest.fn().mockReturnThis(),
+        from: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        offset: jest.fn().mockReturnThis(),
+        insert: jest.fn().mockReturnThis(),
+        values: jest.fn().mockReturnThis(),
+        returning: jest.fn(function (this: any) {
+            return Promise.resolve(this._returnValue);
+        }),
+        update: jest.fn().mockReturnThis(),
+        set: jest.fn().mockReturnThis(),
+        delete: jest.fn().mockReturnThis(),
+    };
+    mock.then = function (onFulfilled: any, onRejected: any) {
+        return Promise.resolve(this._returnValue).then(onFulfilled, onRejected);
+    };
+    mock._setReturn = (val: any[]) => { mock._returnValue = val; };
+    return mock;
+}
 
 // Helper to create a mock failed Response. Only the fields buildApiErrorMessage
 // actually reads (ok, status, text) need to be present; the cast is safe because
@@ -304,12 +350,29 @@ describe('SEP-2549 cache hints exposed by the MCP handler', () => {
     });
 });
 
-describe('MCP HTTP Router', () => {
+describe('MCP Handler', () => {
     let app: express.Application;
+    let mockDb: ReturnType<typeof createMockDb>;
+    let originalFetch: any;
+
+    beforeAll(() => {
+        originalFetch = (global as any).fetch;
+    });
+
+    afterAll(() => {
+        (global as any).fetch = originalFetch;
+    });
 
     beforeEach(() => {
+        jest.clearAllMocks();
+        mockDb = createMockDb();
+
         app = express();
         app.use(express.json());
+        app.use((req, res, next) => {
+            res.locals.db = mockDb;
+            next();
+        });
         app.use('/', mcpRouter);
     });
 
@@ -328,8 +391,145 @@ describe('MCP HTTP Router', () => {
                 }
             });
         expect(res.status).toBe(200);
-        expect(res.headers['mcp-session-id']).toMatch(
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-        );
+        expect(res.headers['mcp-session-id']).toBe('test-session-123');
+    });
+
+    // =========================================================================
+    // HTTP Boundaries — /mcp POST & GET
+    // =========================================================================
+    describe('HTTP Transport Boundaries', () => {
+
+        it('POST /mcp returns 400 when no session ID and not an initialize request', async () => {
+            const response = await request(app)
+                .post('/mcp')
+                .send({ jsonrpc: '2.0', method: 'tools/list', id: 1 })
+                .expect(400);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Bad Request: No valid session ID provided',
+                },
+                id: null,
+            });
+        });
+
+        it('GET /sse returns an SSE stream with the correct content type', async () => {
+            const response = await request(app)
+                .get('/sse')
+                .buffer(false)
+                .parse((res: any, callback: any) => {
+                    let data = '';
+                    res.on('data', (chunk: Buffer) => {
+                        data += chunk.toString();
+                        if (data.includes('endpoint')) {
+                            res.destroy();
+                            callback(null, data);
+                        }
+                    });
+                    res.on('error', () => {
+                        callback(null, data);
+                    });
+                });
+
+            expect(response.headers['content-type']).toContain('text/event-stream');
+        });
+
+        it('POST /messages returns 400 when sessionId query param is missing or invalid', async () => {
+            const response = await request(app)
+                .post('/messages')
+                .query({ sessionId: 'nonexistent' })
+                .send({ jsonrpc: '2.0', method: 'ping', id: 1 })
+                .expect(400);
+
+            expect(response.body.error || response.text).toBeDefined();
+        });
+    });
+
+    // =========================================================================
+    // MCP Server Internal Logic using InMemoryTransport
+    // =========================================================================
+    describe('MCP Server Internal Logic', () => {
+        let client: Client;
+        let serverTransport: InMemoryTransport;
+        let clientTransport: InMemoryTransport;
+
+        beforeEach(async () => {
+            // Setup in-memory transports
+            const transports = InMemoryTransport.createLinkedPair();
+            clientTransport = transports[0];
+            serverTransport = transports[1];
+
+            // Instantiate and connect server
+            const mcpServer = getServer(mockDb);
+            await mcpServer.connect(serverTransport);
+
+            // Connect client
+            client = new Client({ name: 'test-client', version: '1.0.0' }, { capabilities: {} });
+            await client.connect(clientTransport);
+        });
+
+        afterEach(async () => {
+            await client.close();
+        });
+
+        it('lists all registered tools', async () => {
+            const result = await client.listTools();
+            const toolNames = result.tools.map(t => t.name);
+
+            expect(toolNames).toContain('convert-agreement-to-format');
+            expect(toolNames).toContain('trigger-agreement');
+            expect(toolNames).toContain('getTemplate');
+            expect(toolNames).toContain('getAgreement');
+        });
+
+        it('lists all registered resources', async () => {
+            mockDb._setReturn([]);
+            const result = await client.listResources();
+            expect(result.resources).toBeDefined();
+            expect(Array.isArray(result.resources)).toBe(true);
+        });
+
+        it('executes getTemplate tool correctly', async () => {
+            const mockTemplate = { id: 1, uri: 'test://template/1', author: 'Test Author' };
+            mockDb._setReturn([mockTemplate]);
+
+            const result = await client.callTool({
+                name: 'getTemplate',
+                arguments: { templateId: '1' }
+            });
+
+            const content = result.content as any[];
+            expect(content[0].type).toBe('text');
+            const parsed = JSON.parse(content[0].text as string);
+            expect(parsed.uri).toBe('test://template/1');
+        });
+
+        it('executes trigger-agreement tool correctly', async () => {
+            const mockTemplate = { id: 1, uri: 'test://template/1', author: 'Test Author' };
+            mockDb._setReturn([mockTemplate]);
+
+            (global as any).fetch = jest.fn<any>().mockResolvedValue({
+                ok: true,
+                json: async () => ({ result: { penalty: 20, buyerMayTerminate: false }, state: { count: 1 } }),
+            });
+
+            const payload = JSON.stringify({
+                $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
+                forceMajeure: false,
+                agreedDelivery: '2024-01-01T00:00:00Z',
+                deliveredAt: '2024-01-15T00:00:00Z',
+                goodsValue: 1000
+            });
+
+            const result = await client.callTool({
+                name: 'trigger-agreement',
+                arguments: { agreementId: '1', payload }
+            });
+
+            const content = result.content as any[];
+            expect(content[0].type).toBe('text');
+        });
     });
 });

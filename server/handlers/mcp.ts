@@ -238,7 +238,7 @@ async function getAgreements(db: Database, uri: URL) {
  * @details Creates a new MCP server and registers the template and agreement
  * resources, resource templates, and tool handlers currently exposed by APAP.
  */
-const getServer = (db: Database) => {
+export const getServer = (db: Database) => {
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
