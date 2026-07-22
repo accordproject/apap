@@ -1,22 +1,26 @@
 # GSoC 2026 - Hardening APAP / MCP
 
-> **Status (Jul 18, 2026):** W7 day 5 / 12. Eight PRs merged in the first
-> half (#184, #190, #196, #199, #200, #201, #202, #208): typed
-> `ServiceError` hierarchy (#184, #196, #200), Concerto typed-context via
-> `InitializeResult.instructions` + `apap://schema/protocol.cto` resource
-> (#199, A/B wins of +20pp on Claude Sonnet 4.6 and +38pp on GPT-4o),
-> SEP-2549 `ttlMs` + `cacheScope` hints on `ReadResourceResult.contents[]`
-> (#201, forward-compatible with the MCP 2026-07-28 RC), and #208 CRUD
-> strict-numeric `:id` hardening. Midterm dispatch published on Medium +
-> LinkedIn (Jul 12). Midterm evaluation submitted (Jul 13). Weekly
-> Thursday 9 AM PT sync slot with Niall confirmed. W7 code shipped on
-> POC as [`apap-mcp-poc#7`](https://github.com/JayDS22/apap-mcp-poc/pull/7):
-> `subscriptions/listen` handler + transport-agnostic
-> `SubscriptionRegistry` service. US-C4 async trigger + jobId polling
-> deferred to a follow-up W8 slice tracked at
-> [`apap-mcp-poc#8`](https://github.com/JayDS22/apap-mcp-poc/issues/8).
-> This PR (#198) stays open as the rolling roadmap doc through end of
-> GSoC per the Jul 16 sync.
+> **Status (Jul 21, 2026):** W8 day 1 / 12. Fifteen PRs merged in the first
+> half, headlined by the service-layer port completing upstream this week:
+> `templateService` + `agreementService` (with `convertAgreement` +
+> `triggerAgreement`) now share the same code path from REST and MCP, and the
+> last internal `makeApiRequest` HTTP loops are gone. Chain shipped Jul 21 as
+> #211 → #213 → #214 → #216. CI hygiene also landed: #212 stopped `npm test`
+> failures from being swallowed, #215 fixed the CI never installing
+> `server/node_modules`, #210 dropped a phantom `crypto` npm stub. Prior
+> first-half work: typed `ServiceError` hierarchy (#184, #196, #200), Concerto
+> typed-context via `InitializeResult.instructions` +
+> `apap://schema/protocol.cto` resource (#199, A/B wins of +20pp on Claude
+> Sonnet 4.6 and +38pp on GPT-4o), SEP-2549 `ttlMs` + `cacheScope` hints on
+> `ReadResourceResult.contents[]` (#201, forward-compatible with the MCP
+> 2026-07-28 RC), CRUD strict-numeric `:id` hardening (#208). Midterm dispatch
+> published on Medium + LinkedIn (Jul 12); midterm evaluation submitted (Jul
+> 13). Weekly Thursday 9 AM PT sync slot with Niall confirmed. W7 code shipped
+> on POC as [`apap-mcp-poc#7`](https://github.com/JayDS22/apap-mcp-poc/pull/7):
+> `subscriptions/listen` handler + transport-agnostic `SubscriptionRegistry`
+> service. Slice 3 (REST list route unification through `buildCrudRouter`) is
+> the last piece of the Proposal Core lane. This PR (#198) stays open as the
+> rolling roadmap doc through end of GSoC per the Jul 16 sync.
 
 **Project:** Idea #4 - Hardening the APAP / MCP Server
 **Contributor:** Jay Guwalani ([@JayDS22](https://github.com/JayDS22))
@@ -43,7 +47,7 @@ scope expansion be memorialized).
 
 | # | Workstream | Owner | Current status |
 |---|---|---|---|
-| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | First-half complete: slice 1 (#184), contract tests (#196), slice 3 (#200, replaces the closed slice-2 draft #197) and Concerto typed-context (#199) all merged upstream. Remaining rollout continues through W10 |
+| 1 | **Proposal Core** - service layer, tests, multi-client docs | Jay | Service-layer port complete upstream (Jul 21). Chain shipped as #211 (templateService) → #213 (agreementService CRUD) → #214 (convertAgreement) → #216 (triggerAgreement). REST + MCP now call the same functions; the last internal `makeApiRequest` HTTP loops are gone. Earlier first-half work: slice 1 (#184), contract tests (#196), slice 3 (#200 replaces the closed slice-2 draft #197), Concerto typed-context (#199). Slice 3 (REST list route unification through `buildCrudRouter`) is the remaining piece |
 | 2 | **MCP RC migration** - adopt 2026-07-28 spec via env-gated stateless rewrite (SEPs 2567/2575/2243/2549) | Jay | On track. SEP-2549 (`ttlMs` + `cacheScope`) landed via #201; W7 slice adds `subscriptions/listen` (POC first); W8 folds JSON-RPC error code mapping (`-32020..-32099`) |
 | 3 | **Agentic Payments** - multi-provider OAuth, privacy boundary, agent-calling-agents demo | Jay (with Niall) | Privacy-boundary sketch drafted; W9 lane confirmed joint Niall+Jay on Jun 18 call |
 | 4 | **Alternatives Evaluation** - OpenAI fn-calling, LangGraph / CrewAI comparison | Jay | Complete. Both spikes shipped, decision memo merged, Concerto typed-context A/B shipped (#199). Framework-vs-tool-count finding published on Medium Jul 12 |
@@ -63,7 +67,7 @@ scope expansion be memorialized).
 | 4 | Jun 23 - Jun 29 | Tests + payments + Headroom + RC W4 slice | Integration tests (Docker Postgres); privacy-boundary design; Headroom proxy methodology; typed-error rollout slice-2 draft (#197 opened, later closed and rewritten as slice 3 in #200) | Done |
 | 5 | Jun 30 - Jul 6 | Contract tests + services rollout | Contract tests for `buildApiErrorMessage` helper merged (#196, Jul 1); typed-errors slice 3 replaced the closed slice-2 draft #197 with a clean rewrite (#200 opened) | Done |
 | 6 | Jul 7 - Jul 13 | Midterm + Concerto typed-context + SEP-2549 | **Midterm evaluation submitted (form)**; **Concerto typed-context merged (#199, Jul 9)**; **typed-errors slice 3 merged (#200, Jul 3)**; **SEP-2549 `ttlMs` + `cacheScope` cache hints merged (#201, Jul 10)**; **CLAUDE.md refresh merged (#202, Jul 9)**; **#208 CRUD strict-numeric `:id` guard merged (Jul 13)**; midterm dispatch published on Medium + LinkedIn (Jul 12); community peer review posted on #194 (Satvik's session cleanup) | Done |
-| 7 | Jul 14 - Jul 20 | `subscriptions/listen` slice + docs | **W7 issue scoped in [`apap-mcp-poc#6`](https://github.com/JayDS22/apap-mcp-poc/issues/6)**; **`subscriptions/listen` handler on POC with new `SubscriptionRegistry` service**; notification dispatch hooks in `templateService` + `agreementService` mutation paths; session-close cleanup; fake-timer test coverage; **prompt versioning: move `SERVER_INSTRUCTIONS` and future LLM-facing strings into a versioned `prompts/` directory**; Claude tutorial draft | Active |
+| 7 | Jul 14 - Jul 20 | `subscriptions/listen` slice + service-layer upstream port | **W7 issue scoped in [`apap-mcp-poc#6`](https://github.com/JayDS22/apap-mcp-poc/issues/6)**; **`subscriptions/listen` handler on POC with new `SubscriptionRegistry` service** (shipped as POC #7); notification dispatch hooks in `templateService` + `agreementService` mutation paths; session-close cleanup; fake-timer test coverage; **service-layer port to upstream: templateService (#211), agreementService CRUD (#213), convertAgreement (#214), triggerAgreement (#216)** — all four merged Jul 21; **CI hygiene: #210 (crypto stub), #212 (test-swallow), #215 (server install) all merged Jul 20-21** | Done |
 | 8 | Jul 21 - Jul 27 | Upstream port + JSON-RPC error mapping + observability | Port W7 `subscriptions/listen` to upstream RI (`accordproject/apap`); **`ServiceError → JSON-RPC` mapping into `-32020..-32099` reserved range** (`ServiceError.jsonRpcCode` constant table; `serviceErrorToResourceError` + `serviceErrorToCallToolResult` updated); ChatGPT + Inspector tutorials; **logger refactor to `pino` (replace 17 `console.log` + 11 `console.error` sites in `handlers/mcp.ts`)** | Planned |
 | 9 | Jul 28 - Aug 3 | Migration guide + demo | Migration guide; agent-calling-agents demo (APAP as service, not agent) | Planned |
 | 10 | Aug 4 - Aug 10 | DX + demo | Pino at 15+ call sites; demo polish; blog draft (alternatives + agents with Accord) | Planned |
@@ -139,7 +143,16 @@ All three asks from May 20 closed within 24 hours of the Jun 5 sync follow-up em
 | [PR #201](https://github.com/accordproject/apap/pull/201) | Feature | SEP-2549 `ttlMs` + `cacheScope` cache hints on `ReadResourceResult.contents[]`, forward-compatible with MCP 2026-07-28 RC (merged Jul 10) |
 | [PR #202](https://github.com/accordproject/apap/pull/202) | Docs | CLAUDE.md refresh documenting the MCP typed-context surface and Docker context invariant (merged Jul 9) |
 | [PR #208](https://github.com/accordproject/apap/pull/208) | Bug fix | Reject non-strict-numeric `:id` in CRUD router up-front (closes #162). Community-approved by @apoorv7g Jul 12; merged by @niallroche Jul 13 |
+| [PR #210](https://github.com/accordproject/apap/pull/210) | Chore | Drop placeholder `crypto` npm stub from `server/package.json` (npm registry deprecated the package; Node ships the builtin) (merged Jul 21) |
+| [PR #211](https://github.com/accordproject/apap/pull/211) | Feature | Slice 1 of the service-layer port: `templateService` + new `Database` type; rewire 4 mcp.ts template loops from `makeApiRequest` to direct service calls; `{ limit, offset }` pagination on the primitive (merged Jul 21) |
+| [PR #212](https://github.com/accordproject/apap/pull/212) | CI | Stop `npm test || echo "No tests configured"` from silently swallowing failures in Build + CI workflows; also fixed the Windows jest-bin shell-wrapper issue that this exposed (merged Jul 21) |
+| [PR #213](https://github.com/accordproject/apap/pull/213) | Feature | Slice 2: `agreementService` CRUD half (`listAgreements`, `getAgreementById`, `getAgreementByUri`) + rewire 4 mcp.ts agreement lookup loops; same pagination pattern as #211 (merged Jul 21) |
+| [PR #214](https://github.com/accordproject/apap/pull/214) | Feature | Slice 2b: `convertAgreement` in the service wrapping the real `TemplateArchiveProcessor.draft`; REST `/agreements/:id/convert/:format` + MCP `convert-agreement-to-format` tool both call the same function; private `resolveAgreementRuntime` helper (merged Jul 21) |
+| [PR #215](https://github.com/accordproject/apap/pull/215) | CI | Two-step install in Build + CI workflows so `server/node_modules` is actually populated on the runner (root `npm ci` doesn't recurse without a workspaces field). Fixed a silent-red matrix cell on macos-24 that had been broken on main for 12+ days (merged Jul 20) |
+| [PR #216](https://github.com/accordproject/apap/pull/216) | Feature | Slice 2c: `triggerAgreement` in the service wrapping `TemplateArchiveProcessor.trigger`; REST `/agreements/:id/trigger` + MCP `trigger-agreement` tool both call the same function; targeted `.set({ state })` persist avoids concurrent-column clobber; legacy `{ isError: true }` HTTP 200 shape preserved for existing REST clients (merged Jul 21) |
+| [Issue #217](https://github.com/accordproject/apap/issues/217) | Follow-up | Expose paged reads via MCP resource URIs for `apap://templates` and `apap://agreements` — service primitives are ready; MCP callers still can only see the first 100 rows. Slice 3 or slice 4 fold-in |
 | Peer review on [#194](https://github.com/accordproject/apap/pull/194) | Review | Comment-style review on Satvik77777's session-cleanup memory-leak fix: flagged module-level `setInterval` side effect, weak test coverage on the cleanup path, and missing `transport.close()` before reference deletion |
+| Peer reviews on [#192](https://github.com/accordproject/apap/pull/192) + [#203](https://github.com/accordproject/apap/pull/203) | Review | APPROVE reviews on Satvik77777's error-middleware refactor (with two defer-able follow-ups on unit coverage + Postgres error message preservation) and mcp-session-id header fix; both merged shortly after |
 
 ### POC deliverables (in `JayDS22/apap-mcp-poc`)
 
