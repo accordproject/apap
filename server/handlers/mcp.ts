@@ -4,7 +4,7 @@ import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mc
 import { z } from 'zod';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResult, McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
+import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResult, McpError } from "@modelcontextprotocol/sdk/types.js";
 import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, MODEL, Template } from '../db/schema';
@@ -132,15 +132,18 @@ export function serviceErrorToCallToolResult(error: ServiceError): CallToolResul
 
 /**
  * @param error A `ServiceError` raised inside an MCP resource handler.
- * @return An `McpError` whose `data` field carries the structured `toJSON()` payload.
+ * @return An `McpError` whose `code` is the subclass's assigned `-32020..-32099`
+ * code and whose `data` field carries the structured `toJSON()` payload.
  * @details Resource handlers do not have a `CallToolResult { isError }` channel, but the
  * SDK ships `McpError` with a typed JSON-RPC error code and a structured `data` field.
- * Choosing the JSON-RPC code here maps not-found-style cases to `InvalidParams` so the
- * client sees an actionable code without us inventing a new SDK error string.
+ * Each `ServiceError` subclass assigns its own JSON-RPC code from the
+ * `-32020..-32099` MCP implementation-defined range (see `MCP_ERROR_CODES` in
+ * `services/errors.ts`), so clients can branch on the integer code without parsing
+ * messages. The base `ServiceError.jsonRpcCode` (`-32028`) is a generic fallback
+ * used when a caller throws the base class directly.
  */
 export function serviceErrorToResourceError(error: ServiceError): McpError {
-    const code = error.statusCode === 404 ? ErrorCode.InvalidParams : ErrorCode.InternalError;
-    return new McpError(code, error.message, error.toJSON());
+    return new McpError(error.jsonRpcCode, error.message, error.toJSON());
 }
 
 /**

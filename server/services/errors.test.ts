@@ -8,19 +8,21 @@ import {
     ValidationError,
     UpstreamApiError,
     AgreementTriggerError,
+    MCP_ERROR_CODES,
 } from './errors';
 
 describe('ServiceError', () => {
-    it('exposes code, statusCode, message, and details', () => {
-        const err = new ServiceError('CUSTOM_CODE', 418, 'tea time', { teapot: true });
+    it('exposes code, statusCode, jsonRpcCode, message, and details', () => {
+        const err = new ServiceError('CUSTOM_CODE', 418, -32028, 'tea time', { teapot: true });
         expect(err.code).toBe('CUSTOM_CODE');
         expect(err.statusCode).toBe(418);
+        expect(err.jsonRpcCode).toBe(-32028);
         expect(err.message).toBe('tea time');
         expect(err.details).toEqual({ teapot: true });
     });
 
     it('omits details from toJSON when not provided', () => {
-        const err = new ServiceError('NO_DETAILS', 500, 'boom');
+        const err = new ServiceError('NO_DETAILS', 500, -32028, 'boom');
         expect(err.details).toBeUndefined();
         expect(err.toJSON()).toEqual({
             error: { code: 'NO_DETAILS', message: 'boom' },
@@ -28,7 +30,7 @@ describe('ServiceError', () => {
     });
 
     it('includes details in toJSON when provided', () => {
-        const err = new ServiceError('WITH_DETAILS', 400, 'bad', { field: 'name' });
+        const err = new ServiceError('WITH_DETAILS', 400, -32025, 'bad', { field: 'name' });
         expect(err.toJSON()).toEqual({
             error: {
                 code: 'WITH_DETAILS',
@@ -46,11 +48,28 @@ describe('ServiceError', () => {
     });
 });
 
+describe('MCP_ERROR_CODES range', () => {
+    it('all codes sit inside the reserved -32020..-32099 MCP implementation range', () => {
+        for (const [name, code] of Object.entries(MCP_ERROR_CODES)) {
+            expect(code).toBeGreaterThanOrEqual(-32099);
+            expect(code).toBeLessThanOrEqual(-32020);
+            // sanity: each code is a unique integer
+            expect(Number.isInteger(code)).toBe(true);
+        }
+    });
+
+    it('each code is unique (no accidental collisions on refactor)', () => {
+        const codes = Object.values(MCP_ERROR_CODES);
+        expect(new Set(codes).size).toBe(codes.length);
+    });
+});
+
 describe('Template errors', () => {
     it('TemplateNotFoundError -> 404 TEMPLATE_NOT_FOUND with identifier in details', () => {
         const err = new TemplateNotFoundError(42);
         expect(err.statusCode).toBe(404);
         expect(err.code).toBe('TEMPLATE_NOT_FOUND');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.TEMPLATE_NOT_FOUND);
         expect(err.details).toEqual({ identifier: 42 });
         expect(err.message).toContain('42');
     });
@@ -59,6 +78,7 @@ describe('Template errors', () => {
         const err = new TemplateDuplicateError('resource:foo#bar');
         expect(err.statusCode).toBe(409);
         expect(err.code).toBe('TEMPLATE_DUPLICATE');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.TEMPLATE_DUPLICATE);
         expect(err.details).toEqual({ uri: 'resource:foo#bar' });
     });
 });
@@ -68,6 +88,7 @@ describe('Agreement errors', () => {
         const err = new AgreementNotFoundError('xyz');
         expect(err.statusCode).toBe(404);
         expect(err.code).toBe('AGREEMENT_NOT_FOUND');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.AGREEMENT_NOT_FOUND);
         expect(err.details).toEqual({ identifier: 'xyz' });
     });
 
@@ -75,6 +96,7 @@ describe('Agreement errors', () => {
         const err = new AgreementConversionError(7, 'html', 'engine crashed');
         expect(err.statusCode).toBe(500);
         expect(err.code).toBe('AGREEMENT_CONVERSION_FAILED');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.AGREEMENT_CONVERSION_FAILED);
         expect(err.details).toEqual({ agreementId: 7, format: 'html', reason: 'engine crashed' });
         expect(err.message).toContain('html');
         expect(err.message).toContain('engine crashed');
@@ -93,6 +115,7 @@ describe('Generic input errors', () => {
         const err = new InvalidPayloadError('missing field', { field: 'uri' });
         expect(err.statusCode).toBe(400);
         expect(err.code).toBe('INVALID_PAYLOAD');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.INVALID_PAYLOAD);
         expect(err.details).toEqual({ field: 'uri' });
     });
 
@@ -100,6 +123,7 @@ describe('Generic input errors', () => {
         const err = new ValidationError('schema mismatch');
         expect(err.statusCode).toBe(422);
         expect(err.code).toBe('VALIDATION_ERROR');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.VALIDATION_ERROR);
         expect(err.details).toBeUndefined();
     });
 });
@@ -109,6 +133,7 @@ describe('Upstream errors', () => {
         const err = new UpstreamApiError('http://localhost:9000/templates', 500, 'boom');
         expect(err.statusCode).toBe(502);
         expect(err.code).toBe('UPSTREAM_API_ERROR');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.UPSTREAM_API_ERROR);
         expect(err.upstreamUrl).toBe('http://localhost:9000/templates');
         expect(err.httpStatus).toBe(500);
         expect(err.upstreamBody).toBe('boom');
@@ -147,6 +172,7 @@ describe('Upstream errors', () => {
         const err = new AgreementTriggerError('agr-7', 'request did not validate against Request type');
         expect(err.statusCode).toBe(502);
         expect(err.code).toBe('AGREEMENT_TRIGGER_FAILED');
+        expect(err.jsonRpcCode).toBe(MCP_ERROR_CODES.AGREEMENT_TRIGGER_FAILED);
         expect(err.agreementId).toBe('agr-7');
         expect(err.upstreamMessage).toBe('request did not validate against Request type');
         expect(err.details).toEqual({

@@ -30,12 +30,13 @@ import mcpRouter, {
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
 } from './mcp';
-import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
+import { McpError } from '@modelcontextprotocol/sdk/types.js';
 import {
     AgreementConversionError,
     AgreementNotFoundError,
     ServiceError,
     TemplateNotFoundError,
+    UpstreamApiError,
 } from '../services/errors';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -224,12 +225,14 @@ describe('mcp typed error helpers', () => {
     });
 
     describe('serviceErrorToResourceError', () => {
-        it('returns an McpError with InvalidParams code for 404-style ServiceErrors', () => {
+        it('returns an McpError whose code is the ServiceError subclass jsonRpcCode', () => {
             const err = new TemplateNotFoundError('tmpl-1');
             const wrapped = serviceErrorToResourceError(err);
 
             expect(wrapped).toBeInstanceOf(McpError);
-            expect(wrapped.code).toBe(ErrorCode.InvalidParams);
+            // TemplateNotFoundError sits at MCP_ERROR_CODES.TEMPLATE_NOT_FOUND (-32020),
+            // in the -32020..-32099 range reserved for implementation-defined MCP errors.
+            expect(wrapped.code).toBe(-32020);
             expect(wrapped.message).toContain('tmpl-1');
 
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
@@ -237,12 +240,13 @@ describe('mcp typed error helpers', () => {
             expect(data.error.message).toContain('tmpl-1');
         });
 
-        it('uses InternalError code for non-404 ServiceErrors', () => {
-            const err = new ServiceError('CUSTOM', 500, 'kaboom', { reason: 'overflow' });
+        it('propagates whatever jsonRpcCode a bare ServiceError carries', () => {
+            // Base-class throw with an explicit jsonRpcCode in the -32020..-32099 range.
+            const err = new ServiceError('CUSTOM', 500, -32050, 'kaboom', { reason: 'overflow' });
             const wrapped = serviceErrorToResourceError(err);
 
             expect(wrapped).toBeInstanceOf(McpError);
-            expect(wrapped.code).toBe(ErrorCode.InternalError);
+            expect(wrapped.code).toBe(-32050);
             // McpError prepends "MCP error <code>:" to the constructor message; check substring.
             expect(wrapped.message).toContain('kaboom');
 
@@ -252,13 +256,26 @@ describe('mcp typed error helpers', () => {
         });
 
         it('round-trips arbitrary ServiceError subclasses into the McpError data payload', () => {
-            const err = new ServiceError('CUSTOM', 418, 'I am a teapot', { teapot: true });
+            const err = new ServiceError('CUSTOM', 418, -32060, 'I am a teapot', { teapot: true });
             const wrapped = serviceErrorToResourceError(err);
 
+            expect(wrapped.code).toBe(-32060);
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
             expect(data.error.code).toBe('CUSTOM');
             expect(data.error.message).toBe('I am a teapot');
             expect(data.error.details).toEqual({ teapot: true });
+        });
+
+        it('UpstreamApiError surfaces httpStatus in error.data.details for diagnostic parity with the REST 502', () => {
+            const err = new UpstreamApiError('http://localhost:9000/agreements/7/trigger', 502, 'gateway down');
+            const wrapped = serviceErrorToResourceError(err);
+
+            expect(wrapped.code).toBe(-32027);
+            const data = wrapped.data as { error: { code: string; details: { upstreamUrl: string; httpStatus: number; upstreamBody: string } } };
+            expect(data.error.code).toBe('UPSTREAM_API_ERROR');
+            expect(data.error.details.httpStatus).toBe(502);
+            expect(data.error.details.upstreamUrl).toBe('http://localhost:9000/agreements/7/trigger');
+            expect(data.error.details.upstreamBody).toBe('gateway down');
         });
     });
 });
