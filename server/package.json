@@ -24,7 +24,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
-    "@accordproject/cicero-core": "0.25.1-20250328175253",
+    "@accordproject/cicero-core": "0.25.2",
     "@accordproject/concerto-core": "3.21.0",
     "@accordproject/concerto-util": "3.20.4",
     "@accordproject/template-engine": "2.7.1",
@@ -35,7 +35,7 @@
     "drizzle-zod": "0.7.1",
     "express": "4.22.0",
     "express-oauth-server": "2.0.0",
-    "morgan": "1.9.1",
+    "morgan": "1.11.0",
     "openapi-backend": "5.12.0",
     "postgres": "3.4.5",
     "source-map-support": "0.5.10",

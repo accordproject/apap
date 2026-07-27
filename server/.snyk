@@ -1,0 +1,22 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-AXIOS-18060804:
+    - '*':
+        reason: |
+          Medium-severity "Allocation of Resources Without Limits or Throttling"
+          in axios@1.13.6, introduced transitively via
+          @accordproject/cicero-core@0.25.2 > axios@1.13.6. Fixed upstream in
+          axios@1.18.0, but @accordproject/cicero-core has not yet bumped its
+          axios pin.
+
+          axios in this chain is doc-processing only (template-engine's
+          markdown/PDF pipeline), not on the REST or MCP request hot path.
+          Ignoring keeps the security-only bump PR (net -3 advisories) landable
+          while we wait for cicero-core to update. Revisit when cicero-core
+          pins axios@1.18.0+, or fold into the template-engine 2.9 migration PR.
+        expires: '2026-10-22T00:00:00.000Z'
+        created: '2026-07-24T00:00:00.000Z'
+# patches apply the minimum changes required to fix a vulnerability
+patch: {}
