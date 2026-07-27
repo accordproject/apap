@@ -27,9 +27,9 @@
     "@accordproject/cicero-core": "0.25.2",
     "@accordproject/concerto-core": "3.21.0",
     "@accordproject/concerto-util": "3.20.4",
-    "@accordproject/template-engine": "2.7.1",
-    "@modelcontextprotocol/sdk": "1.15.1",
-    "adm-zip": "0.5.16",
+    "@accordproject/template-engine": "2.9.0",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "adm-zip": "0.6.0",
     "dotenv": "16.5.0",
     "drizzle-orm": "0.45.2",
     "drizzle-zod": "0.7.1",
@@ -49,7 +49,7 @@
     "@types/morgan": "1.7.35",
     "@types/node": "10.17.60",
     "@types/supertest": "6.0.3",
-    "axios": "1.15.1",
+    "axios": "1.18.0",
     "concurrently": "6.2.0",
     "drizzle-kit": "0.31.0",
     "jest": "29.7.0",
@@ -59,6 +59,6 @@
     "tslint": "5.12.1",
     "tsx": "4.19.3",
     "typescript": "5.8.3",
-    "wait-on": "3.2.0"
+    "wait-on": "9.1.0"
   }
 }
