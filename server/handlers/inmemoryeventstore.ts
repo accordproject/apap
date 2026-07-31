@@ -1,8 +1,8 @@
-// import { JSONRPCMessage } from '../../types.js';
-// import { EventStore } from '../../server/streamableHttp.js';
-
-import { EventStore } from "@modelcontextprotocol/sdk/dist/esm/server/streamableHttp";
-import { JSONRPCMessage } from "@modelcontextprotocol/sdk/dist/esm/types";
+// Migrated to @modelcontextprotocol/server@2.0.0 (SDK 2.0 line).
+// The old private `@modelcontextprotocol/sdk/dist/esm/*` paths no longer exist
+// in the split-package layout; both `EventStore` and `JSONRPCMessage` are now
+// public exports of `@modelcontextprotocol/server`.
+import type { EventStore, JSONRPCMessage } from "@modelcontextprotocol/server";
 
 /**
  * Simple in-memory implementation of the EventStore interface for resumability

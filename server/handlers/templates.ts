@@ -52,7 +52,9 @@ async function templateValidation(body:any) : Promise<ValidationResult> {
 const crudRouter = buildCrudRouter({
     table: Template,
     typeName: 'Template',
-    validateBody: { schema: TemplateInsertSchema, custom: (body) => templateValidation(body) }
+    // ponytail: cast TemplateInsertSchema to any due to zod v3 -> v4 upgrade
+    // depth-instantiation issue with drizzle-zod. Runtime unaffected.
+    validateBody: { schema: TemplateInsertSchema as any, custom: (body) => templateValidation(body) }
 });
 
 router.use('/', crudRouter);

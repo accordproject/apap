@@ -27,8 +27,12 @@
     "@accordproject/cicero-core": "0.25.2",
     "@accordproject/concerto-core": "3.21.0",
     "@accordproject/concerto-util": "3.20.4",
-    "@accordproject/template-engine": "2.7.1",
-    "@modelcontextprotocol/sdk": "1.15.1",
+    "@accordproject/template-engine": "^4.0.0",
+    "@modelcontextprotocol/client": "^2.0.0",
+    "@modelcontextprotocol/core": "^2.0.0",
+    "@modelcontextprotocol/express": "^2.0.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "adm-zip": "0.5.16",
     "dotenv": "16.5.0",
     "drizzle-orm": "0.45.2",
@@ -39,7 +43,8 @@
     "openapi-backend": "5.12.0",
     "postgres": "3.4.5",
     "source-map-support": "0.5.10",
-    "zod": "3.24.3"
+    "undefined": "^0.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/adm-zip": "0.5.7",
@@ -53,12 +58,12 @@
     "concurrently": "6.2.0",
     "drizzle-kit": "0.31.0",
     "jest": "29.7.0",
-    "nodemon": "1.18.10",
+    "nodemon": "^3.1.14",
     "supertest": "7.1.4",
     "ts-jest": "29.0.3",
     "tslint": "5.12.1",
     "tsx": "4.19.3",
     "typescript": "5.8.3",
-    "wait-on": "3.2.0"
+    "wait-on": "^9.1.0"
   }
 }

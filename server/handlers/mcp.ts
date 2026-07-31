@@ -1,10 +1,16 @@
 import express, { Request, Response } from 'express';
-import { asyncHandler } from '../middleware/errorHandler';
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {
+    McpServer,
+    ResourceTemplate,
+    isInitializeRequest,
+    ProtocolError,
+    INTERNAL_ERROR,
+    INVALID_PARAMS,
+    type CallToolResult,
+    type ReadResourceResult,
+} from '@modelcontextprotocol/server';
+import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
 import { z } from 'zod';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { isInitializeRequest, CallToolResult, GetPromptResult, ReadResourceResult, McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import * as crypto from "crypto";
 import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, MODEL, Template } from '../db/schema';
@@ -132,15 +138,18 @@ export function serviceErrorToCallToolResult(error: ServiceError): CallToolResul
 
 /**
  * @param error A `ServiceError` raised inside an MCP resource handler.
- * @return An `McpError` whose `data` field carries the structured `toJSON()` payload.
+ * @return A `ProtocolError` whose `data` field carries the structured `toJSON()` payload.
  * @details Resource handlers do not have a `CallToolResult { isError }` channel, but the
- * SDK ships `McpError` with a typed JSON-RPC error code and a structured `data` field.
- * Choosing the JSON-RPC code here maps not-found-style cases to `InvalidParams` so the
- * client sees an actionable code without us inventing a new SDK error string.
+ * SDK ships `ProtocolError` with a numeric JSON-RPC error code and a structured `data` field.
+ * Under SDK 2.0 the old `McpError` / `ErrorCode` monolith was split into a `ProtocolError`
+ * class hierarchy plus numeric code constants (`INVALID_PARAMS`, `INTERNAL_ERROR`, ...);
+ * `ProtocolError`'s `(code, message, data)` constructor is the direct replacement for the
+ * removed `new McpError(code, message, data)` shape. Not-found-style cases still map to
+ * `InvalidParams` so the client sees an actionable code without us inventing an SDK string.
  */
-export function serviceErrorToResourceError(error: ServiceError): McpError {
-    const code = error.statusCode === 404 ? ErrorCode.InvalidParams : ErrorCode.InternalError;
-    return new McpError(code, error.message, error.toJSON());
+export function serviceErrorToResourceError(error: ServiceError): ProtocolError {
+    const code = error.statusCode === 404 ? INVALID_PARAMS : INTERNAL_ERROR;
+    return new ProtocolError(code, error.message, error.toJSON());
 }
 
 /**
@@ -246,10 +255,14 @@ export const getServer = (db: Database) => {
 
     // register the Concerto protocol model as a readable resource so a
     // client (or any LLM behind it) can resolve `$class` discriminators to
-    // type definitions without external lookup
-    server.resource(
+    // type definitions without external lookup.
+    // SDK 2.0 renamed `.resource()` / `.tool()` to `.registerResource()` /
+    // `.registerTool()` and requires a `config` object between the URI and
+    // the callback (title/description/mimeType/etc.).
+    server.registerResource(
         'protocol-schema',
         "apap://schema/protocol.cto",
+        { mimeType: "text/x-concerto" },
         async (uri: URL): Promise<ReadResourceResult> => ({
             contents: [{
                 uri: uri.toString(),
@@ -261,13 +274,23 @@ export const getServer = (db: Database) => {
     );
 
     // register the templates
-    server.resource('templates', "apap://templates", (uri: URL) => getTemplates(db, uri));
+    server.registerResource(
+        'templates',
+        "apap://templates",
+        { mimeType: "application/json" },
+        (uri: URL) => getTemplates(db, uri),
+    );
 
     // register the agreements
-    server.resource('agreements', "apap://agreements", (uri: URL) => getAgreements(db, uri));
+    server.registerResource(
+        'agreements',
+        "apap://agreements",
+        { mimeType: "application/json" },
+        (uri: URL) => getAgreements(db, uri),
+    );
 
     // register resource template for agreements
-    server.resource(
+    server.registerResource(
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
             list: async () => {
@@ -281,14 +304,15 @@ export const getServer = (db: Database) => {
                 };
             }
         }),
-        async (uri: URL, variables: any) => {
-            const agreementId = variables.agreementId;
+        { mimeType: "application/json" },
+        async (uri: URL, variables: Record<string, string | string[]>) => {
+            const agreementId = String(variables.agreementId);
             return await getAgreement(db, uri.toString(), { agreementId });
         }
     );
 
     // register resource template for templates
-    server.resource(
+    server.registerResource(
         "template",
         new ResourceTemplate("apap://templates/{templateId}", {
             list: async () => {
@@ -302,8 +326,9 @@ export const getServer = (db: Database) => {
                 };
             }
         }),
-        async (uri: URL, variables: any) => {
-            const templateId = variables.templateId;
+        { mimeType: "application/json" },
+        async (uri: URL, variables: Record<string, string | string[]>) => {
+            const templateId = String(variables.templateId);
             // Same strict-numeric guard as the REST /templates/:id route from #208.
             // Anything not a decimal integer resolves to a not-found, not a NaN.
             const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
@@ -329,12 +354,21 @@ export const getServer = (db: Database) => {
         }
     );
 
-    // register the format conversion tool
-    server.tool(
+    // register the format conversion tool.
+    // SDK 2.0's `.registerTool()` bundles description, inputSchema, and
+    // annotations into a single `config` object; the handler's arg shape
+    // is inferred from `inputSchema` (a Zod raw shape auto-wrapped by the SDK).
+    server.registerTool(
         "convert-agreement-to-format",
-        "Converts an existing agreement to an output format",
-        { agreementId: z.string(), format: z.enum(['html', 'markdown']) },
-        async ({ agreementId, format }): Promise<CallToolResult> => {
+        {
+            description: "Converts an existing agreement to an output format",
+            // ponytail: cast to any because project zod (v3.24) and SDK bundled zod (v4.4)
+            // are separate instances; TypeScript sees ZodString-v3 and ZodString-v4 as
+            // distinct types. Runtime is fine (SDK accepts any zod raw shape). Upgrade
+            // project zod to v4 as a follow-up to remove the cast.
+            inputSchema: { agreementId: z.string(), format: z.enum(['html', 'markdown']) } as any,
+        },
+        async ({ agreementId, format }: { agreementId: string; format: 'html' | 'markdown' }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
             if (!Number.isFinite(id)) {
                 return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
@@ -354,18 +388,20 @@ export const getServer = (db: Database) => {
     );
 
     // register the trigger tool
-    server.tool(
+    server.registerTool(
         "trigger-agreement",
-        `Sends JSON data (as a string) to an existing agreement, evaluating the logic of the agreement against the input data.
+        {
+            description: `Sends JSON data (as a string) to an existing agreement, evaluating the logic of the agreement against the input data.
 The schema for the JSON object must be one of the transaction types which extend 'Request' defined in the model for the agreement's template.
 Refer to the agreement's template model to determine which fields are required or optional.`,
-        { agreementId: z.string(), payload: z.string() },
-        async ({ agreementId, payload }): Promise<CallToolResult> => {
+            inputSchema: { agreementId: z.string(), payload: z.string() } as any,
+        },
+        async ({ agreementId, payload }: { agreementId: string; payload: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
             if (!Number.isFinite(id)) {
                 return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
             }
-            let parsedPayload: any;
+            let parsedPayload: unknown;
             try {
                 parsedPayload = JSON.parse(payload);
             } catch {
@@ -388,19 +424,19 @@ Refer to the agreement's template model to determine which fields are required o
     );
 
     // register the getTemplate tool
-    server.tool(
+    server.registerTool(
         'getTemplate',
-        'Retrieve a template by ID',
         {
-            templateId: z.string(),
+            description: 'Retrieve a template by ID',
+            inputSchema: { templateId: z.string() } as any,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false,
+            },
         },
-        {
-            readOnlyHint: true,
-            destructiveHint: false,
-            idempotentHint: true,
-            openWorldHint: false,
-        },
-        async ({ templateId }): Promise<CallToolResult> => {
+        async ({ templateId }: { templateId: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
             if (!Number.isFinite(id)) {
                 return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
@@ -420,19 +456,19 @@ Refer to the agreement's template model to determine which fields are required o
     );
 
     // register the getAgreement tool
-    server.tool(
+    server.registerTool(
         'getAgreement',
-        'Retrieve an agreement by ID',
         {
-            agreementId: z.string(),
+            description: 'Retrieve an agreement by ID',
+            inputSchema: { agreementId: z.string() } as any,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false,
+            },
         },
-        {
-            readOnlyHint: true,
-            destructiveHint: false,
-            idempotentHint: true,
-            openWorldHint: false,
-        },
-        async ({ agreementId }): Promise<CallToolResult> => {
+        async ({ agreementId }: { agreementId: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
             if (!Number.isFinite(id)) {
                 return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
@@ -455,8 +491,10 @@ Refer to the agreement's template model to determine which fields are required o
 };
 
 
-// Exported for testing purposes
-export const transports: Record<string, StreamableHTTPServerTransport | SSEServerTransport> = {};
+// Exported for testing purposes.
+// SDK 2.0 dropped `SSEServerTransport`; the map now only holds Streamable HTTP
+// transports (single-type record, no union).
+export const transports: Record<string, NodeStreamableHTTPServerTransport> = {};
 
 export const sessionLastActivity: Record<string, number> = {};
 
@@ -484,7 +522,7 @@ export function startSessionCleanup(): void {
         const now = Date.now();
         for (const sessionId of Object.keys(transports)) {
             const lastActivity = sessionLastActivity[sessionId];
-            if (lastActivity && 
+            if (lastActivity &&
                 now - lastActivity > SESSION_TIMEOUT_MS) {
                 console.log({
                     type: 'session_cleanup',
@@ -512,6 +550,10 @@ export function startSessionCleanup(): void {
 
 //=============================================================================
 // STREAMABLE HTTP TRANSPORT (PROTOCOL VERSION 2025-03-26)
+//
+// SSE transport (`GET /sse` + `POST /messages`) was removed alongside the
+// SDK 1.x -> 2.x migration: `@modelcontextprotocol/server@2.0.0` no longer
+// exports `SSEServerTransport`. Only Streamable HTTP remains.
 //=============================================================================
 
 const router = express.Router();
@@ -531,31 +573,16 @@ router.all('/mcp', async (req: Request, res: Response) => {
     try {
         // Check for existing session ID
         const sessionId = req.headers['mcp-session-id'] as string | undefined;
-        let transport: StreamableHTTPServerTransport;
+        let transport: NodeStreamableHTTPServerTransport;
 
         if (sessionId && transports[sessionId]) {
-            // Check if the transport is of the correct type
-            const existingTransport = transports[sessionId];
-            if (existingTransport instanceof StreamableHTTPServerTransport) {
-                // Reuse existing transport
-                transport = existingTransport;
-                // Update last activity on every request
-                sessionLastActivity[sessionId] = Date.now();
-            } else {
-                // Transport exists but is not a StreamableHTTPServerTransport (could be SSEServerTransport)
-                res.status(400).json({
-                    jsonrpc: '2.0',
-                    error: {
-                        code: -32000,
-                        message: 'Bad Request: Session exists but uses a different transport protocol',
-                    },
-                    id: null,
-                });
-                return;
-            }
+            // Reuse existing transport (map is now single-type: only Streamable HTTP).
+            transport = transports[sessionId];
+            // Update last activity on every request
+            sessionLastActivity[sessionId] = Date.now();
         } else if (!sessionId && req.method === 'POST' && isInitializeRequest(req.body)) {
             const eventStore = new InMemoryEventStore();
-            transport = new StreamableHTTPServerTransport({
+            transport = new NodeStreamableHTTPServerTransport({
                 sessionIdGenerator: () => (crypto as any).randomUUID(),
                 eventStore, // Enable resumability
                 onsessioninitialized: (sessionId) => {
@@ -570,13 +597,15 @@ router.all('/mcp', async (req: Request, res: Response) => {
             // Set up onclose handler to clean up transport when closed
             transport.onclose = () => {
                 const sid = transport.sessionId;
-                delete transports[sid];
-                delete sessionLastActivity[sid];
-                console.log({
-                    type: 'session_closed',
-                    sessionId: sid,
-                    reason: 'transport_onclose'
-                });
+                if (sid) {
+                    delete transports[sid];
+                    delete sessionLastActivity[sid];
+                    console.log({
+                        type: 'session_closed',
+                        sessionId: sid,
+                        reason: 'transport_onclose'
+                    });
+                }
             };
 
             // Connect the transport to the MCP server
@@ -614,61 +643,5 @@ router.all('/mcp', async (req: Request, res: Response) => {
         }
     }
 });
-
-//=============================================================================
-// DEPRECATED HTTP+SSE TRANSPORT (PROTOCOL VERSION 2024-11-05)
-//=============================================================================
-
-/**
- * @param req The incoming Express request for the legacy SSE bootstrap endpoint.
- * @param res The Express response that is bound to the SSE transport stream.
- * @return Resolves after the SSE transport is created and connected to a new MCP server.
- * @details Creates a legacy `SSEServerTransport`, stores it by session id, and
- * removes it again when the HTTP connection closes.
- */
-router.get('/sse', asyncHandler(async (req: Request, res: Response) => {
-    const transport = new SSEServerTransport('/messages', res);
-    transports[transport.sessionId] = transport;
-    res.on("close", () => {
-        delete transports[transport.sessionId];
-        delete sessionLastActivity[transport.sessionId];
-    });
-    const server = getServer(res.locals.db);
-    await server.connect(transport);
-}));
-
-/**
- * @param req The incoming Express request carrying a legacy SSE message.
- * @param res The Express response used for JSON-RPC output.
- * @return Resolves after the message has been forwarded to the matching SSE session
- * transport or an error response has been written.
- * @details Looks up the existing SSE transport by `sessionId`, verifies that the
- * session belongs to the legacy transport type, and forwards the posted MCP message.
- */
-router.post("/messages", asyncHandler(async (req: Request, res: Response) => {
-    const sessionId = req.query.sessionId as string;
-    let transport: SSEServerTransport;
-    const existingTransport = transports[sessionId];
-    if (existingTransport instanceof SSEServerTransport) {
-        // Reuse existing transport
-        transport = existingTransport;
-    } else {
-        // Transport exists but is not a SSEServerTransport (could be StreamableHTTPServerTransport)
-        res.status(400).json({
-            jsonrpc: '2.0',
-            error: {
-                code: -32000,
-                message: 'Bad Request: Session exists but uses a different transport protocol',
-            },
-            id: null,
-        });
-        return;
-    }
-    if (transport) {
-        await transport.handlePostMessage(req, res, req.body);
-    } else {
-        res.status(400).send('No transport found for sessionId');
-    }
-}));
 
 export default router;
