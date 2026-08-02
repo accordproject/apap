@@ -7,6 +7,14 @@ import { HttpModelRetriever } from './retrievers/HttpModelRetriever';
 
 const router = express.Router();
 
+class SecureFileDownloader {
+    async getFile(url: string): Promise<string> {
+        const retriever = new HttpModelRetriever();
+
+        return await retriever.fetchModel(url);
+    }
+}
+
 router.post('/', async (req, res, next) => {
     const uri: string | undefined = req.body?.uri;
     const retriever = new HttpModelRetriever();
@@ -17,7 +25,9 @@ router.post('/', async (req, res, next) => {
 
             const modelManager = new ModelManager({ strict: true, addMetamodel: true });
             const modelFile = modelManager.addCTOModel(ctoText, 'external.cto', true);
-            await modelManager.updateExternalModels();
+            
+            const secureDownloader = new SecureFileDownloader();
+            await modelManager.updateExternalModels({}, secureDownloader as any);
             
             const namespace = modelFile.getNamespace() || 'external';
 
@@ -31,8 +41,9 @@ router.post('/', async (req, res, next) => {
                 ]
             };
         } catch (error: any) {
+            console.error(`[SharedModels Post Error]:`, error);
             return res.status(400).json({
-                error: 'Failed to fetch or parse external model',
+                error: 'Failed to fetch or parse external model safely.',
                 details: error.message
             });
         }
