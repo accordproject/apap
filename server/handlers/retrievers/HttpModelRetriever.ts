@@ -6,17 +6,18 @@ const ALLOWED_DOMAINS = [
     'raw.githubusercontent.com'
 ];
 
+const MAX_FILE_SIZE = 1024 * 1024; 
+
 export class HttpModelRetriever implements IModelRetriever {
     public getURISchemes(): string[] {
-        return ['http', 'https'];
+        return ['https'];
     }
 
     async fetchModel(uri: string): Promise<string> {
-        if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
-            throw new Error(`Invalid URI scheme: ${uri}`);
+        if (!uri.startsWith('https://')) {
+            throw new Error(`Invalid URI scheme. Only https is allowed.`);
         }
 
-        // 1. Create a brand new URL object to break the CodeQL taint chain
         let safeUrl: URL;
         try {
             safeUrl = new URL(uri);
@@ -24,9 +25,16 @@ export class HttpModelRetriever implements IModelRetriever {
             throw new Error(`Malformed URL provided.`);
         }
 
-        // 2. Validate the host of the new object
+        if (safeUrl.port !== '' && safeUrl.port !== '443') {
+            throw new Error(`SSRF Prevention: Custom ports are not allowed.`);
+        }
+
         if (!ALLOWED_DOMAINS.includes(safeUrl.hostname)) {
-            throw new Error(`SSRF Prevention: Domain not in allowlist. Received: ${safeUrl.hostname}`);
+            throw new Error(`SSRF Prevention: Domain not in allowlist.`);
+        }
+
+        if (safeUrl.hostname === 'raw.githubusercontent.com' && !safeUrl.pathname.startsWith('/accordproject/')) {
+            throw new Error(`SSRF Prevention: Only official accordproject GitHub repositories are allowed.`);
         }
 
         const headers: Record<string, string> = {};
@@ -38,17 +46,31 @@ export class HttpModelRetriever implements IModelRetriever {
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         try {
-            // 3. Pass the validated URL object string, NOT the user's original 'uri'
             const response = await fetch(safeUrl.toString(), { 
                 headers,
-                signal: controller.signal
+                signal: controller.signal,
+                redirect: 'error' 
             });
             
             if (!response.ok) {
-                throw new Error(`Failed to fetch model from ${safeUrl.toString()}: ${response.statusText} (${response.status})`);
+                throw new Error(`HTTP request failed with status ${response.status}`);
             }
 
-            return await response.text();
+            const contentLength = response.headers.get('content-length');
+            if (contentLength && parseInt(contentLength, 10) > MAX_FILE_SIZE) {
+                throw new Error('Model file exceeds the 1MB size limit.');
+            }
+
+            const text = await response.text();
+
+            if (Buffer.byteLength(text, 'utf8') > MAX_FILE_SIZE) {
+                throw new Error('Model file exceeds the 1MB size limit after download.');
+            }
+
+            return text;
+        } catch (error: any) {
+            console.error(`[HttpModelRetriever Error]:`, error);
+            throw new Error('Failed to securely fetch the external model. Ensure the URL is valid, public, and within allowed limits.');
         } finally {
             clearTimeout(timeoutId);
         }
