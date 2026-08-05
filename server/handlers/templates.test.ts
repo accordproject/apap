@@ -19,8 +19,10 @@ jest.mock('./concertovalidation', () => {
     };
 });
 
-// Get a reference to the mocked schema so we can control safeParse
-const mockedSchema = TemplateInsertSchema as jest.Mocked<typeof TemplateInsertSchema>;
+// Get a reference to the mocked schema so we can control safeParse.
+// ponytail: cast to any due to zod v3 -> v4 upgrade depth-instantiation
+// issue with drizzle-zod. Runtime unaffected.
+const mockedSchema = TemplateInsertSchema as any;
 
 describe('templateValidation', () => {
   let app: express.Application;

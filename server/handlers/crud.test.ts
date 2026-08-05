@@ -16,7 +16,9 @@ jest.mock('./concertovalidation', () => {
     };
 });
 
-const mockedSchema = TemplateInsertSchema as jest.Mocked<typeof TemplateInsertSchema>;
+// ponytail: cast to any due to zod v3 -> v4 upgrade depth-instantiation
+// issue with drizzle-zod. Runtime unaffected.
+const mockedSchema = TemplateInsertSchema as any;
 
 const validTemplateBody = {
     uri: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',

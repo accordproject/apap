@@ -416,19 +416,19 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     if (!result.success) {
                         return res.status(400).json({ 
                             error: 'Invalid request body',
-                            details: result.error.errors 
+                            details: result.error.issues 
                         });
                     }
                     req.body = result.data;  // Use validated data
                     if(validateBody.custom) {
                         const result = await validateBody.custom(req.body);
                         if (!result.success) {
-                            return res.status(400).json({ 
+                            return res.status(400).json({
                                 error: 'Invalid request body',
-                                details: result.error.errors 
+                                details: result.error.errors
                             });
                         }
-                        req.body = result.data;  // Use validated data        
+                        req.body = result.data;  // Use validated data
                     }
                 }
 
@@ -520,7 +520,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     if (!result.success) {
                         return res.status(400).json({
                             error: 'Invalid request body',
-                            details: result.error.errors
+                            details: result.error.issues
                         });
                     }
                     req.body = result.data;

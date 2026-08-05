@@ -30,15 +30,14 @@ import mcpRouter, {
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
 } from './mcp';
-import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
+import { ProtocolError, ProtocolErrorCode, InMemoryTransport } from '@modelcontextprotocol/server';
 import {
     AgreementConversionError,
     AgreementNotFoundError,
     ServiceError,
     TemplateNotFoundError,
 } from '../services/errors';
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { Client } from '@modelcontextprotocol/client';
 
 function createMockDb() {
     const mock: any = {
@@ -224,12 +223,12 @@ describe('mcp typed error helpers', () => {
     });
 
     describe('serviceErrorToResourceError', () => {
-        it('returns an McpError with InvalidParams code for 404-style ServiceErrors', () => {
+        it('returns an ProtocolError with InvalidParams code for 404-style ServiceErrors', () => {
             const err = new TemplateNotFoundError('tmpl-1');
             const wrapped = serviceErrorToResourceError(err);
 
-            expect(wrapped).toBeInstanceOf(McpError);
-            expect(wrapped.code).toBe(ErrorCode.InvalidParams);
+            expect(wrapped).toBeInstanceOf(ProtocolError);
+            expect(wrapped.code).toBe(ProtocolErrorCode.InvalidParams);
             expect(wrapped.message).toContain('tmpl-1');
 
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
@@ -241,8 +240,8 @@ describe('mcp typed error helpers', () => {
             const err = new ServiceError('CUSTOM', 500, 'kaboom', { reason: 'overflow' });
             const wrapped = serviceErrorToResourceError(err);
 
-            expect(wrapped).toBeInstanceOf(McpError);
-            expect(wrapped.code).toBe(ErrorCode.InternalError);
+            expect(wrapped).toBeInstanceOf(ProtocolError);
+            expect(wrapped.code).toBe(ProtocolErrorCode.InternalError);
             // McpError prepends "MCP error <code>:" to the constructor message; check substring.
             expect(wrapped.message).toContain('kaboom');
 
@@ -415,36 +414,8 @@ describe('MCP Handler', () => {
             });
         });
 
-        it('GET /sse returns an SSE stream with the correct content type', async () => {
-            const response = await request(app)
-                .get('/sse')
-                .buffer(false)
-                .parse((res: any, callback: any) => {
-                    let data = '';
-                    res.on('data', (chunk: Buffer) => {
-                        data += chunk.toString();
-                        if (data.includes('endpoint')) {
-                            res.destroy();
-                            callback(null, data);
-                        }
-                    });
-                    res.on('error', () => {
-                        callback(null, data);
-                    });
-                });
-
-            expect(response.headers['content-type']).toContain('text/event-stream');
-        });
-
-        it('POST /messages returns 400 when sessionId query param is missing or invalid', async () => {
-            const response = await request(app)
-                .post('/messages')
-                .query({ sessionId: 'nonexistent' })
-                .send({ jsonrpc: '2.0', method: 'ping', id: 1 })
-                .expect(400);
-
-            expect(response.body.error || response.text).toBeDefined();
-        });
+        // SSE transport dropped in SDK 2.0. `GET /sse` and `POST /messages`
+        // routes no longer exist; former SSE tests removed as part of #221.
     });
 
     // =========================================================================

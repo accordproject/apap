@@ -28,9 +28,11 @@ const router = express.Router();
 router.post('/', asyncHandler(async (req, res) => {
         const db = res.locals.db;
         
-        const zodValidation = AgreementInsertSchema.safeParse(req.body);
+        // ponytail: cast schema to any due to zod v3 -> v4 upgrade depth-instantiation
+        // issue with drizzle-zod. Runtime unaffected.
+        const zodValidation = (AgreementInsertSchema as any).safeParse(req.body);
         if (!zodValidation.success) {
-            return res.status(400).json({ error: 'Schema validation failed', details: zodValidation.error.errors });
+            return res.status(400).json({ error: 'Schema validation failed', details: zodValidation.error.issues });
         }
 
         const { success, error } = await concertoValidation('Agreement', req.body);
@@ -84,7 +86,9 @@ router.post('/', asyncHandler(async (req, res) => {
 const crudRouter = buildCrudRouter({
     table: Agreement,
     typeName: 'Agreement',
-    validateBody: { schema: AgreementInsertSchema, custom: (body) => concertoValidation('Agreement', body) }
+    // ponytail: cast schema to any due to zod v3 -> v4 upgrade depth-instantiation
+    // issue with drizzle-zod. Runtime unaffected.
+    validateBody: { schema: AgreementInsertSchema as any, custom: (body) => concertoValidation('Agreement', body) }
 });
 
 /**
