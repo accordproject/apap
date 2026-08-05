@@ -437,6 +437,35 @@ describe('SQL injection prevention in defaultWhereClause', () => {
             .get('/templates?author=null');
         expect(res.status).not.toBe(500);
     });
+
+    // Case-insensitive filter via `~` prefix (closes #125). Original bug: a
+    // template created by "Purushotham" was not findable by `?author=purushotham`
+    // or `?author=Purushotham` because the router built a case-sensitive
+    // equality clause. The `~` prefix opts the value into an ILIKE comparison,
+    // which Postgres treats as case-insensitive. Backwards compatible: existing
+    // queries without the prefix keep the case-sensitive equality behaviour.
+    it('does not crash when ~ prefix requests a case-insensitive match', async () => {
+        const res = await request(app)
+            .get('/templates?author=~Rob');
+        expect(res.status).not.toBe(500);
+    });
+
+    it('does not crash when ~ prefix is used with an empty operand', async () => {
+        // `?author=~` after the tilde is an empty value; the router should
+        // still handle it (Postgres ILIKE against an empty string is a valid
+        // query, matches empty string columns only). The point is no crash.
+        const res = await request(app)
+            .get('/templates?author=~');
+        expect(res.status).not.toBe(500);
+    });
+
+    it('does not crash when ~ prefix contains SQL-like metacharacters', async () => {
+        // ILIKE treats % and _ as wildcards. Passing them as bound parameters
+        // is safe (no SQL injection), but the router should still not crash.
+        const res = await request(app)
+            .get('/templates?author=~%25admin%25');
+        expect(res.status).not.toBe(500);
+    });
 });
 
 function createRequest(query: Request['query']): Request {

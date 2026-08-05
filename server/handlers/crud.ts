@@ -85,6 +85,19 @@ function defaultWhereClause<T extends PgTable<any>>(
 		// detect operator inside value (no naming convention needed)
 		if (typeof value === 'string') {
 			const trimmed = value.trim();
+
+			// Case-insensitive equality via `~` prefix. `?author=~Rob` matches
+			// "rob", "ROB", "Rob", etc. via Postgres ILIKE. Placed before the
+			// standard operator match so `~` never collides with the numeric
+			// comparison operators. Operand is passed as a bound parameter so
+			// SQL injection is not a concern (identifier safety on the column
+			// is already enforced by SAFE_IDENTIFIER_RX above). Closes #125.
+			if (trimmed.startsWith('~')) {
+				const operand = trimmed.slice(1).trim();
+				conditions.push(sql`${column} ILIKE ${operand}`);
+				continue;
+			}
+
 			const opMatch = trimmed.match(/^(>=|<=|<>|!=|>|<)\s*(.+)$/);
 			if (opMatch) {
 				const operator = opMatch[1];
