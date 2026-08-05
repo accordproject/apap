@@ -7,6 +7,7 @@ import * as db from './templatebuilder';
 import * as validationModule from './concertovalidation';
 import { parseQueryParams } from './crud';
 import { TemplateInsertSchema } from '../db/schema';
+import { globalErrorHandler } from '../middleware/errorHandler';
 
 jest.mock('../db/schema');
 jest.mock('./templatebuilder');
@@ -509,5 +510,214 @@ describe('parseQueryParams', () => {
         expect(queryParams.limit).toBe(100);
         expect(queryParams.sortBy).toBe('createdAt');
         expect(queryParams.sortOrder).toBe('desc');
+    });
+});
+
+// Coverage additions for the CRUD router happy paths + boundary shapes that
+// PR #165 (@Thomas-Sedhom, opened April 2026) originally targeted. That PR
+// went stale before landing and the router surface has since been hardened
+// with SQL-injection guards (bdc536e), strict numeric-ID parsing (#208),
+// 404-on-missing DELETE (#180), pagination guards (#177), and pagination
+// query parsing hardening (5e6782d). This section fills gaps not already
+// covered by those hardening PRs: GET / list envelope + pagination shape,
+// GET /:id happy + 404, and POST / happy path.
+describe('GET / list route (envelope + pagination shape)', () => {
+    let app: express.Application;
+    let dbMock: any;
+    // The list route runs two sequential awaits: a count query
+    // (db.select({count}).from().where() -> [{count: N}]) then an items
+    // query (db.select().from().where().limit().offset() -> [rows...]).
+    // Both terminate at different points in the fluent chain, so instead
+    // of chasing which method .mockResolvedValueOnce should target,
+    // intercept the shared `then` on the mock and pop from a queue.
+    let awaitQueue: any[];
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        awaitQueue = [];
+        dbMock = {
+            select: jest.fn().mockReturnThis(),
+            from: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            limit: jest.fn().mockReturnThis(),
+            offset: jest.fn().mockReturnThis(),
+            orderBy: jest.fn().mockReturnThis(),
+            insert: jest.fn().mockReturnThis(),
+            values: jest.fn().mockReturnThis(),
+            returning: jest.fn().mockReturnThis(),
+            update: jest.fn().mockReturnThis(),
+            set: jest.fn().mockReturnThis(),
+            delete: jest.fn().mockReturnThis(),
+            then(onF: any, onR: any) {
+                const value = awaitQueue.shift() ?? [];
+                return Promise.resolve(value).then(onF, onR);
+            },
+        };
+        app = express();
+        app.use(express.json());
+        app.use((req, res, next) => {
+            res.locals.db = dbMock;
+            next();
+        });
+        app.use('/templates', templatesRouter);
+        app.use(globalErrorHandler);
+    });
+
+    it('returns PaginatedResponse envelope with items + total + page + limit + totalPages', async () => {
+        // Queue is [count-result, items-result] in order of await.
+        const items = [{ id: 1, uri: 'apap://a' }, { id: 2, uri: 'apap://b' }];
+        awaitQueue = [[{ count: 42 }], items];
+
+        const res = await request(app).get('/templates');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            items,
+            total: 42,
+            page: 1,
+            limit: 100,
+            totalPages: 1,
+        });
+    });
+
+    it('returns an empty items array + total=0 when the table has no rows', async () => {
+        awaitQueue = [[{ count: 0 }], []];
+
+        const res = await request(app).get('/templates');
+
+        expect(res.status).toBe(200);
+        expect(res.body.items).toEqual([]);
+        expect(res.body.total).toBe(0);
+        expect(res.body.totalPages).toBe(0);
+    });
+
+    it('paginates past total: page beyond last returns empty items but preserves total', async () => {
+        // 5 rows total, page=3 at limit=10 asks for rows 21..30 which do
+        // not exist. Total metadata must still reflect the true row count so
+        // the client can render "showing 0 of 5" instead of an outright 404.
+        awaitQueue = [[{ count: 5 }], []];
+
+        const res = await request(app).get('/templates?page=3&limit=10');
+
+        expect(res.status).toBe(200);
+        expect(res.body.items).toEqual([]);
+        expect(res.body.total).toBe(5);
+        expect(res.body.page).toBe(3);
+        expect(res.body.limit).toBe(10);
+        expect(res.body.totalPages).toBe(1);
+    });
+
+    it('computes totalPages as ceil(total / limit)', async () => {
+        // 47 rows at limit=20 -> ceil(47/20) = 3 pages.
+        awaitQueue = [[{ count: 47 }], []];
+
+        const res = await request(app).get('/templates?limit=20');
+
+        expect(res.body.total).toBe(47);
+        expect(res.body.limit).toBe(20);
+        expect(res.body.totalPages).toBe(3);
+    });
+});
+
+describe('GET /:id single-fetch route', () => {
+    let app: express.Application;
+    let dbMock: any;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        dbMock = {
+            select: jest.fn().mockReturnThis(),
+            from: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            limit: jest.fn().mockReturnThis(),
+            offset: jest.fn().mockReturnThis(),
+            orderBy: jest.fn().mockReturnThis(),
+            insert: jest.fn().mockReturnThis(),
+            values: jest.fn().mockReturnThis(),
+            returning: jest.fn().mockReturnThis(),
+            update: jest.fn().mockReturnThis(),
+            set: jest.fn().mockReturnThis(),
+            delete: jest.fn().mockReturnThis(),
+        };
+        app = express();
+        app.use(express.json());
+        app.use((req, res, next) => {
+            res.locals.db = dbMock;
+            next();
+        });
+        app.use('/templates', templatesRouter);
+    });
+
+    it('returns 200 with the row when the id exists', async () => {
+        const row = { id: 7, uri: 'apap://t/7', author: 'test' };
+        // Single-lookup queries terminate at `.limit(1)`.
+        dbMock.limit.mockResolvedValueOnce([row]);
+
+        const res = await request(app).get('/templates/7');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ id: 7, uri: 'apap://t/7' });
+    });
+
+    it('returns 404 when the id does not exist', async () => {
+        dbMock.limit.mockResolvedValueOnce([]);
+
+        const res = await request(app).get('/templates/999');
+
+        expect(res.status).toBe(404);
+    });
+});
+
+describe('POST / happy path', () => {
+    // Existing "POST without validateBody" and "PUT /:id validation" blocks
+    // above cover POST rejection paths; this test pins the accept-and-insert
+    // wire shape so a regression in the insert-and-return path is caught.
+    let app: express.Application;
+    let dbMock: any;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        dbMock = {
+            insert: jest.fn().mockReturnThis(),
+            values: jest.fn().mockReturnThis(),
+            returning: jest.fn<any>().mockResolvedValue([{ id: 42, uri: 'apap://new' }]),
+            select: jest.fn().mockReturnThis(),
+            from: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            limit: jest.fn().mockReturnThis(),
+            offset: jest.fn().mockReturnThis(),
+            orderBy: jest.fn().mockReturnThis(),
+            update: jest.fn().mockReturnThis(),
+            set: jest.fn().mockReturnThis(),
+            delete: jest.fn().mockReturnThis(),
+        };
+        app = express();
+        app.use(express.json());
+        app.use((req, res, next) => {
+            res.locals.db = dbMock;
+            next();
+        });
+        app.use('/templates', templatesRouter);
+    });
+
+    it('inserts a valid body and returns 200 with the created row', async () => {
+        (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({
+            success: true,
+            data: validTemplateBody,
+        });
+        const valModule = require('./concertovalidation');
+        valModule.concertoValidation.mockResolvedValueOnce({
+            success: true,
+            data: validTemplateBody,
+        });
+        jest.spyOn(db, 'templateFromDatabase').mockResolvedValueOnce({} as any);
+
+        const res = await request(app)
+            .post('/templates')
+            .send(validTemplateBody);
+
+        expect(res.status).toBe(200);
+        expect(dbMock.insert).toHaveBeenCalled();
+        expect(dbMock.values).toHaveBeenCalled();
     });
 });
