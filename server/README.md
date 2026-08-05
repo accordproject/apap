@@ -49,6 +49,35 @@ docker compose down --rmi all
 docker-compose build
 ```
 
+## Upgrading from Postgres 17
+
+The RI now ships Postgres 18 in `compose.yaml`. Postgres 18 relocated its
+`PGDATA` from `/var/lib/postgresql/data` to `/var/lib/postgresql/<MAJOR>/docker`,
+and the compose volume mount was updated from `db-data:/var/lib/postgresql/data`
+to `db-data:/var/lib/postgresql` to match.
+
+If you have never run the RI before, `docker compose up` on a fresh machine
+"just works": Postgres 18 boots on an empty volume.
+
+If you have an existing `server_db-data` volume created under Postgres 17, it
+will NOT auto-migrate. Pick one path:
+
+1. Throw away the dev volume (fastest, loses data):
+   ```bash
+   docker compose down
+   docker volume rm server_db-data
+   docker compose up
+   npx drizzle-kit push
+   ```
+
+2. Dump-and-restore into a fresh Postgres 18 volume (preserves data):
+   ```bash
+   cd server
+   ./upgrade-postgres-17-to-18.sh
+   ```
+   The script spins up a temporary Postgres 17 against the existing volume,
+   runs `pg_dumpall`, recreates the volume, boots Postgres 18, and restores.
+
 # Running Locally without Docker
 
 The RI uses a Postgres database for persistence. Set the POSTGRES_URL environment variable to a Postgres connection string. If you are running
