@@ -363,19 +363,28 @@ describe('POST without validateBody', () => {
 
 describe('SQL injection prevention in defaultWhereClause', () => {
     let app: express.Application;
+    // Captures each SQL clause passed to db.where(...). The first call is
+    // the count query, the second the row query; both receive the same
+    // clause built by defaultWhereClause, so index [0] is enough for tests
+    // that assert the built clause shape.
+    let capturedWhereClauses: any[] = [];
 
     beforeEach(() => {
         jest.clearAllMocks();
+        capturedWhereClauses = [];
         app = express();
         app.use(express.json());
         app.use((req, res, next) => {
             // Mock DB that chains fluently and returns a valid paginated shape.
             // select().from().where().limit().offset() → items array
             // select({ count }).from().where() → [{ count: 0 }]
-            const chainable = {
+            const chainable: any = {
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
-                where: jest.fn().mockReturnThis(),
+                where: jest.fn(function (this: any, clause: any) {
+                    capturedWhereClauses.push(clause);
+                    return this;
+                }),
                 limit: jest.fn().mockReturnThis(),
                 offset: jest.fn().mockReturnThis(),
                 orderBy: jest.fn().mockReturnThis(),
@@ -466,16 +475,45 @@ describe('SQL injection prevention in defaultWhereClause', () => {
         // Prior to the escape fix, `?author=~%admin%` silently became a
         // contains-match (ILIKE '%admin%'). The `~` operator advertises
         // case-insensitive EQUALITY, so `%` and `_` must be escaped and
-        // matched as literal characters. The generated SQL should include
-        // an `ESCAPE '\'` clause; the operand should carry `\%admin\%`.
-        //
-        // Runtime assertion: the router still returns non-500 (no crash),
-        // AND (implicitly, by not being a wildcard) matches only the
-        // literal "%admin%" string. Full end-to-end verification against
-        // a live Postgres is out of scope for the unit tests here.
+        // matched as literal characters. This test compiles the SQL clause
+        // that defaultWhereClause emits and asserts the operand is escaped
+        // AND the SQL carries `ESCAPE '\'`. A test that only asserts
+        // non-500 (like the earlier "SQL-like metacharacters" version)
+        // would pass against the buggy pre-fix code because unescaped
+        // wildcards also do not crash, they just silently over-match.
+        const { PgDialect } = require('drizzle-orm/pg-core');
+        const dialect = new PgDialect();
+
         const res = await request(app)
             .get('/templates?author=~%25admin%25');
         expect(res.status).not.toBe(500);
+
+        // Serialize the captured where-clause and assert the escape shape.
+        // capturedWhereClauses[0] is the count-query clause, [1] the row
+        // query; both are built from the same defaultWhereClause output so
+        // either works.
+        expect(capturedWhereClauses.length).toBeGreaterThan(0);
+        const compiled = dialect.sqlToQuery(capturedWhereClauses[0]);
+        expect(compiled.sql).toContain('ILIKE');
+        expect(compiled.sql).toContain("ESCAPE '\\'");
+        expect(compiled.params).toContain('\\%admin\\%');
+    });
+
+    it('~ prefix on non-metacharacter operand still passes the operand as-is under ILIKE', async () => {
+        // Baseline: without metacharacters, escape is a no-op and the
+        // ILIKE + ESCAPE clause still forms correctly.
+        const { PgDialect } = require('drizzle-orm/pg-core');
+        const dialect = new PgDialect();
+
+        const res = await request(app)
+            .get('/templates?author=~Rob');
+        expect(res.status).not.toBe(500);
+
+        expect(capturedWhereClauses.length).toBeGreaterThan(0);
+        const compiled = dialect.sqlToQuery(capturedWhereClauses[0]);
+        expect(compiled.sql).toContain('ILIKE');
+        expect(compiled.sql).toContain("ESCAPE '\\'");
+        expect(compiled.params).toContain('Rob');
     });
 });
 
