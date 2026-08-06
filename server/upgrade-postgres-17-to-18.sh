@@ -11,7 +11,11 @@ set -euo pipefail
 
 WORKDIR="$(pwd)"
 DUMP="$WORKDIR/dump.sql"
-VOLUME_NAME="server_db-data"
+# Volume name can be overridden for non-default docker-compose project names.
+# Default matches `docker compose -p server` (the layout under server/compose.yaml)
+# but a custom -p at compose time changes the volume prefix. Pass as arg 1 or
+# set VOLUME_NAME env var. Follow-up to #229 review.
+VOLUME_NAME="${1:-${VOLUME_NAME:-server_db-data}}"
 TEMP_CONTAINER="pg17-temp"
 
 # Ensure volume exists
@@ -37,6 +41,16 @@ done
 
 # Create dump
 docker exec "$TEMP_CONTAINER" pg_dumpall -U postgres > "$DUMP"
+
+# Guard against silent data loss: pg_dumpall can exit 0 even when the dump
+# file is empty or truncated (e.g. broken pipe after headers written). Refuse
+# to proceed to volume-delete unless the dump has content. Follow-up to #229.
+if [ ! -s "$DUMP" ]; then
+    echo "ERROR: pg_dumpall produced an empty dump at $DUMP; aborting before volume-delete." >&2
+    docker stop "$TEMP_CONTAINER" || true
+    docker rm "$TEMP_CONTAINER" || true
+    exit 1
+fi
 
 # Stop temporary container
 docker stop "$TEMP_CONTAINER"

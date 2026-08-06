@@ -58,10 +58,14 @@ function defaultWhereClause<T extends PgTable<any>>(
 	for (const key of Object.keys(filters)) {
 		let value = filters[key];
 
-		// Use hasOwnProperty instead of `in` to prevent prototype pollution.
-		// The `in` operator traverses the prototype chain, so keys like
-		// "toString", "constructor", or "__proto__" would pass through.
-		if (table && !Object.prototype.hasOwnProperty.call(table, key)) {
+		// Prototype-pollution guard (fail-closed): use hasOwnProperty against
+		// the passed table, and reject the key outright if no table was
+		// provided. The `in` operator traverses the prototype chain, so
+		// unfiltered keys like "toString" / "constructor" / "__proto__" would
+		// pass through. Previously `if (table && ...)` meant a caller that
+		// omitted `table` silently skipped the guard, so any filter key would
+		// be interpolated. Now: no table -> no filters, ever.
+		if (!table || !Object.prototype.hasOwnProperty.call(table, key)) {
 			continue;
 		}
 
@@ -87,14 +91,23 @@ function defaultWhereClause<T extends PgTable<any>>(
 			const trimmed = value.trim();
 
 			// Case-insensitive equality via `~` prefix. `?author=~Rob` matches
-			// "rob", "ROB", "Rob", etc. via Postgres ILIKE. Placed before the
-			// standard operator match so `~` never collides with the numeric
-			// comparison operators. Operand is passed as a bound parameter so
+			// "rob", "ROB", "Rob", etc. Placed before the standard operator
+			// match so `~` never collides with the numeric comparison
+			// operators. Escapes ILIKE metacharacters (`%` `_` `\`) so
+			// `?author=~%admin%` matches the LITERAL string "%admin%" rather
+			// than silently becoming a wildcard contains-match, which was
+			// #228's follow-up bug. Operand is passed as a bound parameter so
 			// SQL injection is not a concern (identifier safety on the column
 			// is already enforced by SAFE_IDENTIFIER_RX above). Closes #125.
+			//
+			// TODO: `~` on a non-text column (e.g. `?id=~5`) still surfaces
+			// as a Postgres type error. Add a column-type check when a shared
+			// column-metadata accessor exists on the router. Tracked in the
+			// #228 follow-up scope.
 			if (trimmed.startsWith('~')) {
 				const operand = trimmed.slice(1).trim();
-				conditions.push(sql`${column} ILIKE ${operand}`);
+				const escaped = operand.replace(/[\\%_]/g, '\\$&');
+				conditions.push(sql`${column} ILIKE ${escaped} ESCAPE '\\'`);
 				continue;
 			}
 

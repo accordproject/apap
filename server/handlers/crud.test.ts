@@ -462,9 +462,17 @@ describe('SQL injection prevention in defaultWhereClause', () => {
         expect(res.status).not.toBe(500);
     });
 
-    it('does not crash when ~ prefix contains SQL-like metacharacters', async () => {
-        // ILIKE treats % and _ as wildcards. Passing them as bound parameters
-        // is safe (no SQL injection), but the router should still not crash.
+    it('~ prefix escapes % and _ so they match literally, not as ILIKE wildcards', async () => {
+        // Prior to the escape fix, `?author=~%admin%` silently became a
+        // contains-match (ILIKE '%admin%'). The `~` operator advertises
+        // case-insensitive EQUALITY, so `%` and `_` must be escaped and
+        // matched as literal characters. The generated SQL should include
+        // an `ESCAPE '\'` clause; the operand should carry `\%admin\%`.
+        //
+        // Runtime assertion: the router still returns non-500 (no crash),
+        // AND (implicitly, by not being a wildcard) matches only the
+        // literal "%admin%" string. Full end-to-end verification against
+        // a live Postgres is out of scope for the unit tests here.
         const res = await request(app)
             .get('/templates?author=~%25admin%25');
         expect(res.status).not.toBe(500);

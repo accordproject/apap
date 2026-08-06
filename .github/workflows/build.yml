@@ -56,6 +56,42 @@ jobs:
           name: npm-logs
           path: C:\npm\cache\_logs\
 
+  # Postgres 18 smoke check. Standalone job (services: only run on Linux
+  # runners, cannot be attached to the matrix build above). Proves the pinned
+  # postgres:18-alpine image stands up cleanly and accepts the app's schema
+  # via drizzle-kit push. Follow-up to #229 review: "tested against PG18"
+  # is now true in CI, not just in local docker compose.
+  postgres-18-smoke:
+    name: Postgres 18 schema smoke
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: 1baddeed
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install server deps
+        working-directory: server
+        run: npm ci
+      - name: Apply schema to Postgres 18 via drizzle-kit push
+        working-directory: server
+        env:
+          POSTGRES_URL: postgres://postgres:1baddeed@localhost:5432/postgres
+        run: npx drizzle-kit push --config drizzle.config.ts
+
   publish:
     needs:
       - build
