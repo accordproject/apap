@@ -12,7 +12,7 @@ import {
     InvalidPayloadError,
     ValidationError,
 } from '../services/errors';
-import { convertAgreement, triggerAgreement } from '../services/agreementService';
+import { convertAgreement, triggerAgreement, listAgreementsPaged } from '../services/agreementService';
 import { asyncHandler } from '../middleware/errorHandler';
 
 const router = express.Router();
@@ -88,7 +88,8 @@ const crudRouter = buildCrudRouter({
     typeName: 'Agreement',
     // ponytail: cast schema to any due to zod v3 -> v4 upgrade depth-instantiation
     // issue with drizzle-zod. Runtime unaffected.
-    validateBody: { schema: AgreementInsertSchema as any, custom: (body) => concertoValidation('Agreement', body) }
+    validateBody: { schema: AgreementInsertSchema as any, custom: (body) => concertoValidation('Agreement', body) },
+    listService: (db, opts) => listAgreementsPaged(db, opts),
 });
 
 /**

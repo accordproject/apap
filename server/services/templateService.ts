@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import AdmZip from 'adm-zip';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import { Template } from '../db/schema';
@@ -177,4 +177,58 @@ export async function deleteTemplate(db: Database, uri: string): Promise<void> {
 function isUniqueViolation(err: unknown): boolean {
     return typeof err === 'object' && err !== null && 'code' in err
         && (err as { code: string }).code === '23505';
+}
+
+/**
+ * Paginated variant of `listTemplates` for slice-3 REST unification.
+ *
+ * REST callers (via `buildCrudRouter` in `handlers/crud.ts`) parse
+ * pagination + filter + sort from the query string and pass the built
+ * clauses in; MCP callers can pass empty clauses to get a straight page.
+ * Returning `{ items, total }` gives REST the metadata it needs for the
+ * PaginatedResponse envelope and gives MCP the total for SEP-2549
+ * cache-hint decisions and future paged resource URIs.
+ *
+ * Bounds mirror `parseQueryParams`: limit clamped 1..100, offset >= 0.
+ * The total count is computed with the same whereClause as the row read,
+ * so callers do not need to run a second query themselves.
+ */
+export async function listTemplatesPaged(
+    db: Database,
+    opts: {
+        whereClause?: SQL;
+        orderClause?: SQLWrapper | null;
+        limit: number;
+        offset: number;
+    },
+): Promise<{ items: TemplateRow[]; total: number }> {
+    const limit = Math.min(100, Math.max(1, opts.limit));
+    const offset = Math.max(0, opts.offset);
+
+    // Read-skew note: count and row-fetch are two separate queries with no
+    // shared snapshot. Under concurrent writes a caller can observe `total`
+    // and `items.length` disagreeing by one or two rows between the round-
+    // trips. Acceptable for list endpoints where pagination metadata is
+    // best-effort; wrap both queries in a `repeatable read` transaction if
+    // strict consistency is ever required.
+    const [{ count: totalRow }] = await db
+        .select({ count: count() })
+        .from(Template)
+        .where(opts.whereClause);
+
+    // Pagination determinism: `limit` + `offset` over an unordered result set
+    // can repeat or skip rows across pages. Fall back to `asc(Template.id)`
+    // when no order was provided so paging is stable by construction. Callers
+    // that DO pass an orderClause take responsibility for tie-breaking on a
+    // unique key themselves.
+    const orderClause: SQLWrapper = opts.orderClause ?? asc(Template.id);
+    const items = await db
+        .select()
+        .from(Template)
+        .where(opts.whereClause)
+        .orderBy(orderClause as SQL<unknown>)
+        .limit(limit)
+        .offset(offset);
+
+    return { items, total: totalRow };
 }

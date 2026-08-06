@@ -186,6 +186,21 @@ export type InsertValidator = {
     custom?: (body:any) => Promise<ValidationResult>,
 }
 
+/**
+ * Signature for a service-layer list function that the router can delegate
+ * to. Returns `{ items, total }`; the router wraps that into the full
+ * PaginatedResponse envelope with page / limit / totalPages metadata.
+ */
+export type ListService<TRow> = (
+    db: any,
+    opts: {
+        whereClause?: SQL;
+        orderClause?: SQLWrapper | null;
+        limit: number;
+        offset: number;
+    },
+) => Promise<{ items: TRow[]; total: number }>;
+
 interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     table: T;
     typeName: string;
@@ -193,6 +208,15 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     validateBody?: InsertValidator;
     transformResponse?: (item: any) => any;
     transformRequest?: (req: Request) => any;
+    /**
+     * Optional service-layer list function. When provided, the GET / handler
+     * delegates DB read + count to it instead of the inline path. Router
+     * still owns query-string parsing (`parseQueryParams`), `whereClause`
+     * construction (`defaultWhereClause` with `SAFE_IDENTIFIER_RX` /
+     * operator whitelist), and `orderClause` construction; the service owns
+     * the DB select + count. Keeps REST and MCP on one code path for reads.
+     */
+    listService?: ListService<any>;
 }
 
 function getSingleQueryParam(value: unknown): string | undefined {
@@ -292,7 +316,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     buildWhereClause,
     validateBody,
     transformResponse,
-    transformRequest
+    transformRequest,
+    listService,
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
@@ -354,25 +379,50 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 
 
 
-                // Get total count for pagination
-                const [{ count: total }] = await res.locals.db
-                    .select({ count: count() })
-                    .from(table)
-                    .where(whereClause);
+                // Slice-3 unification: delegate the DB read + count to a
+                // service-layer list function when one is registered on the
+                // router. The router still owns query parsing and clause
+                // construction so per-table filter/sort semantics stay
+                // uniform. When no listService is provided, keep the
+                // pre-slice-3 inline path so resources without a service
+                // layer (e.g. sharedmodels) work unchanged.
+                //
+                // TODO(#217): the inline fallback below does NOT get the
+                // clamping / default-order / read-skew safeguards that the
+                // service path enforces. `sharedmodels` is the only current
+                // caller of the fallback; once a `sharedModelService.ts` +
+                // `listSharedModelsPaged` land, delete the fallback branch
+                // and make `listService` required on the CrudRouterOptions
+                // shape. Follow-up tracked in #217.
+                let items: any[];
+                let total: number;
+                if (listService) {
+                    const paged = await listService(res.locals.db, {
+                        whereClause,
+                        orderClause,
+                        limit,
+                        offset: (page - 1) * limit,
+                    });
+                    items = paged.items;
+                    total = paged.total;
+                } else {
+                    const [{ count: countRow }] = await res.locals.db
+                        .select({ count: count() })
+                        .from(table)
+                        .where(whereClause);
+                    total = countRow;
 
-                // Get paginated results
-                let query = res.locals.db
-                    .select()
-                    .from(table)
-                    .where(whereClause)
-                    .limit(limit)
-                    .offset((page - 1) * limit);
-
-                if (orderClause !== null) {
-                    query = query.orderBy(orderClause as SQL<unknown>);
+                    let query = res.locals.db
+                        .select()
+                        .from(table)
+                        .where(whereClause)
+                        .limit(limit)
+                        .offset((page - 1) * limit);
+                    if (orderClause !== null) {
+                        query = query.orderBy(orderClause as SQL<unknown>);
+                    }
+                    items = await query;
                 }
-
-                const items = await query;
 
                 const response: PaginatedResponse<any> = {
                     items,
