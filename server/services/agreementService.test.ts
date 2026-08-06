@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import {
     listAgreements,
+    listAgreementsPaged,
     getAgreementById,
     getAgreementByUri,
     convertAgreement,
@@ -27,6 +28,7 @@ function createMockDb() {
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         offset: jest.fn().mockReturnThis(),
     };
@@ -252,6 +254,47 @@ describe('agreementService', () => {
             }
             expect(caught).toBeInstanceOf(AgreementConversionError);
             expect(caught).toMatchObject({ code: 'AGREEMENT_CONVERSION_FAILED' });
+        });
+    });
+
+    // Slice-3 (#225) additions symmetric with listTemplatesPaged. Pin the
+    // clamping + default-order safeguards for the paged variant that
+    // buildCrudRouter delegates to via listService.
+    describe('listAgreementsPaged', () => {
+        beforeEach(() => {
+            db._setReturn([{ count: 0 }]);
+        });
+
+        it('clamps limit to 100 when caller requests more', async () => {
+            await listAgreementsPaged(db, { limit: 500, offset: 0 });
+            expect(db.limit).toHaveBeenCalledWith(100);
+        });
+
+        it('clamps limit to at least 1 when caller requests less', async () => {
+            await listAgreementsPaged(db, { limit: 0, offset: 0 });
+            expect(db.limit).toHaveBeenCalledWith(1);
+        });
+
+        it('clamps offset to at least 0 when caller passes negative', async () => {
+            await listAgreementsPaged(db, { limit: 10, offset: -5 });
+            expect(db.offset).toHaveBeenCalledWith(0);
+        });
+
+        it('applies a default orderClause when caller passes null (pagination determinism)', async () => {
+            await listAgreementsPaged(db, { limit: 10, offset: 0, orderClause: null });
+            expect(db.orderBy).toHaveBeenCalled();
+        });
+
+        it('honours a caller-provided orderClause without overriding it', async () => {
+            const customClause = { fake: 'orderBy' } as any;
+            await listAgreementsPaged(db, { limit: 10, offset: 0, orderClause: customClause });
+            expect(db.orderBy).toHaveBeenCalledWith(customClause);
+        });
+
+        it('surfaces total from the count-query result destructure', async () => {
+            db._setReturn([{ count: 42 }]);
+            const result = await listAgreementsPaged(db, { limit: 10, offset: 0 });
+            expect(result.total).toBe(42);
         });
     });
 });
