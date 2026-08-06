@@ -153,3 +153,53 @@ export class AgreementTriggerError extends ServiceError {
         this.upstreamMessage = upstreamMessage;
     }
 }
+
+// -- Subscription errors (SEP-2575 preview) --
+
+/**
+ * Raised when an MCP client tries to `subscriptions/listen` on a URI that is
+ * not subscribable (unknown scheme, or a scheme that has no notify() call
+ * sites in the service layer). The set of accepted URI prefixes lives in
+ * `subscriptionRegistry.ts` (`isValidResourceUri`); this error surfaces at
+ * the handler boundary so clients see a code they can branch on rather than
+ * a silent no-op subscription.
+ */
+export class SubscriptionInvalidUriError extends ServiceError {
+    constructor(uri: string) {
+        super(
+            'SUBSCRIPTION_INVALID_URI',
+            400,
+            `Subscription URI is not subscribable: ${uri}`,
+            { uri },
+        );
+        this.name = 'SubscriptionInvalidUriError';
+    }
+}
+
+/**
+ * Raised when a session tries to subscribe beyond the per-session cap.
+ * Bounds the `bySession` and `byUri` indices in `subscriptionRegistry` so a
+ * runaway or malicious client cannot exhaust memory by opening unbounded
+ * distinct subscriptions on a single session. The cap value lives in
+ * `subscriptionRegistry.ts` as `MAX_SUBSCRIPTIONS_PER_SESSION`; this error
+ * carries both the current session count and the configured limit so
+ * clients can surface the boundary in their UI without a second round-trip.
+ */
+export class SubscriptionLimitError extends ServiceError {
+    public readonly sessionId: string;
+    public readonly currentCount: number;
+    public readonly limit: number;
+
+    constructor(sessionId: string, currentCount: number, limit: number) {
+        super(
+            'SUBSCRIPTION_LIMIT_EXCEEDED',
+            429,
+            `Session ${sessionId} has reached the subscription cap (${currentCount}/${limit})`,
+            { sessionId, currentCount, limit },
+        );
+        this.name = 'SubscriptionLimitError';
+        this.sessionId = sessionId;
+        this.currentCount = currentCount;
+        this.limit = limit;
+    }
+}

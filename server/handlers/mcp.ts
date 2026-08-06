@@ -21,7 +21,13 @@ import {
     AgreementConversionError,
     AgreementTriggerError,
     UpstreamApiError,
+    SubscriptionInvalidUriError,
 } from '../services/errors';
+import {
+    subscriptionRegistry,
+    isValidResourceUri,
+    NotificationPayload,
+} from '../services/subscriptionRegistry';
 import { listTemplates, getTemplateById } from '../services/templateService';
 import {
     listAgreements,
@@ -247,11 +253,120 @@ async function getAgreements(db: Database, uri: URL) {
  * @details Creates a new MCP server and registers the template and agreement
  * resources, resource templates, and tool handlers currently exposed by APAP.
  */
-export const getServer = (db: Database) => {
+export const getServer = (db: Database, getSessionId?: () => string) => {
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
-    }, { capabilities: { logging: {} }, instructions: SERVER_INSTRUCTIONS });
+    }, {
+        capabilities: {
+            logging: {},
+            // Advertise resource-subscription support when the caller has plumbed
+            // a session-id getter through. The subscribe handler below reads that
+            // id to key registry entries so `clearSession` can drop them on
+            // disconnect. Without it, subscriptions/listen would leak.
+            ...(getSessionId ? { resources: { subscribe: true } } : {}),
+        },
+        instructions: SERVER_INSTRUCTIONS,
+    });
+
+    // -- subscriptions/listen (SEP-2575 preview) --
+    //
+    // The 2026-07-28 RC formalises `subscriptions/listen` as a single long-lived
+    // POST-response stream with opt-in types tagged by
+    // `io.modelcontextprotocol/subscriptionId`. SDK 2.0 does not yet route that
+    // method natively, so we register it as a custom request handler on the
+    // underlying Server and dispatch via `sendResourceUpdated`, which matches
+    // the wire shape the SDK already produces for `notifications/resources/updated`.
+    if (getSessionId) {
+        // SDK 2.0 `setRequestHandler(method: string, schema, handler)` differs
+        // from SDK 1.x's `(schema, handler)` shape: the method name is now the
+        // first arg, and the schema validates only the params (not the whole
+        // envelope). See sibling handlers in @modelcontextprotocol/server for
+        // the shape.
+        const SubscribeParamsSchema = z.object({
+            uris: z.array(z.string()).min(1),
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (server as any).server.setRequestHandler(
+            'subscriptions/listen',
+            SubscribeParamsSchema,
+            async (request: { params: { uris: string[] } }) => {
+                // SECURITY (fail-closed guard):
+                // The registry currently has NO `notify()` call sites in the
+                // service write paths. Nothing fires yet. This subscribe
+                // handler MUST NOT be wired to `notify()` until it enforces
+                // the same authorisation as a `resources/read` for the
+                // target URI. Contract for the follow-up PR that wires
+                // notify(): (1) resolve URI to owning resource + run same
+                // auth check as resource-read, reject with ServiceError(403)
+                // on failure; (2) keep notification payload THIN (uri +
+                // subscriptionId only, never resource data) so client
+                // re-reads via resources/read re-enforce auth; (3) sessionId
+                // fed to subscribe / clearSession MUST be the transport's
+                // own unguessable session id bound to the authenticated
+                // session, not a client-supplied value.
+                const sessionId = getSessionId();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const subscriptionId = (crypto as any).randomUUID();
+
+                try {
+                    // Validate all URIs before registering any; partial
+                    // registration on a mixed-valid input would strand
+                    // entries in the registry.
+                    for (const uri of request.params.uris) {
+                        if (!isValidResourceUri(uri)) {
+                            throw new SubscriptionInvalidUriError(uri);
+                        }
+                    }
+
+                    for (const uri of request.params.uris) {
+                        subscriptionRegistry.subscribe(
+                            sessionId,
+                            uri,
+                            (payload: NotificationPayload) => {
+                                // Fire-and-forget: broken transports must not
+                                // cascade back to the DB write path that
+                                // invoked notify(). sendResourceUpdated returns
+                                // a Promise; an unhandled rejection would
+                                // surface at the notify() call site.
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                (server as any).server
+                                    .sendResourceUpdated({ uri: payload.params.uri })
+                                    .catch((err: unknown) => {
+                                        console.warn({
+                                            type: 'sendResourceUpdated_failed',
+                                            sessionId,
+                                            uri: payload.params.uri,
+                                            err: err instanceof Error ? err.message : String(err),
+                                        });
+                                    });
+                            },
+                            subscriptionId,
+                        );
+                    }
+                } catch (err) {
+                    // Surface ServiceError subclasses (SubscriptionInvalidUriError,
+                    // SubscriptionLimitError) as ProtocolErrors carrying the
+                    // service error toJSON payload. Non-ServiceError bubbles up
+                    // unwrapped so the SDK default handler maps it to -32603.
+                    if (err instanceof ServiceError) {
+                        throw serviceErrorToResourceError(err);
+                    }
+                    throw err;
+                }
+
+                console.log({
+                    type: 'subscriptions_listen_registered',
+                    sessionId,
+                    subscriptionId,
+                    uris: request.params.uris,
+                });
+
+                return { subscriptionId };
+            },
+        );
+    }
 
     // register the Concerto protocol model as a readable resource so a
     // client (or any LLM behind it) can resolve `$class` discriminators to
@@ -600,6 +715,9 @@ router.all('/mcp', async (req: Request, res: Response) => {
                 if (sid) {
                     delete transports[sid];
                     delete sessionLastActivity[sid];
+                    // Drop any subscriptions/listen entries so a disconnecting
+                    // client cannot leak subscribers in the registry.
+                    subscriptionRegistry.clearSession(sid);
                     console.log({
                         type: 'session_closed',
                         sessionId: sid,
@@ -609,7 +727,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
             };
 
             // Connect the transport to the MCP server
-            const server = getServer(res.locals.db);
+            const server = getServer(res.locals.db, () => transport.sessionId as string);
             await server.connect(transport);
             console.log({ type: 'connected_server_to_transport' });
         } else {
