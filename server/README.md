@@ -162,7 +162,7 @@ curl --request POST \
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "0.25.x"
+		"cicero": "2.x"
 	},
 	"logo": null,
 	"templateModel": {
@@ -209,7 +209,7 @@ Response:
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "0.25.x"
+		"cicero": "2.x"
 	},
 	"logo": null,
 	"templateModel": {
@@ -258,7 +258,7 @@ Response:
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "0.25.x"
+		"cicero": "2.x"
 	},
 	"logo": null,
 	"templateModel": {
@@ -311,7 +311,7 @@ Response:
 				"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 				"runtime": "typescript",
 				"template": "clause",
-				"cicero": "0.25.x"
+				"cicero": "2.x"
 			},
 			"logo": null,
 			"templateModel": {
@@ -385,7 +385,7 @@ Response:
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "0.25.x"
+		"cicero": "2.x"
 	},
 	"logo": null,
 	"templateModel": {
@@ -556,7 +556,7 @@ curl --request POST \
 		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
 		"runtime": "typescript",
 		"template": "clause",
-		"cicero": "0.25.x"
+		"cicero": "2.x"
 	},
 	"logo": null,
 	"templateModel": {

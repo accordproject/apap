@@ -19,7 +19,7 @@ let DEFAULT_MODEL_MANAGER:ModelManager = undefined;
  */
 export async function concertoValidation(typeName: string, body: any, modelManager?: ModelManager): Promise<ValidationResult> {
     if(!DEFAULT_MODEL_MANAGER) {
-        DEFAULT_MODEL_MANAGER = new ModelManager({ strict: true, addMetamodel: true });
+        DEFAULT_MODEL_MANAGER = new ModelManager({ addMetamodel: true });
         DEFAULT_MODEL_MANAGER.addCTOModel(Buffer.from(MODEL, 'base64').toString(), 'protocol.cto', true);
         await DEFAULT_MODEL_MANAGER.updateExternalModels();
     }

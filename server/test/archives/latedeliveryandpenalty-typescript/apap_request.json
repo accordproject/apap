@@ -10,7 +10,7 @@
     "$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
     "runtime": "typescript",
     "template": "clause",
-    "cicero": "^0.25.0"
+    "cicero": "^2.0.0"
   },
   "logo": null,
   "templateModel": {

@@ -99,7 +99,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
      */
     visitModelFile(modelFile: ModelFile, parameters: any): any {
         modelFile.getAllDeclarations()
-            .filter(declaration => !declaration.isScalarDeclaration?.()).forEach((decl) => {
+            .filter((declaration: any) => !declaration.isScalarDeclaration?.()).forEach((decl: any) => {
                 decl.accept(this, parameters);
             });
 
@@ -114,7 +114,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
      * @private
      */
     visitEnumDeclaration(enumDeclaration: EnumDeclaration, parameters: any): any {
-        const names = enumDeclaration.getProperties().map((property) => `'${property.getName()}'`);
+        const names = enumDeclaration.getProperties().map((property: any) => `'${property.getName()}'`);
         parameters.fileWriter.writeLine(0, `export const ${enumDeclaration.getName()} = pgEnum('${enumDeclaration.getName()}', [${names.join(',\n')}]);`);
         return null;
     }
@@ -136,7 +136,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
             // create a database ID for the resource, serial, PK
             parameters.fileWriter.writeLine(1, 'id: serial().primaryKey(),');
 
-            classDeclaration.getOwnProperties().forEach((property) => {
+            classDeclaration.getOwnProperties().forEach((property: any) => {
                 const idField = property.getName() === idFieldName;
                 property.accept(this, {idField, ...parameters});
             });
@@ -255,7 +255,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
 }
 
 async function main() {
-    const mm = new ModelManager({ strict: true });
+    const mm = new ModelManager();
     const cto = fs.readFileSync('../model/protocol.cto', 'utf8');
     mm.addCTOModel(cto, 'protocol.cto', true);
     await mm.updateExternalModels();

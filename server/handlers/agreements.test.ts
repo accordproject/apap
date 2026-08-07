@@ -539,7 +539,7 @@ describe('POST / - Agreement Creation with External Template', () => {
 
         beforeEach(async () => {
             realApTemplate = await createLateDeliveryTemplate();
-            templateBuffer = await realApTemplate.toArchive();
+            templateBuffer = await realApTemplate.toArchive(undefined);
 
             // Save a reference to the real Node.js fetch
             const originalFetch = (global as any).fetch;
