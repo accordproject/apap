@@ -6,6 +6,6 @@
   },
   "deploy": {
     "preDeployCommand": null,
-    "startCommand": null,
+    "startCommand": null
   }
 }
