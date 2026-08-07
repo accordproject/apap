@@ -66,7 +66,7 @@ cd apap/server && npx drizzle-kit push
 
 Click the button below to provision the server and a managed Postgres instance in one click:
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/QYiXk5)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/QYiXk5?referralCode=Gx6QTA&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 Once deployed, your server is available at the Railway-assigned URL (e.g. `https://my-apap.up.railway.app`). No database setup required — Postgres is provisioned and linked automatically. Important note: this deployment is a sample implementation and not hardened for a production implementation. 
 
