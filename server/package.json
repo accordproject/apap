@@ -37,7 +37,7 @@
     "@modelcontextprotocol/express": "^2.0.0",
     "@modelcontextprotocol/node": "^2.0.0",
     "@modelcontextprotocol/server": "^2.0.0",
-    "adm-zip": "0.5.16",
+    "adm-zip": "0.6.0",
     "dotenv": "16.5.0",
     "drizzle-orm": "0.45.2",
     "drizzle-zod": "0.7.1",
