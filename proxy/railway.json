@@ -7,6 +7,5 @@
   "deploy": {
     "preDeployCommand": null,
     "startCommand": null,
-    "healthcheckPath": "/health"
   }
 }
