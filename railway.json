@@ -6,7 +6,7 @@
     "watchPatterns": ["server/**"]
   },
   "deploy": {
-    "preDeployCommand": ["sh -c 'cd server && npm run db:migrateprod'"],
+    "preDeployCommand": ["sh -c 'cd server && npx drizzle-kit push'"],
     "startCommand": "cd server/dist && npm start",
     "healthcheckPath": "/health",
     "restartPolicyType": "ON_FAILURE",
