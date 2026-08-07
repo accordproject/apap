@@ -60,6 +60,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
 app.use('/templates', templatesRouter);
 app.use('/agreements', agreementsRouter);
 app.use('/sharedmodels', sharedModelsRouter);

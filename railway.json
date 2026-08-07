@@ -8,6 +8,7 @@
   "deploy": {
     "preDeployCommand": ["sh -c 'cd server && npm run db:migrateprod'"],
     "startCommand": "cd server/dist && npm start",
+    "healthcheckPath": "/health",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
