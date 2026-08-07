@@ -27,9 +27,7 @@ FROM base AS deps
 
 # Copy the source files into the image (including tsconfig.json).
 COPY . .
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
+RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
 ################################################################################
