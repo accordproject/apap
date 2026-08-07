@@ -44,3 +44,38 @@ Generated client code for various platforms is available in the [client](./clien
 ## Reference Implementation
 
 A reference implementation of the protocol is available in the [server](./server) directory.
+
+## Quick Start
+
+### Run locally with Docker
+
+```bash
+git clone https://github.com/accordproject/apap.git
+cd apap/server
+cp .env_example .env
+docker compose up
+```
+
+The server starts at `http://localhost:9000`. On first run, bootstrap the database schema in a separate terminal:
+
+```bash
+cd apap/server && npx drizzle-kit push
+```
+
+### Deploy on Railway
+
+Click the button below to provision the server and a managed Postgres instance in one click:
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/QYiXk5)
+
+Once deployed, your server is available at the Railway-assigned URL (e.g. `https://my-apap.up.railway.app`). No database setup required — Postgres is provisioned and linked automatically. Important note: this deployment is a sample implementation and not hardened for a production implementation. 
+
+### Verify
+
+```bash
+curl http://localhost:9000/capabilities
+# or https://my-apap.up.railway.app/capabilities
+```
+
+
+For full API documentation see [docs.accordproject.org/docs/ref-apap](https://docs.accordproject.org/docs/ref-apap).
