@@ -32,4 +32,9 @@ async function runMigration() {
 	}
 }
 
-runMigration().catch((error) => console.error('Error in migration process 🚨:', error))
+runMigration()
+	.then(() => process.exit(0))
+	.catch((error) => {
+		console.error('Error in migration process 🚨:', error)
+		process.exit(1)
+	})
