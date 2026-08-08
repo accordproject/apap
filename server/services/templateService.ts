@@ -95,7 +95,7 @@ export async function createTemplateFromArchive(
     db: Database,
     archive: Buffer,
 ): Promise<TemplateRow> {
-    let apTemplate;
+    let apTemplate: ApTemplate;
     try {
         apTemplate = await ApTemplate.fromArchive(archive);
     } catch (err: any) {
