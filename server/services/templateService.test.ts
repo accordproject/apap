@@ -1,13 +1,55 @@
 import { jest } from '@jest/globals';
+import fs from 'fs';
+import path from 'path';
+import AdmZip from 'adm-zip';
 import {
     listTemplates,
     getTemplateById,
     getTemplateByUri,
     createTemplate,
+    createTemplateFromArchive,
     updateTemplate,
     deleteTemplate,
 } from './templateService';
-import { TemplateNotFoundError, TemplateDuplicateError } from './errors';
+import {
+    TemplateNotFoundError,
+    TemplateDuplicateError,
+    TemplateCiceroVersionMismatchError,
+    InvalidPayloadError,
+} from './errors';
+
+// Builds a real `.cta` archive buffer from the late-delivery-and-penalty test
+// fixture, optionally overriding the `package.json.accordproject.cicero`
+// compatibility range so version-mismatch behavior can be exercised without
+// needing a second fixture archive.
+function buildArchive(opts: { cicero?: string } = {}): Buffer {
+    const templatePath = path.join(__dirname, '../test/archives/latedeliveryandpenalty-typescript');
+    const zip = new AdmZip();
+
+    const packageJson = JSON.parse(fs.readFileSync(path.join(templatePath, 'package.json'), 'utf8'));
+    if (opts.cicero !== undefined) {
+        packageJson.accordproject.cicero = opts.cicero;
+    }
+    zip.addFile('package.json', Buffer.from(JSON.stringify(packageJson), 'utf8'));
+
+    const grammarText = fs.readFileSync(path.join(templatePath, 'text/grammar.tem.md'), 'utf8');
+    zip.addFile('text/grammar.tem.md', Buffer.from(grammarText, 'utf8'));
+
+    fs.readdirSync(path.join(templatePath, 'model')).forEach((file) => {
+        const modelContent = fs.readFileSync(path.join(templatePath, 'model', file), 'utf8');
+        zip.addFile(`model/${file}`, Buffer.from(modelContent, 'utf8'));
+    });
+
+    const logicPath = path.join(templatePath, 'logic');
+    if (fs.existsSync(logicPath)) {
+        fs.readdirSync(logicPath).filter((f) => f.endsWith('.ts') || f.endsWith('.js')).forEach((file) => {
+            const logicContent = fs.readFileSync(path.join(logicPath, file), 'utf8');
+            zip.addFile(`logic/${file}`, Buffer.from(logicContent, 'utf8'));
+        });
+    }
+
+    return zip.toBuffer();
+}
 
 // Minimal Template fixtures. The service only touches `uri` and `id`, but
 // TemplateInsert requires the not-null json fields (metadata, templateModel,
@@ -202,6 +244,59 @@ describe('templateService', () => {
             await expect(
                 createTemplate(db, lateDeliveryTemplate),
             ).rejects.toThrow('connection lost');
+        });
+    });
+
+    describe('createTemplateFromArchive', () => {
+        it('parses a valid archive whose declared Cicero range is satisfied and inserts it', async () => {
+            db._setReturn([]); // no existing row with this hash
+            // `.returning()` normally echoes the DB's inserted row; here it echoes
+            // back whatever `createTemplate` passed to `.values(...)` so we can
+            // assert on the shape `extractTemplateForDatabase` actually produced.
+            let insertedValues: any;
+            db.values = jest.fn((v: any) => { insertedValues = v; return db; });
+            db.returning = jest.fn(() => Promise.resolve([{ id: 99, ...insertedValues }]));
+
+            const archive = buildArchive();
+            const result = await createTemplateFromArchive(db, archive);
+
+            expect(db.insert).toHaveBeenCalled();
+            expect(result.hash).toBeTruthy();
+            expect(result.uri).toMatch(/^archive:latedeliveryandpenalty-typescript@/);
+            expect(result.metadata).toMatchObject({ cicero: '^0.25.0' });
+        });
+
+        it('returns the existing row without inserting when the hash already exists', async () => {
+            const archive = buildArchive();
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 42);
+            db._setReturn([existingRow]);
+
+            const result = await createTemplateFromArchive(db, archive);
+
+            expect(result).toEqual(existingRow);
+            expect(db.insert).not.toHaveBeenCalled();
+        });
+
+        it('throws InvalidPayloadError for bytes that are not a valid .cta archive', async () => {
+            await expect(
+                createTemplateFromArchive(db, Buffer.from('not a zip file')),
+            ).rejects.toThrow(InvalidPayloadError);
+        });
+
+        it('throws TemplateCiceroVersionMismatchError when the declared range is not satisfied', async () => {
+            const archive = buildArchive({ cicero: '^99.0.0' });
+
+            await expect(
+                createTemplateFromArchive(db, archive),
+            ).rejects.toThrow(TemplateCiceroVersionMismatchError);
+        });
+
+        it('throws TemplateCiceroVersionMismatchError when no Cicero range is declared', async () => {
+            const archive = buildArchive({ cicero: '' });
+
+            await expect(
+                createTemplateFromArchive(db, archive),
+            ).rejects.toThrow(TemplateCiceroVersionMismatchError);
         });
     });
 

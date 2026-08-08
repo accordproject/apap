@@ -1,7 +1,29 @@
 import { eq } from 'drizzle-orm';
+import { Template as ApTemplate } from '@accordproject/cicero-core';
 import { Template } from '../db/schema';
 import type { Database } from '../db/client';
-import { TemplateNotFoundError, TemplateDuplicateError } from './errors';
+import { extractTemplateForDatabase } from '../handlers/templatebuilder';
+import {
+    TemplateNotFoundError,
+    TemplateDuplicateError,
+    TemplateCiceroVersionMismatchError,
+    InvalidPayloadError,
+} from './errors';
+
+// The exact cicero-core version this server parses/executes `.cta` archives
+// with (server/package.json's direct dependency, not a nested copy pulled in
+// by @accordproject/template-engine).
+const SERVER_CICERO_VERSION: string = require('@accordproject/cicero-core/package.json').version;
+
+// cicero-core's own Template.fromArchive already enforces that an archive's
+// declared `accordproject.cicero` semver range is satisfied by the installed
+// cicero-core version (and that a range is declared at all) — see
+// node_modules/@accordproject/cicero-core's TemplateMetadata constructor.
+// It has no typed error for this, only a bare Error whose message always
+// mentions "Cicero version" for both failure modes, so that's what we match
+// on to route to a typed, machine-readable error instead of a generic 400.
+const CICERO_VERSION_ERROR_RX = /cicero version/i;
+const CICERO_VERSION_RANGE_RX = /targets Cicero(?: version)? \(?([^\s)]+)\)?/i;
 
 // Each function takes `db` as the first arg so both the MCP handler and the REST
 // routes can call the same code path without an internal HTTP loop. This is the
@@ -59,6 +81,44 @@ export async function createTemplate(
         if (isUniqueViolation(err)) throw new TemplateDuplicateError(data.uri);
         throw err;
     }
+}
+
+/**
+ * Creates a Template from raw `.cta` archive bytes (as opposed to the
+ * already-exploded JSON shape `createTemplate` expects). Parses the archive
+ * with cicero-core, rejects it if its declared Cicero compatibility range
+ * doesn't cover this server's pinned cicero-core version, and dedupes on
+ * content hash the same way the `POST /agreements` external-template fetch
+ * already does.
+ */
+export async function createTemplateFromArchive(
+    db: Database,
+    archive: Buffer,
+): Promise<TemplateRow> {
+    let apTemplate;
+    try {
+        apTemplate = await ApTemplate.fromArchive(archive);
+    } catch (err: any) {
+        const message: string = err?.message ?? 'Unknown error';
+        if (CICERO_VERSION_ERROR_RX.test(message)) {
+            const declaredRange = message.match(CICERO_VERSION_RANGE_RX)?.[1];
+            throw new TemplateCiceroVersionMismatchError(declaredRange, SERVER_CICERO_VERSION, message);
+        }
+        throw new InvalidPayloadError('Uploaded file is not a valid .cta template archive', {
+            reason: message,
+        });
+    }
+
+    const packageJson: Record<string, any> = apTemplate.getMetadata().getPackageJson();
+    const hash = apTemplate.getHash();
+    const existing = await db.select().from(Template).where(eq(Template.hash, hash)).limit(1);
+    if (existing.length > 0) {
+        return existing[0];
+    }
+
+    const uri = `archive:${packageJson.name}@${packageJson.version}`;
+    const data = extractTemplateForDatabase(apTemplate, uri, hash) as TemplateInsert;
+    return createTemplate(db, data);
 }
 
 export async function updateTemplate(

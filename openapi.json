@@ -5994,6 +5994,48 @@
         }
       ]
     },
+    "/templates/archive": {
+      "summary": "Path used to create a template from a .cta archive.",
+      "description": "The REST endpoint/path used to create a `Template` by uploading a Cicero Template Archive (`.cta`) file directly, instead of the pre-parsed JSON shape accepted by `POST /templates`.",
+      "post": {
+        "requestBody": {
+          "description": "A Cicero Template Archive (`.cta`) file.",
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "The template was created (or, if an identical archive already exists, the existing template was returned).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The uploaded file is missing or is not a valid `.cta` archive."
+          },
+          "422": {
+            "description": "The archive's declared Cicero compatibility range is not satisfied by the Cicero version this server supports."
+          }
+        },
+        "operationId": "postTemplateArchive",
+        "summary": "Create a template from a .cta archive",
+        "description": "Parses an uploaded `.cta` archive and creates a `Template`, rejecting archives whose declared Cicero version range does not match the version of Cicero supported by this server.",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
     "/capabilities": {
       "summary": "Path used to retrieve server capabilities.",
       "description": "The REST endpoint used to understand the capabiities of the server.",

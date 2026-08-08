@@ -16,3 +16,15 @@
 <p>Generated client code for various platforms is available in the <a href="./client/">client</a> directory.</p>
 <h2 id="reference-implementation">Reference Implementation</h2>
 <p>A reference implementation of the protocol is available in the <a href="./server">server</a> directory.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="run-locally-with-docker">Run locally with Docker</h3>
+<pre class="language-bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/accordproject/apap.git<br><span class="token builtin class-name">cd</span> apap/server<br><span class="token function">cp</span> .env_example .env<br><span class="token function">docker</span> compose up</code></pre>
+<p>The server starts at <code>http://localhost:9000</code>. On first run, bootstrap the database schema in a separate terminal:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">cd</span> apap/server <span class="token operator">&amp;&amp;</span> npx drizzle-kit push</code></pre>
+<h3 id="deploy-on-railway">Deploy on Railway</h3>
+<p>Click the button below to provision the server and a managed Postgres instance in one click:</p>
+<p><a href="https://railway.com/deploy/QYiXk5?referralCode=Gx6QTA&amp;utm_medium=integration&amp;utm_source=template&amp;utm_campaign=generic"><img src="https://railway.com/button.svg" alt="Deploy on Railway"></a></p>
+<p>Once deployed, your server is available at the Railway-assigned URL (e.g. <code>https://my-apap.up.railway.app</code>). No database setup required — Postgres is provisioned and linked automatically. Important note: this deployment is a sample implementation and not hardened for a production implementation.</p>
+<h3 id="verify">Verify</h3>
+<pre class="language-bash"><code class="language-bash"><span class="token function">curl</span> http://localhost:9000/capabilities<br><span class="token comment"># or https://my-apap.up.railway.app/capabilities</span></code></pre>
+<p>For full API documentation see <a href="https://docs.accordproject.org/docs/ref-apap">docs.accordproject.org/docs/ref-apap</a>.</p>

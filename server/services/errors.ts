@@ -65,6 +65,27 @@ export class TemplateDuplicateError extends ServiceError {
     }
 }
 
+/**
+ * Raised when an uploaded `.cta` archive declares a Cicero compatibility
+ * range (`package.json.accordproject.cicero`) that the server's own pinned
+ * `@accordproject/cicero-core` version does not satisfy, or declares none
+ * at all. The archive parsed fine — it's just not safe to execute against
+ * this server's runtime.
+ */
+export class TemplateCiceroVersionMismatchError extends ServiceError {
+    constructor(declaredRange: string | undefined, serverVersion: string, reason?: string) {
+        super(
+            'TEMPLATE_CICERO_VERSION_MISMATCH',
+            422,
+            declaredRange
+                ? `Template requires Cicero ${declaredRange}, server supports ${serverVersion}`
+                : `Template does not declare a supported Cicero version range; server supports ${serverVersion}`,
+            { declaredRange, serverVersion, ...(reason && { reason }) },
+        );
+        this.name = 'TemplateCiceroVersionMismatchError';
+    }
+}
+
 // -- Agreement errors --
 
 export class AgreementNotFoundError extends ServiceError {
