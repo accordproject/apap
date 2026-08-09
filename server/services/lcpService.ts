@@ -3,7 +3,22 @@ import { eq } from 'drizzle-orm';
 import type { Database } from '../db/client';
 import { Agreement } from '../db/schema';
 import { AgreementNotFoundError } from './errors';
-import { convertAgreement, RECORD_FROZEN_STATUSES } from './agreementService';
+import { convertAgreement } from './agreementService';
+
+// Statuses under which `Agreement.data` — what /agreements/:id/terms
+// renders from — is guaranteed not to change, per
+// agreementService.ts's assertAgreementRecordMutable: `data` freezes from
+// SIGNING onward (a signatory's signature must not be invalidated by the
+// terms moving under them), and the full record freezes from
+// COMPLETED/SUPERSEDED. Deliberately not imported from agreementService.ts:
+// that module's internal frozen-status constants are private and have
+// already been renamed once independently of this file. AgreementStatusType
+// has exactly four values (DRAFT, SIGNING, COMPLETED, SUPERSEDED), so
+// "not DRAFT" is an exact, stable restatement of "data is frozen" that
+// doesn't depend on agreementService.ts's internal naming — but it does
+// depend on that invariant holding, so if assertAgreementRecordMutable's
+// data-freeze point ever moves, this must move with it.
+const DRAFT_STATUS = 'DRAFT';
 
 // Legal Context Protocol (legalcontextprotocol.org v1.0) support.
 //
@@ -186,25 +201,25 @@ export function advisoryLegalContextFromMetadata(metadata: unknown): AdvisoryFie
  * and `acceptanceRequired` are all meaningful per agreement and meaningless
  * averaged across a multi-tenant host.
  *
- * `atrHash` is included once — and only once — `agreementStatus` is in
- * `RECORD_FROZEN_STATUSES` (COMPLETED or SUPERSEDED). The LCP schema requires
+ * `atrHash` is included once — and only once — `agreementStatus` is not
+ * `DRAFT` (i.e. SIGNING, COMPLETED, or SUPERSEDED). The LCP schema requires
  * that once `atrHash` is present, the terms document "MUST be byte-identical
- * on every serve": before that guard existed, `/agreements/:id/terms` drafted
- * from `agreement.data`, which was mutable via `PUT` at any time, so the
- * promise couldn't be honoured and this document stayed honestly L1. Now that
- * `assertAgreementRecordMutable` (agreementService.ts) rejects any write to
- * `data` — or anything else the terms rendering could depend on — once the
- * record is frozen, a frozen agreement's terms really are pinned, so `atrHash`
- * is safe to claim. A DRAFT/SIGNING agreement still omits it, unchanged.
+ * on every serve": before agreementService.ts's `assertAgreementRecordMutable`
+ * guard existed, `/agreements/:id/terms` drafted from `agreement.data`, which
+ * was mutable via `PUT` at any time, so the promise couldn't be honoured and
+ * this document stayed honestly L1. That guard now freezes `data` as soon as
+ * SIGNING begins — a signatory's signature must not be invalidated by the
+ * terms moving under them — and freezes the full record from
+ * COMPLETED/SUPERSEDED, so a non-DRAFT agreement's terms really are pinned
+ * and `atrHash` is safe to claim from SIGNING onward. Only a DRAFT agreement
+ * still omits it.
  *
- * Residual gap, not closed by this: the terms rendering also depends on the
- * *Template* referenced by `agreement.template`/`templateHash` — its `text`/
- * `logic` — and `PUT /templates/:id` has no equivalent freeze. Editing a
- * template in place, without changing its content hash, would silently
- * change what every agreement using it renders, including frozen ones. This
- * is a real hole in the L2 claim; closing it (freezing a Template once any
- * frozen Agreement references it, or simply never mutating templates in
- * place) is a follow-up, not solved here.
+ * The terms rendering also depends on the *Template* referenced by
+ * `agreement.template`/`templateHash` — its `text`/`logic` — which templates
+ * are now immutable once created (see templateService.ts's
+ * `assertTemplateContentImmutable`), so this no longer undermines the claim:
+ * neither the agreement's `data` nor the template it renders against can
+ * change out from under a byte-pinned terms document.
  */
 export async function buildAgreementLegalContext(
     db: Database,
@@ -218,7 +233,7 @@ export async function buildAgreementLegalContext(
     const agreement = rows[0];
     const advisory = advisoryLegalContextFromMetadata(agreement.metadata);
 
-    const atrHash = RECORD_FROZEN_STATUSES.has(agreement.agreementStatus)
+    const atrHash = agreement.agreementStatus !== DRAFT_STATUS
         ? (await getAgreementTerms(db, agreementId)).atrHash
         : undefined;
 

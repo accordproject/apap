@@ -218,6 +218,7 @@ describe('lcpService', () => {
             const db = createMockDb();
             db._setReturn([{
                 id: 7,
+                agreementStatus: 'DRAFT',
                 metadata: {
                     values: [
                         { key: 'lcp.terms', value: 'https://attacker.example/fake-terms' },
@@ -249,19 +250,20 @@ describe('lcpService', () => {
             expect(doc.atrHash).not.toBe(`0x${'a'.repeat(64)}`);
         });
 
-        it('omits atrHash while the agreement is still DRAFT or SIGNING (data is still mutable)', async () => {
+        it('omits atrHash while the agreement is still DRAFT (data is still fully mutable)', async () => {
             const db = createMockDb();
-            for (const agreementStatus of ['DRAFT', 'SIGNING']) {
-                db._setReturn([{ id: 1, agreementStatus, metadata: null }]);
-                const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
-                expect(doc.atrHash).toBeUndefined();
-            }
+            db._setReturn([{ id: 1, agreementStatus: 'DRAFT', metadata: null }]);
+            const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
+            expect(doc.atrHash).toBeUndefined();
             expect(mockedConvertAgreement).not.toHaveBeenCalled();
         });
 
-        it('includes atrHash once COMPLETED or SUPERSEDED, hashing exactly the served terms bytes', async () => {
+        it('includes atrHash from SIGNING onward, hashing exactly the served terms bytes', async () => {
+            // agreementService.ts's assertAgreementRecordMutable freezes `data`
+            // as soon as SIGNING begins (not just once COMPLETED/SUPERSEDED),
+            // so atrHash is safe to claim starting there too.
             const db = createMockDb();
-            for (const agreementStatus of ['COMPLETED', 'SUPERSEDED']) {
+            for (const agreementStatus of ['SIGNING', 'COMPLETED', 'SUPERSEDED']) {
                 mockedConvertAgreement.mockResolvedValue('# Frozen terms');
                 db._setReturn([{ id: 1, agreementStatus, metadata: null }]);
                 const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
@@ -279,7 +281,7 @@ describe('lcpService', () => {
 
         it('builds terms and api as absolute URLs under the given base', async () => {
             const db = createMockDb();
-            db._setReturn([{ id: 42, metadata: null }]);
+            db._setReturn([{ id: 42, agreementStatus: 'DRAFT', metadata: null }]);
             const doc = await buildAgreementLegalContext(db, 42, 'https://apap.example');
             expect(doc.terms).toBe('https://apap.example/agreements/42/terms');
             expect(doc.termsFormat).toBe('markdown');
@@ -321,7 +323,7 @@ describe('lcpService', () => {
         it('mirrors an agreement when LCP_ROOT_AGREEMENT_ID is set', async () => {
             process.env.LCP_ROOT_AGREEMENT_ID = '3';
             const db = createMockDb();
-            db._setReturn([{ id: 3, metadata: null }]);
+            db._setReturn([{ id: 3, agreementStatus: 'DRAFT', metadata: null }]);
 
             const doc = await buildServerLegalContext(db, 'https://apap.example');
 
