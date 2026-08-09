@@ -275,7 +275,7 @@ describe('templateService', () => {
             expect(db.insert).toHaveBeenCalled();
             expect(result.hash).toBeTruthy();
             expect(result.uri).toMatch(/^archive:latedeliveryandpenalty-typescript@/);
-            expect(result.metadata).toMatchObject({ cicero: '^0.25.0' });
+            expect(result.metadata).toMatchObject({ cicero: '^2.0.0' });
         });
 
         it('returns the existing row without inserting when the hash already exists', async () => {
