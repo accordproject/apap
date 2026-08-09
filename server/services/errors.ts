@@ -76,6 +76,25 @@ export class AgreementNotFoundError extends ServiceError {
     }
 }
 
+/**
+ * Raised when a PUT/PATCH attempts to change `data` (the deal terms /
+ * template instance data that drives the agreement's rendered text) on an
+ * agreement whose `agreementStatus` is COMPLETED or SUPERSEDED. Signing has
+ * finished (or been superseded), so the contract text must stay fixed —
+ * only runtime `state` (via the trigger endpoint) may still change.
+ */
+export class AgreementDataImmutableError extends ServiceError {
+    constructor(agreementId: string | number, status: string) {
+        super(
+            'AGREEMENT_DATA_IMMUTABLE',
+            409,
+            `Agreement ${agreementId} data cannot be changed once its status is ${status}`,
+            { agreementId, status },
+        );
+        this.name = 'AgreementDataImmutableError';
+    }
+}
+
 export class AgreementConversionError extends ServiceError {
     constructor(agreementId: string | number, format: string, reason?: string) {
         super(

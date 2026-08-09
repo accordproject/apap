@@ -4,8 +4,9 @@ import {
     getAgreementById,
     getAgreementByUri,
     convertAgreement,
+    assertAgreementDataMutable,
 } from './agreementService';
-import { AgreementNotFoundError } from './errors';
+import { AgreementNotFoundError, AgreementDataImmutableError } from './errors';
 
 // convertAgreement pulls in the real template engine and templatebuilder
 // utility; mock both so the service can be exercised without a real
@@ -107,7 +108,7 @@ describe('agreementService', () => {
 
     describe('getAgreementById', () => {
         it('returns the agreement when it exists', async () => {
-            const row = agreementRow(5, { agreementStatus: 'SIGNNG' });
+            const row = agreementRow(5, { agreementStatus: 'SIGNING' });
             db._setReturn([row]);
 
             const result = await getAgreementById(db, 5);
@@ -252,6 +253,51 @@ describe('agreementService', () => {
             }
             expect(caught).toBeInstanceOf(AgreementConversionError);
             expect(caught).toMatchObject({ code: 'AGREEMENT_CONVERSION_FAILED' });
+        });
+    });
+
+    describe('assertAgreementDataMutable', () => {
+        it.each(['DRAFT', 'SIGNING'])('allows changing data while status is %s', (agreementStatus) => {
+            const existing = agreementRow(1, { agreementStatus, data: { price: 10 } });
+
+            expect(() =>
+                assertAgreementDataMutable(existing, { data: { price: 20 } }),
+            ).not.toThrow();
+        });
+
+        it.each(['COMPLETED', 'SUPERSEDED'])(
+            'rejects changing data once status is %s',
+            (agreementStatus) => {
+                const existing = agreementRow(1, { agreementStatus, data: { price: 10 } });
+
+                let caught: unknown;
+                try {
+                    assertAgreementDataMutable(existing, { data: { price: 20 } });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementDataImmutableError);
+                expect(caught).toMatchObject({ code: 'AGREEMENT_DATA_IMMUTABLE', statusCode: 409 });
+            },
+        );
+
+        it('allows a no-op resend of the same data once COMPLETED, regardless of key order', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'COMPLETED',
+                data: { price: 10, currency: 'USD' },
+            });
+
+            expect(() =>
+                assertAgreementDataMutable(existing, { data: { currency: 'USD', price: 10 } }),
+            ).not.toThrow();
+        });
+
+        it('allows updates that do not touch data once COMPLETED (e.g. signatures)', () => {
+            const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
+
+            expect(() =>
+                assertAgreementDataMutable(existing, { signatures: [{ signatory: 'party-1' }] }),
+            ).not.toThrow();
         });
     });
 });

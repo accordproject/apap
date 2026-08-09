@@ -4,6 +4,7 @@ import type { Database } from '../db/client';
 import {
     AgreementNotFoundError,
     AgreementConversionError,
+    AgreementDataImmutableError,
     AgreementTriggerError,
     InvalidPayloadError,
     ValidationError,
@@ -24,6 +25,50 @@ import { concertoValidation } from '../handlers/concertovalidation';
 // utility directory is a follow-up refactor.
 
 type AgreementRow = typeof Agreement.$inferSelect;
+
+// Once signing has finished (COMPLETED) or the agreement has been
+// superseded (SUPERSEDED), the deal terms captured in `data` must stop
+// changing — that JSON is what the template engine drafts the contract
+// text from. `state` (written only by triggerAgreement, above) is exempt:
+// runtime/workflow state is expected to keep moving after signing
+// completes (e.g. post-completion obligations tracked via triggers).
+const DATA_IMMUTABLE_STATUSES: ReadonlySet<string> = new Set(['COMPLETED', 'SUPERSEDED']);
+
+/**
+ * Deep-equality check used only to tell "no-op resend of the same data"
+ * apart from an actual attempted change, independent of key order.
+ */
+function deepEqual(a: unknown, b: unknown): boolean {
+    if (a === b) return true;
+    if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+        return false;
+    }
+    if (Array.isArray(a) || Array.isArray(b)) {
+        if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+        return a.every((item, i) => deepEqual(item, b[i]));
+    }
+    const aKeys = Object.keys(a as Record<string, unknown>);
+    const bKeys = Object.keys(b as Record<string, unknown>);
+    if (aKeys.length !== bKeys.length) return false;
+    return aKeys.every((key) =>
+        Object.prototype.hasOwnProperty.call(b, key) &&
+        deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]),
+    );
+}
+
+/**
+ * Guard for the generic CRUD PUT route (see `crud.ts`'s `guardUpdate` hook).
+ * Rejects a request that would change `data` on an agreement that is
+ * already COMPLETED or SUPERSEDED. Any other field (signatures,
+ * agreementStatus itself, metadata, etc.) may still be updated.
+ */
+export function assertAgreementDataMutable(existing: AgreementRow, updates: Record<string, unknown>): void {
+    if (!DATA_IMMUTABLE_STATUSES.has(existing.agreementStatus)) return;
+    if (!Object.prototype.hasOwnProperty.call(updates, 'data')) return;
+    if (deepEqual(existing.data, updates.data)) return;
+
+    throw new AgreementDataImmutableError(existing.id, existing.agreementStatus);
+}
 
 /**
  * Replaces: makeApiRequest(`${API_BASE_URL}/agreements`)

@@ -496,7 +496,7 @@
         "description": "An instance of org.accordproject.protocol@1.0.0.AgreementStatusType",
         "enum": [
           "DRAFT",
-          "SIGNNG",
+          "SIGNING",
           "COMPLETED",
           "SUPERSEDED"
         ],

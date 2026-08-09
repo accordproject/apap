@@ -193,6 +193,13 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     validateBody?: InsertValidator;
     transformResponse?: (item: any) => any;
     transformRequest?: (req: Request) => any;
+    // Runs on PUT /:id, after body validation and before the row is written,
+    // with the row's current DB state and the (validated, transformed)
+    // request body. Throw a ServiceError to reject the update — e.g.
+    // Agreement uses this to keep `data` immutable once signing has
+    // completed. Skipped when no row matches :id, so 404 handling below is
+    // unaffected.
+    guardUpdate?: (existing: any, body: any) => void | Promise<void>;
 }
 
 function getSingleQueryParam(value: unknown): string | undefined {
@@ -292,7 +299,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     buildWhereClause,
     validateBody,
     transformResponse,
-    transformRequest
+    transformRequest,
+    guardUpdate
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
@@ -544,10 +552,21 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    table.id.columnType === 'PgUUID' ? 
+                    table.id.columnType === 'PgUUID' ?
                         eq(table.id, req.params.id) :
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
+
+                if (guardUpdate) {
+                    const existingRows = await res.locals.db
+                        .select()
+                        .from(table)
+                        .where(and(...whereConditions))
+                        .limit(1);
+                    if (existingRows.length > 0) {
+                        await guardUpdate(existingRows[0], req.body);
+                    }
+                }
 
                 let updated;
                 try {

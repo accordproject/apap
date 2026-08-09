@@ -8783,11 +8783,11 @@ Status Code **200**
 |Property|Value|
 |---|---|
 |agreementStatus|DRAFT|
-|agreementStatus|SIGNNG|
+|agreementStatus|SIGNING|
 |agreementStatus|COMPLETED|
 |agreementStatus|SUPERSEDED|
 |agreementStatus|DRAFT|
-|agreementStatus|SIGNNG|
+|agreementStatus|SIGNING|
 |agreementStatus|COMPLETED|
 |agreementStatus|SUPERSEDED|
 
@@ -11291,7 +11291,7 @@ AgreementStatusType
 |Property|Value|
 |---|---|
 |AgreementStatusType|DRAFT|
-|AgreementStatusType|SIGNNG|
+|AgreementStatusType|SIGNING|
 |AgreementStatusType|COMPLETED|
 |AgreementStatusType|SUPERSEDED|
 

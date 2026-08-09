@@ -115,7 +115,7 @@ concept Metadata {
 @description("Runtime status of an agreement")
 enum AgreementStatusType {
     o DRAFT         // No signatories have signed yet
-    o SIGNNG        // Signed by some but not all signatories
+    o SIGNING       // Signed by some but not all signatories
     o COMPLETED     // Signing by all signatories completed
     o SUPERSEDED    // Superseded by subsequent agreement
 }

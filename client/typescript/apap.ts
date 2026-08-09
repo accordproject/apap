@@ -455,7 +455,7 @@ export interface components {
          * @description An instance of org.accordproject.protocol@1.0.0.AgreementStatusType
          * @enum {unknown}
          */
-        "org.accordproject.protocol@1.0.0.AgreementStatusType": "DRAFT" | "SIGNNG" | "COMPLETED" | "SUPERSEDED";
+        "org.accordproject.protocol@1.0.0.AgreementStatusType": "DRAFT" | "SIGNING" | "COMPLETED" | "SUPERSEDED";
         /**
          * Agreement
          * @description An instance of org.accordproject.protocol@1.0.0.Agreement
