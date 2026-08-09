@@ -566,6 +566,15 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
 
+                // Deliberately runs after transformRequest (not before): the guard
+                // must see the exact payload that .set(req.body) below is about to
+                // persist, not the pre-transform one — otherwise a transformRequest
+                // that adds/renames a field could slip an unguarded change past the
+                // check. transformRequest output already skips re-validation against
+                // validateBody on this route (true for POST too, not new here); no
+                // current caller of guardUpdate (Agreement, Template) supplies a
+                // transformRequest, so this is inert today, but keep the ordering if
+                // one ever does.
                 if (guardUpdate) {
                     const existingRows = await res.locals.db
                         .select()
