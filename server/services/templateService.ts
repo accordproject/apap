@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import AdmZip from 'adm-zip';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import { Template } from '../db/schema';
 import type { Database } from '../db/client';
@@ -24,6 +25,13 @@ const SERVER_CICERO_VERSION: string = require('@accordproject/cicero-core/packag
 // on to route to a typed, machine-readable error instead of a generic 400.
 const CICERO_VERSION_ERROR_RX = /cicero version/i;
 const CICERO_VERSION_RANGE_RX = /targets Cicero(?: version)? \(?([^\s)]+)\)?/i;
+
+// express.raw's upload limit only caps compressed bytes on the wire; a small
+// zip can still declare a huge uncompressed size in its central directory
+// and OOM the process when cicero-core inflates it. Reject anything whose
+// declared (not yet inflated) total uncompressed size exceeds this ceiling
+// before cicero-core ever decompresses a byte.
+const MAX_ARCHIVE_UNCOMPRESSED_BYTES = 50 * 1024 * 1024;
 
 // Each function takes `db` as the first arg so both the MCP handler and the REST
 // routes can call the same code path without an internal HTTP loop. This is the
@@ -95,6 +103,23 @@ export async function createTemplateFromArchive(
     db: Database,
     archive: Buffer,
 ): Promise<TemplateRow> {
+    let entries;
+    try {
+        entries = new AdmZip(archive).getEntries();
+    } catch (err: any) {
+        throw new InvalidPayloadError('Uploaded file is not a valid .cta template archive', {
+            reason: err?.message ?? 'Unknown error',
+        });
+    }
+
+    const totalUncompressed = entries.reduce((sum, entry) => sum + entry.header.size, 0);
+    if (totalUncompressed > MAX_ARCHIVE_UNCOMPRESSED_BYTES) {
+        throw new InvalidPayloadError('Archive exceeds the maximum allowed uncompressed size', {
+            totalUncompressed,
+            maxAllowed: MAX_ARCHIVE_UNCOMPRESSED_BYTES,
+        });
+    }
+
     let apTemplate: ApTemplate;
     try {
         apTemplate = await ApTemplate.fromArchive(archive);
@@ -118,7 +143,20 @@ export async function createTemplateFromArchive(
 
     const uri = `archive:${packageJson.name}@${packageJson.version}`;
     const data = extractTemplateForDatabase(apTemplate, uri, hash) as TemplateInsert;
-    return createTemplate(db, data);
+    try {
+        return await createTemplate(db, data);
+    } catch (err) {
+        // Select-then-insert race: a concurrent upload of the same archive
+        // may have inserted between our dedupe check above and this insert,
+        // tripping the unique constraint. Treat that as the same "already
+        // exists, hand back the existing row" outcome instead of letting a
+        // 409 leak out for what the caller sees as a successful re-upload.
+        if (err instanceof TemplateDuplicateError) {
+            const rows = await db.select().from(Template).where(eq(Template.hash, hash)).limit(1);
+            if (rows.length > 0) return rows[0];
+        }
+        throw err;
+    }
 }
 
 export async function updateTemplate(

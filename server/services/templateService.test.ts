@@ -51,6 +51,18 @@ function buildArchive(opts: { cicero?: string } = {}): Buffer {
     return zip.toBuffer();
 }
 
+// Simulates a zip-bomb archive: a real, small `.cta` whose central directory
+// is then tampered to declare an uncompressed size far past
+// MAX_ARCHIVE_UNCOMPRESSED_BYTES, without actually allocating that much
+// memory. adm-zip writes `header.size` back into the serialized central
+// directory on `toBuffer()`, so re-parsing the result reports the lied-about
+// size exactly like a real crafted archive would.
+function buildOversizedArchive(): Buffer {
+    const zip = new AdmZip(buildArchive());
+    zip.getEntries()[0].header.size = 100 * 1024 * 1024;
+    return zip.toBuffer();
+}
+
 // Minimal Template fixtures. The service only touches `uri` and `id`, but
 // TemplateInsert requires the not-null json fields (metadata, templateModel,
 // text) so include placeholder shapes for those.
@@ -297,6 +309,39 @@ describe('templateService', () => {
             await expect(
                 createTemplateFromArchive(db, archive),
             ).rejects.toThrow(TemplateCiceroVersionMismatchError);
+        });
+
+        it('throws InvalidPayloadError when the archive declares an uncompressed size over the ceiling', async () => {
+            const archive = buildOversizedArchive();
+
+            await expect(
+                createTemplateFromArchive(db, archive),
+            ).rejects.toThrow(InvalidPayloadError);
+
+            // Rejected before cicero-core ever gets to decompress anything.
+            expect(db.select).not.toHaveBeenCalled();
+        });
+
+        it('falls back to the existing row when a concurrent upload wins the insert race', async () => {
+            const archive = buildArchive();
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 7);
+
+            // First select (pre-insert dedupe check) sees nothing; the insert
+            // itself then hits the unique constraint as if a concurrent upload
+            // of the same archive landed first; the second select (post-catch
+            // re-query) finds the row that concurrent upload just inserted.
+            let selectCalls = 0;
+            db.then = function (onFulfilled: any, onRejected: any) {
+                selectCalls += 1;
+                const value = selectCalls === 1 ? [] : [existingRow];
+                return Promise.resolve(value).then(onFulfilled, onRejected);
+            };
+            db.returning = jest.fn(() => Promise.reject({ code: '23505' }));
+
+            const result = await createTemplateFromArchive(db, archive);
+
+            expect(result).toEqual(existingRow);
+            expect(selectCalls).toBe(2);
         });
     });
 
