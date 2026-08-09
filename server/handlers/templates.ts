@@ -3,7 +3,13 @@ import { Template, TemplateInsertSchema, } from '../db/schema';
 import { buildCrudRouter, ValidationResult } from './crud';
 import { concertoValidation } from './concertovalidation';
 import { templateFromDatabase } from './templatebuilder';
-import { assertTemplateContentImmutable, assertTemplateNotInUse } from '../services/templateService';
+import {
+    assertTemplateContentImmutable,
+    assertTemplateNotInUse,
+    createTemplateFromArchive,
+} from '../services/templateService';
+import { InvalidPayloadError } from '../services/errors';
+import { asyncHandler } from '../middleware/errorHandler';
 
 const router = express.Router();
 
@@ -63,6 +69,25 @@ const crudRouter = buildCrudRouter({
     guardUpdate: (existing, body) => assertTemplateContentImmutable(existing, body),
     guardDelete: (existing, db) => assertTemplateNotInUse(existing, db),
 });
+
+/**
+ * @param req The Express request carrying a raw `.cta` archive as the body.
+ * @param res The Express response used to return the created template or an error.
+ * @return Resolves after the created template or an error response has been written.
+ * @details Parses the uploaded archive with cicero-core, rejects it if the archive's
+ * declared Cicero compatibility range doesn't cover the server's pinned cicero-core
+ * version, and creates (or, on a matching content hash, returns the existing) Template.
+ */
+crudRouter.post('/archive',
+    express.raw({ type: 'application/octet-stream', limit: '10mb' }),
+    asyncHandler(async (req, res) => {
+        if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
+            throw new InvalidPayloadError('Missing .cta archive body');
+        }
+        const template = await createTemplateFromArchive(res.locals.db, req.body);
+        res.status(201).json(template);
+    })
+);
 
 router.use('/', crudRouter);
 export default router;

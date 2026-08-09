@@ -215,6 +215,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/templates/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a template from a .cta archive
+         * @description Parses an uploaded `.cta` archive and creates a `Template`, rejecting archives whose declared Cicero version range does not match the version of Cicero supported by this server.
+         */
+        post: operations["postTemplateArchive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/capabilities": {
         parameters: {
             query?: never;
@@ -2053,6 +2073,45 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.TriggerResponse"];
                 };
+            };
+        };
+    };
+    postTemplateArchive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description A Cicero Template Archive (`.cta`) file. */
+        requestBody: {
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        responses: {
+            /** @description The template was created (or, if an identical archive already exists, the existing template was returned). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.Template"];
+                };
+            };
+            /** @description The uploaded file is missing or is not a valid `.cta` archive. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The archive's declared Cicero compatibility range is not satisfied by the Cicero version this server supports. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
