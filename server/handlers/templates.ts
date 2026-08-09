@@ -3,6 +3,7 @@ import { Template, TemplateInsertSchema, } from '../db/schema';
 import { buildCrudRouter, ValidationResult } from './crud';
 import { concertoValidation } from './concertovalidation';
 import { templateFromDatabase } from './templatebuilder';
+import { assertTemplateContentImmutable, assertTemplateNotInUse } from '../services/templateService';
 
 const router = express.Router();
 
@@ -54,7 +55,13 @@ const crudRouter = buildCrudRouter({
     typeName: 'Template',
     // ponytail: cast TemplateInsertSchema to any due to zod v3 -> v4 upgrade
     // depth-instantiation issue with drizzle-zod. Runtime unaffected.
-    validateBody: { schema: TemplateInsertSchema as any, custom: (body) => templateValidation(body) }
+    validateBody: { schema: TemplateInsertSchema as any, custom: (body) => templateValidation(body) },
+    // Templates are content-addressed (by `hash`, for auto-fetched ones) or
+    // cited by `uri` (for directly-posted ones) — either way a template's
+    // content is not supposed to change after creation. A new version is a
+    // new template, not an edit in place. See templateService.ts.
+    guardUpdate: (existing, body) => assertTemplateContentImmutable(existing, body),
+    guardDelete: (existing, db) => assertTemplateNotInUse(existing, db),
 });
 
 router.use('/', crudRouter);

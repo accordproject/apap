@@ -200,6 +200,14 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     // once signing has completed or been superseded. Skipped when no row
     // matches :id, so 404 handling below is unaffected.
     guardUpdate?: (existing: any, body: any) => void | Promise<void>;
+    // Runs on DELETE /:id, after the row is confirmed to exist and before it
+    // is removed, with the row's current DB state and the request-scoped db
+    // handle (needed for cross-table "is this still referenced elsewhere"
+    // checks — e.g. Template uses this to block deleting a template an
+    // Agreement still resolves against). Throw a ServiceError to reject the
+    // delete. Skipped when no row matches :id, so 404 handling below is
+    // unaffected.
+    guardDelete?: (existing: any, db: any) => void | Promise<void>;
 }
 
 function getSingleQueryParam(value: unknown): string | undefined {
@@ -300,7 +308,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     validateBody,
     transformResponse,
     transformRequest,
-    guardUpdate
+    guardUpdate,
+    guardDelete
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
@@ -602,10 +611,21 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         asyncHandler(async (req: Request, res: Response) => {
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    table.id.columnType === 'PgUUID' ? 
+                    table.id.columnType === 'PgUUID' ?
                         eq(table.id, req.params.id) :
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
+
+                if (guardDelete) {
+                    const existingRows = await res.locals.db
+                        .select()
+                        .from(table)
+                        .where(and(...whereConditions))
+                        .limit(1);
+                    if (existingRows.length > 0) {
+                        await guardDelete(existingRows[0], res.locals.db);
+                    }
+                }
 
                 const result = await res.locals.db
                     .delete(table)

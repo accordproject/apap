@@ -5,9 +5,10 @@ import { jest } from '@jest/globals';
 import templatesRouter from './templates';
 import * as db from './templatebuilder';
 import * as validationModule from './concertovalidation';
-import { parseQueryParams } from './crud';
+import { buildCrudRouter, parseQueryParams } from './crud';
 import { TemplateInsertSchema } from '../db/schema';
 import { globalErrorHandler } from '../middleware/errorHandler';
+import { ServiceError } from '../services/errors';
 
 jest.mock('../db/schema');
 jest.mock('./templatebuilder');
@@ -47,6 +48,18 @@ describe('PUT /:id validation', () => {
                 update: jest.fn().mockReturnThis(),
                 set: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
+                // Templates now wire a `guardUpdate` hook (content is
+                // immutable once created — see templateService.ts), which
+                // PUT /:id runs a select().from().limit(1) pre-check for
+                // before validating the write. select/from/limit resolve to
+                // this same mock object (no `.length`), so
+                // `existingRows.length > 0` is false and the guard is
+                // skipped — these tests exercise body validation, not the
+                // immutability guard, which has its own coverage in
+                // templateService.test.ts and templates.test.ts.
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnThis(),
             };
             next();
         });
@@ -236,6 +249,116 @@ describe('DELETE /:id', () => {
     it('returns 200 when resource exists and is deleted', async () => {
         const res = await request(app)
             .delete('/templates/1');
+        expect(res.status).toBe(200);
+    });
+});
+
+describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
+    // Exercises the crud.ts hook mechanism itself with synthetic guards,
+    // independent of any specific resource's guard logic (Agreement's and
+    // Template's own guard functions have their own coverage in
+    // agreementService.test.ts / templateService.test.ts). A real array-
+    // returning mock (not the shared beforeEach's mockReturnThis() chains)
+    // is needed here so `existingRows.length > 0` actually reflects whether
+    // a row was found, letting these tests distinguish "guard ran and threw"
+    // from "guard was skipped".
+    class TestGuardError extends ServiceError {
+        constructor() {
+            super('TEST_GUARD_REJECTED', 409, 'rejected by test guard');
+            this.name = 'TestGuardError';
+        }
+    }
+
+    function mockDbWithRow(row: any) {
+        return {
+            select: jest.fn().mockReturnThis(),
+            from: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            limit: jest.fn<any>().mockResolvedValue(row ? [row] : []),
+            update: jest.fn().mockReturnThis(),
+            set: jest.fn().mockReturnThis(),
+            delete: jest.fn().mockReturnThis(),
+            returning: jest.fn<any>().mockResolvedValue(row ? [row] : []),
+        };
+    }
+
+    function buildTestApp(db: any, guards: { guardUpdate?: any; guardDelete?: any }) {
+        const { Template: DbTemplate } = require('../db/schema');
+        const testRouter = buildCrudRouter({ table: DbTemplate, typeName: 'TestResource', ...guards });
+        const testApp = express();
+        testApp.use(express.json());
+        testApp.use((req, res, next) => {
+            res.locals.db = db;
+            next();
+        });
+        testApp.use('/test', testRouter);
+        testApp.use(globalErrorHandler);
+        return testApp;
+    }
+
+    it('guardUpdate is called with the existing row and the request body, and a thrown ServiceError maps to its status', async () => {
+        const existing = { id: 1, name: 'old' };
+        const guardUpdate = jest.fn(() => { throw new TestGuardError(); });
+        const app = buildTestApp(mockDbWithRow(existing), { guardUpdate });
+
+        const res = await request(app).put('/test/1').send({ name: 'new' });
+
+        expect(res.status).toBe(409);
+        expect(res.body.error.code).toBe('TEST_GUARD_REJECTED');
+        expect(guardUpdate).toHaveBeenCalledWith(existing, expect.objectContaining({ name: 'new' }));
+    });
+
+    it('guardUpdate is skipped (and the write proceeds) when no row matches :id', async () => {
+        const guardUpdate = jest.fn();
+        const app = buildTestApp(mockDbWithRow(null), { guardUpdate });
+
+        const res = await request(app).put('/test/999').send({ name: 'new' });
+
+        expect(guardUpdate).not.toHaveBeenCalled();
+        expect(res.status).not.toBe(409);
+    });
+
+    it('a guardUpdate that does not throw lets the write proceed normally', async () => {
+        const existing = { id: 1, name: 'old' };
+        const guardUpdate = jest.fn();
+        const app = buildTestApp(mockDbWithRow(existing), { guardUpdate });
+
+        const res = await request(app).put('/test/1').send({ name: 'new' });
+
+        expect(guardUpdate).toHaveBeenCalled();
+        expect(res.status).toBe(200);
+    });
+
+    it('guardDelete is called with the existing row and the db handle, and a thrown ServiceError maps to its status', async () => {
+        const existing = { id: 1, name: 'old' };
+        const db = mockDbWithRow(existing);
+        const guardDelete = jest.fn(() => { throw new TestGuardError(); });
+        const app = buildTestApp(db, { guardDelete });
+
+        const res = await request(app).delete('/test/1');
+
+        expect(res.status).toBe(409);
+        expect(res.body.error.code).toBe('TEST_GUARD_REJECTED');
+        expect(guardDelete).toHaveBeenCalledWith(existing, db);
+    });
+
+    it('guardDelete is skipped when no row matches :id', async () => {
+        const guardDelete = jest.fn();
+        const app = buildTestApp(mockDbWithRow(null), { guardDelete });
+
+        const res = await request(app).delete('/test/999');
+
+        expect(guardDelete).not.toHaveBeenCalled();
+    });
+
+    it('a guardDelete that does not throw lets the delete proceed normally', async () => {
+        const existing = { id: 1, name: 'old' };
+        const guardDelete = jest.fn();
+        const app = buildTestApp(mockDbWithRow(existing), { guardDelete });
+
+        const res = await request(app).delete('/test/1');
+
+        expect(guardDelete).toHaveBeenCalled();
         expect(res.status).toBe(200);
     });
 });

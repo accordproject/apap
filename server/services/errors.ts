@@ -65,6 +65,43 @@ export class TemplateDuplicateError extends ServiceError {
     }
 }
 
+/**
+ * Raised by PUT /templates/:id. A template's `hash` (for auto-cached
+ * templates) or its role as a fixed, citable artifact (for directly-posted
+ * ones) both depend on its content never changing after creation — there is
+ * no first-class notion of "template versioning" elsewhere in this codebase
+ * (see assertTemplateContentImmutable), so a new version must be a new row,
+ * never an edit in place.
+ */
+export class TemplateImmutableError extends ServiceError {
+    constructor(identifier: string | number) {
+        super(
+            'TEMPLATE_IMMUTABLE',
+            409,
+            `Template ${identifier} is immutable: content cannot be changed after creation. Create a new template for a new version.`,
+            { identifier },
+        );
+        this.name = 'TemplateImmutableError';
+    }
+}
+
+/**
+ * Raised by DELETE /templates/:id when at least one Agreement still resolves
+ * against this template (by cached `templateHash` or by `uri`). Deleting it
+ * would orphan those agreements' template lookups.
+ */
+export class TemplateInUseError extends ServiceError {
+    constructor(identifier: string | number) {
+        super(
+            'TEMPLATE_IN_USE',
+            409,
+            `Template ${identifier} cannot be deleted: still referenced by at least one agreement`,
+            { identifier },
+        );
+        this.name = 'TemplateInUseError';
+    }
+}
+
 // -- Agreement errors --
 
 export class AgreementNotFoundError extends ServiceError {
