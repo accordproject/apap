@@ -235,6 +235,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/agreements/{agreementId}/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique identifier for a `Agreement`. */
+                agreementId: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get agreement terms
+         * @description Fetch the byte-pinned Legal Context Protocol terms document for an existing agreement.
+         */
+        get: operations["getAgreementTerms"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/agreements/{agreementId}/legal-context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique identifier for a `Agreement`. */
+                agreementId: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get agreement legal context
+         * @description Fetch the Legal Context Protocol discovery document for an existing agreement.
+         */
+        get: operations["getAgreementLegalContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/capabilities": {
         parameters: {
             query?: never;
@@ -590,11 +636,61 @@ export interface components {
             $class: string;
         };
         /**
+         * LcpDisputeResolution
+         * @description An instance of org.accordproject.protocol@1.0.0.LcpDisputeResolution
+         */
+        "org.accordproject.protocol@1.0.0.LcpDisputeResolution": {
+            /**
+             * @description The class identifier for org.accordproject.protocol@1.0.0.LcpDisputeResolution
+             * @default org.accordproject.protocol@1.0.0.LcpDisputeResolution
+             */
+            $class: string;
+            method?: string;
+            jurisdiction?: string;
+            contact?: string;
+            clauseId?: string;
+            source?: string;
+            catalog?: string;
+        };
+        /**
+         * LcpContact
+         * @description An instance of org.accordproject.protocol@1.0.0.LcpContact
+         */
+        "org.accordproject.protocol@1.0.0.LcpContact": {
+            /**
+             * @description The class identifier for org.accordproject.protocol@1.0.0.LcpContact
+             * @default org.accordproject.protocol@1.0.0.LcpContact
+             */
+            $class: string;
+            legal?: string;
+            technical?: string;
+        };
+        /**
+         * LegalContext
+         * @description An instance of org.accordproject.protocol@1.0.0.LegalContext
+         */
+        "org.accordproject.protocol@1.0.0.LegalContext": {
+            /**
+             * @description The class identifier for org.accordproject.protocol@1.0.0.LegalContext
+             * @default org.accordproject.protocol@1.0.0.LegalContext
+             */
+            $class: string;
+            terms: string;
+            termsFormat?: string;
+            atrHash?: string;
+            /** @default false */
+            acceptanceRequired: boolean;
+            disputeResolution?: components["schemas"]["org.accordproject.protocol@1.0.0.LcpDisputeResolution"];
+            returns?: string;
+            contact?: components["schemas"]["org.accordproject.protocol@1.0.0.LcpContact"];
+            api?: string;
+        };
+        /**
          * FeatureType
          * @description An instance of org.accordproject.protocol@1.0.0.FeatureType
          * @enum {unknown}
          */
-        "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_MANAGE" | "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "LOGIC_WASM" | "LOGIC_ES2015" | "LOGIC_TYPESCRIPT" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_CONVERT_HTML" | "AGREEMENT_SIGNING" | "SHARED_MODEL_MANAGE";
+        "org.accordproject.protocol@1.0.0.FeatureType": "TEMPLATE_MANAGE" | "TEMPLATE_VERIFY_SIGNATURES" | "TEMPLATE_LOGIC" | "TEMPLATE_STATEFUL" | "LOGIC_WASM" | "LOGIC_ES2015" | "LOGIC_TYPESCRIPT" | "AGREEMENT_MANAGE" | "AGREEMENT_TRIGGER" | "AGREEMENT_STATE" | "AGREEMENT_CONVERT_HTML" | "AGREEMENT_LEGAL_CONTEXT" | "AGREEMENT_SIGNING" | "SHARED_MODEL_MANAGE";
         /**
          * Capabilities
          * @description An instance of org.accordproject.protocol@1.0.0.Capabilities
@@ -1082,19 +1178,6 @@ export interface components {
             nodes?: (components["schemas"]["org.accordproject.commonmark@0.5.0.Node"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Root"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Document"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Child"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Text"] | components["schemas"]["org.accordproject.commonmark@0.5.0.CodeBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Code"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlInline"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HtmlBlock"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Emph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Strong"] | components["schemas"]["org.accordproject.commonmark@0.5.0.BlockQuote"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Heading"] | components["schemas"]["org.accordproject.commonmark@0.5.0.ThematicBreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Softbreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Linebreak"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Link"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Image"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Paragraph"] | components["schemas"]["org.accordproject.commonmark@0.5.0.List"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Item"] | components["schemas"]["org.accordproject.commonmark@0.5.0.Table"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableHead"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableBody"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableRow"] | components["schemas"]["org.accordproject.commonmark@0.5.0.HeaderCell"] | components["schemas"]["org.accordproject.commonmark@0.5.0.TableCell"])[];
             startLine?: number;
             endLine?: number;
-        };
-        /**
-         * Party
-         * @description An instance of org.accordproject.party@0.2.0.Party
-         */
-        "org.accordproject.party@0.2.0.Party": {
-            /**
-             * @description The class identifier for org.accordproject.party@0.2.0.Party
-             * @default org.accordproject.party@0.2.0.Party
-             */
-            $class: string;
-            /** @description The instance identifier for this type */
-            partyId: string;
         };
         /**
          * Position
@@ -1672,6 +1755,19 @@ export interface components {
             $class: string;
             models: components["schemas"]["concerto.metamodel@0.4.0.Model"][];
         };
+        /**
+         * Party
+         * @description An instance of org.accordproject.party@0.2.0.Party
+         */
+        "org.accordproject.party@0.2.0.Party": {
+            /**
+             * @description The class identifier for org.accordproject.party@0.2.0.Party
+             * @default org.accordproject.party@0.2.0.Party
+             */
+            $class: string;
+            /** @description The instance identifier for this type */
+            partyId: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2108,6 +2204,66 @@ export interface operations {
             };
             /** @description The archive's declared Cicero compatibility range is not satisfied by the Cicero version this server supports. */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getAgreementTerms: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique identifier for a `Agreement`. */
+                agreementId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The agreement's terms document. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/markdown": string;
+                };
+            };
+            /** @description No agreement exists with the given id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getAgreementLegalContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique identifier for a `Agreement`. */
+                agreementId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response - returns the `LegalContext` document for the agreement. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["org.accordproject.protocol@1.0.0.LegalContext"];
+                };
+            };
+            /** @description No agreement exists with the given id. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

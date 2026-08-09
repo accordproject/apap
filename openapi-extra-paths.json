@@ -129,6 +129,78 @@
         "tags": ["templates"]
       }
     },
+    "/agreements/{agreementId}/terms": {
+      "summary": "Path used to fetch the byte-pinned terms document for an agreement.",
+      "description": "The REST endpoint/path used to fetch the Legal Context Protocol terms artifact for an `agreement` — a deterministic Markdown rendering of the agreement text. The response is the exact byte sequence that `atrHash` on `/agreements/{agreementId}/legal-context` authenticates.",
+      "get": {
+        "responses": {
+          "200": {
+            "description": "The agreement's terms document.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No agreement exists with the given id."
+          }
+        },
+        "operationId": "getAgreementTerms",
+        "summary": "Get agreement terms",
+        "description": "Fetch the byte-pinned Legal Context Protocol terms document for an existing agreement.",
+        "tags": ["agreements"]
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/agreements/{agreementId}/legal-context": {
+      "summary": "Path used to fetch the Legal Context Protocol document for an agreement.",
+      "description": "The REST endpoint/path used to fetch the resource-scoped Legal Context Protocol (legalcontextprotocol.org v1.0) discovery document for an `agreement`.",
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.LegalContext"
+                }
+              }
+            },
+            "description": "Successful response - returns the `LegalContext` document for the agreement."
+          },
+          "404": {
+            "description": "No agreement exists with the given id."
+          }
+        },
+        "operationId": "getAgreementLegalContext",
+        "summary": "Get agreement legal context",
+        "description": "Fetch the Legal Context Protocol discovery document for an existing agreement.",
+        "tags": ["agreements"]
+      },
+      "parameters": [
+        {
+          "name": "agreementId",
+          "description": "A unique identifier for a `Agreement`.",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/capabilities": {
       "summary": "Path used to retrieve server capabilities.",
       "description": "The REST endpoint used to understand the capabiities of the server.",

@@ -180,6 +180,34 @@ abstract concept ConversionOptions {
 concept HtmlConversionOptions extends ConversionOptions {
 }
 
+@description("Dispute resolution metadata for a Legal Context Protocol document")
+concept LcpDisputeResolution {
+    o String method optional          // e.g. "Dispute Resolution Service Rules"
+    o String jurisdiction optional    // e.g. "New York, USA"
+    o String contact optional         // email or URL for dispute filing
+    o String clauseId optional        // content-addressed clause: "sha256:0x<64-hex>"
+    o String source optional          // URL of the dispute clause text
+    o String catalog optional         // dispute-services catalog URL
+}
+
+@description("Service contact information for a Legal Context Protocol document")
+concept LcpContact {
+    o String legal optional           // legal department contact
+    o String technical optional       // technical support contact
+}
+
+@description("A Legal Context Protocol discovery document (legalcontextprotocol.org v1.0)")
+concept LegalContext {
+    o String terms                                     // REQUIRED: absolute HTTPS URL of the terms document
+    o String termsFormat optional                       // markdown | json | plain | html | pdf
+    o String atrHash optional                            // SHA-256 of the terms doc: "0x" + 64 lowercase hex
+    o Boolean acceptanceRequired default=false
+    o LcpDisputeResolution disputeResolution optional
+    o String returns optional                             // URL of a returns/claims API or process
+    o LcpContact contact optional
+    o String api optional                                 // legal-context API entry point (L4)
+}
+
 @description("Server feature identifiers")
 enum FeatureType {
     o TEMPLATE_MANAGE             // crud operations on templates
@@ -197,6 +225,7 @@ enum FeatureType {
     o AGREEMENT_TRIGGER            // trigger agreements
     o AGREEMENT_STATE              // get the state of an agreement
     o AGREEMENT_CONVERT_HTML       // draft an agreement to an output format
+    o AGREEMENT_LEGAL_CONTEXT      // publish LCP legal-context documents for an agreement
 
     // send an agreement for signature
     o AGREEMENT_SIGNING
