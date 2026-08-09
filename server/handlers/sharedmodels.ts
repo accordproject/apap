@@ -3,15 +3,55 @@ import { SharedModel, SharedModelInsertSchema } from '../db/schema';
 import { buildCrudRouter } from './crud';
 import { concertoValidation } from './concertovalidation';
 import { ModelManager } from '@accordproject/concerto-core';
-import { HttpModelRetriever } from './retrievers/HttpModelRetriever';
+import { HttpModelRetriever, assertAllowedUrl } from './retrievers/HttpModelRetriever';
 
 const router = express.Router();
 
-class SecureFileDownloader {
-    async getFile(url: string): Promise<string> {
-        const retriever = new HttpModelRetriever();
+class SecureFileLoader {
+    accepts(url: string): boolean {
+        try {
+            assertAllowedUrl(url);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
 
+    async load(url: string, options: any): Promise<string> {
+        const retriever = new HttpModelRetriever();
         return await retriever.fetchModel(url);
+    }
+}
+
+class SecureDownloader {
+    private fileLoader = new SecureFileLoader();
+    private modelManager: ModelManager;
+
+    constructor(modelManager: ModelManager) {
+        this.modelManager = modelManager;
+    }
+
+    async downloadExternalDependencies(modelFiles: any[], options: any): Promise<any[]> {
+        const downloadedModels: any[] = [];
+        
+        for (const modelFile of modelFiles) {
+            const ast = modelFile.getAst ? modelFile.getAst() : { imports: [] };
+            const imports = ast.imports || [];
+            
+            for (const imp of imports) {
+                const uri = imp.uri;
+                if (typeof uri === 'string' && uri.startsWith('http')) {
+                    if (!this.fileLoader.accepts(uri)) {
+                        throw new Error(`SSRF Prevention: Transitive import domain or URL not allowed: ${uri}`);
+                    }
+                    const content = await this.fileLoader.load(uri, options);
+                    
+                    const parsedModel = this.modelManager.addCTOModel(content, 'transitive.cto', true);
+                    downloadedModels.push(parsedModel);
+                }
+            }
+        }
+        return downloadedModels;
     }
 }
 
@@ -23,10 +63,10 @@ router.post('/', async (req, res, next) => {
         try {
             const ctoText = await retriever.fetchModel(uri);
 
-            const modelManager = new ModelManager({ strict: true, addMetamodel: true });
+            const modelManager = new ModelManager({ addMetamodel: true });
             const modelFile = modelManager.addCTOModel(ctoText, 'external.cto', true);
             
-            const secureDownloader = new SecureFileDownloader();
+            const secureDownloader = new SecureDownloader(modelManager);
             await modelManager.updateExternalModels({}, secureDownloader as any);
             
             const namespace = modelFile.getNamespace() || 'external';

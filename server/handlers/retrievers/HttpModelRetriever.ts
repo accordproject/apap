@@ -1,12 +1,39 @@
 import { IModelRetriever } from './IModelRetriever';
 
-const ALLOWED_DOMAINS = [
-    'models.accordproject.org',
-    'templates.accordproject.org',
-    'raw.githubusercontent.com'
-];
+export const MAX_FILE_SIZE = 1024 * 1024; 
 
-const MAX_FILE_SIZE = 1024 * 1024; 
+export function assertAllowedUrl(uri: string): URL {
+    if (!uri.startsWith('https://')) {
+        throw new Error(`Invalid URI scheme. Only https is allowed.`);
+    }
+
+    let safeUrl: URL;
+    try {
+        safeUrl = new URL(uri);
+    } catch (e) {
+        throw new Error(`Malformed URL provided.`);
+    }
+
+    if (safeUrl.port !== '' && safeUrl.port !== '443') {
+        throw new Error(`SSRF Prevention: Custom ports are not allowed.`);
+    }
+
+    const host = safeUrl.hostname;
+
+    if (
+        host !== 'models.accordproject.org' &&
+        host !== 'templates.accordproject.org' &&
+        host !== 'raw.githubusercontent.com'
+    ) {
+        throw new Error(`SSRF Prevention: Domain not in allowlist.`);
+    }
+
+    if (host === 'raw.githubusercontent.com' && !safeUrl.pathname.startsWith('/accordproject/')) {
+        throw new Error(`SSRF Prevention: Only official accordproject GitHub repositories are allowed.`);
+    }
+
+    return safeUrl;
+}
 
 export class HttpModelRetriever implements IModelRetriever {
     public getURISchemes(): string[] {
@@ -14,28 +41,7 @@ export class HttpModelRetriever implements IModelRetriever {
     }
 
     async fetchModel(uri: string): Promise<string> {
-        if (!uri.startsWith('https://')) {
-            throw new Error(`Invalid URI scheme. Only https is allowed.`);
-        }
-
-        let safeUrl: URL;
-        try {
-            safeUrl = new URL(uri);
-        } catch (e) {
-            throw new Error(`Malformed URL provided.`);
-        }
-
-        if (safeUrl.port !== '' && safeUrl.port !== '443') {
-            throw new Error(`SSRF Prevention: Custom ports are not allowed.`);
-        }
-
-        if (!ALLOWED_DOMAINS.includes(safeUrl.hostname)) {
-            throw new Error(`SSRF Prevention: Domain not in allowlist.`);
-        }
-
-        if (safeUrl.hostname === 'raw.githubusercontent.com' && !safeUrl.pathname.startsWith('/accordproject/')) {
-            throw new Error(`SSRF Prevention: Only official accordproject GitHub repositories are allowed.`);
-        }
+        const safeUrl = assertAllowedUrl(uri);
 
         const headers: Record<string, string> = {};
         if (process.env.EXTERNAL_TEMPLATE_TOKEN) {
@@ -44,12 +50,12 @@ export class HttpModelRetriever implements IModelRetriever {
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
-
+        
         try {
             const response = await fetch(safeUrl.toString(), { 
                 headers,
                 signal: controller.signal,
-                redirect: 'error' 
+                redirect: 'error'
             });
             
             if (!response.ok) {
@@ -62,7 +68,7 @@ export class HttpModelRetriever implements IModelRetriever {
             }
 
             const text = await response.text();
-
+            
             if (Buffer.byteLength(text, 'utf8') > MAX_FILE_SIZE) {
                 throw new Error('Model file exceeds the 1MB size limit after download.');
             }
