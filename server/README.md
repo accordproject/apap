@@ -625,13 +625,12 @@ so the terms really are pinned, and `atrHash` becomes a real L2 claim:
 }
 ```
 
-**Residual gap**, not closed by the above: the terms rendering also depends on
-the *Template* the agreement references (`text`/`logic`), and there is no
-equivalent freeze on `PUT /templates/:id`. Editing a template in place without
-changing its content hash would silently change what every agreement using it
-renders — including frozen ones. Closing this (freezing a template once any
-frozen agreement references it, or simply treating templates as append-only)
-is a follow-up, not solved here.
+**Closed**: the terms rendering also depends on the *Template* the agreement
+references (`text`/`logic`), which could previously be edited in place via
+`PUT /templates/:id` without changing its content hash — silently altering
+what every agreement using it renders, including frozen ones. Templates are
+immutable once created (see "Templates are immutable" above), so this no
+longer undermines the `atrHash` claim.
 
 Advisory fields (`disputeResolution`, `contact`, `returns`, `acceptanceRequired`)
 are sourced from an agreement's `metadata` by a reserved key convention —
