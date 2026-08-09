@@ -539,8 +539,8 @@ describe('POST / - Agreement Creation with External Template', () => {
 
         beforeEach(async () => {
             realApTemplate = await createLateDeliveryTemplate();
-            // No target language: save the archive in the template's own declared runtime (typescript).
-            templateBuffer = await realApTemplate.toArchive(undefined);
+            // Save the archive targeting the template's own declared runtime (typescript).
+            templateBuffer = await realApTemplate.toArchive('typescript');
 
             // Save a reference to the real Node.js fetch
             const originalFetch = (global as any).fetch;

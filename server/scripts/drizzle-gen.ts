@@ -255,6 +255,7 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'driz
 }
 
 async function main() {
+    // `strict` was removed in concerto-core 4.x; versioned namespaces are mandatory now.
     const mm = new ModelManager();
     const cto = fs.readFileSync('../model/protocol.cto', 'utf8');
     mm.addCTOModel(cto, 'protocol.cto', true);
