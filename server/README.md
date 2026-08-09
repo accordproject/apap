@@ -606,14 +606,16 @@ client that already holds an agreement id can discover its LCP document without
 needing any well-known convention at all.
 
 `atrHash` is included once — and only once — the agreement's `agreementStatus`
-is `COMPLETED` or `SUPERSEDED`. The LCP schema requires that once `atrHash` is
-present, the terms document "MUST be byte-identical on every serve"; a `DRAFT`
-or `SIGNING` agreement's `data` is still mutable via `PUT`, so that promise
-can't be honoured yet and `atrHash` stays absent — honestly L1 ("findable"),
-not L2 ("byte-pinned"). Once an agreement is completed or superseded,
-`assertAgreementRecordMutable` (`services/agreementService.ts`) rejects any
-further write to `data` — or anything else the terms rendering depends on —
-so the terms really are pinned, and `atrHash` becomes a real L2 claim:
+is not `DRAFT` (i.e. `SIGNING`, `COMPLETED`, or `SUPERSEDED`). The LCP schema
+requires that once `atrHash` is present, the terms document "MUST be
+byte-identical on every serve"; a `DRAFT` agreement's `data` is still fully
+mutable via `PUT`, so that promise can't be honoured yet and `atrHash` stays
+absent — honestly L1 ("findable"), not L2 ("byte-pinned"). From `SIGNING`
+onward, `assertAgreementRecordMutable` (`services/agreementService.ts`)
+freezes `data` specifically — a signatory's signature must not be invalidated
+by the terms moving under them — and from `COMPLETED`/`SUPERSEDED` it freezes
+the full record. Either way, once SIGNING has begun, `data` — and so the
+terms — really is pinned, and `atrHash` becomes a real L2 claim:
 
 ```json
 {
