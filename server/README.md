@@ -233,58 +233,34 @@ If the delay is more than 15 days, the Buyer is entitled to terminate this Contr
 ```
 
 > Drafting works for any archive the server accepts. Triggering additionally
-> requires the archive's `logic/` to resolve its own imports: the published
-> `latedeliveryandpenalty@1.0.0` archive stores its generated Concerto classes
-> flat under `logic/` while `logic/logic.ts` imports values from
-> `./generated/...`, so `POST /agreements/:id/trigger` cannot resolve the import
-> for that particular archive.
-> [cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)
-> makes those imports type-only, which resolves it — triggering that template
-> returns a `LateDeliveryAndPenaltyResponse` with a `MonetaryAmount` penalty and
-> a `PaymentObligationEvent`. See
+> requires the archive to ship logic whose imports resolve within the archive
+> itself — an archive whose `logic/` imports values from a path it does not
+> contain drafts fine but fails at `POST /agreements/:id/trigger`. See
 > [Trigger an Agreement](#trigger-an-agreement) for the request/response shape.
 
 ### Cicero version compatibility
 
 Every archive declares the Cicero version range its contents were built for, and
 the RI only accepts archives whose range covers the `@accordproject/cicero-core`
-version pinned in [`package.json`](./package.json):
+version pinned in [`package.json`](./package.json). To see what an archive asks
+for before using it:
 
 ```bash
-curl -sL -o latedeliveryandpenalty.cta \
-  https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta
-unzip -p latedeliveryandpenalty.cta package.json | jq .accordproject
-# { "template": "clause", "runtime": "typescript", "cicero": "^1.0.0" }
+curl -sL -o template.cta \
+  https://templates.accordproject.org/archives/<name>@<version>.cta
+unzip -p template.cta package.json | jq .accordproject.cicero
 ```
 
-The archives currently published on templates.accordproject.org declare
-`"cicero": "^1.0.0"`, which the RI's cicero-core 2.x does not satisfy, so they
-are rejected — as a plain `500` from `POST /agreements`, or as the typed `422`
-below from `POST /templates/archive`:
+A range the server cannot satisfy is rejected. `POST /agreements` surfaces that
+as a plain `500` carrying cicero's own message:
 
 ```
 The template targets Cicero version ^1.0.0 but the current Cicero version is 2.1.1.
 ```
 
-[cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)
-upgrades the library's templates to `"cicero": "^2.0.0"` — once it lands and the
-archives are republished (`latedeliveryandpenalty@1.0.1`), the walkthrough above
-runs end to end with no extra steps. Until then, use an archive built for the
-RI's Cicero major — or, if you know the template's contents are compatible,
-retarget the declared range and upload the result with `POST /templates/archive`
-below:
-
-```bash
-# ^2.0.0 here is the RI's Cicero major — use ^0.25.0 on a checkout pinning
-# cicero-core 0.25.x, and so on.
-mkdir -p retarget && cd retarget && unzip -oq ../latedeliveryandpenalty.cta
-jq '.accordproject.cicero = "^2.0.0"' package.json > package.tmp && mv package.tmp package.json
-zip -qr ../latedeliveryandpenalty-retargeted.cta . && cd ..
-```
-
-Retargeting only rewrites the declared range — it does not make an incompatible
-template work, so run a `convert` afterwards to confirm the template still
-drafts.
+`POST /templates/archive` reports the same condition as a typed `422`
+([below](#deploying-an-archive-explicitly)). Either way, the fix is an archive
+built for the Cicero major this RI runs.
 
 ### Deploying an archive explicitly
 
@@ -292,8 +268,7 @@ drafts.
 template row, without an agreement being involved. Reach for it when the quick
 path above does not fit:
 
-- the archive is one you built locally, or edited (a retargeted range, a custom
-  clause) and never published
+- the archive is one you built or edited locally and never published
 - the RI has no network egress, or the archive lives somewhere it cannot reach
 - you want the template registered and listable before any agreement exists, and
   a malformed or incompatible archive rejected up front — with a typed error —
@@ -302,10 +277,13 @@ path above does not fit:
 The body is the raw archive, not JSON:
 
 ```bash
+curl -sL -o latedeliveryandpenalty.cta \
+  https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta
+
 curl --request POST \
   --url http://localhost:9000/templates/archive \
   --header 'Content-Type: application/octet-stream' \
-  --data-binary @latedeliveryandpenalty-retargeted.cta
+  --data-binary @latedeliveryandpenalty.cta
 ```
 
 Response (`201`, abridged — the model, text and logic of the archive are stored
