@@ -12,6 +12,7 @@ import {
 import { AgreementNotFoundError } from './errors';
 
 jest.mock('./agreementService', () => ({
+    ...(jest.requireActual('./agreementService') as object),
     convertAgreement: jest.fn(),
 }));
 
@@ -213,7 +214,7 @@ describe('lcpService', () => {
     });
 
     describe('buildAgreementLegalContext', () => {
-        it('never sources terms/termsFormat/atrHash/api from metadata, even if metadata sets those keys', async () => {
+        it('never sources terms/termsFormat/atrHash/api from metadata, even if metadata sets those keys (agreement not yet frozen)', async () => {
             const db = createMockDb();
             db._setReturn([{
                 id: 7,
@@ -233,11 +234,39 @@ describe('lcpService', () => {
             expect(doc.atrHash).toBeUndefined();
         });
 
-        it('never emits atrHash, since agreement.data is mutable', async () => {
+        it('never sources atrHash from metadata even once frozen — the real digest wins, not the attacker-supplied one', async () => {
             const db = createMockDb();
-            db._setReturn([{ id: 1, metadata: null }]);
-            const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
-            expect(doc.atrHash).toBeUndefined();
+            mockedConvertAgreement.mockResolvedValue('the real terms');
+            db._setReturn([{
+                id: 7,
+                agreementStatus: 'COMPLETED',
+                metadata: { values: [{ key: 'lcp.atrHash', value: `0x${'a'.repeat(64)}` }] },
+            }]);
+
+            const doc = await buildAgreementLegalContext(db, 7, 'https://apap.example');
+
+            expect(doc.atrHash).toBe(sha256AtrHash('the real terms'));
+            expect(doc.atrHash).not.toBe(`0x${'a'.repeat(64)}`);
+        });
+
+        it('omits atrHash while the agreement is still DRAFT or SIGNING (data is still mutable)', async () => {
+            const db = createMockDb();
+            for (const agreementStatus of ['DRAFT', 'SIGNING']) {
+                db._setReturn([{ id: 1, agreementStatus, metadata: null }]);
+                const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
+                expect(doc.atrHash).toBeUndefined();
+            }
+            expect(mockedConvertAgreement).not.toHaveBeenCalled();
+        });
+
+        it('includes atrHash once COMPLETED or SUPERSEDED, hashing exactly the served terms bytes', async () => {
+            const db = createMockDb();
+            for (const agreementStatus of ['COMPLETED', 'SUPERSEDED']) {
+                mockedConvertAgreement.mockResolvedValue('# Frozen terms');
+                db._setReturn([{ id: 1, agreementStatus, metadata: null }]);
+                const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
+                expect(doc.atrHash).toBe(sha256AtrHash('# Frozen terms'));
+            }
         });
 
         it('throws AgreementNotFoundError when the agreement does not exist', async () => {
@@ -297,6 +326,17 @@ describe('lcpService', () => {
             const doc = await buildServerLegalContext(db, 'https://apap.example');
 
             expect(doc?.terms).toBe('https://apap.example/agreements/3/terms');
+        });
+
+        it('mirrors the frozen agreement atrHash through the root document too', async () => {
+            process.env.LCP_ROOT_AGREEMENT_ID = '3';
+            mockedConvertAgreement.mockResolvedValue('root terms');
+            const db = createMockDb();
+            db._setReturn([{ id: 3, agreementStatus: 'COMPLETED', metadata: null }]);
+
+            const doc = await buildServerLegalContext(db, 'https://apap.example');
+
+            expect(doc?.atrHash).toBe(sha256AtrHash('root terms'));
         });
 
         it('rejects a non-numeric LCP_ROOT_AGREEMENT_ID', async () => {

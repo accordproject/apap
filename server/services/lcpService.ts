@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import type { Database } from '../db/client';
 import { Agreement } from '../db/schema';
 import { AgreementNotFoundError } from './errors';
-import { convertAgreement } from './agreementService';
+import { convertAgreement, RECORD_FROZEN_STATUSES } from './agreementService';
 
 // Legal Context Protocol (legalcontextprotocol.org v1.0) support.
 //
@@ -186,14 +186,25 @@ export function advisoryLegalContextFromMetadata(metadata: unknown): AdvisoryFie
  * and `acceptanceRequired` are all meaningful per agreement and meaningless
  * averaged across a multi-tenant host.
  *
- * `atrHash` is intentionally omitted. The LCP schema requires that once
- * present, the terms document "MUST be byte-identical on every serve" —
- * but /agreements/:id/terms drafts from `agreement.data`, which is mutable
- * via the existing CRUD PUT/PATCH routes, so that promise cannot be honoured
- * today. Emitting a digest that can go stale on the next edit would make
- * this an L2 ("provable") claim the server cannot back. Pinning atrHash to
- * an immutable, version-pinned terms rendering is a follow-up; until then
- * this document is honestly L1.
+ * `atrHash` is included once — and only once — `agreementStatus` is in
+ * `RECORD_FROZEN_STATUSES` (COMPLETED or SUPERSEDED). The LCP schema requires
+ * that once `atrHash` is present, the terms document "MUST be byte-identical
+ * on every serve": before that guard existed, `/agreements/:id/terms` drafted
+ * from `agreement.data`, which was mutable via `PUT` at any time, so the
+ * promise couldn't be honoured and this document stayed honestly L1. Now that
+ * `assertAgreementRecordMutable` (agreementService.ts) rejects any write to
+ * `data` — or anything else the terms rendering could depend on — once the
+ * record is frozen, a frozen agreement's terms really are pinned, so `atrHash`
+ * is safe to claim. A DRAFT/SIGNING agreement still omits it, unchanged.
+ *
+ * Residual gap, not closed by this: the terms rendering also depends on the
+ * *Template* referenced by `agreement.template`/`templateHash` — its `text`/
+ * `logic` — and `PUT /templates/:id` has no equivalent freeze. Editing a
+ * template in place, without changing its content hash, would silently
+ * change what every agreement using it renders, including frozen ones. This
+ * is a real hole in the L2 claim; closing it (freezing a Template once any
+ * frozen Agreement references it, or simply never mutating templates in
+ * place) is a follow-up, not solved here.
  */
 export async function buildAgreementLegalContext(
     db: Database,
@@ -204,11 +215,17 @@ export async function buildAgreementLegalContext(
     if (rows.length === 0) {
         throw new AgreementNotFoundError(String(agreementId));
     }
-    const advisory = advisoryLegalContextFromMetadata(rows[0].metadata);
+    const agreement = rows[0];
+    const advisory = advisoryLegalContextFromMetadata(agreement.metadata);
+
+    const atrHash = RECORD_FROZEN_STATUSES.has(agreement.agreementStatus)
+        ? (await getAgreementTerms(db, agreementId)).atrHash
+        : undefined;
 
     return {
         terms: new URL(`/agreements/${agreementId}/terms`, baseUrl).toString(),
         termsFormat: DEFAULT_TERMS_FORMAT,
+        atrHash,
         acceptanceRequired: advisory.acceptanceRequired,
         disputeResolution: advisory.disputeResolution,
         returns: advisory.returns,
