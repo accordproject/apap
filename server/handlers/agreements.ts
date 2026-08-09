@@ -13,6 +13,7 @@ import {
     ValidationError,
 } from '../services/errors';
 import { assertAgreementRecordMutable, convertAgreement, triggerAgreement } from '../services/agreementService';
+import { buildAgreementLegalContext, getAgreementTerms, resolvePublicBaseUrl } from '../services/lcpService';
 import { asyncHandler } from '../middleware/errorHandler';
 
 const router = express.Router();
@@ -163,6 +164,76 @@ crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
         throw err;
     }
 }));
+
+/**
+ * @param req The Express request containing the agreement id.
+ * @param res The Express response used to return the agreement's LCP terms artifact.
+ * @return Resolves after the terms document or a not-found error has been written.
+ * @details Serves the Legal Context Protocol terms document for an agreement — a
+ * deterministic Markdown rendering via the same `convertAgreement` path as
+ * `/:id/convert/:format`. The ETag is the SHA-256 digest of exactly the bytes
+ * returned, so a client can verify what it fetched without re-hashing separately.
+ */
+crudRouter.get('/:id/terms', asyncHandler(async function (req, res) {
+    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
+    if (!Number.isFinite(id)) {
+        throw new AgreementNotFoundError(req.params.id);
+    }
+    const terms = await getAgreementTerms(res.locals.db, id);
+    res.setHeader('Content-Type', terms.contentType);
+    res.setHeader('ETag', `"${terms.atrHash}"`);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send(terms.body);
+}));
+
+/**
+ * @param req The Express request containing the agreement id.
+ * @param res The Express response used to return the agreement's LCP legal-context document.
+ * @return Resolves after the `LegalContext` JSON document or a not-found error has been written.
+ * @details Serves the resource-scoped Legal Context Protocol (legalcontextprotocol.org
+ * v1.0) discovery document for one agreement. This is the primary LCP surface for
+ * APAP: a multi-tenant host cannot publish a single spec-compliant
+ * `/.well-known/legal-context.json` per agreement (RFC 8615 scopes well-known URIs
+ * to the origin), so per-agreement documents live at this ordinary resource path
+ * instead, discoverable via the `Link: rel="legal-context"` header set on `GET /:id`.
+ */
+crudRouter.get('/:id/legal-context', asyncHandler(async function (req, res) {
+    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
+    if (!Number.isFinite(id)) {
+        throw new AgreementNotFoundError(req.params.id);
+    }
+    const baseUrl = resolvePublicBaseUrl({ requestProtocol: req.protocol, requestHost: req.get('host') });
+    const legalContext = await buildAgreementLegalContext(res.locals.db, id, baseUrl);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json(legalContext);
+}));
+
+// Advertises per-agreement LCP discovery via Link headers on the CRUD GET /:id
+// route, which is defined generically inside crud.ts's buildCrudRouter and so
+// can't have a header added there without threading LCP concerns into a
+// resource-agnostic router. Registered before `router.use('/', crudRouter)` so
+// it runs first; it only decorates GET requests for a bare numeric id (never
+// /:id/terms, /:id/legal-context, /:id/convert/:format, etc.) and only when
+// the crud handler ends up resolving the id (status 200) — the res.json
+// override lets it see the status crud.ts already set before deciding whether
+// to add the header, so a 404 for an unknown agreement doesn't get a Link
+// header pointing at documents that don't exist either.
+router.use((req, res, next) => {
+    if (req.method === 'GET' && /^\/\d+$/.test(req.path)) {
+        const id = req.path.slice(1);
+        const originalJson = res.json.bind(res);
+        res.json = ((body: unknown) => {
+            if (res.statusCode === 200) {
+                res.setHeader('Link', [
+                    `</agreements/${id}/legal-context>; rel="legal-context"`,
+                    `</agreements/${id}/terms>; rel="terms-of-service"`,
+                ].join(', '));
+            }
+            return originalJson(body);
+        }) as typeof res.json;
+    }
+    next();
+});
 
 router.use('/', crudRouter);
 export default router;
