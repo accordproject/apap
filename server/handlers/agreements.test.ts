@@ -645,7 +645,7 @@ describe('POST / - Agreement Creation with External Template', () => {
         });
     });
 
-    describe('PUT /:id - contract data immutability once COMPLETED/SUPERSEDED', () => {
+    describe('PUT /:id - agreement record immutability once COMPLETED/SUPERSEDED', () => {
         let putApp: express.Application;
         let putDb: any;
 
@@ -689,7 +689,7 @@ describe('POST / - Agreement Creation with External Template', () => {
                 .send({ data: { price: 999 } });
 
             expect(res.status).toBe(409);
-            expect(res.body.error.code).toBe('AGREEMENT_DATA_IMMUTABLE');
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
             expect(putDb.update).not.toHaveBeenCalled();
         });
 
@@ -702,7 +702,33 @@ describe('POST / - Agreement Creation with External Template', () => {
                 .send({ data: { price: 999 } });
 
             expect(res.status).toBe(409);
-            expect(res.body.error.code).toBe('AGREEMENT_DATA_IMMUTABLE');
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
+        });
+
+        it('rejects a signatures change once the agreement is COMPLETED', async () => {
+            const existing = { id: 4, agreementStatus: 'COMPLETED', data: { price: 10 }, signatures: [] as any[] };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/4')
+                .send({ signatures: [{ signatory: 'party-1' }] });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('still allows agreementStatus to move COMPLETED -> SUPERSEDED', async () => {
+            const existing = { id: 5, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+            putDb.returning.mockResolvedValueOnce([{ ...existing, agreementStatus: 'SUPERSEDED' }]);
+
+            const res = await request(putApp)
+                .put('/agreements/5')
+                .send({ agreementStatus: 'SUPERSEDED' });
+
+            expect(res.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
         });
 
         it('still allows a trigger-driven state update once COMPLETED (no data key sent)', async () => {

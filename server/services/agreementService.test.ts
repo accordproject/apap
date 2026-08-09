@@ -4,9 +4,9 @@ import {
     getAgreementById,
     getAgreementByUri,
     convertAgreement,
-    assertAgreementDataMutable,
+    assertAgreementRecordMutable,
 } from './agreementService';
-import { AgreementNotFoundError, AgreementDataImmutableError } from './errors';
+import { AgreementNotFoundError, AgreementRecordImmutableError } from './errors';
 
 // convertAgreement pulls in the real template engine and templatebuilder
 // utility; mock both so the service can be exercised without a real
@@ -256,12 +256,15 @@ describe('agreementService', () => {
         });
     });
 
-    describe('assertAgreementDataMutable', () => {
-        it.each(['DRAFT', 'SIGNING'])('allows changing data while status is %s', (agreementStatus) => {
-            const existing = agreementRow(1, { agreementStatus, data: { price: 10 } });
+    describe('assertAgreementRecordMutable', () => {
+        it.each(['DRAFT', 'SIGNING'])('allows changing data and signatures while status is %s', (agreementStatus) => {
+            const existing = agreementRow(1, { agreementStatus, data: { price: 10 }, signatures: [] });
 
             expect(() =>
-                assertAgreementDataMutable(existing, { data: { price: 20 } }),
+                assertAgreementRecordMutable(existing, {
+                    data: { price: 20 },
+                    signatures: [{ signatory: 'party-1' }],
+                }),
             ).not.toThrow();
         });
 
@@ -272,12 +275,32 @@ describe('agreementService', () => {
 
                 let caught: unknown;
                 try {
-                    assertAgreementDataMutable(existing, { data: { price: 20 } });
+                    assertAgreementRecordMutable(existing, { data: { price: 20 } });
                 } catch (err) {
                     caught = err;
                 }
-                expect(caught).toBeInstanceOf(AgreementDataImmutableError);
-                expect(caught).toMatchObject({ code: 'AGREEMENT_DATA_IMMUTABLE', statusCode: 409 });
+                expect(caught).toBeInstanceOf(AgreementRecordImmutableError);
+                expect(caught).toMatchObject({
+                    code: 'AGREEMENT_RECORD_IMMUTABLE',
+                    statusCode: 409,
+                    details: { field: 'data' },
+                });
+            },
+        );
+
+        it.each(['signatures', 'agreementParties', 'attachments', 'historyEntries', 'references', 'metadata'])(
+            'rejects changing %s once COMPLETED',
+            (field) => {
+                const existing = agreementRow(1, { agreementStatus: 'COMPLETED', [field]: [{ old: true }] });
+
+                let caught: unknown;
+                try {
+                    assertAgreementRecordMutable(existing, { [field]: [{ new: true }] });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementRecordImmutableError);
+                expect(caught).toMatchObject({ details: { field } });
             },
         );
 
@@ -288,15 +311,23 @@ describe('agreementService', () => {
             });
 
             expect(() =>
-                assertAgreementDataMutable(existing, { data: { currency: 'USD', price: 10 } }),
+                assertAgreementRecordMutable(existing, { data: { currency: 'USD', price: 10 } }),
             ).not.toThrow();
         });
 
-        it('allows updates that do not touch data once COMPLETED (e.g. signatures)', () => {
+        it('still allows agreementStatus to transition once COMPLETED (e.g. -> SUPERSEDED)', () => {
             const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
 
             expect(() =>
-                assertAgreementDataMutable(existing, { signatures: [{ signatory: 'party-1' }] }),
+                assertAgreementRecordMutable(existing, { agreementStatus: 'SUPERSEDED' }),
+            ).not.toThrow();
+        });
+
+        it('still allows state updates once COMPLETED (trigger-driven)', () => {
+            const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 }, state: null });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, { state: { step: 1 } }),
             ).not.toThrow();
         });
     });

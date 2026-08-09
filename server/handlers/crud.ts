@@ -196,9 +196,9 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     // Runs on PUT /:id, after body validation and before the row is written,
     // with the row's current DB state and the (validated, transformed)
     // request body. Throw a ServiceError to reject the update — e.g.
-    // Agreement uses this to keep `data` immutable once signing has
-    // completed. Skipped when no row matches :id, so 404 handling below is
-    // unaffected.
+    // Agreement uses this to freeze its record (data, signatures, etc.)
+    // once signing has completed or been superseded. Skipped when no row
+    // matches :id, so 404 handling below is unaffected.
     guardUpdate?: (existing: any, body: any) => void | Promise<void>;
 }
 

@@ -4,7 +4,7 @@ import type { Database } from '../db/client';
 import {
     AgreementNotFoundError,
     AgreementConversionError,
-    AgreementDataImmutableError,
+    AgreementRecordImmutableError,
     AgreementTriggerError,
     InvalidPayloadError,
     ValidationError,
@@ -27,15 +27,23 @@ import { concertoValidation } from '../handlers/concertovalidation';
 type AgreementRow = typeof Agreement.$inferSelect;
 
 // Once signing has finished (COMPLETED) or the agreement has been
-// superseded (SUPERSEDED), the deal terms captured in `data` must stop
-// changing — that JSON is what the template engine drafts the contract
-// text from. `state` (written only by triggerAgreement, above) is exempt:
-// runtime/workflow state is expected to keep moving after signing
-// completes (e.g. post-completion obligations tracked via triggers).
-const DATA_IMMUTABLE_STATUSES: ReadonlySet<string> = new Set(['COMPLETED', 'SUPERSEDED']);
+// superseded (SUPERSEDED), the agreement's record is frozen: deal terms
+// (`data`), the evidence of who signed (`signatures`, `agreementParties`),
+// and everything else that documents the deal (`attachments`,
+// `historyEntries`, `references`, `metadata`, `template`, `uri`, ...) must
+// stop changing. Mistakes are fixed by voiding and reinstantiating the
+// agreement, not by editing it in place.
+const RECORD_FROZEN_STATUSES: ReadonlySet<string> = new Set(['COMPLETED', 'SUPERSEDED']);
+
+// The only fields exempt from the freeze above: `agreementStatus` itself
+// still needs to move (e.g. COMPLETED -> SUPERSEDED when a later agreement
+// supersedes this one), and `state` is the trigger-driven runtime state
+// column — triggerAgreement (above) only ever writes that one column, so
+// post-completion trigger activity keeps working.
+const MUTABLE_FIELDS_AFTER_COMPLETION: ReadonlySet<string> = new Set(['agreementStatus', 'state']);
 
 /**
- * Deep-equality check used only to tell "no-op resend of the same data"
+ * Deep-equality check used only to tell "no-op resend of the same value"
  * apart from an actual attempted change, independent of key order.
  */
 function deepEqual(a: unknown, b: unknown): boolean {
@@ -58,16 +66,21 @@ function deepEqual(a: unknown, b: unknown): boolean {
 
 /**
  * Guard for the generic CRUD PUT route (see `crud.ts`'s `guardUpdate` hook).
- * Rejects a request that would change `data` on an agreement that is
- * already COMPLETED or SUPERSEDED. Any other field (signatures,
- * agreementStatus itself, metadata, etc.) may still be updated.
+ * Rejects a request that would change any recorded field of an agreement
+ * that is already COMPLETED or SUPERSEDED — only `agreementStatus` and
+ * `state` may still be updated. A field is only rejected if the request
+ * would actually change its value; resending the current value (e.g. the
+ * same `data` with different key order) is a no-op, not a violation.
  */
-export function assertAgreementDataMutable(existing: AgreementRow, updates: Record<string, unknown>): void {
-    if (!DATA_IMMUTABLE_STATUSES.has(existing.agreementStatus)) return;
-    if (!Object.prototype.hasOwnProperty.call(updates, 'data')) return;
-    if (deepEqual(existing.data, updates.data)) return;
+export function assertAgreementRecordMutable(existing: AgreementRow, updates: Record<string, unknown>): void {
+    if (!RECORD_FROZEN_STATUSES.has(existing.agreementStatus)) return;
 
-    throw new AgreementDataImmutableError(existing.id, existing.agreementStatus);
+    for (const key of Object.keys(updates)) {
+        if (MUTABLE_FIELDS_AFTER_COMPLETION.has(key)) continue;
+        if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
+
+        throw new AgreementRecordImmutableError(existing.id, existing.agreementStatus, key);
+    }
 }
 
 /**

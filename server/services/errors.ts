@@ -77,21 +77,25 @@ export class AgreementNotFoundError extends ServiceError {
 }
 
 /**
- * Raised when a PUT/PATCH attempts to change `data` (the deal terms /
- * template instance data that drives the agreement's rendered text) on an
- * agreement whose `agreementStatus` is COMPLETED or SUPERSEDED. Signing has
- * finished (or been superseded), so the contract text must stay fixed —
- * only runtime `state` (via the trigger endpoint) may still change.
+ * Raised when a PUT/PATCH attempts to change any part of an agreement's
+ * record (`data`, `signatures`, `agreementParties`, `attachments`,
+ * `historyEntries`, `references`, `metadata`, `template`, `uri`, ...) once
+ * its `agreementStatus` is COMPLETED or SUPERSEDED. Signing has finished
+ * (or been superseded), so the record — deal terms and the evidence of who
+ * signed it — must stay fixed; `agreementStatus` itself (e.g. COMPLETED ->
+ * SUPERSEDED) and `state` (via the trigger endpoint) are the only fields
+ * that may still change. Mistakes are fixed by voiding and reinstantiating
+ * the agreement, not by editing it in place.
  */
-export class AgreementDataImmutableError extends ServiceError {
-    constructor(agreementId: string | number, status: string) {
+export class AgreementRecordImmutableError extends ServiceError {
+    constructor(agreementId: string | number, status: string, field: string) {
         super(
-            'AGREEMENT_DATA_IMMUTABLE',
+            'AGREEMENT_RECORD_IMMUTABLE',
             409,
-            `Agreement ${agreementId} data cannot be changed once its status is ${status}`,
-            { agreementId, status },
+            `Agreement ${agreementId} is immutable once its status is ${status} (attempted to change "${field}")`,
+            { agreementId, status, field },
         );
-        this.name = 'AgreementDataImmutableError';
+        this.name = 'AgreementRecordImmutableError';
     }
 }
 
