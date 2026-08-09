@@ -573,6 +573,93 @@ Reponse:
 </html>
 ```
 
+## Legal Context Protocol (LCP) discovery
+
+APAP publishes [Legal Context Protocol](https://legalcontextprotocol.org) (v1.0)
+discovery documents for hosted agreements. LCP defines exactly one
+`/.well-known/legal-context.json` per origin (RFC 8615) with a REQUIRED `terms`
+field — but APAP is a multi-tenant registry hosting many agreements per origin,
+and there is no agreement-neutral value that honestly satisfies that field. So
+the **primary** LCP surface here is per-agreement, at ordinary resource paths:
+
+```bash
+curl http://localhost:9000/agreements/1/legal-context
+curl http://localhost:9000/agreements/1/terms
+```
+
+`/agreements/:id/terms` is the byte-pinned terms artifact — a Markdown
+rendering of the agreement (the same rendering `/agreements/:id/convert/markdown`
+produces). `/agreements/:id/legal-context` is the LCP document describing it:
+
+```json
+{
+  "terms": "http://localhost:9000/agreements/1/terms",
+  "termsFormat": "markdown",
+  "acceptanceRequired": false,
+  "api": "http://localhost:9000/agreements/1"
+}
+```
+
+`GET /agreements/:id` also advertises both via `Link` headers
+(`rel="legal-context"` and the IANA-registered `rel="terms-of-service"`), so a
+client that already holds an agreement id can discover its LCP document without
+needing any well-known convention at all.
+
+`atrHash` is intentionally omitted. The LCP schema requires that once present,
+the terms document "MUST be byte-identical on every serve" — but an agreement's
+data is mutable via `PUT`/`PATCH`, so that promise can't be honoured today. This
+makes the document honestly L1 ("findable"), not L2 ("byte-pinned"); pinning
+`atrHash` to an immutable, version-pinned terms rendering is a future step.
+
+Advisory fields (`disputeResolution`, `contact`, `returns`, `acceptanceRequired`)
+are sourced from an agreement's `metadata` by a reserved key convention —
+`terms`, `termsFormat`, `atrHash`, and `api` are always server-derived and never
+read from metadata, so a party editing an agreement cannot forge its own
+integrity fields:
+
+| Metadata key | LegalContext field |
+|---|---|
+| `lcp.acceptanceRequired` | `acceptanceRequired` (`"true"` exactly) |
+| `lcp.disputeResolution.method` / `.jurisdiction` / `.contact` / `.clauseId` / `.source` / `.catalog` | `disputeResolution.*` |
+| `lcp.contact.legal` / `.technical` | `contact.*` |
+| `lcp.returns` | `returns` |
+
+### The root `/.well-known/legal-context.json`
+
+Since the origin-level document can't represent many tenants at once, it only
+exists when explicitly configured, and 404s otherwise:
+
+```bash
+curl -i http://localhost:9000/.well-known/legal-context.json
+```
+
+Two ways to configure it, mirroring the env vars used by the
+[accord-x402-contract-server](https://github.com/The-Building-Blocks/accord-x402-contract-server)
+reference implementation so a deployment can move between the two servers:
+
+```bash
+# Point the root document at an externally hosted terms document
+LCP_TERMS_URL='https://apap.example/agreements/1/terms' \
+LCP_TERMS_HASH='0x<lowercase-sha256-of-served-bytes>' \
+LCP_TERMS_FORMAT='markdown' \
+LCP_API_URL='https://apap.example/' \
+npm start
+
+# Or mirror one locally-hosted agreement's legal-context document
+LCP_ROOT_AGREEMENT_ID=1 npm start
+```
+
+`LCP_TERMS_HASH` is optional — when absent the root document is honestly L1,
+and (as with the per-agreement documents) it is never populated from a hash
+that doesn't authenticate the exact bytes served at `LCP_TERMS_URL`.
+
+Every URL an LCP document emits must be absolute `https://`, per the spec. Set
+`APAP_PUBLIC_BASE_URL` (e.g. `https://apap.example`) in any deployment an agent
+can reach. Without it, URLs fall back to the incoming request's protocol/host —
+convenient for local development, but non-compliant (typically `http://`) and
+not something to rely on the `Host` header for once the server is reachable by
+anyone else.
+
 ## Trigger an Agreement
 
 ### Create a Template with Logic
