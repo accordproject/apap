@@ -169,7 +169,7 @@ describe('POST /templates/archive', () => {
     });
 
     it('creates a template from a valid archive and returns 201', async () => {
-        const createdTemplate = { id: 1, uri: 'archive:foo@1.0.0', hash: 'abc' };
+        const createdTemplate = { id: 1, uri: 'ap://foo@1.0.0#abc', hash: 'abc' };
         (mockedTemplateService.createTemplateFromArchive as any).mockResolvedValueOnce(createdTemplate);
 
         const res = await request(app)

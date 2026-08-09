@@ -95,8 +95,9 @@ curl --request POST \
 ```
 
 The archive is parsed, deduplicated on its content hash, and stored as a
-template with the URI `archive:latedeliveryandpenalty@1.0.0` — which agreements
-then reference as their `template`. Archives declare the Cicero version they
+template whose URI is `ap://latedeliveryandpenalty@1.0.0#<hash>` — the Accord
+Project template URI syntax, which agreements then reference as their
+`template`. Archives declare the Cicero version they
 target and are rejected with a `422` if the server does not run a matching
 version (the library's archives are being upgraded to Cicero 2.x in
 [cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)),
