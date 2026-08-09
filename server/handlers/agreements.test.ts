@@ -744,14 +744,42 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(putDb.update).toHaveBeenCalled();
         });
 
-        it('allows changing data while the agreement is still DRAFT/SIGNING', async () => {
-            const existing = { id: 3, agreementStatus: 'SIGNING', data: { price: 10 } };
+        it('allows changing data while the agreement is still DRAFT', async () => {
+            const existing = { id: 3, agreementStatus: 'DRAFT', data: { price: 10 } };
             putDb.limit.mockResolvedValueOnce([existing]);
             putDb.returning.mockResolvedValueOnce([{ ...existing, data: { price: 999 } }]);
 
             const res = await request(putApp)
                 .put('/agreements/3')
                 .send({ data: { price: 999 } });
+
+            expect(res.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
+        });
+
+        it('rejects a data change once the agreement is SIGNING', async () => {
+            const existing = { id: 6, agreementStatus: 'SIGNING', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/6')
+                .send({ data: { price: 999 } });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('still allows a signature to be added while SIGNING (only data is frozen)', async () => {
+            const existing = { id: 7, agreementStatus: 'SIGNING', data: { price: 10 }, signatures: [] as any[] };
+            putDb.limit.mockResolvedValueOnce([existing]);
+            putDb.returning.mockResolvedValueOnce([
+                { ...existing, signatures: [{ signatory: 'party-1' }] },
+            ]);
+
+            const res = await request(putApp)
+                .put('/agreements/7')
+                .send({ signatures: [{ signatory: 'party-1' }] });
 
             expect(res.status).toBe(200);
             expect(putDb.update).toHaveBeenCalled();

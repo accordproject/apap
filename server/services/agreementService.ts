@@ -33,14 +33,22 @@ type AgreementRow = typeof Agreement.$inferSelect;
 // `historyEntries`, `references`, `metadata`, `template`, `uri`, ...) must
 // stop changing. Mistakes are fixed by voiding and reinstantiating the
 // agreement, not by editing it in place.
-const RECORD_FROZEN_STATUSES: ReadonlySet<string> = new Set(['COMPLETED', 'SUPERSEDED']);
+const FULLY_FROZEN_STATUSES: ReadonlySet<string> = new Set(['COMPLETED', 'SUPERSEDED']);
 
 // The only fields exempt from the freeze above: `agreementStatus` itself
 // still needs to move (e.g. COMPLETED -> SUPERSEDED when a later agreement
 // supersedes this one), and `state` is the trigger-driven runtime state
 // column — triggerAgreement (above) only ever writes that one column, so
 // post-completion trigger activity keeps working.
-const MUTABLE_FIELDS_AFTER_COMPLETION: ReadonlySet<string> = new Set(['agreementStatus', 'state']);
+const MUTABLE_FIELDS_ONCE_FULLY_FROZEN: ReadonlySet<string> = new Set(['agreementStatus', 'state']);
+
+// Deal terms lock earlier than the rest of the record: as soon as any
+// signatory has started signing (SIGNING), the terms they're signing
+// against must not move out from under them, even though the record as a
+// whole (more signatures arriving, parties, etc.) is still legitimately
+// changing. `data` therefore freezes from SIGNING onward, one status ahead
+// of every other field.
+const DATA_FROZEN_STATUS: string = 'SIGNING';
 
 /**
  * Deep-equality check used only to tell "no-op resend of the same value"
@@ -66,20 +74,37 @@ function deepEqual(a: unknown, b: unknown): boolean {
 
 /**
  * Guard for the generic CRUD PUT route (see `crud.ts`'s `guardUpdate` hook).
- * Rejects a request that would change any recorded field of an agreement
- * that is already COMPLETED or SUPERSEDED — only `agreementStatus` and
- * `state` may still be updated. A field is only rejected if the request
- * would actually change its value; resending the current value (e.g. the
- * same `data` with different key order) is a no-op, not a violation.
+ *
+ * - Once COMPLETED or SUPERSEDED, rejects a request that would change any
+ *   recorded field — only `agreementStatus` and `state` may still be
+ *   updated.
+ * - While SIGNING, rejects a request that would change `data` alone; every
+ *   other field (signatures arriving, parties, etc.) stays mutable, since
+ *   that's the whole point of the SIGNING status.
+ *
+ * A field is only rejected if the request would actually change its value;
+ * resending the current value (e.g. the same `data` with different key
+ * order) is a no-op, not a violation.
  */
 export function assertAgreementRecordMutable(existing: AgreementRow, updates: Record<string, unknown>): void {
-    if (!RECORD_FROZEN_STATUSES.has(existing.agreementStatus)) return;
+    const status = existing.agreementStatus;
 
-    for (const key of Object.keys(updates)) {
-        if (MUTABLE_FIELDS_AFTER_COMPLETION.has(key)) continue;
-        if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
+    if (FULLY_FROZEN_STATUSES.has(status)) {
+        for (const key of Object.keys(updates)) {
+            if (MUTABLE_FIELDS_ONCE_FULLY_FROZEN.has(key)) continue;
+            if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
 
-        throw new AgreementRecordImmutableError(existing.id, existing.agreementStatus, key);
+            throw new AgreementRecordImmutableError(existing.id, status, key);
+        }
+        return;
+    }
+
+    if (
+        status === DATA_FROZEN_STATUS &&
+        Object.prototype.hasOwnProperty.call(updates, 'data') &&
+        !deepEqual(existing.data, updates.data)
+    ) {
+        throw new AgreementRecordImmutableError(existing.id, status, 'data');
     }
 }
 

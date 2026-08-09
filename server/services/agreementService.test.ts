@@ -257,14 +257,57 @@ describe('agreementService', () => {
     });
 
     describe('assertAgreementRecordMutable', () => {
-        it.each(['DRAFT', 'SIGNING'])('allows changing data and signatures while status is %s', (agreementStatus) => {
-            const existing = agreementRow(1, { agreementStatus, data: { price: 10 }, signatures: [] });
+        it('allows changing data and signatures while status is DRAFT', () => {
+            const existing = agreementRow(1, { agreementStatus: 'DRAFT', data: { price: 10 }, signatures: [] });
 
             expect(() =>
                 assertAgreementRecordMutable(existing, {
                     data: { price: 20 },
                     signatures: [{ signatory: 'party-1' }],
                 }),
+            ).not.toThrow();
+        });
+
+        it('rejects changing data once status is SIGNING', () => {
+            const existing = agreementRow(1, { agreementStatus: 'SIGNING', data: { price: 10 } });
+
+            let caught: unknown;
+            try {
+                assertAgreementRecordMutable(existing, { data: { price: 20 } });
+            } catch (err) {
+                caught = err;
+            }
+            expect(caught).toBeInstanceOf(AgreementRecordImmutableError);
+            expect(caught).toMatchObject({
+                code: 'AGREEMENT_RECORD_IMMUTABLE',
+                statusCode: 409,
+                details: { field: 'data', status: 'SIGNING' },
+            });
+        });
+
+        it('still allows signatures/agreementParties to change while SIGNING (only data is frozen)', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'SIGNING',
+                data: { price: 10 },
+                signatures: [],
+            });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, {
+                    signatures: [{ signatory: 'party-1' }],
+                    agreementParties: [{ name: 'party-1', signatory: true }],
+                }),
+            ).not.toThrow();
+        });
+
+        it('allows a no-op resend of the same data while SIGNING, regardless of key order', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'SIGNING',
+                data: { price: 10, currency: 'USD' },
+            });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, { data: { currency: 'USD', price: 10 } }),
             ).not.toThrow();
         });
 

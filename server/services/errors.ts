@@ -114,15 +114,20 @@ export class AgreementNotFoundError extends ServiceError {
 }
 
 /**
- * Raised when a PUT/PATCH attempts to change any part of an agreement's
- * record (`data`, `signatures`, `agreementParties`, `attachments`,
- * `historyEntries`, `references`, `metadata`, `template`, `uri`, ...) once
- * its `agreementStatus` is COMPLETED or SUPERSEDED. Signing has finished
- * (or been superseded), so the record — deal terms and the evidence of who
- * signed it — must stay fixed; `agreementStatus` itself (e.g. COMPLETED ->
- * SUPERSEDED) and `state` (via the trigger endpoint) are the only fields
- * that may still change. Mistakes are fixed by voiding and reinstantiating
- * the agreement, not by editing it in place.
+ * Raised when a PUT/PATCH attempts to change a field of an agreement that
+ * is no longer allowed to change given its `agreementStatus`:
+ *
+ * - COMPLETED or SUPERSEDED: the whole record (`data`, `signatures`,
+ *   `agreementParties`, `attachments`, `historyEntries`, `references`,
+ *   `metadata`, `template`, `uri`, ...) is frozen — only `agreementStatus`
+ *   itself (e.g. COMPLETED -> SUPERSEDED) and `state` (via the trigger
+ *   endpoint) may still change.
+ * - SIGNING: only `data` (the deal terms) is frozen, so a signature given
+ *   against those terms can't be invalidated by a later edit; every other
+ *   field stays mutable while signatures continue to arrive.
+ *
+ * Mistakes are fixed by voiding and reinstantiating the agreement, not by
+ * editing it in place.
  */
 export class AgreementRecordImmutableError extends ServiceError {
     constructor(agreementId: string | number, status: string, field: string) {
