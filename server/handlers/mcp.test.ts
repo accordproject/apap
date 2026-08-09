@@ -26,6 +26,7 @@ import mcpRouter, {
     serviceErrorToCallToolResult,
     serviceErrorToResourceError,
     buildApiErrorMessage,
+    pageOpts,
     PROTOCOL_CTO,
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
@@ -349,6 +350,46 @@ describe('SEP-2549 cache hints exposed by the MCP handler', () => {
     });
 });
 
+// Paged MCP resource URIs (#217): `apap://templates{?limit,offset}` and
+// `apap://agreements{?limit,offset}`. `pageOpts` is the pure parser that
+// converts RFC 6570 form-style variables into safe integers for the service
+// layer. The service-layer clamp ([1, 100]) is already covered by
+// services/templateService.test.ts and services/agreementService.test.ts;
+// these tests only pin the callback-plumbing shape and the parser boundaries.
+describe('pageOpts parser for paged resource URIs', () => {
+    it('parses numeric limit and offset strings', () => {
+        expect(pageOpts({ limit: '50', offset: '100' })).toEqual({ limit: 50, offset: 100 });
+    });
+
+    it('returns undefined for absent variables so the service default applies', () => {
+        expect(pageOpts({})).toEqual({ limit: undefined, offset: undefined });
+        expect(pageOpts(undefined)).toEqual({ limit: undefined, offset: undefined });
+    });
+
+    it('returns undefined for empty-string variables (?limit=&offset=)', () => {
+        expect(pageOpts({ limit: '', offset: '' })).toEqual({ limit: undefined, offset: undefined });
+    });
+
+    it('returns undefined for non-numeric garbage instead of NaN', () => {
+        // Anything that fails parseInt (or fails Number.isFinite after) drops
+        // to the service default rather than propagating NaN into the query.
+        expect(pageOpts({ limit: 'abc', offset: 'xyz' })).toEqual({ limit: undefined, offset: undefined });
+    });
+
+    it('passes through out-of-range values so the service layer clamps them', () => {
+        // No double-clamp here. Service-layer test coverage owns the [1, 100] cap.
+        expect(pageOpts({ limit: '1000', offset: '-5' })).toEqual({ limit: 1000, offset: -5 });
+        expect(pageOpts({ limit: '0' })).toEqual({ limit: 0, offset: undefined });
+    });
+
+    it('picks the first element when a variable is exploded into an array', () => {
+        // RFC 6570 exploded form (`{?limit*}`) would surface as an array. We
+        // aren't registering exploded params, but the callback signature admits
+        // string | string[], so cover the branch defensively.
+        expect(pageOpts({ limit: ['50', '75'] })).toEqual({ limit: 50, offset: undefined });
+    });
+});
+
 describe('MCP Handler', () => {
     let app: express.Application;
     let mockDb: ReturnType<typeof createMockDb>;
@@ -501,6 +542,106 @@ describe('MCP Handler', () => {
 
             const content = result.content as any[];
             expect(content[0].type).toBe('text');
+        });
+
+        // =====================================================================
+        // Paged resource URIs — apap://templates{?limit,offset} (#217)
+        // =====================================================================
+        //
+        // These tests pin the SDK dispatch shape: an exact-string static URI
+        // hits the bare-URI callback (backwards compat with clients that don't
+        // know about the paging surface); a URI with both `?limit=X&offset=Y`
+        // hits the ResourceTemplate callback with the values threaded through
+        // to the service.
+        //
+        // Service-layer clamping ([1, 100]) is verified in the service test
+        // files; here we only verify what the mockDb chain was asked for, so
+        // the assertion is `db.limit` / `db.offset` were called with the right
+        // integers.
+        describe('paged resource URIs (#217)', () => {
+            const templateRow = { id: 1, uri: 'test://template/1', author: 'A' };
+            const agreementRow = { id: 2, uri: 'test://agreement/2', data: { foo: 'bar' } };
+
+            it('apap://templates?limit=50&offset=100 threads paging into the service', async () => {
+                mockDb._setReturn([templateRow]);
+                const result = await client.readResource({ uri: 'apap://templates?limit=50&offset=100' });
+
+                expect(mockDb.limit).toHaveBeenCalledWith(50);
+                expect(mockDb.offset).toHaveBeenCalledWith(100);
+                expect(result.contents).toHaveLength(1);
+                expect((result.contents[0] as any).uri).toBe('apap://templates/1');
+            });
+
+            it('apap://templates?limit=1000 clamps to 100 via the service', async () => {
+                // pageOpts passes 1000 through; the service clamps to 100.
+                mockDb._setReturn([]);
+                await client.readResource({ uri: 'apap://templates?limit=1000&offset=0' });
+
+                expect(mockDb.limit).toHaveBeenCalledWith(100);
+                expect(mockDb.offset).toHaveBeenCalledWith(0);
+            });
+
+            it('apap://templates?limit=0 clamps to 1 via the service', async () => {
+                mockDb._setReturn([]);
+                await client.readResource({ uri: 'apap://templates?limit=0&offset=0' });
+
+                expect(mockDb.limit).toHaveBeenCalledWith(1);
+                expect(mockDb.offset).toHaveBeenCalledWith(0);
+            });
+
+            it('apap://templates (bare URI) still returns limit=100 offset=0 (backwards compat)', async () => {
+                mockDb._setReturn([templateRow]);
+                const result = await client.readResource({ uri: 'apap://templates' });
+
+                expect(mockDb.limit).toHaveBeenCalledWith(100);
+                expect(mockDb.offset).toHaveBeenCalledWith(0);
+                expect(result.contents).toHaveLength(1);
+            });
+
+            it('apap://agreements?limit=50&offset=100 threads paging into the service', async () => {
+                mockDb._setReturn([agreementRow]);
+                const result = await client.readResource({ uri: 'apap://agreements?limit=50&offset=100' });
+
+                expect(mockDb.limit).toHaveBeenCalledWith(50);
+                expect(mockDb.offset).toHaveBeenCalledWith(100);
+                expect(result.contents).toHaveLength(1);
+                expect((result.contents[0] as any).uri).toBe('apap://agreements/2');
+            });
+
+            it('apap://agreements (bare URI) still returns limit=100 offset=0 (backwards compat)', async () => {
+                mockDb._setReturn([agreementRow]);
+                const result = await client.readResource({ uri: 'apap://agreements' });
+
+                expect(mockDb.limit).toHaveBeenCalledWith(100);
+                expect(mockDb.offset).toHaveBeenCalledWith(0);
+                expect(result.contents).toHaveLength(1);
+            });
+
+            // Empty query-string values (`?limit=&offset=`): the SDK's
+            // UriTemplate regex requires `=([^&]+)` per param — non-empty is
+            // mandatory. So this URI matches NEITHER the static exact-URI
+            // resource nor the template, and the SDK raises
+            // ResourceNotFoundError. Pin the behavior so we notice if the SDK
+            // ever loosens it (in which case pageOpts' empty-string branch
+            // would take over and default to full-page).
+            it('apap://templates?limit=&offset= surfaces the SDK ResourceNotFoundError', async () => {
+                await expect(
+                    client.readResource({ uri: 'apap://templates?limit=&offset=' }),
+                ).rejects.toThrow(/apap:\/\/templates\?limit=&offset=/);
+            });
+
+            // Partial URI (offset param entirely absent, not empty). The SDK's
+            // UriTemplate regex for `{?limit,offset}` compiles both params as
+            // required and non-empty, so this URI matches NEITHER the static
+            // exact-URI resource nor the template — the SDK raises
+            // ResourceNotFoundError. Same failure shape as the empty-string
+            // case above; pinned separately because "param absent" and "param
+            // empty" are different SDK code paths.
+            it('apap://templates?limit=50 (partial URI, offset absent) surfaces ResourceNotFoundError', async () => {
+                await expect(
+                    client.readResource({ uri: 'apap://templates?limit=50' }),
+                ).rejects.toThrow(/apap:\/\/templates\?limit=50/);
+            });
         });
     });
 });

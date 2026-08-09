@@ -107,6 +107,20 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
     });
 }
 
+// Parses `{ limit, offset }` from RFC 6570 form-style template variables into
+// safe integers for the paged resource callbacks (#217). Non-numeric or absent
+// values become `undefined` so the service layer applies its own default (100 /
+// 0) and clamp ([1, 100]); no double-clamp here.
+export function pageOpts(variables: Record<string, string | string[]> | undefined): { limit?: number; offset?: number } {
+    const pick = (v: string | string[] | undefined): number | undefined => {
+        const raw = Array.isArray(v) ? v[0] : v;
+        if (raw === undefined || raw === '') return undefined;
+        const n = parseInt(raw, 10);
+        return Number.isFinite(n) ? n : undefined;
+    };
+    return { limit: pick(variables?.limit), offset: pick(variables?.offset) };
+}
+
 // Builds a meaningful error message from a failed API response so that MCP clients
 // can tell apart a 404 (resource missing) from a 400 (bad input) or a 500 (server issue).
 // Without this, every failure just says "Failed to load ..." which is impossible to debug.
@@ -196,9 +210,14 @@ async function getAgreement(db: Database, uri: string, variables: { agreementId:
 // Direct service call, no HTTP loop. This is the slice-1 payoff: a bug fix in
 // `templateService.listTemplates` now propagates to both the MCP resource
 // callback and any future REST caller without going through Express.
-async function getTemplates(db: Database, uri: URL) {
-    console.log({ type: 'get_templates_requested', uri: uri.toString() });
-    const templates = await listTemplates(db);
+//
+// Optional `opts` carries the paged-URI query variables (`{?limit,offset}`)
+// per RFC 6570 form-style expansion. The service clamps to [1, 100] internally
+// so we never double-clamp here; `undefined` values fall back to the same
+// full-page default the bare `apap://templates` URI uses (limit=100, offset=0).
+async function getTemplates(db: Database, uri: URL, opts: { limit?: number; offset?: number } = {}) {
+    console.log({ type: 'get_templates_requested', uri: uri.toString(), ...opts });
+    const templates = await listTemplates(db, opts);
     console.log({ type: 'fetched_templates_success', count: templates.length });
     return {
         contents: templates.map((t) => ({
@@ -216,9 +235,9 @@ async function getTemplates(db: Database, uri: URL) {
  * @details Loads the agreement collection from the local REST API and serializes
  * each item into the MCP resource format expected by agreement resources.
  */
-async function getAgreements(db: Database, uri: URL) {
-    console.log({ type: 'get_agreements_requested', uri: uri.toString() });
-    const agreements = await listAgreements(db);
+async function getAgreements(db: Database, uri: URL, opts: { limit?: number; offset?: number } = {}) {
+    console.log({ type: 'get_agreements_requested', uri: uri.toString(), ...opts });
+    const agreements = await listAgreements(db, opts);
     console.log({ type: 'fetched_agreements_success', count: agreements.length });
     return {
         // FIX for issue #128: The previous version spread the full agreement object
@@ -287,6 +306,31 @@ export const getServer = (db: Database) => {
         "apap://agreements",
         { mimeType: "application/json" },
         (uri: URL) => getAgreements(db, uri),
+    );
+
+    // Paged variants for #217: RFC 6570 form-style query expansion
+    // (`{?limit,offset}`). The SDK dispatcher (mcp.mjs `resources/read`) checks
+    // exact-string static resources first, then iterates registered templates
+    // and calls `UriTemplate.match(uri)`. Bare `apap://templates` still hits the
+    // static resource above; `apap://templates?limit=50&offset=100` hits the
+    // template below. Callback receives `{ limit, offset }` as string variables;
+    // service clamps to [1, 100] and defaults to full-page when a var is missing
+    // (SDK regex requires both params present + non-empty, so the `?? '100'`
+    // fallback here is defensive coverage for future SDK laxity).
+    server.registerResource(
+        'templates-page',
+        new ResourceTemplate('apap://templates{?limit,offset}', { list: undefined }),
+        { title: 'Templates (paged)', mimeType: 'application/json' },
+        (uri: URL, variables: Record<string, string | string[]>) =>
+            getTemplates(db, uri, pageOpts(variables)),
+    );
+
+    server.registerResource(
+        'agreements-page',
+        new ResourceTemplate('apap://agreements{?limit,offset}', { list: undefined }),
+        { title: 'Agreements (paged)', mimeType: 'application/json' },
+        (uri: URL, variables: Record<string, string | string[]>) =>
+            getAgreements(db, uri, pageOpts(variables)),
     );
 
     // register resource template for agreements
