@@ -217,8 +217,8 @@ the `^2.0.0` below is the retargeted archive from step 2:
 ```json
 {
 	"id": 1,
-	"uri": "archive:latedeliveryandpenalty@1.0.0",
-	"hash": "e29682ed71694106…",
+	"uri": "ap://latedeliveryandpenalty@1.0.0#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
+	"hash": "e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
 	"author": "Accord Project",
 	"displayName": "Late Delivery and Penalty",
 	"version": "1.0.0",
@@ -235,8 +235,14 @@ the `^2.0.0` below is the retargeted archive from step 2:
 }
 ```
 
-Note the assigned `uri`: `archive:<name>@<version>`, taken from the archive's
-own `package.json`. That is the value agreements reference as their `template`.
+Note the assigned `uri`: `ap://<name>@<version>#<hash>` — the Accord Project
+template URI syntax, the same form the
+[template library index](https://templates.accordproject.org/template-library.json)
+publishes. Name and version come from the archive's own `package.json`, and the
+fragment is its content hash, so the URI identifies those exact bytes. That is
+the value agreements reference as their `template`, and it has to match
+character for character — copy it from this response rather than the examples
+below, whose hash is illustrative and will not match your upload.
 
 Uploads are deduplicated on the archive's content hash, so re-posting the same
 `.cta` returns the existing row (still `201`) rather than creating a duplicate —
@@ -277,7 +283,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
 	"uri": "apap://agreement-ldp",
-	"template": "archive:latedeliveryandpenalty@1.0.0",
+	"template": "ap://latedeliveryandpenalty@1.0.0#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
 	"agreementStatus": "DRAFT",
 	"data": {
 		"$class": "org.accordproject.latedeliveryandpenalty@0.2.0.TemplateModel",

@@ -76,9 +76,15 @@ describe('Template Builder - extractTemplateForDatabase', () => {
 // outside that set, so an unsanitized name made convert/trigger fail with
 // "template name can only contain lowercase alphanumerics, _ or -".
 describe('Template Builder - templateNameFromUri', () => {
-    it('strips the scheme and version from an archive URI', () => {
+    it('takes the name out of an ap:// URI, ignoring the hash fragment', () => {
         // The URI POST /templates/archive assigns.
-        expect(templateNameFromUri('archive:latedeliveryandpenalty@1.0.0'))
+        expect(templateNameFromUri('ap://latedeliveryandpenalty@1.0.1#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712'))
+            .toBe('latedeliveryandpenalty');
+    });
+
+    it('falls back to generic parsing for an ap:// URI missing its hash', () => {
+        // TemplateLibrary.parseURI rejects these, so the generic path handles it.
+        expect(templateNameFromUri('ap://latedeliveryandpenalty@1.0.1'))
             .toBe('latedeliveryandpenalty');
     });
 
@@ -94,11 +100,11 @@ describe('Template Builder - templateNameFromUri', () => {
     });
 
     it('lowercases and replaces characters cicero rejects', () => {
-        expect(templateNameFromUri('archive:My Template!@2.0.0')).toBe('my-template');
+        expect(templateNameFromUri('ap://My Template!@2.0.0')).toBe('my-template');
     });
 
     it('falls back to a default name when the URI yields nothing usable', () => {
         expect(templateNameFromUri('')).toBe('dynamic-template');
-        expect(templateNameFromUri('archive:@1.0.0')).toBe('dynamic-template');
+        expect(templateNameFromUri('ap://@1.0.0')).toBe('dynamic-template');
     });
 });

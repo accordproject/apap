@@ -1,4 +1,4 @@
-import { Template as ApTemplate } from '@accordproject/cicero-core';
+import { Template as ApTemplate, TemplateLibrary } from '@accordproject/cicero-core';
 import AdmZip from "adm-zip";
 import { Template } from '../db/schema';
 
@@ -33,8 +33,9 @@ interface ApTemplateInstance {
  *
  * cicero-core only accepts `[a-z0-9_-]` in `package.json.name`, so the raw last
  * segment of a URI cannot be used as-is: every URI shape the RI stores carries
- * characters cicero rejects — `archive:latedeliveryandpenalty@1.0.0` (the URI
- * `POST /templates/archive` assigns) keeps its scheme and `@version`, and
+ * characters cicero rejects — `ap://latedeliveryandpenalty@1.0.1#<hash>` (the
+ * URI `POST /templates/archive` assigns) keeps its scheme, `@version` and hash
+ * fragment, and
  * `https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta`
  * (the URI `POST /agreements` assigns when it fetches a remote archive) keeps
  * `@1.0.0` after the `.cta` is stripped. Feeding either back through
@@ -50,6 +51,21 @@ export function templateNameFromUri(uri: string): string {
         return fallback;
     }
 
+    const sanitize = (value: string) =>
+        value.toLowerCase().replace(/[^a-z0-9_-]/g, '-').replace(/^-+|-+$/g, '');
+
+    // An `ap://` URI's fragment is the archive's content hash, not its name, so
+    // it is the one shape where the fragment must be ignored. Let cicero parse
+    // it rather than second-guessing the syntax it defines.
+    if (TemplateLibrary.acceptsURI(uri)) {
+        try {
+            const { templateName } = TemplateLibrary.parseURI(uri) as { templateName: string };
+            return sanitize(templateName) || fallback;
+        } catch (err) {
+            // Malformed `ap://` URI — fall through to the generic handling.
+        }
+    }
+
     // `resource:...#name` identifies the template after the fragment; every
     // other shape puts it in the last path segment.
     let name = uri.includes('#')
@@ -61,9 +77,8 @@ export function templateNameFromUri(uri: string): string {
     // Drop a trailing `@version`, keeping npm-style scopes (`@scope/name` has
     // already lost its scope to the path split above).
     name = name.replace(/@[^@]*$/, '');
-    name = name.toLowerCase().replace(/[^a-z0-9_-]/g, '-').replace(/^-+|-+$/g, '');
 
-    return name || fallback;
+    return sanitize(name) || fallback;
 }
 
 /**
