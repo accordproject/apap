@@ -77,5 +77,30 @@ curl http://localhost:9000/capabilities
 # or https://my-apap.up.railway.app/capabilities
 ```
 
+### Deploy a template
+
+A new server starts with an empty database, so there is nothing to draft until a
+template is loaded. Rather than hand-writing one, deploy an existing Cicero
+Template Archive (`.cta`) from
+[templates.accordproject.org](https://templates.accordproject.org):
+
+```bash
+curl -sL -o latedeliveryandpenalty.cta \
+  https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta
+
+curl --request POST \
+  --url http://localhost:9000/templates/archive \
+  --header 'Content-Type: application/octet-stream' \
+  --data-binary @latedeliveryandpenalty.cta
+```
+
+The archive is parsed, deduplicated on its content hash, and stored as a
+template with the URI `archive:latedeliveryandpenalty@1.0.0` — which agreements
+then reference as their `template`. Archives declare the Cicero version they
+target and are rejected with a `422` if the server does not run a matching
+version, so see
+[Deploying a Template Archive](./server/README.md#deploying-a-template-archive-cta)
+for the compatibility check and the rest of the walkthrough (creating an
+agreement and rendering it to HTML).
 
 For full API documentation see [docs.accordproject.org/docs/ref-apap](https://docs.accordproject.org/docs/ref-apap).
