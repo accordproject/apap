@@ -10641,6 +10641,368 @@ Sends data to an existing agreement.
 This operation does not require authentication
 </aside>
 
+## getAgreementTerms
+
+<a id="opIdgetAgreementTerms"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET /agreements/{agreementId}/terms \
+  -H 'Accept: text/markdown'
+
+```
+
+```http
+GET /agreements/{agreementId}/terms HTTP/1.1
+
+Accept: text/markdown
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'text/markdown'
+};
+
+fetch('/agreements/{agreementId}/terms',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => 'text/markdown'
+}
+
+result = RestClient.get '/agreements/{agreementId}/terms',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': 'text/markdown'
+}
+
+r = requests.get('/agreements/{agreementId}/terms', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => 'text/markdown',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','/agreements/{agreementId}/terms', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("/agreements/{agreementId}/terms");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"text/markdown"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "/agreements/{agreementId}/terms", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /agreements/{agreementId}/terms`
+
+*Get agreement terms*
+
+Fetch the byte-pinned Legal Context Protocol terms document for an existing agreement.
+
+<h3 id="getagreementterms-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|agreementId|path|string|true|A unique identifier for a `Agreement`.|
+
+> Example responses
+
+> 200 Response
+
+<h3 id="getagreementterms-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The agreement's terms document.|string|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|No agreement exists with the given id.|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## getAgreementLegalContext
+
+<a id="opIdgetAgreementLegalContext"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET /agreements/{agreementId}/legal-context \
+  -H 'Accept: application/json'
+
+```
+
+```http
+GET /agreements/{agreementId}/legal-context HTTP/1.1
+
+Accept: application/json
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('/agreements/{agreementId}/legal-context',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => 'application/json'
+}
+
+result = RestClient.get '/agreements/{agreementId}/legal-context',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': 'application/json'
+}
+
+r = requests.get('/agreements/{agreementId}/legal-context', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => 'application/json',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','/agreements/{agreementId}/legal-context', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("/agreements/{agreementId}/legal-context");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"application/json"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "/agreements/{agreementId}/legal-context", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /agreements/{agreementId}/legal-context`
+
+*Get agreement legal context*
+
+Fetch the Legal Context Protocol discovery document for an existing agreement.
+
+<h3 id="getagreementlegalcontext-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|agreementId|path|string|true|A unique identifier for a `Agreement`.|
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.LegalContext",
+  "terms": "string",
+  "termsFormat": "string",
+  "atrHash": "string",
+  "acceptanceRequired": false,
+  "disputeResolution": {
+    "$class": "org.accordproject.protocol@1.0.0.LcpDisputeResolution",
+    "method": "string",
+    "jurisdiction": "string",
+    "contact": "string",
+    "clauseId": "string",
+    "source": "string",
+    "catalog": "string"
+  },
+  "returns": "string",
+  "contact": {
+    "$class": "org.accordproject.protocol@1.0.0.LcpContact",
+    "legal": "string",
+    "technical": "string"
+  },
+  "api": "string"
+}
+```
+
+<h3 id="getagreementlegalcontext-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Successful response - returns the `LegalContext` document for the agreement.|[org.accordproject.protocol@1.0.0.LegalContext](#schemaorg.accordproject.protocol@1.0.0.legalcontext)|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|No agreement exists with the given id.|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
 <h1 id="accord-protocol-capabilities">capabilities</h1>
 
 ## getCapabilities
@@ -11925,6 +12287,116 @@ HtmlConversionOptions
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.HtmlConversionOptions|
 
+<h2 id="tocS_org.accordproject.protocol@1.0.0.LcpDisputeResolution">org.accordproject.protocol@1.0.0.LcpDisputeResolution</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.lcpdisputeresolution"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.LcpDisputeResolution"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.lcpdisputeresolution"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.lcpdisputeresolution"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.LcpDisputeResolution",
+  "method": "string",
+  "jurisdiction": "string",
+  "contact": "string",
+  "clauseId": "string",
+  "source": "string",
+  "catalog": "string"
+}
+
+```
+
+LcpDisputeResolution
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.LcpDisputeResolution|
+|method|string|false|none|none|
+|jurisdiction|string|false|none|none|
+|contact|string|false|none|none|
+|clauseId|string|false|none|none|
+|source|string|false|none|none|
+|catalog|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.LcpContact">org.accordproject.protocol@1.0.0.LcpContact</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.lcpcontact"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.LcpContact"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.lcpcontact"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.lcpcontact"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.LcpContact",
+  "legal": "string",
+  "technical": "string"
+}
+
+```
+
+LcpContact
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.LcpContact|
+|legal|string|false|none|none|
+|technical|string|false|none|none|
+
+<h2 id="tocS_org.accordproject.protocol@1.0.0.LegalContext">org.accordproject.protocol@1.0.0.LegalContext</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.protocol@1.0.0.legalcontext"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.LegalContext"></a>
+<a id="tocSorg.accordproject.protocol@1.0.0.legalcontext"></a>
+<a id="tocsorg.accordproject.protocol@1.0.0.legalcontext"></a>
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.LegalContext",
+  "terms": "string",
+  "termsFormat": "string",
+  "atrHash": "string",
+  "acceptanceRequired": false,
+  "disputeResolution": {
+    "$class": "org.accordproject.protocol@1.0.0.LcpDisputeResolution",
+    "method": "string",
+    "jurisdiction": "string",
+    "contact": "string",
+    "clauseId": "string",
+    "source": "string",
+    "catalog": "string"
+  },
+  "returns": "string",
+  "contact": {
+    "$class": "org.accordproject.protocol@1.0.0.LcpContact",
+    "legal": "string",
+    "technical": "string"
+  },
+  "api": "string"
+}
+
+```
+
+LegalContext
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.LegalContext|
+|terms|string|true|none|none|
+|termsFormat|string|false|none|none|
+|atrHash|string|false|none|none|
+|acceptanceRequired|boolean|true|none|none|
+|disputeResolution|[org.accordproject.protocol@1.0.0.LcpDisputeResolution](#schemaorg.accordproject.protocol@1.0.0.lcpdisputeresolution)|false|none|An instance of org.accordproject.protocol@1.0.0.LcpDisputeResolution|
+|returns|string|false|none|none|
+|contact|[org.accordproject.protocol@1.0.0.LcpContact](#schemaorg.accordproject.protocol@1.0.0.lcpcontact)|false|none|An instance of org.accordproject.protocol@1.0.0.LcpContact|
+|api|string|false|none|none|
+
 <h2 id="tocS_org.accordproject.protocol@1.0.0.FeatureType">org.accordproject.protocol@1.0.0.FeatureType</h2>
 <!-- backwards compatibility -->
 <a id="schemaorg.accordproject.protocol@1.0.0.featuretype"></a>
@@ -11960,6 +12432,7 @@ FeatureType
 |FeatureType|AGREEMENT_TRIGGER|
 |FeatureType|AGREEMENT_STATE|
 |FeatureType|AGREEMENT_CONVERT_HTML|
+|FeatureType|AGREEMENT_LEGAL_CONTEXT|
 |FeatureType|AGREEMENT_SIGNING|
 |FeatureType|SHARED_MODEL_MANAGE|
 
@@ -17919,30 +18392,6 @@ continued
 |startLine|integer|false|none|none|
 |endLine|integer|false|none|none|
 
-<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
-<!-- backwards compatibility -->
-<a id="schemaorg.accordproject.party@0.2.0.party"></a>
-<a id="schema_org.accordproject.party@0.2.0.Party"></a>
-<a id="tocSorg.accordproject.party@0.2.0.party"></a>
-<a id="tocsorg.accordproject.party@0.2.0.party"></a>
-
-```json
-{
-  "$class": "org.accordproject.party@0.2.0.Party",
-  "partyId": "string"
-}
-
-```
-
-Party
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
-|partyId|string|true|none|The instance identifier for this type|
-
 <h2 id="tocS_concerto.metamodel@0.4.0.Position">concerto.metamodel@0.4.0.Position</h2>
 <!-- backwards compatibility -->
 <a id="schemaconcerto.metamodel@0.4.0.position"></a>
@@ -21206,4 +21655,28 @@ Models
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for concerto.metamodel@0.4.0.Models|
 |models|[[concerto.metamodel@0.4.0.Model](#schemaconcerto.metamodel@0.4.0.model)]|true|none|[An instance of concerto.metamodel@0.4.0.Model]|
+
+<h2 id="tocS_org.accordproject.party@0.2.0.Party">org.accordproject.party@0.2.0.Party</h2>
+<!-- backwards compatibility -->
+<a id="schemaorg.accordproject.party@0.2.0.party"></a>
+<a id="schema_org.accordproject.party@0.2.0.Party"></a>
+<a id="tocSorg.accordproject.party@0.2.0.party"></a>
+<a id="tocsorg.accordproject.party@0.2.0.party"></a>
+
+```json
+{
+  "$class": "org.accordproject.party@0.2.0.Party",
+  "partyId": "string"
+}
+
+```
+
+Party
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|$class|string|true|none|The class identifier for org.accordproject.party@0.2.0.Party|
+|partyId|string|true|none|The instance identifier for this type|
 
