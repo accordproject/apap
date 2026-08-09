@@ -77,33 +77,32 @@ curl http://localhost:9000/capabilities
 # or https://my-apap.up.railway.app/capabilities
 ```
 
-### Deploy a template
+### Draft your first agreement
 
 A new server starts with an empty database, so there is nothing to draft until a
-template is loaded. Rather than hand-writing one, deploy an existing Cicero
-Template Archive (`.cta`) from
-[templates.accordproject.org](https://templates.accordproject.org):
+template is loaded. The shortest way in is to point an agreement straight at a
+Cicero Template Archive (`.cta`) hosted on
+[templates.accordproject.org](https://templates.accordproject.org) — the server
+fetches and caches the template for you, so there is no separate deploy step:
 
 ```bash
-curl -sL -o latedeliveryandpenalty.cta \
-  https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta
-
 curl --request POST \
-  --url http://localhost:9000/templates/archive \
-  --header 'Content-Type: application/octet-stream' \
-  --data-binary @latedeliveryandpenalty.cta
+  --url http://localhost:9000/agreements \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"uri": "apap://agreement-ldp",
+	"template": "https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta",
+	"agreementStatus": "DRAFT",
+	"data": { "...": "an instance of the template model" }
+}'
+
+curl http://localhost:9000/agreements/1/convert/html
 ```
 
-The archive is parsed, deduplicated on its content hash, and stored as a
-template whose URI is `ap://latedeliveryandpenalty@1.0.0#<hash>` — the Accord
-Project template URI syntax, which agreements then reference as their
-`template`. Archives declare the Cicero version they
-target and are rejected with a `422` if the server does not run a matching
-version (the library's archives are being upgraded to Cicero 2.x in
-[cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)),
-so see
-[Deploying a Template Archive](./server/README.md#deploying-a-template-archive-cta)
-for the compatibility check and the rest of the walkthrough (creating an
-agreement and rendering it to HTML).
+See
+[Using a Template from templates.accordproject.org](./server/README.md#using-a-template-from-templatesaccordprojectorg)
+for the full agreement body, the Cicero version compatibility check, and
+`POST /templates/archive` — the explicit upload path for custom archives or
+servers without network egress.
 
 For full API documentation see [docs.accordproject.org/docs/ref-apap](https://docs.accordproject.org/docs/ref-apap).

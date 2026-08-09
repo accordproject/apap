@@ -141,141 +141,26 @@ Example response:
 
 These capabiltities will evolve as the functionality of the RI is extended to new use cases.
 
-## Deploying a Template Archive (.cta)
+## Using a Template from templates.accordproject.org
 
 A freshly bootstrapped RI has an empty database, so there is nothing to draft or
 trigger until a template is loaded — the cold start problem. Hand-writing the
 `POST /templates` body (see [Creating a Template](#creating-a-template)) means
-pasting an escaped Concerto model and template text into JSON. `POST
-/templates/archive` skips that: it takes a Cicero Template Archive (`.cta`)
-verbatim and explodes it into a template row for you, so an existing template
-from [templates.accordproject.org](https://templates.accordproject.org) can seed
-the server in one request.
-
-### 1. Pick a template
+pasting an escaped Concerto model and template text into JSON, so for a quick
+start use an existing Cicero Template Archive (`.cta`) from
+[templates.accordproject.org](https://templates.accordproject.org) instead.
 
 Archives are published at
 `https://templates.accordproject.org/archives/<name>@<version>.cta`, and the
 full index of names, versions and descriptions is at
 [template-library.json](https://templates.accordproject.org/template-library.json).
-This walkthrough uses `latedeliveryandpenalty`:
+The examples below use `latedeliveryandpenalty`.
 
-```bash
-curl -sL -o latedeliveryandpenalty.cta \
-  https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta
-```
+### Quick start: point an agreement at a hosted archive
 
-### 2. Check the archive's Cicero version
-
-Every archive declares the Cicero version range its contents were built for, and
-the RI only accepts archives whose range covers the `@accordproject/cicero-core`
-version pinned in [`package.json`](./package.json):
-
-```bash
-unzip -p latedeliveryandpenalty.cta package.json | jq .accordproject
-# { "template": "clause", "runtime": "typescript", "cicero": "^1.0.0" }
-```
-
-> **Note:** the archives currently published on templates.accordproject.org
-> declare `"cicero": "^1.0.0"`, which the RI's cicero-core 2.x does not satisfy,
-> so uploading one as-is is rejected with the `422` below.
-> [cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)
-> upgrades the library's templates to `"cicero": "^2.0.0"` — once it lands and
-> the archives are republished (`latedeliveryandpenalty@1.0.1`), this
-> walkthrough runs end to end with no extra steps. Until then, use an archive
-> built for the RI's Cicero major — or, if you know the template's contents are
-> compatible, retarget the declared range before uploading:
->
-> ```bash
-> # ^2.0.0 here is the RI's Cicero major — use ^0.25.0 on a checkout pinning
-> # cicero-core 0.25.x, and so on.
-> mkdir -p retarget && cd retarget && unzip -oq ../latedeliveryandpenalty.cta
-> jq '.accordproject.cicero = "^2.0.0"' package.json > package.tmp && mv package.tmp package.json
-> zip -qr ../latedeliveryandpenalty-retargeted.cta . && cd ..
-> ```
->
-> Retargeting only rewrites the declared range — it does not make an
-> incompatible template work, so run a `convert` afterwards to confirm the
-> template still drafts.
-
-### 3. Deploy the archive
-
-The body is the raw archive, not JSON:
-
-```bash
-curl --request POST \
-  --url http://localhost:9000/templates/archive \
-  --header 'Content-Type: application/octet-stream' \
-  --data-binary @latedeliveryandpenalty.cta
-```
-
-Response (`201`, abridged — the model, text and logic of the archive are stored
-in full). `hash` is the archive's content hash and `metadata` is its
-`package.json.accordproject` block, so both follow the exact bytes uploaded —
-the `^2.0.0` below is the retargeted archive from step 2:
-
-```json
-{
-	"id": 1,
-	"uri": "ap://latedeliveryandpenalty@1.0.0#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
-	"hash": "e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
-	"author": "Accord Project",
-	"displayName": "Late Delivery and Penalty",
-	"version": "1.0.0",
-	"description": "A sample Late Delivery And Penalty clause.",
-	"license": "Apache-2.0",
-	"metadata": {
-		"template": "clause",
-		"runtime": "typescript",
-		"cicero": "^2.0.0"
-	},
-	"templateModel": { "model": { "$class": "org.accordproject.protocol@1.0.0.CtoModel", "ctoFiles": [ "..." ] } },
-	"text": { "templateText": "## Late Delivery and Penalty.\n\nIn case of delayed delivery{{#if forceMajeure}} except for Force Majeure cases,{{/if}}\n..." },
-	"logic": { "codes": [ "..." ] }
-}
-```
-
-Note the assigned `uri`: `ap://<name>@<version>#<hash>` — the Accord Project
-template URI syntax, the same form the
-[template library index](https://templates.accordproject.org/template-library.json)
-publishes. Name and version come from the archive's own `package.json`, and the
-fragment is its content hash, so the URI identifies those exact bytes. That is
-the value agreements reference as their `template`, and it has to match
-character for character — copy it from this response rather than the examples
-below, whose hash is illustrative and will not match your upload.
-
-Uploads are deduplicated on the archive's content hash, so re-posting the same
-`.cta` returns the existing row (still `201`) rather than creating a duplicate —
-re-running the command above is safe.
-
-Errors:
-
-| Status | `error.code`                       | Cause                                                      |
-| ------ | ---------------------------------- | ---------------------------------------------------------- |
-| `400`  | `INVALID_PAYLOAD`                  | Empty body, or bytes that are not a readable `.cta` archive |
-| `422`  | `TEMPLATE_CICERO_VERSION_MISMATCH` | The archive targets a Cicero version this server does not run |
-
-```json
-{
-	"error": {
-		"code": "TEMPLATE_CICERO_VERSION_MISMATCH",
-		"message": "Template requires Cicero ^1.0.0, server supports 2.1.1",
-		"details": {
-			"declaredRange": "^1.0.0",
-			"serverVersion": "2.1.1"
-		}
-	}
-}
-```
-
-`serverVersion` is whatever `@accordproject/cicero-core` version this RI pins,
-so the exact numbers depend on the checkout.
-
-### 4. Create an agreement against the deployed template
-
-`template` is the `uri` returned above, and `data` is an instance of the
-archive's `@template` type — for this template the namespace comes from
-`model/clause.cto`, `org.accordproject.latedeliveryandpenalty@0.2.0`:
+`POST /agreements` accepts an `http(s)` URL as its `template` and resolves it on
+the way through (see `handlers/retrievers/HttpTemplateRetriever.ts`), so a
+single request gets you a usable agreement — no `/templates` call at all:
 
 ```bash
 curl --request POST \
@@ -283,7 +168,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
 	"uri": "apap://agreement-ldp",
-	"template": "ap://latedeliveryandpenalty@1.0.0#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
+	"template": "https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta",
 	"agreementStatus": "DRAFT",
 	"data": {
 		"$class": "org.accordproject.latedeliveryandpenalty@0.2.0.TemplateModel",
@@ -309,7 +194,18 @@ curl --request POST \
 }'
 ```
 
-### 5. Draft it
+`data` is an instance of the archive's `@template` type — for this template the
+namespace comes from its `model/clause.cto`,
+`org.accordproject.latedeliveryandpenalty@0.2.0`.
+
+The RI fetches the archive, parses it, and stores it as a template row keyed by
+its content hash — its `uri` is the URL it came from, so it shows up in
+`GET /templates` — and records that hash on the agreement. A later agreement
+against the same URL fetches it again but reuses the stored row rather than
+duplicating it, and converting or triggering this agreement rebuilds the
+template from that row instead of going back to the URL.
+
+Then draft it:
 
 ```bash
 curl --request GET \
@@ -348,25 +244,142 @@ If the delay is more than 15 days, the Buyer is entitled to terminate this Contr
 > a `PaymentObligationEvent`. See
 > [Trigger an Agreement](#trigger-an-agreement) for the request/response shape.
 
-### Letting an agreement fetch the archive instead
+### Cicero version compatibility
 
-`POST /agreements` also accepts an `http(s)` URL as its `template`, and fetches,
-hashes and caches the archive on the way through (see
-`handlers/retrievers/HttpTemplateRetriever.ts`) — one request instead of two:
+Every archive declares the Cicero version range its contents were built for, and
+the RI only accepts archives whose range covers the `@accordproject/cicero-core`
+version pinned in [`package.json`](./package.json):
+
+```bash
+curl -sL -o latedeliveryandpenalty.cta \
+  https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta
+unzip -p latedeliveryandpenalty.cta package.json | jq .accordproject
+# { "template": "clause", "runtime": "typescript", "cicero": "^1.0.0" }
+```
+
+The archives currently published on templates.accordproject.org declare
+`"cicero": "^1.0.0"`, which the RI's cicero-core 2.x does not satisfy, so they
+are rejected — as a plain `500` from `POST /agreements`, or as the typed `422`
+below from `POST /templates/archive`:
+
+```
+The template targets Cicero version ^1.0.0 but the current Cicero version is 2.1.1.
+```
+
+[cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)
+upgrades the library's templates to `"cicero": "^2.0.0"` — once it lands and the
+archives are republished (`latedeliveryandpenalty@1.0.1`), the walkthrough above
+runs end to end with no extra steps. Until then, use an archive built for the
+RI's Cicero major — or, if you know the template's contents are compatible,
+retarget the declared range and upload the result with `POST /templates/archive`
+below:
+
+```bash
+# ^2.0.0 here is the RI's Cicero major — use ^0.25.0 on a checkout pinning
+# cicero-core 0.25.x, and so on.
+mkdir -p retarget && cd retarget && unzip -oq ../latedeliveryandpenalty.cta
+jq '.accordproject.cicero = "^2.0.0"' package.json > package.tmp && mv package.tmp package.json
+zip -qr ../latedeliveryandpenalty-retargeted.cta . && cd ..
+```
+
+Retargeting only rewrites the declared range — it does not make an incompatible
+template work, so run a `convert` afterwards to confirm the template still
+drafts.
+
+### Deploying an archive explicitly
+
+`POST /templates/archive` takes a `.cta` verbatim and explodes it into a
+template row, without an agreement being involved. Reach for it when the quick
+path above does not fit:
+
+- the archive is one you built locally, or edited (a retargeted range, a custom
+  clause) and never published
+- the RI has no network egress, or the archive lives somewhere it cannot reach
+- you want the template registered and listable before any agreement exists, and
+  a malformed or incompatible archive rejected up front — with a typed error —
+  rather than at first agreement
+
+The body is the raw archive, not JSON:
+
+```bash
+curl --request POST \
+  --url http://localhost:9000/templates/archive \
+  --header 'Content-Type: application/octet-stream' \
+  --data-binary @latedeliveryandpenalty-retargeted.cta
+```
+
+Response (`201`, abridged — the model, text and logic of the archive are stored
+in full). `hash` is the archive's content hash and `metadata` is its
+`package.json.accordproject` block, so both follow the exact bytes uploaded:
 
 ```json
 {
-	"uri": "apap://agreement-ldp-remote",
-	"template": "https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta",
+	"id": 1,
+	"uri": "ap://latedeliveryandpenalty@1.0.0#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
+	"hash": "e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
+	"author": "Accord Project",
+	"displayName": "Late Delivery and Penalty",
+	"version": "1.0.0",
+	"description": "A sample Late Delivery And Penalty clause.",
+	"license": "Apache-2.0",
+	"metadata": {
+		"template": "clause",
+		"runtime": "typescript",
+		"cicero": "^2.0.0"
+	},
+	"templateModel": { "model": { "$class": "org.accordproject.protocol@1.0.0.CtoModel", "ctoFiles": [ "..." ] } },
+	"text": { "templateText": "## Late Delivery and Penalty.\n\nIn case of delayed delivery{{#if forceMajeure}} except for Force Majeure cases,{{/if}}\n..." },
+	"logic": { "codes": [ "..." ] }
+}
+```
+
+Note the assigned `uri`: `ap://<name>@<version>#<hash>` — the Accord Project
+template URI syntax, the same form the
+[template library index](https://templates.accordproject.org/template-library.json)
+publishes. Name and version come from the archive's own `package.json`, and the
+fragment is its content hash, so the URI identifies those exact bytes.
+
+An agreement then references that URI as its `template`, in place of the URL
+used in the quick start — everything else about the agreement is unchanged:
+
+```json
+{
+	"uri": "apap://agreement-ldp-uploaded",
+	"template": "ap://latedeliveryandpenalty@1.0.0#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
 	"agreementStatus": "DRAFT",
 	"data": { "...": "as above" }
 }
 ```
 
-Deploying the archive explicitly is still worth doing when you want the template
-available (and listable at `GET /templates`) before any agreement exists, when
-the archive is not reachable over HTTP from the server, or when you want the
-upload rejected up front rather than at first agreement.
+It has to match character for character, so copy the `uri` out of the upload
+response — the hash above is illustrative and will not match yours.
+
+Uploads are deduplicated on the archive's content hash, so re-posting the same
+`.cta` returns the existing row (still `201`) rather than creating a duplicate —
+re-running the command is safe.
+
+Errors:
+
+| Status | `error.code`                       | Cause                                                      |
+| ------ | ---------------------------------- | ---------------------------------------------------------- |
+| `400`  | `INVALID_PAYLOAD`                  | Empty body, or bytes that are not a readable `.cta` archive |
+| `422`  | `TEMPLATE_CICERO_VERSION_MISMATCH` | The archive targets a Cicero version this server does not run |
+
+```json
+{
+	"error": {
+		"code": "TEMPLATE_CICERO_VERSION_MISMATCH",
+		"message": "Template requires Cicero ^1.0.0, server supports 2.1.1",
+		"details": {
+			"declaredRange": "^1.0.0",
+			"serverVersion": "2.1.1"
+		}
+	}
+}
+```
+
+`serverVersion` is whatever `@accordproject/cicero-core` version this RI pins,
+so the exact numbers depend on the checkout.
 
 ## Creating a Template
 
