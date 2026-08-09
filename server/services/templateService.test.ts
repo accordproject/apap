@@ -274,7 +274,8 @@ describe('templateService', () => {
 
             expect(db.insert).toHaveBeenCalled();
             expect(result.hash).toBeTruthy();
-            expect(result.uri).toMatch(/^archive:latedeliveryandpenalty-typescript@/);
+            // Accord Project template URI: ap://<name>@<version>#<content hash>
+            expect(result.uri).toMatch(/^ap:\/\/latedeliveryandpenalty-typescript@0\.0\.1#[0-9a-f]{64}$/);
             expect(result.metadata).toMatchObject({ cicero: '^0.25.0' });
         });
 

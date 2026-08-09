@@ -141,7 +141,11 @@ export async function createTemplateFromArchive(
         return existing[0];
     }
 
-    const uri = `archive:${packageJson.name}@${packageJson.version}`;
+    // Accord Project template URI syntax — `ap://<name>@<version>#<hash>`, the
+    // same form the template library index publishes and `TemplateLibrary`
+    // parses. The fragment is the archive's content hash, so the URI a client
+    // gets back identifies these exact bytes.
+    const uri = `ap://${packageJson.name}@${packageJson.version}#${hash}`;
     const data = extractTemplateForDatabase(apTemplate, uri, hash) as TemplateInsert;
     try {
         return await createTemplate(db, data);
