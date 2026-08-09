@@ -18,6 +18,7 @@ import sharedModelsRouter from './handlers/sharedmodels';
 import capabilitiesRouter from './handlers/capabilities';
 import mcpRouter, { startSessionCleanup } from './handlers/mcp';
 import authRouter from './handlers/auth';
+import lcpRouter from './handlers/lcp';
 
 const app = Express();
 app.use(Express.json());
@@ -68,6 +69,7 @@ app.use('/sharedmodels', sharedModelsRouter);
 app.use('/capabilities', capabilitiesRouter);
 app.use('/', mcpRouter);
 app.use('/', authRouter);
+app.use('/', lcpRouter);
 
 // Start MCP session cleanup
 startSessionCleanup();
