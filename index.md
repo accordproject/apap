@@ -8442,6 +8442,265 @@ Deletes an existing `template`.
 This operation does not require authentication
 </aside>
 
+## postTemplateArchive
+
+<a id="opIdpostTemplateArchive"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X POST /templates/archive \
+  -H 'Content-Type: application/octet-stream' \
+  -H 'Accept: application/json'
+
+```
+
+```http
+POST /templates/archive HTTP/1.1
+
+Content-Type: application/octet-stream
+Accept: application/json
+
+```
+
+```javascript
+const inputBody = 'string';
+const headers = {
+  'Content-Type':'application/octet-stream',
+  'Accept':'application/json'
+};
+
+fetch('/templates/archive',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Content-Type' => 'application/octet-stream',
+  'Accept' => 'application/json'
+}
+
+result = RestClient.post '/templates/archive',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/octet-stream',
+  'Accept': 'application/json'
+}
+
+r = requests.post('/templates/archive', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Content-Type' => 'application/octet-stream',
+    'Accept' => 'application/json',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('POST','/templates/archive', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("/templates/archive");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/octet-stream"},
+        "Accept": []string{"application/json"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "/templates/archive", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`POST /templates/archive`
+
+*Create a template from a .cta archive*
+
+Parses an uploaded `.cta` archive and creates a `Template`, rejecting archives whose declared Cicero version range does not match the version of Cicero supported by this server.
+
+> Body parameter
+
+```yaml
+string
+
+```
+
+<h3 id="posttemplatearchive-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|string(binary)|true|A Cicero Template Archive (`.cta`) file.|
+
+> Example responses
+
+> 201 Response
+
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Template",
+  "uri": "string",
+  "author": "string",
+  "displayName": "string",
+  "version": "string",
+  "description": "string",
+  "license": "string",
+  "keywords": [
+    "string"
+  ],
+  "metadata": {
+    "$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+    "runtime": "string",
+    "template": "string",
+    "cicero": "string"
+  },
+  "logo": {
+    "$class": "org.accordproject.protocol@1.0.0.Blob",
+    "base64": "string",
+    "mimeType": "string"
+  },
+  "templateModel": {
+    "$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+    "typeName": "string",
+    "sharedModel": "string",
+    "model": {
+      "$class": "org.accordproject.protocol@1.0.0.DomainModel"
+    }
+  },
+  "text": {
+    "$class": "org.accordproject.protocol@1.0.0.Text",
+    "templateMark": {
+      "$class": "org.accordproject.commonmark@0.5.0.Document",
+      "xmlns": "string",
+      "text": "string",
+      "nodes": [
+        {
+          "$class": "org.accordproject.commonmark@0.5.0.Node",
+          "text": "string",
+          "nodes": [
+            {
+              "$class": "org.accordproject.commonmark@0.5.0.Node",
+              "text": "string",
+              "nodes": [],
+              "startLine": 0,
+              "endLine": 0
+            }
+          ],
+          "startLine": 0,
+          "endLine": 0
+        }
+      ],
+      "startLine": 0,
+      "endLine": 0
+    },
+    "templateText": "string"
+  },
+  "logic": {
+    "$class": "org.accordproject.protocol@1.0.0.Logic",
+    "stateType": "string",
+    "codes": [
+      {
+        "$class": "org.accordproject.protocol@1.0.0.Code",
+        "id": "string",
+        "type": "ES2015",
+        "encoding": "PLAIN_TEXT",
+        "value": "string"
+      }
+    ]
+  },
+  "sampleRequest": "string"
+}
+```
+
+<h3 id="posttemplatearchive-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|201|[Created](https://tools.ietf.org/html/rfc7231#section-6.3.2)|The template was created (or, if an identical archive already exists, the existing template was returned).|[org.accordproject.protocol@1.0.0.Template](#schemaorg.accordproject.protocol@1.0.0.template)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|The uploaded file is missing or is not a valid `.cta` archive.|None|
+|422|[Unprocessable Entity](https://tools.ietf.org/html/rfc2518#section-10.3)|The archive's declared Cicero compatibility range is not satisfied by the Cicero version this server supports.|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
 <h1 id="accord-protocol-agreements">agreements</h1>
 
 ## listAgreements
