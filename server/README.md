@@ -176,12 +176,15 @@ unzip -p latedeliveryandpenalty.cta package.json | jq .accordproject
 # { "template": "clause", "runtime": "typescript", "cicero": "^1.0.0" }
 ```
 
-> **Note:** the templates published on templates.accordproject.org currently
-> declare `"cicero": "^1.0.0"`, which no cicero-core version the RI has pinned
-> satisfies, so uploading one as-is is rejected with the `422` below. Until the
-> library republishes against the RI's Cicero major, use an archive built for
-> that major — or, if you know the template's contents are compatible, retarget
-> the declared range before uploading:
+> **Note:** the archives currently published on templates.accordproject.org
+> declare `"cicero": "^1.0.0"`, which the RI's cicero-core 2.x does not satisfy,
+> so uploading one as-is is rejected with the `422` below.
+> [cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)
+> upgrades the library's templates to `"cicero": "^2.0.0"` — once it lands and
+> the archives are republished (`latedeliveryandpenalty@1.0.1`), this
+> walkthrough runs end to end with no extra steps. Until then, use an archive
+> built for the RI's Cicero major — or, if you know the template's contents are
+> compatible, retarget the declared range before uploading:
 >
 > ```bash
 > # ^2.0.0 here is the RI's Cicero major — use ^0.25.0 on a checkout pinning
@@ -207,14 +210,15 @@ curl --request POST \
 ```
 
 Response (`201`, abridged — the model, text and logic of the archive are stored
-in full). `hash` and `metadata.cicero` reflect the exact bytes uploaded, so the
-values below are for the retargeted archive from step 2:
+in full). `hash` is the archive's content hash and `metadata` is its
+`package.json.accordproject` block, so both follow the exact bytes uploaded —
+the `^2.0.0` below is the retargeted archive from step 2:
 
 ```json
 {
 	"id": 1,
 	"uri": "archive:latedeliveryandpenalty@1.0.0",
-	"hash": "e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712",
+	"hash": "e29682ed71694106…",
 	"author": "Accord Project",
 	"displayName": "Late Delivery and Penalty",
 	"version": "1.0.0",
@@ -327,13 +331,16 @@ If the delay is more than 15 days, the Buyer is entitled to terminate this Contr
 ```
 
 > Drafting works for any archive the server accepts. Triggering additionally
-> requires the archive's `logic/` to be self-contained: the published
+> requires the archive's `logic/` to resolve its own imports: the published
 > `latedeliveryandpenalty@1.0.0` archive stores its generated Concerto classes
-> flat under `logic/` while `logic/logic.ts` imports them from
-> `./generated/...`, so `POST /agreements/:id/trigger` fails to resolve the
-> import for that particular archive. See
-> [Trigger an Agreement](#trigger-an-agreement) for a template whose logic
-> executes.
+> flat under `logic/` while `logic/logic.ts` imports values from
+> `./generated/...`, so `POST /agreements/:id/trigger` cannot resolve the import
+> for that particular archive.
+> [cicero-template-library#526](https://github.com/accordproject/cicero-template-library/pull/526)
+> makes those imports type-only, which resolves it — triggering that template
+> returns a `LateDeliveryAndPenaltyResponse` with a `MonetaryAmount` penalty and
+> a `PaymentObligationEvent`. See
+> [Trigger an Agreement](#trigger-an-agreement) for the request/response shape.
 
 ### Letting an agreement fetch the archive instead
 
