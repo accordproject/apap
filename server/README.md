@@ -605,11 +605,33 @@ produces). `/agreements/:id/legal-context` is the LCP document describing it:
 client that already holds an agreement id can discover its LCP document without
 needing any well-known convention at all.
 
-`atrHash` is intentionally omitted. The LCP schema requires that once present,
-the terms document "MUST be byte-identical on every serve" — but an agreement's
-data is mutable via `PUT`/`PATCH`, so that promise can't be honoured today. This
-makes the document honestly L1 ("findable"), not L2 ("byte-pinned"); pinning
-`atrHash` to an immutable, version-pinned terms rendering is a future step.
+`atrHash` is included once — and only once — the agreement's `agreementStatus`
+is `COMPLETED` or `SUPERSEDED`. The LCP schema requires that once `atrHash` is
+present, the terms document "MUST be byte-identical on every serve"; a `DRAFT`
+or `SIGNING` agreement's `data` is still mutable via `PUT`, so that promise
+can't be honoured yet and `atrHash` stays absent — honestly L1 ("findable"),
+not L2 ("byte-pinned"). Once an agreement is completed or superseded,
+`assertAgreementRecordMutable` (`services/agreementService.ts`) rejects any
+further write to `data` — or anything else the terms rendering depends on —
+so the terms really are pinned, and `atrHash` becomes a real L2 claim:
+
+```json
+{
+  "terms": "http://localhost:9000/agreements/1/terms",
+  "termsFormat": "markdown",
+  "atrHash": "0x1f3d...c2",
+  "acceptanceRequired": false,
+  "api": "http://localhost:9000/agreements/1"
+}
+```
+
+**Residual gap**, not closed by the above: the terms rendering also depends on
+the *Template* the agreement references (`text`/`logic`), and there is no
+equivalent freeze on `PUT /templates/:id`. Editing a template in place without
+changing its content hash would silently change what every agreement using it
+renders — including frozen ones. Closing this (freezing a template once any
+frozen agreement references it, or simply treating templates as append-only)
+is a follow-up, not solved here.
 
 Advisory fields (`disputeResolution`, `contact`, `returns`, `acceptanceRequired`)
 are sourced from an agreement's `metadata` by a reserved key convention —
