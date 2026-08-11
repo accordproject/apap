@@ -110,10 +110,18 @@ jobs:
           psql -h localhost -U postgres -d postgres -v ON_ERROR_STOP=1 <<'SQL'
           CREATE TABLE _rls_smoke (id int PRIMARY KEY, owner text NOT NULL);
           ALTER TABLE _rls_smoke ENABLE ROW LEVEL SECURITY;
-          ALTER TABLE _rls_smoke FORCE ROW LEVEL SECURITY;
           CREATE POLICY p_owner ON _rls_smoke
               USING (owner = current_setting('app.user_id', true));
           INSERT INTO _rls_smoke VALUES (1, 'alice'), (2, 'bob');
+
+          -- Superusers bypass RLS regardless of FORCE ROW LEVEL SECURITY, and
+          -- the CI service runs as `postgres` (SUPERUSER). Demote to a fresh
+          -- NOSUPERUSER NOBYPASSRLS role for the assertions so the policy
+          -- actually applies. GRANT SELECT so the role can read the throwaway
+          -- table.
+          CREATE ROLE rls_tester NOSUPERUSER NOBYPASSRLS;
+          GRANT SELECT ON _rls_smoke TO rls_tester;
+          SET ROLE rls_tester;
 
           SELECT set_config('app.user_id', 'alice', false);
           DO $$
