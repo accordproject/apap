@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
 import type { Database } from '../db/client';
 import {
@@ -210,4 +210,38 @@ export async function triggerAgreement(
         .where(eq(Agreement.id, agreementId));
 
     return triggerResult;
+}
+
+/**
+ * Paginated variant of `listAgreements` for slice-3 REST unification.
+ * Symmetric with `listTemplatesPaged`; see that function's doc for
+ * read-skew and pagination-determinism notes.
+ */
+export async function listAgreementsPaged(
+    db: Database,
+    opts: {
+        whereClause?: SQL;
+        orderClause?: SQLWrapper | null;
+        limit: number;
+        offset: number;
+    },
+): Promise<{ items: AgreementRow[]; total: number }> {
+    const limit = Math.min(100, Math.max(1, opts.limit));
+    const offset = Math.max(0, opts.offset);
+
+    const [{ count: totalRow }] = await db
+        .select({ count: count() })
+        .from(Agreement)
+        .where(opts.whereClause);
+
+    const orderClause: SQLWrapper = opts.orderClause ?? asc(Agreement.id);
+    const items = await db
+        .select()
+        .from(Agreement)
+        .where(opts.whereClause)
+        .orderBy(orderClause as SQL<unknown>)
+        .limit(limit)
+        .offset(offset);
+
+    return { items, total: totalRow };
 }

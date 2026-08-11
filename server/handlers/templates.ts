@@ -3,7 +3,7 @@ import { Template, TemplateInsertSchema, } from '../db/schema';
 import { buildCrudRouter, ValidationResult } from './crud';
 import { concertoValidation } from './concertovalidation';
 import { templateFromDatabase } from './templatebuilder';
-import { createTemplateFromArchive } from '../services/templateService';
+import { createTemplateFromArchive, listTemplatesPaged } from '../services/templateService';
 import { InvalidPayloadError } from '../services/errors';
 import { asyncHandler } from '../middleware/errorHandler';
 
@@ -57,7 +57,8 @@ const crudRouter = buildCrudRouter({
     typeName: 'Template',
     // ponytail: cast TemplateInsertSchema to any due to zod v3 -> v4 upgrade
     // depth-instantiation issue with drizzle-zod. Runtime unaffected.
-    validateBody: { schema: TemplateInsertSchema as any, custom: (body) => templateValidation(body) }
+    validateBody: { schema: TemplateInsertSchema as any, custom: (body) => templateValidation(body) },
+    listService: (db, opts) => listTemplatesPaged(db, opts),
 });
 
 /**

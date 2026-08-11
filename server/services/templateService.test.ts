@@ -4,6 +4,7 @@ import path from 'path';
 import AdmZip from 'adm-zip';
 import {
     listTemplates,
+    listTemplatesPaged,
     getTemplateById,
     getTemplateByUri,
     createTemplate,
@@ -122,6 +123,7 @@ function createMockDb() {
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         offset: jest.fn().mockReturnThis(),
         insert: jest.fn().mockReturnThis(),
@@ -379,6 +381,54 @@ describe('templateService', () => {
             await expect(deleteTemplate(db, 'resource:ghost')).rejects.toThrow(
                 TemplateNotFoundError,
             );
+        });
+    });
+
+    // Slice-3 (#225) additions: the paged variant is what buildCrudRouter
+    // delegates to via `listService`. These pin the safeguards Niall's #226
+    // review flagged as missing: bounds clamping and pagination determinism.
+    describe('listTemplatesPaged', () => {
+        beforeEach(() => {
+            // Both the count query and the row query resolve through the
+            // shared thenable. Setting `[{ count: 0 }]` is enough for these
+            // tests because they inspect what was called, not what came back.
+            db._setReturn([{ count: 0 }]);
+        });
+
+        it('clamps limit to 100 when caller requests more', async () => {
+            await listTemplatesPaged(db, { limit: 500, offset: 0 });
+            expect(db.limit).toHaveBeenCalledWith(100);
+        });
+
+        it('clamps limit to at least 1 when caller requests less', async () => {
+            await listTemplatesPaged(db, { limit: 0, offset: 0 });
+            expect(db.limit).toHaveBeenCalledWith(1);
+        });
+
+        it('clamps offset to at least 0 when caller passes negative', async () => {
+            await listTemplatesPaged(db, { limit: 10, offset: -5 });
+            expect(db.offset).toHaveBeenCalledWith(0);
+        });
+
+        it('applies a default orderClause when caller passes null (pagination determinism)', async () => {
+            // Without a fallback, `limit`/`offset` over an unordered result
+            // set can repeat or skip rows across pages. The service defaults
+            // to `asc(Template.id)` so this test proves `orderBy` fires even
+            // when the caller passes explicit null.
+            await listTemplatesPaged(db, { limit: 10, offset: 0, orderClause: null });
+            expect(db.orderBy).toHaveBeenCalled();
+        });
+
+        it('honours a caller-provided orderClause without overriding it', async () => {
+            const customClause = { fake: 'orderBy' } as any;
+            await listTemplatesPaged(db, { limit: 10, offset: 0, orderClause: customClause });
+            expect(db.orderBy).toHaveBeenCalledWith(customClause);
+        });
+
+        it('surfaces total from the count-query result destructure', async () => {
+            db._setReturn([{ count: 42 }]);
+            const result = await listTemplatesPaged(db, { limit: 10, offset: 0 });
+            expect(result.total).toBe(42);
         });
     });
 });
