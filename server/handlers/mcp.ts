@@ -298,7 +298,13 @@ export const getServer = (db: Database) => {
         }),
     );
 
-    // register the templates
+    // register the templates. NOTE (#217 dispatch order): the SDK checks these
+    // exact-string static resources BEFORE iterating the `{?limit,offset}`
+    // templates registered below. Keep them registered; without them, a bare
+    // `apap://templates` read would fall through to the paged template's regex
+    // (which requires both params non-empty) and surface as
+    // ResourceNotFoundError, breaking backwards-compat for clients that page
+    // via the default full-page URI.
     server.registerResource(
         'templates',
         "apap://templates",
@@ -306,7 +312,7 @@ export const getServer = (db: Database) => {
         (uri: URL) => getTemplates(db, uri),
     );
 
-    // register the agreements
+    // register the agreements (see #217 dispatch-order note on templates above).
     server.registerResource(
         'agreements',
         "apap://agreements",

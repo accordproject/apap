@@ -46,6 +46,7 @@ function createMockDb() {
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         offset: jest.fn().mockReturnThis(),
         insert: jest.fn().mockReturnThis(),

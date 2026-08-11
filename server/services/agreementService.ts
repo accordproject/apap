@@ -40,7 +40,13 @@ export async function listAgreements(
 ): Promise<AgreementRow[]> {
     const limit = Math.min(100, Math.max(1, opts.limit ?? 100));
     const offset = Math.max(0, opts.offset ?? 0);
-    return db.select().from(Agreement).limit(limit).offset(offset);
+    // Stable pagination: without an explicit order, Postgres is free to return
+    // rows in any order between the (limit=50, offset=0) and (limit=50,
+    // offset=50) requests the paged `apap://agreements{?limit,offset}` MCP
+    // resource issues, which can duplicate or skip rows. Mirrors the
+    // asc(Agreement.id) default #225 landed for `listAgreementsPaged` so REST
+    // and MCP page over the same stable order.
+    return db.select().from(Agreement).orderBy(asc(Agreement.id)).limit(limit).offset(offset);
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/agreements/${id}`) */
