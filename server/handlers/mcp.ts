@@ -314,9 +314,13 @@ export const getServer = (db: Database) => {
     // and calls `UriTemplate.match(uri)`. Bare `apap://templates` still hits the
     // static resource above; `apap://templates?limit=50&offset=100` hits the
     // template below. Callback receives `{ limit, offset }` as string variables;
-    // service clamps to [1, 100] and defaults to full-page when a var is missing
-    // (SDK regex requires both params present + non-empty, so the `?? '100'`
-    // fallback here is defensive coverage for future SDK laxity).
+    // `pageOpts` coerces to safe integers or `undefined`, and the service layer
+    // applies its own default (100 / 0) and clamp ([1, 100]). Today the SDK's
+    // UriTemplate regex requires both params present + non-empty, so out-of-band
+    // URIs (`?limit=&offset=` or `?limit=50` alone) surface as
+    // ResourceNotFoundError before the callback ever runs (pinned in tests).
+    // `pageOpts` returning `undefined` for empty/absent values is defensive
+    // coverage for the day the SDK loosens that regex.
     server.registerResource(
         'templates-page',
         new ResourceTemplate('apap://templates{?limit,offset}', { list: undefined }),
