@@ -371,9 +371,17 @@ describe('pageOpts parser for paged resource URIs', () => {
     });
 
     it('returns undefined for non-numeric garbage instead of NaN', () => {
-        // Anything that fails parseInt (or fails Number.isFinite after) drops
-        // to the service default rather than propagating NaN into the query.
         expect(pageOpts({ limit: 'abc', offset: 'xyz' })).toEqual({ limit: undefined, offset: undefined });
+    });
+
+    it('rejects parseInt-friendly garbage that would silently truncate', () => {
+        // Strict-integer regex catches values that `parseInt(v, 10)` would
+        // silently truncate to a plausible-looking integer. These should hit
+        // the service default rather than accept a partial parse.
+        expect(pageOpts({ limit: '50abc' })).toEqual({ limit: undefined, offset: undefined });
+        expect(pageOpts({ limit: '50.5' })).toEqual({ limit: undefined, offset: undefined });
+        expect(pageOpts({ limit: '1e2' })).toEqual({ limit: undefined, offset: undefined });
+        expect(pageOpts({ offset: ' 50 ' })).toEqual({ limit: undefined, offset: 50 });
     });
 
     it('passes through out-of-range values so the service layer clamps them', () => {
@@ -571,6 +579,15 @@ describe('MCP Handler', () => {
                 expect(result.contents).toHaveLength(1);
                 expect((result.contents[0] as any).uri).toBe('apap://templates/1');
             });
+
+            // Cache-hint inheritance from #201 is verified by code reading:
+            // both paged callbacks route through the shared `getTemplates` /
+            // `getAgreements` functions (mcp.ts:325, mcp.ts:333) that spread
+            // `...CACHE_HINTS.templateList` / `.agreementList` (mcp.ts:227,
+            // mcp.ts:258) into each content entry. Adding a runtime assertion
+            // here fails today because the SDK's `ReadResourceResult` schema
+            // strips top-level non-standard fields (pre-existing #199/#201
+            // shape issue, out of scope for #217).
 
             it('apap://templates?limit=1000 clamps to 100 via the service', async () => {
                 // pageOpts passes 1000 through; the service clamps to 100.

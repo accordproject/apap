@@ -108,15 +108,21 @@ async function makeApiRequest(url: string, options: RequestInit = {}) {
 }
 
 // Parses `{ limit, offset }` from RFC 6570 form-style template variables into
-// safe integers for the paged resource callbacks (#217). Non-numeric or absent
-// values become `undefined` so the service layer applies its own default (100 /
-// 0) and clamp ([1, 100]); no double-clamp here.
+// safe integers for the paged resource callbacks (#217). Non-numeric, partial,
+// or absent values become `undefined` so the service layer applies its own
+// default (100 / 0) and clamp ([1, 100]); no double-clamp here.
+//
+// Strict-integer regex rejects `parseInt`-friendly garbage that would silently
+// truncate: '50abc' -> undefined (not 50), '50.5' -> undefined (not 50), '1e2'
+// -> undefined (not 100). Trailing whitespace is tolerated via `.trim()`.
 export function pageOpts(variables: Record<string, string | string[]> | undefined): { limit?: number; offset?: number } {
     const pick = (v: string | string[] | undefined): number | undefined => {
         const raw = Array.isArray(v) ? v[0] : v;
-        if (raw === undefined || raw === '') return undefined;
-        const n = parseInt(raw, 10);
-        return Number.isFinite(n) ? n : undefined;
+        if (raw === undefined) return undefined;
+        const trimmed = raw.trim();
+        if (trimmed === '' || !/^-?\d+$/.test(trimmed)) return undefined;
+        const n = Number(trimmed);
+        return Number.isSafeInteger(n) ? n : undefined;
     };
     return { limit: pick(variables?.limit), offset: pick(variables?.offset) };
 }
