@@ -1,5 +1,5 @@
 import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
-import { Agreement, Template } from '../db/schema';
+import { Agreement, AgreementStatusType, Template } from '../db/schema';
 import type { Database } from '../db/client';
 import {
     AgreementCreationError,
@@ -42,7 +42,11 @@ export const AgreementCreateSchema = z.object({
     data: objectValue,
     template: z.string().min(1),
     state: z.unknown().optional(),
-    agreementStatus: z.enum(['DRAFT', 'SIGNNG', 'COMPLETED', 'SUPERSEDED']),
+    // Derived from the generated pgEnum rather than restated. db/schema.ts is
+    // generated from model/protocol.cto, so a status added or renamed in the
+    // model reaches this schema by regeneration instead of by someone
+    // remembering to edit a second list. (#240 renames SIGNNG -> SIGNING.)
+    agreementStatus: z.enum(AgreementStatusType.enumValues),
     agreementParties: z.array(z.unknown()).optional(),
     signatures: z.array(z.unknown()).optional(),
     historyEntries: z.array(z.unknown()).optional(),

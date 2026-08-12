@@ -14,7 +14,17 @@ import { globalErrorHandler } from '../middleware/errorHandler';
 jest.setTimeout(30000);
 
 // Mock dependencies (but not TemplateArchiveProcessor)
-jest.mock('../db/schema');
+//
+// db/schema is automocked except for the status pgEnum. AgreementCreateSchema
+// derives its `agreementStatus` values from `AgreementStatusType.enumValues` so
+// the two cannot drift from model/protocol.cto; an automocked stub carries no
+// `enumValues`, which would leave `z.enum` with an empty set and turn every
+// request body into a 400.
+jest.mock('../db/schema', () => {
+    const actual = jest.requireActual('../db/schema') as any;
+    const automock = jest.createMockFromModule('../db/schema') as any;
+    return { ...automock, AgreementStatusType: actual.AgreementStatusType };
+});
 jest.mock('./templatebuilder');
 jest.mock('./concertovalidation', () => {
     const actualModule = jest.requireActual('./concertovalidation') as any;
