@@ -2,15 +2,22 @@ import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
 import type { Database } from '../db/client';
 import {
+    AgreementCreationError,
+    AgreementDuplicateError,
     AgreementNotFoundError,
     AgreementConversionError,
     AgreementTriggerError,
     InvalidPayloadError,
     ValidationError,
 } from './errors';
+import { ServiceError } from './errors';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
-import { templateFromDatabase } from '../handlers/templatebuilder';
+import { extractTemplateForDatabase, templateFromDatabase } from '../handlers/templatebuilder';
 import { concertoValidation } from '../handlers/concertovalidation';
+import { Template as CiceroTemplate } from '@accordproject/cicero-core';
+import { HttpTemplateRetriever } from '../handlers/retrievers/HttpTemplateRetriever';
+import type { ITemplateRetriever } from '../handlers/retrievers/ITemplateRetriever';
+import { z } from 'zod';
 
 // Slice 2 ported the CRUD lookup half. Slice 2b + 2c add the runtime half —
 // convertAgreement + triggerAgreement — which wrap the real
@@ -23,7 +30,136 @@ import { concertoValidation } from '../handlers/concertovalidation';
 // "services stay transport-agnostic" invariant. Moving them under a proper
 // utility directory is a follow-up refactor.
 
-type AgreementRow = typeof Agreement.$inferSelect;
+export type AgreementRow = typeof Agreement.$inferSelect;
+
+export const PROTOCOL_NAMESPACE = 'org.accordproject.protocol@1.0.0';
+export const AGREEMENT_TEMPLATE_RESOURCE_PREFIX = `resource:${PROTOCOL_NAMESPACE}.Template#`;
+
+const objectValue = z.record(z.string(), z.unknown());
+export const AgreementCreateSchema = z.object({
+    $class: z.string().optional(),
+    uri: z.string().min(1),
+    data: objectValue,
+    template: z.string().min(1),
+    state: z.unknown().optional(),
+    agreementStatus: z.enum(['DRAFT', 'SIGNNG', 'COMPLETED', 'SUPERSEDED']),
+    agreementParties: z.array(z.unknown()).optional(),
+    signatures: z.array(z.unknown()).optional(),
+    historyEntries: z.array(z.unknown()).optional(),
+    attachments: z.array(z.unknown()).optional(),
+    references: z.array(z.string()).optional(),
+    metadata: objectValue.optional(),
+}).strict();
+
+export type AgreementCreateInput = z.infer<typeof AgreementCreateSchema>;
+
+/**
+ * Both template forms are accepted:
+ *
+ *   - a plain absolute http(s) URL, promoted to the canonical relationship form
+ *     so it survives Concerto validation (a bare URL is rejected there with
+ *     "Invalid URI scheme");
+ *   - a value already in canonical `resource:<ns>.Template#<id>` form, passed
+ *     through untouched.
+ *
+ * Anything else is handed to Concerto unchanged rather than pre-rejected here.
+ * That is deliberate. The retriever list is extensible — `ITemplateRetriever`
+ * matches on URI scheme — so a canonical relationship pointing at a non-http
+ * template id stays valid and simply resolves no retriever, exactly as it did
+ * before creation moved into this service. Narrowing to http(s) would reject
+ * agreements referencing an already-stored template.
+ */
+function normalizeTemplate(template: string): string {
+    if (template.startsWith('resource:')) return template;
+    if (/^https?:\/\/[^\s]+$/.test(template)) return `${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${template}`;
+    return template;
+}
+
+/** Mirrors the pre-refactor strip in `agreements.ts`: everything after the first
+ *  `#`. Equivalent to slicing the known prefix length — Concerto pins the
+ *  namespace, so no other prefix reaches here — but it keeps the recovery
+ *  independent of the constant it is paired with. */
+function templateIdFromRelationship(template: string): string {
+    return template.startsWith('resource:') ? template.split('#').slice(1).join('#') : template;
+}
+
+export async function createAgreement(
+    db: Database,
+    input: AgreementCreateInput,
+    options: { organization?: unknown; templateRetrievers?: ITemplateRetriever[] } = {},
+): Promise<AgreementRow> {
+    const parsed = AgreementCreateSchema.safeParse(input);
+    if (!parsed.success) {
+        throw new InvalidPayloadError('Schema validation failed', { issues: parsed.error.issues });
+    }
+
+    const normalized = { ...parsed.data, template: normalizeTemplate(parsed.data.template) };
+    let validation;
+    try {
+        // Validate a throwaway copy. `concertoValidation` mutates the object it is
+        // given — it JSON.stringify()s `data` and `state` in place, see the "HACK"
+        // block in handlers/concertovalidation.ts — and the inlined REST route used
+        // to persist that mutated body, so `Agreement.data` was written as a JSON
+        // *string* while every reader treats it as an object (`processor.draft(
+        // agreement.data, ...)` in convertAgreement/triggerAgreement below). Passing
+        // a copy keeps validation semantics identical and lets the row carry the
+        // object form the rest of the service already expects.
+        validation = await concertoValidation('Agreement', structuredClone(normalized));
+    } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        throw new AgreementCreationError(reason, { uri: normalized.uri });
+    }
+    const { success, error } = validation;
+    if (!success) {
+        throw new ValidationError('Invalid request body', { errors: error?.errors ?? [] });
+    }
+
+    const templateUri = templateIdFromRelationship(normalized.template);
+    let currentHash: string | null = null;
+
+    // Template resolution and caching. A unique violation raised in here is a
+    // *template* conflict — `onConflictDoNothing` targets `Template.hash`, so it
+    // does not suppress the separate `Template.uri` constraint, which trips when a
+    // re-published archive keeps its URI but changes its hash. Reporting that as a
+    // duplicate agreement URI would name the wrong row entirely, so this block
+    // never maps 23505.
+    try {
+        const retrievers = options.templateRetrievers ?? [new HttpTemplateRetriever()];
+        const retriever = retrievers.find(candidate =>
+            candidate.getURISchemes().some(scheme => templateUri.startsWith(`${scheme}:`)));
+        if (retriever) {
+            const archive = await retriever.fetch(templateUri);
+            const apTemplate = await CiceroTemplate.fromArchive(archive);
+            currentHash = apTemplate.getHash();
+            const existing = await db.select().from(Template).where(eq(Template.hash, currentHash)).limit(1);
+            if (existing.length === 0) {
+                await db.insert(Template)
+                    .values(extractTemplateForDatabase(apTemplate, templateUri, currentHash))
+                    .onConflictDoNothing({ target: Template.hash });
+            }
+        }
+    } catch (err) {
+        if (err instanceof ServiceError) throw err;
+        const reason = err instanceof Error ? err.message : String(err);
+        throw new AgreementCreationError(reason, { uri: normalized.uri, template: templateUri });
+    }
+
+    // Agreement insert. `Agreement.uri` is the only unique constraint reachable
+    // here, so 23505 does mean a duplicate agreement URI.
+    try {
+        const insertData: Record<string, unknown> = { ...normalized, templateHash: currentHash };
+        if (options.organization !== undefined) insertData.organization = options.organization;
+        const inserted = await db.insert(Agreement).values(insertData as any).returning();
+        return inserted[0];
+    } catch (err) {
+        if (err instanceof ServiceError) throw err;
+        if (typeof err === 'object' && err !== null && 'code' in err && (err as any).code === '23505') {
+            throw new AgreementDuplicateError(normalized.uri);
+        }
+        const reason = err instanceof Error ? err.message : String(err);
+        throw new AgreementCreationError(reason, { uri: normalized.uri });
+    }
+}
 
 /**
  * Replaces: makeApiRequest(`${API_BASE_URL}/agreements`)

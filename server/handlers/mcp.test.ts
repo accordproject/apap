@@ -21,6 +21,11 @@ jest.mock('./inmemoryeventstore', () => {
     };
 });
 
+jest.mock('../services/agreementService', () => {
+    const actual = jest.requireActual('../services/agreementService') as any;
+    return { ...actual, createAgreement: jest.fn() };
+});
+
 import mcpRouter, {
     getServer,
     serviceErrorToCallToolResult,
@@ -37,8 +42,10 @@ import {
     AgreementNotFoundError,
     ServiceError,
     TemplateNotFoundError,
+    ValidationError,
 } from '../services/errors';
 import { Client } from '@modelcontextprotocol/client';
+import * as agreementService from '../services/agreementService';
 
 function createMockDb() {
     const mock: any = {
@@ -402,16 +409,6 @@ describe('pageOpts parser for paged resource URIs', () => {
 describe('MCP Handler', () => {
     let app: express.Application;
     let mockDb: ReturnType<typeof createMockDb>;
-    let originalFetch: any;
-
-    beforeAll(() => {
-        originalFetch = (global as any).fetch;
-    });
-
-    afterAll(() => {
-        (global as any).fetch = originalFetch;
-    });
-
     beforeEach(() => {
         jest.clearAllMocks();
         mockDb = createMockDb();
@@ -423,6 +420,10 @@ describe('MCP Handler', () => {
             next();
         });
         app.use('/', mcpRouter);
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
     });
 
     it('returns mcp-session-id header on initialization response', async () => {
@@ -493,6 +494,7 @@ describe('MCP Handler', () => {
 
         afterEach(async () => {
             await client.close();
+            jest.restoreAllMocks();
         });
 
         it('lists all registered tools', async () => {
@@ -528,7 +530,7 @@ describe('MCP Handler', () => {
             expect(parsed.uri).toBe('test://template/1');
         });
 
-        it('executes create-agreement through the REST boundary', async () => {
+        it('executes create-agreement with structured input and the injected database', async () => {
             const created = {
                 id: 7,
                 uri: 'urn:agreement:oa-ciiaa-001',
@@ -536,30 +538,49 @@ describe('MCP Handler', () => {
                 agreementStatus: 'DRAFT',
                 data: { $class: 'org.openagreements.custom.CIIAA', contractId: 'oa-ciiaa-001' },
             };
-            (global as any).fetch = jest.fn<any>().mockResolvedValue({
-                ok: true,
-                json: async () => created,
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+            createMock.mockResolvedValue(created as any);
+
+            const input = {
+                $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                uri: created.uri,
+                template: created.template,
+                agreementStatus: 'DRAFT' as const,
+                data: created.data,
+            };
+
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: input,
             });
+
+            expect(createMock).toHaveBeenCalledWith(mockDb, input);
+            const content = result.content as any[];
+            expect(JSON.parse(content[0].text).id).toBe(7);
+        });
+
+        // A ServiceError raised by the shared service must come back as the typed
+        // `{ code, message, details }` contract the sibling tools honour. Before the
+        // service refactor this path threw out of the callback and the SDK handed
+        // the client a raw exception string instead.
+        it('returns create-agreement service failures as a typed MCP error', async () => {
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+            createMock.mockRejectedValue(new ValidationError('Invalid request body', { errors: ['bad template'] }));
 
             const result = await client.callTool({
                 name: 'create-agreement',
                 arguments: {
-                    agreement: JSON.stringify({
-                        $class: 'org.accordproject.protocol@1.0.0.Agreement',
-                        uri: created.uri,
-                        template: created.template,
-                        agreementStatus: 'DRAFT',
-                        data: created.data,
-                    }),
+                    uri: 'urn:agreement:bad',
+                    template: 'ftp://example.com/t.cta',
+                    agreementStatus: 'DRAFT' as const,
+                    data: {},
                 },
             });
 
-            expect((global as any).fetch).toHaveBeenCalledWith(
-                expect.stringMatching(/\/agreements$/),
-                expect.objectContaining({ method: 'POST' }),
-            );
-            const content = result.content as any[];
-            expect(JSON.parse(content[0].text).id).toBe(7);
+            expect(result.isError).toBe(true);
+            const payload = JSON.parse((result.content as any[])[0].text);
+            expect(payload.error.code).toBe('VALIDATION_ERROR');
+            expect(payload.error.details).toEqual({ errors: ['bad template'] });
         });
 
         it('executes trigger-agreement tool correctly', async () => {

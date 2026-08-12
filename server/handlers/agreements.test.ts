@@ -600,7 +600,9 @@ describe('POST / - Agreement Creation with External Template', () => {
             }
 
             const creationRequest = {
+                uri: 'urn:agreement:late-delivery-router-test',
                 template: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                agreementStatus: 'DRAFT',
                 data: {
                     $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
                     clauseId: 'latedelivery-1',
@@ -641,7 +643,42 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(templateInsertPayload).toHaveProperty('text');
             expect(templateInsertPayload).toHaveProperty('logic');
             expect(templateInsertPayload).toHaveProperty('metadata');
-            expect(templateInsertPayload).toHaveProperty('logo'); 
+            expect(templateInsertPayload).toHaveProperty('logo');
+        });
+
+        // Regression: the shared AgreementCreateSchema is strict, so an unsplit
+        // `organization` key makes the whole request a 400 — but the pre-refactor
+        // route accepted such a body. This asserts acceptance only. It deliberately
+        // does NOT assert persistence: the generated Agreement table has no
+        // `organization` column, so a real Drizzle insert drops the key, and an
+        // assertion against the mocked `.values()` payload would pass whether or
+        // not the column existed.
+        it('still accepts a body carrying organization rather than rejecting it', async () => {
+            (AgreementInsertSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true });
+
+            mockDb.insert = jest.fn().mockReturnThis();
+            mockDb.values = jest.fn().mockReturnThis();
+            mockDb.onConflictDoNothing = jest.fn<any>().mockResolvedValue([{ id: 2 }]);
+            mockDb.returning = jest.fn<any>().mockResolvedValue([{ id: 2 }]);
+            mockDb.select.mockReturnValue(mockDb);
+            mockDb.from.mockReturnValue(mockDb);
+            mockDb.where.mockReturnValue(mockDb);
+            mockDb.limit.mockResolvedValue([]);
+
+            const valModule = require('./concertovalidation');
+            valModule.concertoValidation?.mockResolvedValueOnce?.({ success: true, error: null });
+            valModule.default?.mockResolvedValueOnce?.({ success: true, error: null });
+
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:organization-passthrough',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data: { $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel' },
+                organization: 'org-from-body',
+            });
+
+            // The point of the assertion: not a 400 with "Unrecognized key".
+            expect(response.status).toBe(200);
         });
     });
 });

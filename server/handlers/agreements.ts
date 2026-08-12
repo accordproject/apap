@@ -1,18 +1,14 @@
 import express from 'express';
-import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
+import { Agreement, AgreementInsertSchema } from '../db/schema';
 import { buildCrudRouter } from './crud';
 import { concertoValidation } from './concertovalidation';
-import { extractTemplateForDatabase } from './templatebuilder';
-import { eq } from 'drizzle-orm';
-import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
-import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import {
     AgreementNotFoundError,
     AgreementTriggerError,
     InvalidPayloadError,
     ValidationError,
 } from '../services/errors';
-import { convertAgreement, triggerAgreement, listAgreementsPaged } from '../services/agreementService';
+import { createAgreement, convertAgreement, triggerAgreement, listAgreementsPaged } from '../services/agreementService';
 import { asyncHandler } from '../middleware/errorHandler';
 
 const router = express.Router();
@@ -26,61 +22,23 @@ const router = express.Router();
  * retriever, and finally inserts the agreement into the database.
  */
 router.post('/', asyncHandler(async (req, res) => {
-        const db = res.locals.db;
-        
-        // ponytail: cast schema to any due to zod v3 -> v4 upgrade depth-instantiation
-        // issue with drizzle-zod. Runtime unaffected.
-        const zodValidation = (AgreementInsertSchema as any).safeParse(req.body);
-        if (!zodValidation.success) {
-            return res.status(400).json({ error: 'Schema validation failed', details: zodValidation.error.issues });
-        }
-
-        const { success, error } = await concertoValidation('Agreement', req.body);
-        if (!success) {
-            return res.status(400).json({ error: 'Invalid request body', details: error.errors });
-        }
-
-        let templateUri = req.body.template;
-        if (templateUri && templateUri.startsWith('resource:')) {
-            templateUri = templateUri.split('#').slice(1).join('#');
-        }
-
-        let currentHash = null;
-
-        const availableRetrievers = [
-            new HttpTemplateRetriever()
-        ];
-
-        if (templateUri) {
-            const matchingRetriever = availableRetrievers.find(r => 
-                r.getURISchemes().some(scheme => templateUri.startsWith(`${scheme}:`))
-            );
-
-            if (matchingRetriever) {
-                const buffer = await matchingRetriever.fetch(templateUri);
-                
-                const apTemplate = await CiceroTemplate.fromArchive(buffer);
-                currentHash = apTemplate.getHash();
-
-                const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
-                
-                if (existing.length === 0) {
-                    const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                    await db.insert(DbTemplate)
-                        .values(newDbTemplateRow)
-                        .onConflictDoNothing({ target: DbTemplate.hash });
-                }
-            }
-        }
-
-        const insertData = {
-            ...req.body,
-            templateHash: currentHash,
-            organization: res.locals.orgId !== undefined ? res.locals.orgId : req.body.organization
-        };
-
-        const inserted = await db.insert(Agreement).values(insertData).returning();
-        res.json(inserted[0]);
+    // `organization` is not a writable protocol field, so AgreementCreateSchema
+    // rejects it. Splitting it off here keeps a body that carries it from turning
+    // into a 400, which is what the pre-refactor route did, and preserves that
+    // route's precedence (resolved orgId wins; body value only when none). MCP
+    // callers reach the service directly and so cannot set it at all.
+    //
+    // Note it is not persisted either way: the generated Agreement table has no
+    // `organization` column (db/schema.ts), so Drizzle drops the key. That was
+    // equally true before this refactor — the old route also built it into
+    // `insertData`. Preserved as-is rather than quietly changed; giving the
+    // column a home is a schema decision for the maintainers, and db/schema.ts is
+    // generated from model/protocol.cto and must not be hand-edited.
+    const { organization: bodyOrganization, ...agreement } = req.body ?? {};
+    const created = await createAgreement(res.locals.db, agreement, {
+        organization: res.locals.orgId !== undefined ? res.locals.orgId : bodyOrganization,
+    });
+    res.json(created);
 }));
 
 const crudRouter = buildCrudRouter({
