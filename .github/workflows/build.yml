@@ -153,6 +153,10 @@ jobs:
               END IF;
           END $$;
 
+          -- Return to the postgres superuser role before DROP: `rls_tester`
+          -- only has GRANT SELECT (not ownership) so a DROP as that role
+          -- fails with "must be owner of table _rls_smoke".
+          RESET ROLE;
           DROP TABLE _rls_smoke;
           SQL
 
