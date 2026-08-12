@@ -581,6 +581,26 @@ describe('MCP Handler', () => {
                 expect((result.contents[0] as any).uri).toBe('apap://templates/1');
             });
 
+            // Regression guard for the stable-ordering fix Niall asked for in
+            // his #243 review: if someone deletes `.orderBy(asc(Template.id))`
+            // from `listTemplates` (or `.orderBy(asc(Agreement.id))` from
+            // `listAgreements`), paged reads silently return unstable rows
+            // between pages. This asserts the fluent chain saw `orderBy()` at
+            // all; the specific column argument is owned by the service test
+            // that pins the SQL construction. Same guard for templates and
+            // agreements since both share the drop-risk.
+            it('apap://templates paged read invokes .orderBy on the fluent chain (stable-order guard)', async () => {
+                mockDb._setReturn([templateRow]);
+                await client.readResource({ uri: 'apap://templates?limit=50&offset=100' });
+                expect(mockDb.orderBy).toHaveBeenCalled();
+            });
+
+            it('apap://agreements paged read invokes .orderBy on the fluent chain (stable-order guard)', async () => {
+                mockDb._setReturn([agreementRow]);
+                await client.readResource({ uri: 'apap://agreements?limit=50&offset=100' });
+                expect(mockDb.orderBy).toHaveBeenCalled();
+            });
+
             // Cache-hint inheritance from #201 is verified by code reading:
             // both paged callbacks route through the shared `getTemplates` /
             // `getAgreements` functions (mcp.ts:325, mcp.ts:333) that spread
