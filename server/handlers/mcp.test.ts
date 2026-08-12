@@ -500,6 +500,7 @@ describe('MCP Handler', () => {
             const toolNames = result.tools.map(t => t.name);
 
             expect(toolNames).toContain('convert-agreement-to-format');
+            expect(toolNames).toContain('create-agreement');
             expect(toolNames).toContain('trigger-agreement');
             expect(toolNames).toContain('getTemplate');
             expect(toolNames).toContain('getAgreement');
@@ -525,6 +526,40 @@ describe('MCP Handler', () => {
             expect(content[0].type).toBe('text');
             const parsed = JSON.parse(content[0].text as string);
             expect(parsed.uri).toBe('test://template/1');
+        });
+
+        it('executes create-agreement through the REST boundary', async () => {
+            const created = {
+                id: 7,
+                uri: 'urn:agreement:oa-ciiaa-001',
+                template: 'https://openagreements.org/templates/openagreements-confidentiality-invention-assignment-agreement/v0.4.0',
+                agreementStatus: 'DRAFT',
+                data: { $class: 'org.openagreements.custom.CIIAA', contractId: 'oa-ciiaa-001' },
+            };
+            (global as any).fetch = jest.fn<any>().mockResolvedValue({
+                ok: true,
+                json: async () => created,
+            });
+
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    agreement: JSON.stringify({
+                        $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                        uri: created.uri,
+                        template: created.template,
+                        agreementStatus: 'DRAFT',
+                        data: created.data,
+                    }),
+                },
+            });
+
+            expect((global as any).fetch).toHaveBeenCalledWith(
+                expect.stringMatching(/\/agreements$/),
+                expect.objectContaining({ method: 'POST' }),
+            );
+            const content = result.content as any[];
+            expect(JSON.parse(content[0].text).id).toBe(7);
         });
 
         it('executes trigger-agreement tool correctly', async () => {

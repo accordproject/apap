@@ -447,6 +447,65 @@ export const getServer = (db: Database) => {
         }
     );
 
+    // Create an Agreement through the same REST boundary used by non-MCP
+    // clients. Keeping creation generic lets output adapters (including the
+    // OpenAgreements DOCX adapter) consume the resulting Concerto data without
+    // coupling APAP to a particular document vendor or renderer.
+    server.registerTool(
+        "create-agreement",
+        {
+            description: `Creates an APAP Agreement from a template URI and Concerto agreement data.
+The agreement argument must be a JSON string containing the protocol Agreement fields, including uri, template, data, and agreementStatus.
+Use the returned agreement data with a format converter or a configured output adapter such as OpenAgreements DOCX.`,
+            inputSchema: { agreement: z.string() } as any,
+            annotations: {
+                readOnlyHint: false,
+                destructiveHint: false,
+                idempotentHint: false,
+                openWorldHint: true,
+            },
+        },
+        async ({ agreement }: { agreement: string }): Promise<CallToolResult> => {
+            let parsed: Record<string, unknown>;
+            try {
+                parsed = JSON.parse(agreement);
+            } catch {
+                return serviceErrorToCallToolResult(
+                    new InvalidPayloadError('Agreement must be valid JSON'),
+                );
+            }
+            if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+                return serviceErrorToCallToolResult(
+                    new InvalidPayloadError('Agreement must be a JSON object'),
+                );
+            }
+            if (typeof parsed.template !== 'string' || !parsed.template) {
+                return serviceErrorToCallToolResult(
+                    new InvalidPayloadError('Agreement must include a template URI'),
+                );
+            }
+            if (!parsed.data || typeof parsed.data !== 'object' || Array.isArray(parsed.data)) {
+                return serviceErrorToCallToolResult(
+                    new InvalidPayloadError('Agreement must include Concerto data'),
+                );
+            }
+
+            const result = await makeApiRequest(`${API_BASE_URL}/agreements`, {
+                method: 'POST',
+                body: JSON.stringify(parsed),
+            });
+            if (!result.ok) {
+                return serviceErrorToCallToolResult(new UpstreamApiError(
+                    `${API_BASE_URL}/agreements`,
+                    result.status,
+                    await result.text().catch(() => 'No error details available'),
+                ));
+            }
+            const created = await result.json();
+            return { content: [{ type: 'text', text: JSON.stringify(created) }] };
+        },
+    );
+
     // register the trigger tool
     server.registerTool(
         "trigger-agreement",
