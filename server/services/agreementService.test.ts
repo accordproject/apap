@@ -181,6 +181,86 @@ describe('agreementService', () => {
             expect(typeof input.data).toBe('object');
         });
 
+        it('accepts data as an object-encoding JSON string and persists the normalized object', async () => {
+            const createDb = creationDb();
+            const result = await createAgreement(
+                createDb,
+                { ...baseInput, data: JSON.stringify(baseInput.data) },
+                { templateRetrievers: [retriever()] },
+            );
+
+            expect(result.data).toEqual(baseInput.data);
+            expect(typeof result.data).toBe('object');
+            const agreementInsert = createDb.insertedValues[createDb.insertedValues.length - 1].value;
+            expect(agreementInsert.data).toEqual(baseInput.data);
+            expect(typeof agreementInsert.data).toBe('object');
+        });
+
+        it('normalizes object-encoding state strings without narrowing prior state inputs', async () => {
+            const state = { $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModelState' };
+            const stringStateDb = creationDb();
+            const stringStateResult = await createAgreement(
+                stringStateDb,
+                { ...baseInput, state: JSON.stringify(state) },
+                { templateRetrievers: [retriever()] },
+            );
+            expect(stringStateResult.state).toEqual(state);
+            expect(stringStateDb.insertedValues[stringStateDb.insertedValues.length - 1].value.state).toEqual(state);
+
+            for (const stateInput of ['pending', '{bad-json}', '[]', '42', 'null']) {
+                const preserved = await createAgreement(
+                    creationDb(),
+                    { ...baseInput, state: stateInput },
+                    { templateRetrievers: [retriever()] },
+                );
+                expect(preserved.state).toBe(stateInput);
+            }
+        });
+
+        it('rejects a data string encoding an array', async () => {
+            const error = await createAgreement(creationDb(), { ...baseInput, data: '[]' }).catch(e => e);
+            expect(error).toBeInstanceOf(InvalidPayloadError);
+            expect(error.details.issues[0].message).toBe('data string must encode a JSON object');
+        });
+
+        it('rejects a data string encoding a scalar', async () => {
+            await expect(createAgreement(creationDb(), { ...baseInput, data: '42' }))
+                .rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        it('rejects a data string encoding null', async () => {
+            await expect(createAgreement(creationDb(), { ...baseInput, data: 'null' }))
+                .rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        it('rejects an unparseable data string', async () => {
+            const error = await createAgreement(creationDb(), { ...baseInput, data: '{not-json}' }).catch(e => e);
+            expect(error).toBeInstanceOf(InvalidPayloadError);
+            expect(error.details.issues[0].message).toBe('data string must be valid JSON');
+        });
+
+        it('rejects bare non-object data values', async () => {
+            const invalidValues: unknown[] = [[], 42, true];
+            for (const data of invalidValues) {
+                await expect(createAgreement(creationDb(), { ...baseInput, data } as any))
+                    .rejects.toBeInstanceOf(InvalidPayloadError);
+            }
+        });
+
+        it('normalizes special keys consistently across object and string encodings', async () => {
+            const data = { ['__proto__']: { polluted: true }, ...baseInput.data };
+            for (const encoded of [data, JSON.stringify(data)]) {
+                const result = await createAgreement(
+                    creationDb(),
+                    { ...baseInput, data: encoded },
+                    { templateRetrievers: [retriever()] },
+                );
+                expect(result.data).toEqual(baseInput.data);
+                expect(Object.prototype.hasOwnProperty.call(result.data, '__proto__')).toBe(false);
+            }
+            expect((Object.prototype as any).polluted).toBeUndefined();
+        });
+
         // A unique violation from the *template* cache names a different row than
         // the agreement URI. `onConflictDoNothing` targets Template.hash, so the
         // separate Template.uri constraint still surfaces — a re-published archive

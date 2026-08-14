@@ -656,6 +656,41 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(templateInsertPayload).toHaveProperty('logo');
         });
 
+        it('accepts spec-shaped string data and returns 200', async () => {
+            mockDb.insert = jest.fn().mockReturnThis();
+            mockDb.values = jest.fn().mockReturnThis();
+            mockDb.returning = jest.fn<any>().mockResolvedValue([{ id: 3, status: 'DRAFT' }]);
+
+            const data = {
+                $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                clauseId: 'latedelivery-spec-string',
+            };
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:spec-shaped-string-data',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data: JSON.stringify(data),
+            });
+
+            expect(response.status).toBe(200);
+            expect(mockDb.values).toHaveBeenCalledWith(expect.objectContaining({ data }));
+        });
+
+        it.each([
+            ['{not-json}', 'data string must be valid JSON'],
+            ['[1,2]', 'data string must encode a JSON object'],
+        ])('returns 400 with the custom message for string data %p', async (data, message) => {
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:invalid-string-data',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data,
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error.details.issues[0]).toEqual(expect.objectContaining({ message, path: ['data'] }));
+        });
+
         // Regression: the shared AgreementCreateSchema is strict, so an unsplit
         // `organization` key makes the whole request a 400 — but the pre-refactor
         // route accepted such a body. This asserts acceptance only. It deliberately

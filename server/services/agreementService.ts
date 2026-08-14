@@ -36,12 +36,73 @@ export const PROTOCOL_NAMESPACE = 'org.accordproject.protocol@1.0.0';
 export const AGREEMENT_TEMPLATE_RESOURCE_PREFIX = `resource:${PROTOCOL_NAMESPACE}.Template#`;
 
 const objectValue = z.record(z.string(), z.unknown());
+
+type JsonObjectParseResult =
+    | { kind: 'object'; value: Record<string, unknown> }
+    | { kind: 'non-object' }
+    | { kind: 'invalid' };
+
+function parseJsonObject(value: string): JsonObjectParseResult {
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(value);
+    } catch {
+        return { kind: 'invalid' };
+    }
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return { kind: 'non-object' };
+    }
+    // Match z.record's direct-object branch, which clones the record and drops
+    // the special __proto__ key rather than preserving it as data.
+    return {
+        kind: 'object',
+        value: Object.fromEntries(Object.entries(parsed).filter(([key]) => key !== '__proto__')),
+    };
+}
+
+/** `JSON` is `scalar JSON extends String` in model/protocol.cto, so the
+ * generated OpenAPI schema publishes `data` as a string. Accept both the
+ * published form and the object form the runtime readers consume, normalizing
+ * strings before validation and persistence. Non-object JSON stays invalid
+ * because the agreement processors consume `data` as an object. */
+const agreementData = z.union(
+    [objectValue, z.string()],
+    { error: 'data must be an object or a JSON string encoding an object' },
+)
+    .describe('Concerto agreement data as an object or a JSON string encoding that object')
+    .transform((value, ctx) => {
+        if (typeof value !== 'string') return value;
+        const parsed = parseJsonObject(value);
+        if (parsed.kind === 'invalid') {
+            ctx.addIssue({ code: 'custom', message: 'data string must be valid JSON' });
+            return z.NEVER;
+        }
+        if (parsed.kind === 'non-object') {
+            ctx.addIssue({ code: 'custom', message: 'data string must encode a JSON object' });
+            return z.NEVER;
+        }
+        return parsed.value;
+    });
+
+/** Preserve state's historically permissive input surface, but normalize the
+ * spec-shaped case that readers require: a string encoding a JSON object.
+ * Non-object and invalid strings deliberately continue through unchanged. That
+ * preserves compatibility, including silent acceptance of malformed strings,
+ * while fixing the spec-shaped object string that readers actually consume. */
+const agreementState = z.unknown()
+    .describe('Agreement state; object-encoding JSON strings are normalized to objects')
+    .transform(value => {
+        if (typeof value !== 'string') return value;
+        const parsed = parseJsonObject(value);
+        return parsed.kind === 'object' ? parsed.value : value;
+    });
+
 export const AgreementCreateSchema = z.object({
     $class: z.string().optional(),
     uri: z.string().min(1),
-    data: objectValue,
+    data: agreementData,
     template: z.string().min(1),
-    state: z.unknown().optional(),
+    state: agreementState.optional(),
     // Derived from the generated pgEnum rather than restated. db/schema.ts is
     // generated from model/protocol.cto, so a status added or renamed in the
     // model reaches this schema by regeneration instead of by someone
@@ -55,7 +116,7 @@ export const AgreementCreateSchema = z.object({
     metadata: objectValue.optional(),
 }).strict();
 
-export type AgreementCreateInput = z.infer<typeof AgreementCreateSchema>;
+export type AgreementCreateInput = z.input<typeof AgreementCreateSchema>;
 
 /**
  * Both template forms are accepted:

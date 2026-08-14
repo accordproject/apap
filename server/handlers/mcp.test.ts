@@ -559,6 +559,42 @@ describe('MCP Handler', () => {
             expect(JSON.parse(content[0].text).id).toBe(7);
         });
 
+        it('normalizes create-agreement string data before invoking the service', async () => {
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+            createMock.mockResolvedValue({ id: 8 } as any);
+            const data = { $class: 'org.openagreements.custom.CIIAA', contractId: 'oa-ciiaa-string' };
+
+            await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    uri: 'urn:agreement:oa-ciiaa-string',
+                    template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                    agreementStatus: 'DRAFT',
+                    data: JSON.stringify(data),
+                },
+            });
+
+            expect(createMock).toHaveBeenCalledWith(mockDb, expect.objectContaining({ data }));
+        });
+
+        it.each([
+            ['{not-json}', 'data string must be valid JSON'],
+            ['[1,2]', 'data string must encode a JSON object'],
+        ])('returns the custom create-agreement message for string data %p', async (data, message) => {
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    uri: 'urn:agreement:invalid-string-data',
+                    template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                    agreementStatus: 'DRAFT',
+                    data,
+                },
+            });
+
+            expect(result.isError).toBe(true);
+            expect((result.content as any[])[0].text).toContain(message);
+        });
+
         // A ServiceError raised by the shared service must come back as the typed
         // `{ code, message, details }` contract the sibling tools honour. Before the
         // service refactor this path threw out of the callback and the SDK handed
