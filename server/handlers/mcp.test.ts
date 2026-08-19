@@ -506,6 +506,13 @@ describe('MCP Handler', () => {
             expect(toolNames).toContain('trigger-agreement');
             expect(toolNames).toContain('getTemplate');
             expect(toolNames).toContain('getAgreement');
+
+            const createTool = result.tools.find(t => t.name === 'create-agreement');
+            expect(createTool?.inputSchema).toEqual(expect.objectContaining({
+                type: 'object',
+                additionalProperties: false,
+            }));
+            expect((createTool?.inputSchema as any).properties.data).toBeDefined();
         });
 
         it('lists all registered resources', async () => {
@@ -557,6 +564,24 @@ describe('MCP Handler', () => {
             expect(createMock).toHaveBeenCalledWith(mockDb, input);
             const content = result.content as any[];
             expect(JSON.parse(content[0].text).id).toBe(7);
+        });
+
+        it('rejects unknown create-agreement fields before the service runs', async () => {
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    uri: 'urn:agreement:unknown-field',
+                    template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                    agreementStatus: 'DRAFT',
+                    data: { $class: 'org.example.TemplateModel' },
+                    id: 123,
+                },
+            });
+
+            expect(result.isError).toBe(true);
+            expect(createMock).not.toHaveBeenCalled();
         });
 
         it('normalizes create-agreement string data before invoking the service', async () => {

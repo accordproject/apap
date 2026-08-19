@@ -435,7 +435,11 @@ export const getServer = (db: Database) => {
 Supply the writable protocol Agreement fields, including uri, template, data, and agreementStatus.
 The template accepts either a plain https URL to a .cta archive or the canonical relationship form resource:org.accordproject.protocol@1.0.0.Template#<id>.
 Use the returned agreement data with a format converter or a configured output adapter such as OpenAgreements DOCX.`,
-            inputSchema: AgreementCreateSchema.shape as any,
+            // Pass the complete Standard Schema so the SDK advertises and enforces
+            // object-level rules such as .strict(). Passing only .shape uses the
+            // deprecated raw-shape overload, whose non-strict wrapper strips unknown
+            // fields before the service can reject them.
+            inputSchema: AgreementCreateSchema,
             annotations: {
                 readOnlyHint: false,
                 destructiveHint: false,

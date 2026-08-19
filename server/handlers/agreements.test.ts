@@ -691,6 +691,28 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(response.body.error.details.issues[0]).toEqual(expect.objectContaining({ message, path: ['data'] }));
         });
 
+        it('returns the typed 422 contract for Concerto-invalid agreement data', async () => {
+            const errors = [{ message: 'missing required model property', path: ['data', 'requiredField'] }];
+            (validationModule.concertoValidation as jest.MockedFunction<typeof validationModule.concertoValidation>)
+                .mockResolvedValueOnce({ success: false, error: { errors } } as any);
+
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:concerto-invalid',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data: { $class: 'org.example.IncompleteTemplateModel' },
+            });
+
+            expect(response.status).toBe(422);
+            expect(response.body).toEqual({
+                error: {
+                    code: 'VALIDATION_ERROR',
+                    message: 'Invalid request body',
+                    details: { errors },
+                },
+            });
+        });
+
         // Regression: the shared AgreementCreateSchema is strict, so an unsplit
         // `organization` key makes the whole request a 400 — but the pre-refactor
         // route accepted such a body. This asserts acceptance only. It deliberately

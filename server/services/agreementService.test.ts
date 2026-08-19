@@ -140,9 +140,23 @@ describe('agreementService', () => {
         it.each([
             ['ftp://example.com/late-delivery.cta', ValidationError],   // Concerto: invalid URI scheme
             ['', InvalidPayloadError],                                  // Zod: min(1)
+            ['https://[invalid-host/template.cta', InvalidPayloadError], // URL parser: malformed host
+            ['https:example.com/template.cta', InvalidPayloadError],    // URL parser: not absolute
         ])('rejects invalid template %p', async (template, expected) => {
             await expect(createAgreement(creationDb(), { ...baseInput, template } as any, { templateRetrievers: [retriever()] }))
                 .rejects.toBeInstanceOf(expected);
+        });
+
+        it('uses the platform URL parser to canonicalize an absolute HTTP template URL', async () => {
+            const createDb = creationDb();
+            const upperCaseUrl = 'HTTPS://templates.accordproject.org/late-delivery.cta';
+            const result = await createAgreement(
+                createDb,
+                { ...baseInput, template: upperCaseUrl },
+                { templateRetrievers: [retriever()] },
+            );
+
+            expect(result.template).toBe(`${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${templateUrl}`);
         });
 
         // Status quo, asserted so it is a decision rather than an accident. A

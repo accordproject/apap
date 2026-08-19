@@ -136,8 +136,23 @@ export type AgreementCreateInput = z.input<typeof AgreementCreateSchema>;
  */
 function normalizeTemplate(template: string): string {
     if (template.startsWith('resource:')) return template;
-    if (/^https?:\/\/[^\s]+$/.test(template)) return `${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${template}`;
-    return template;
+    if (!/^https?:/i.test(template)) return template;
+
+    // A regex can recognize an http-looking string but cannot establish that it
+    // is a valid absolute URL. Parse it here so callers receive a typed 400 before
+    // Concerto validation or template retrieval, and persist the canonical form.
+    if (!/^https?:\/\//i.test(template)) {
+        throw new InvalidPayloadError('Invalid template URL', { template });
+    }
+    try {
+        const url = new URL(template);
+        if ((url.protocol !== 'http:' && url.protocol !== 'https:') || !url.hostname) {
+            throw new Error('unsupported or missing URL components');
+        }
+        return `${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${url.toString()}`;
+    } catch {
+        throw new InvalidPayloadError('Invalid template URL', { template });
+    }
 }
 
 /** Mirrors the pre-refactor strip in `agreements.ts`: everything after the first
