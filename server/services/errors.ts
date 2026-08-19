@@ -162,6 +162,26 @@ export class AgreementRecordImmutableError extends ServiceError {
     }
 }
 
+/**
+ * Raised when a PUT attempts to move `agreementStatus` to a lower-ranked
+ * status than it's currently at (rank: DRAFT < SIGNING < COMPLETED <
+ * SUPERSEDED) -- e.g. COMPLETED back to DRAFT, or SUPERSEDED back to
+ * COMPLETED. The agreement lifecycle only moves forward; a downgrade would
+ * make the freezes AgreementRecordImmutableError enforces reversible in two
+ * requests (revert the status, then edit the now-reopened record).
+ */
+export class AgreementStatusTransitionError extends ServiceError {
+    constructor(agreementId: string | number, from: string, to: string) {
+        super(
+            'AGREEMENT_STATUS_TRANSITION_INVALID',
+            409,
+            `Agreement ${agreementId} cannot move agreementStatus from ${from} back to ${to}`,
+            { agreementId, from, to },
+        );
+        this.name = 'AgreementStatusTransitionError';
+    }
+}
+
 export class AgreementConversionError extends ServiceError {
     constructor(agreementId: string | number, format: string, reason?: string) {
         super(

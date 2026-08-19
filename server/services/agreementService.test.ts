@@ -6,7 +6,11 @@ import {
     convertAgreement,
     assertAgreementRecordMutable,
 } from './agreementService';
-import { AgreementNotFoundError, AgreementRecordImmutableError } from './errors';
+import {
+    AgreementNotFoundError,
+    AgreementRecordImmutableError,
+    AgreementStatusTransitionError,
+} from './errors';
 
 // convertAgreement pulls in the real template engine and templatebuilder
 // utility; mock both so the service can be exercised without a real
@@ -372,6 +376,74 @@ describe('agreementService', () => {
             expect(() =>
                 assertAgreementRecordMutable(existing, { state: { step: 1 } }),
             ).not.toThrow();
+        });
+
+        // The freeze only holds if agreementStatus itself can't move
+        // backward -- otherwise a client unlocks a frozen record in two
+        // requests: revert agreementStatus, then edit the now-reopened
+        // record.
+        describe('agreementStatus cannot move backward (reopens the freeze otherwise)', () => {
+            it.each([
+                ['COMPLETED', 'DRAFT'],
+                ['COMPLETED', 'SIGNING'],
+                ['SUPERSEDED', 'COMPLETED'],
+                ['SUPERSEDED', 'DRAFT'],
+                ['SIGNING', 'DRAFT'],
+            ] as const)('rejects %s -> %s as a downgrade', (from, to) => {
+                const existing = agreementRow(1, { agreementStatus: from, data: { price: 10 } });
+
+                let caught: unknown;
+                try {
+                    assertAgreementRecordMutable(existing, { agreementStatus: to });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementStatusTransitionError);
+                expect(caught).toMatchObject({
+                    code: 'AGREEMENT_STATUS_TRANSITION_INVALID',
+                    statusCode: 409,
+                    details: { from, to },
+                });
+            });
+
+            it('a downgrade attempt is rejected even bundled with a data change -- the record stays frozen', () => {
+                // The two-request exploit relies on the revert succeeding on
+                // its own. Confirms it's rejected outright, not merely
+                // deferred to the data check.
+                const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
+
+                let caught: unknown;
+                try {
+                    assertAgreementRecordMutable(existing, {
+                        agreementStatus: 'DRAFT',
+                        data: { price: 999 },
+                    });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementStatusTransitionError);
+            });
+
+            it.each([
+                ['DRAFT', 'SIGNING'],
+                ['SIGNING', 'COMPLETED'],
+                ['COMPLETED', 'SUPERSEDED'],
+                ['DRAFT', 'COMPLETED'],
+            ] as const)('still allows the forward transition %s -> %s', (from, to) => {
+                const existing = agreementRow(1, { agreementStatus: from, data: { price: 10 } });
+
+                expect(() =>
+                    assertAgreementRecordMutable(existing, { agreementStatus: to }),
+                ).not.toThrow();
+            });
+
+            it('a same-status resend is not treated as a transition at all', () => {
+                const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
+
+                expect(() =>
+                    assertAgreementRecordMutable(existing, { agreementStatus: 'COMPLETED' }),
+                ).not.toThrow();
+            });
         });
     });
 });

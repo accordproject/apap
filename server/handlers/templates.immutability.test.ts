@@ -39,16 +39,21 @@ const mockedAssertImmutable = assertTemplateContentImmutable as jest.MockedFunct
 const mockedAssertNotInUse = assertTemplateNotInUse as jest.MockedFunction<typeof assertTemplateNotInUse>;
 
 function mockDbWithRow(row: Record<string, unknown> | null) {
-    return {
+    const db: any = {
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
+        for: jest.fn().mockReturnThis(),
         limit: jest.fn<any>().mockResolvedValue(row ? [row] : []),
         update: jest.fn().mockReturnThis(),
         set: jest.fn().mockReturnThis(),
         delete: jest.fn().mockReturnThis(),
         returning: jest.fn<any>().mockResolvedValue(row ? [row] : []),
     };
+    // Guarded PUT/DELETE now run inside db.transaction(cb) — hand the
+    // callback this same mock so it behaves as its own transaction handle.
+    db.transaction = jest.fn((cb: any) => cb(db));
+    return db;
 }
 
 function buildApp(db: ReturnType<typeof mockDbWithRow>) {

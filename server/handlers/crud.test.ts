@@ -41,7 +41,7 @@ describe('PUT /:id validation', () => {
         app = express();
         app.use(express.json());
         app.use((req, res, next) => {
-            res.locals.db = {
+            const db: any = {
                 insert: jest.fn().mockReturnThis(),
                 values: jest.fn().mockReturnThis(),
                 returning: jest.fn<any>().mockResolvedValue([{ id: 1 }]),
@@ -50,17 +50,20 @@ describe('PUT /:id validation', () => {
                 where: jest.fn().mockReturnThis(),
                 // Templates now wire a `guardUpdate` hook (content is
                 // immutable once created — see templateService.ts), which
-                // PUT /:id runs a select().from().limit(1) pre-check for
-                // before validating the write. select/from/limit resolve to
-                // this same mock object (no `.length`), so
-                // `existingRows.length > 0` is false and the guard is
-                // skipped — these tests exercise body validation, not the
-                // immutability guard, which has its own coverage in
-                // templateService.test.ts and templates.test.ts.
+                // PUT /:id runs a select().from().for('update').limit(1)
+                // pre-check, inside db.transaction(cb), before validating the
+                // write. select/from/for/limit resolve to this same mock
+                // object (no `.length`), so `existingRows.length > 0` is
+                // false and the guard is skipped — these tests exercise body
+                // validation, not the immutability guard, which has its own
+                // coverage in templateService.test.ts and templates.test.ts.
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
+                for: jest.fn().mockReturnThis(),
                 limit: jest.fn().mockReturnThis(),
             };
+            db.transaction = jest.fn((cb: any) => cb(db));
+            res.locals.db = db;
             next();
         });
         app.use('/templates', templatesRouter);
@@ -198,7 +201,7 @@ describe('DELETE /:id', () => {
         app = express();
         app.use(express.json());
         app.use((req, res, next) => {
-            res.locals.db = {
+            const db: any = {
                 delete: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
                 returning: jest.fn<any>().mockResolvedValue([{ id: 1 }]),
@@ -208,10 +211,15 @@ describe('DELETE /:id', () => {
                 set: jest.fn().mockReturnThis(),
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
+                for: jest.fn().mockReturnThis(),
                 limit: jest.fn().mockReturnThis(),
                 offset: jest.fn().mockReturnThis(),
                 orderBy: jest.fn().mockReturnThis(),
             };
+            // templates.ts wires a real guardDelete, so DELETE now runs inside
+            // db.transaction(cb) — hand the callback this same mock.
+            db.transaction = jest.fn((cb: any) => cb(db));
+            res.locals.db = db;
             next();
         });
         app.use('/templates', templatesRouter);
@@ -222,7 +230,7 @@ describe('DELETE /:id', () => {
         const notFoundApp = express();
         notFoundApp.use(express.json());
         notFoundApp.use((req, res, next) => {
-            res.locals.db = {
+            const db: any = {
                 delete: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
                 returning: jest.fn<any>().mockResolvedValue([]),
@@ -232,10 +240,13 @@ describe('DELETE /:id', () => {
                 set: jest.fn().mockReturnThis(),
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
+                for: jest.fn().mockReturnThis(),
                 limit: jest.fn().mockReturnThis(),
                 offset: jest.fn().mockReturnThis(),
                 orderBy: jest.fn().mockReturnThis(),
             };
+            db.transaction = jest.fn((cb: any) => cb(db));
+            res.locals.db = db;
             next();
         });
         notFoundApp.use('/templates', templatesRouter);
@@ -270,16 +281,21 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
     }
 
     function mockDbWithRow(row: any) {
-        return {
+        const db: any = {
             select: jest.fn().mockReturnThis(),
             from: jest.fn().mockReturnThis(),
             where: jest.fn().mockReturnThis(),
+            for: jest.fn().mockReturnThis(),
             limit: jest.fn<any>().mockResolvedValue(row ? [row] : []),
             update: jest.fn().mockReturnThis(),
             set: jest.fn().mockReturnThis(),
             delete: jest.fn().mockReturnThis(),
             returning: jest.fn<any>().mockResolvedValue(row ? [row] : []),
         };
+        // Guarded PUT/DELETE now run inside db.transaction(cb) — hand the
+        // callback this same mock so it behaves as its own transaction handle.
+        db.transaction = jest.fn((cb: any) => cb(db));
+        return db;
     }
 
     function buildTestApp(db: any, guards: { guardUpdate?: any; guardDelete?: any }) {

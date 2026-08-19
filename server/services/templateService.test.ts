@@ -350,14 +350,29 @@ describe('templateService', () => {
     });
 
     describe('updateTemplate', () => {
-        it('updates and returns the template', async () => {
-            const row = toTemplateRow({ ...lateDeliveryTemplate, description: 'Updated' }, 1);
-            db._setReturn([row]);
+        // updateTemplate now enforces assertTemplateContentImmutable itself
+        // (not just crud.ts's guardUpdate hook), so any caller that reaches
+        // this function directly -- not only PUT /templates/:id -- is
+        // protected. A real field change on an existing template must
+        // reject, matching the guard's own unit tests below.
+        it('throws TemplateImmutableError when the update would change a field', async () => {
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 1);
+            db._setReturn([existingRow]);
+
+            await expect(
+                updateTemplate(db, lateDeliveryTemplate.uri, { description: 'Updated' }),
+            ).rejects.toThrow(TemplateImmutableError);
+        });
+
+        it('resolves as a no-op resend of the current values', async () => {
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 1);
+            db.limit = jest.fn<any>().mockResolvedValueOnce([existingRow]);
+            db.returning = jest.fn<any>().mockResolvedValueOnce([existingRow]);
 
             const result = await updateTemplate(db, lateDeliveryTemplate.uri, {
-                description: 'Updated',
+                description: existingRow.description,
             });
-            expect(result.description).toBe('Updated');
+            expect(result).toEqual(existingRow);
         });
 
         it('throws TemplateNotFoundError when URI does not match', async () => {
@@ -370,11 +385,28 @@ describe('templateService', () => {
     });
 
     describe('deleteTemplate', () => {
-        it('resolves when the template exists', async () => {
+        // Same rationale as updateTemplate above: deleteTemplate now
+        // enforces assertTemplateNotInUse itself. Sequences two distinct
+        // `.limit()` results -- deleteTemplate's own pre-fetch, then
+        // assertTemplateNotInUse's cross-table check -- since the shared
+        // `_returnValue` mock can't tell those two selects apart.
+        it('resolves when the template exists and is not referenced by any agreement', async () => {
             const row = toTemplateRow(lateDeliveryTemplate, 1);
-            db._setReturn([row]);
+            db.limit = jest.fn<any>()
+                .mockResolvedValueOnce([row])
+                .mockResolvedValueOnce([]);
+            db.returning = jest.fn<any>().mockResolvedValueOnce([row]);
 
             await expect(deleteTemplate(db, lateDeliveryTemplate.uri)).resolves.toBeUndefined();
+        });
+
+        it('throws TemplateInUseError when an agreement still resolves against it', async () => {
+            const row = toTemplateRow(lateDeliveryTemplate, 1);
+            db.limit = jest.fn<any>()
+                .mockResolvedValueOnce([row])
+                .mockResolvedValueOnce([{ id: 42 }]);
+
+            await expect(deleteTemplate(db, lateDeliveryTemplate.uri)).rejects.toThrow(TemplateInUseError);
         });
 
         it('throws TemplateNotFoundError when URI does not match', async () => {

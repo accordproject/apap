@@ -5,6 +5,7 @@ import {
     AgreementNotFoundError,
     AgreementConversionError,
     AgreementRecordImmutableError,
+    AgreementStatusTransitionError,
     AgreementTriggerError,
     InvalidPayloadError,
     ValidationError,
@@ -50,6 +51,23 @@ const MUTABLE_FIELDS_ONCE_FULLY_FROZEN: ReadonlySet<string> = new Set(['agreemen
 // of every other field.
 const DATA_FROZEN_STATUS: string = 'SIGNING';
 
+// Every freeze above hinges on `agreementStatus` never moving backward --
+// otherwise a client unlocks a frozen record in two requests: PUT
+// { agreementStatus: 'DRAFT' } on a COMPLETED row (allowed on its own,
+// since agreementStatus is the one field the full-record freeze leaves
+// mutable), then the record is DRAFT and everything, including `data`, is
+// open again. `concertoValidation` only checks shape, not the state
+// machine, so this has to be enforced here. Ranks encode the one-way
+// lifecycle DRAFT -> SIGNING -> COMPLETED -> SUPERSEDED; a transition may
+// jump forward (e.g. DRAFT straight to COMPLETED, for a single-signatory
+// agreement) but never move to a lower rank.
+const STATUS_RANK: Readonly<Record<string, number>> = {
+    DRAFT: 0,
+    SIGNING: 1,
+    COMPLETED: 2,
+    SUPERSEDED: 3,
+};
+
 /**
  * Deep-equality check used only to tell "no-op resend of the same value"
  * apart from an actual attempted change, independent of key order.
@@ -75,6 +93,10 @@ function deepEqual(a: unknown, b: unknown): boolean {
 /**
  * Guard for the generic CRUD PUT route (see `crud.ts`'s `guardUpdate` hook).
  *
+ * - Any `agreementStatus` change must move to an equal-or-higher rank
+ *   (DRAFT < SIGNING < COMPLETED < SUPERSEDED) -- never a downgrade. Checked
+ *   first and unconditionally, since this is what stops the freezes below
+ *   from being reversible.
  * - Once COMPLETED or SUPERSEDED, rejects a request that would change any
  *   recorded field — only `agreementStatus` and `state` may still be
  *   updated.
@@ -88,6 +110,18 @@ function deepEqual(a: unknown, b: unknown): boolean {
  */
 export function assertAgreementRecordMutable(existing: AgreementRow, updates: Record<string, unknown>): void {
     const status = existing.agreementStatus;
+
+    if (
+        Object.prototype.hasOwnProperty.call(updates, 'agreementStatus') &&
+        updates.agreementStatus !== status
+    ) {
+        const nextStatus = updates.agreementStatus as string;
+        const fromRank = STATUS_RANK[status];
+        const toRank = STATUS_RANK[nextStatus];
+        if (fromRank === undefined || toRank === undefined || toRank < fromRank) {
+            throw new AgreementStatusTransitionError(existing.id, status, nextStatus);
+        }
+    }
 
     if (FULLY_FROZEN_STATUSES.has(status)) {
         for (const key of Object.keys(updates)) {

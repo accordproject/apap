@@ -658,11 +658,15 @@ describe('POST / - Agreement Creation with External Template', () => {
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
+                for: jest.fn().mockReturnThis(),
                 limit: jest.fn(),
                 update: jest.fn().mockReturnThis(),
                 set: jest.fn().mockReturnThis(),
                 returning: jest.fn(),
             };
+            // Agreement now wires a guardUpdate hook, so PUT runs inside
+            // db.transaction(cb) — hand the callback this same mock.
+            putDb.transaction = jest.fn((cb: any) => cb(putDb));
             putApp.use((req, res, next) => {
                 res.locals.db = putDb;
                 next();
@@ -729,6 +733,36 @@ describe('POST / - Agreement Creation with External Template', () => {
 
             expect(res.status).toBe(200);
             expect(putDb.update).toHaveBeenCalled();
+        });
+
+        it('rejects reverting agreementStatus COMPLETED -> DRAFT (would reopen the freeze)', async () => {
+            const existing = { id: 8, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/8')
+                .send({ agreementStatus: 'DRAFT' });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_STATUS_TRANSITION_INVALID');
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('the COMPLETED -> DRAFT -> edit exploit is blocked at the first request', async () => {
+            // Confirms the two-request unlock the review flagged is actually
+            // closed end to end: even if this PUT had somehow been allowed
+            // to revert the status, a follow-up PUT changing `data` on the
+            // (no-longer-frozen) row would then succeed. The fix is that the
+            // FIRST request -- the revert itself -- never goes through.
+            const existing = { id: 9, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const revertRes = await request(putApp)
+                .put('/agreements/9')
+                .send({ agreementStatus: 'DRAFT' });
+
+            expect(revertRes.status).toBe(409);
+            expect(putDb.update).not.toHaveBeenCalled();
         });
 
         it('still allows a trigger-driven state update once COMPLETED (no data key sent)', async () => {

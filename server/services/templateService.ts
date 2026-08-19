@@ -161,17 +161,36 @@ export async function createTemplateFromArchive(
     }
 }
 
+// Not called from the REST route today -- templates.ts's PUT goes through
+// crud.ts's generic router directly against the table, with its own
+// guardUpdate pre-check. This function enforces the same content-immutable
+// guard itself so any *other* caller (a future MCP tool, a slice-3 REST
+// unification) can't reach the table and silently skip it -- the freeze
+// belongs at the mutation chokepoint, not only at the current HTTP entry
+// point. See assertTemplateContentImmutable.
 export async function updateTemplate(
     db: Database,
     uri: string,
     data: Partial<TemplateInsert>,
 ): Promise<TemplateRow> {
+    const existingRows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
+    if (existingRows.length === 0) throw new TemplateNotFoundError(uri);
+    assertTemplateContentImmutable(existingRows[0], data);
+
     const rows = await db.update(Template).set(data).where(eq(Template.uri, uri)).returning();
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
     return rows[0];
 }
 
+// Same rationale as updateTemplate above: enforces assertTemplateNotInUse
+// itself rather than relying solely on crud.ts's guardDelete, so a caller
+// that bypasses the HTTP route still can't orphan an agreement's template
+// lookup.
 export async function deleteTemplate(db: Database, uri: string): Promise<void> {
+    const existingRows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
+    if (existingRows.length === 0) throw new TemplateNotFoundError(uri);
+    await assertTemplateNotInUse(existingRows[0], db);
+
     const rows = await db.delete(Template).where(eq(Template.uri, uri)).returning();
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
 }
