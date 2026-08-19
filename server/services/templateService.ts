@@ -57,7 +57,13 @@ export async function listTemplates(
 ): Promise<TemplateRow[]> {
     const limit = Math.min(100, Math.max(1, opts.limit ?? 100));
     const offset = Math.max(0, opts.offset ?? 0);
-    return db.select().from(Template).limit(limit).offset(offset);
+    // Stable pagination: without an explicit order, Postgres is free to return
+    // rows in any order between the (limit=50, offset=0) and (limit=50,
+    // offset=50) requests the paged `apap://templates{?limit,offset}` MCP
+    // resource issues, which can duplicate or skip rows. Mirrors the
+    // asc(Template.id) default #225 landed for `listTemplatesPaged` so REST
+    // and MCP page over the same stable order.
+    return db.select().from(Template).orderBy(asc(Template.id)).limit(limit).offset(offset);
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/templates/${id}`) */
