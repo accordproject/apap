@@ -109,6 +109,20 @@ export class AgreementConversionError extends ServiceError {
     }
 }
 
+export class AgreementCreationError extends ServiceError {
+    constructor(reason: string, details?: Record<string, unknown>) {
+        super('AGREEMENT_CREATION_FAILED', 500, `Failed to create agreement: ${reason}`, details);
+        this.name = 'AgreementCreationError';
+    }
+}
+
+export class AgreementDuplicateError extends ServiceError {
+    constructor(uri: string) {
+        super('AGREEMENT_DUPLICATE', 409, `Agreement with URI already exists: ${uri}`, { uri });
+        this.name = 'AgreementDuplicateError';
+    }
+}
+
 // -- Generic input + validation errors --
 
 export class InvalidPayloadError extends ServiceError {

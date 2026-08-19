@@ -14,7 +14,17 @@ import { globalErrorHandler } from '../middleware/errorHandler';
 jest.setTimeout(30000);
 
 // Mock dependencies (but not TemplateArchiveProcessor)
-jest.mock('../db/schema');
+//
+// db/schema is automocked except for the status pgEnum. AgreementCreateSchema
+// derives its `agreementStatus` values from `AgreementStatusType.enumValues` so
+// the two cannot drift from model/protocol.cto; an automocked stub carries no
+// `enumValues`, which would leave `z.enum` with an empty set and turn every
+// request body into a 400.
+jest.mock('../db/schema', () => {
+    const actual = jest.requireActual('../db/schema') as any;
+    const automock = jest.createMockFromModule('../db/schema') as any;
+    return { ...automock, AgreementStatusType: actual.AgreementStatusType };
+});
 jest.mock('./templatebuilder');
 jest.mock('./concertovalidation', () => {
     const actualModule = jest.requireActual('./concertovalidation') as any;
@@ -600,7 +610,9 @@ describe('POST / - Agreement Creation with External Template', () => {
             }
 
             const creationRequest = {
+                uri: 'urn:agreement:late-delivery-router-test',
                 template: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                agreementStatus: 'DRAFT',
                 data: {
                     $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
                     clauseId: 'latedelivery-1',
@@ -641,7 +653,99 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(templateInsertPayload).toHaveProperty('text');
             expect(templateInsertPayload).toHaveProperty('logic');
             expect(templateInsertPayload).toHaveProperty('metadata');
-            expect(templateInsertPayload).toHaveProperty('logo'); 
+            expect(templateInsertPayload).toHaveProperty('logo');
+        });
+
+        it('accepts spec-shaped string data and returns 200', async () => {
+            mockDb.insert = jest.fn().mockReturnThis();
+            mockDb.values = jest.fn().mockReturnThis();
+            mockDb.returning = jest.fn<any>().mockResolvedValue([{ id: 3, status: 'DRAFT' }]);
+
+            const data = {
+                $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                clauseId: 'latedelivery-spec-string',
+            };
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:spec-shaped-string-data',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data: JSON.stringify(data),
+            });
+
+            expect(response.status).toBe(200);
+            expect(mockDb.values).toHaveBeenCalledWith(expect.objectContaining({ data }));
+        });
+
+        it.each([
+            ['{not-json}', 'data string must be valid JSON'],
+            ['[1,2]', 'data string must encode a JSON object'],
+        ])('returns 400 with the custom message for string data %p', async (data, message) => {
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:invalid-string-data',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data,
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error.details.issues[0]).toEqual(expect.objectContaining({ message, path: ['data'] }));
+        });
+
+        it('returns the typed 422 contract for Concerto-invalid agreement data', async () => {
+            const errors = [{ message: 'missing required model property', path: ['data', 'requiredField'] }];
+            (validationModule.concertoValidation as jest.MockedFunction<typeof validationModule.concertoValidation>)
+                .mockResolvedValueOnce({ success: false, error: { errors } } as any);
+
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:concerto-invalid',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data: { $class: 'org.example.IncompleteTemplateModel' },
+            });
+
+            expect(response.status).toBe(422);
+            expect(response.body).toEqual({
+                error: {
+                    code: 'VALIDATION_ERROR',
+                    message: 'Invalid request body',
+                    details: { errors },
+                },
+            });
+        });
+
+        // Regression: the shared AgreementCreateSchema is strict, so an unsplit
+        // `organization` key makes the whole request a 400 — but the pre-refactor
+        // route accepted such a body. This asserts acceptance only. It deliberately
+        // does NOT assert persistence: the generated Agreement table has no
+        // `organization` column, so a real Drizzle insert drops the key, and an
+        // assertion against the mocked `.values()` payload would pass whether or
+        // not the column existed.
+        it('still accepts a body carrying organization rather than rejecting it', async () => {
+            (AgreementInsertSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true });
+
+            mockDb.insert = jest.fn().mockReturnThis();
+            mockDb.values = jest.fn().mockReturnThis();
+            mockDb.onConflictDoNothing = jest.fn<any>().mockResolvedValue([{ id: 2 }]);
+            mockDb.returning = jest.fn<any>().mockResolvedValue([{ id: 2 }]);
+            mockDb.select.mockReturnValue(mockDb);
+            mockDb.from.mockReturnValue(mockDb);
+            mockDb.where.mockReturnValue(mockDb);
+            mockDb.limit.mockResolvedValue([]);
+
+            const valModule = require('./concertovalidation');
+            valModule.concertoValidation?.mockResolvedValueOnce?.({ success: true, error: null });
+            valModule.default?.mockResolvedValueOnce?.({ success: true, error: null });
+
+            const response = await request(app).post('/agreements/').send({
+                uri: 'urn:agreement:organization-passthrough',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                agreementStatus: 'DRAFT',
+                data: { $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel' },
+                organization: 'org-from-body',
+            });
+
+            // The point of the assertion: not a 400 with "Unrecognized key".
+            expect(response.status).toBe(200);
         });
     });
 });

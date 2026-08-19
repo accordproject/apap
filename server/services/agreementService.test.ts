@@ -5,15 +5,21 @@ import {
     getAgreementById,
     getAgreementByUri,
     convertAgreement,
+    createAgreement,
+    AGREEMENT_TEMPLATE_RESOURCE_PREFIX,
 } from './agreementService';
-import { AgreementNotFoundError } from './errors';
+import { AgreementCreationError, AgreementDuplicateError, AgreementNotFoundError, InvalidPayloadError, ValidationError } from './errors';
+import fs from 'fs';
+import path from 'path';
+import AdmZip from 'adm-zip';
 
 // convertAgreement pulls in the real template engine and templatebuilder
 // utility; mock both so the service can be exercised without a real
 // Postgres or a real .cta archive.
-jest.mock('../handlers/templatebuilder', () => ({
-    templateFromDatabase: jest.fn(),
-}));
+jest.mock('../handlers/templatebuilder', () => {
+    const actual = jest.requireActual('../handlers/templatebuilder') as any;
+    return { ...actual, templateFromDatabase: jest.fn() };
+});
 jest.mock('@accordproject/template-engine', () => ({
     TemplateArchiveProcessor: jest.fn(),
 }));
@@ -62,6 +68,281 @@ describe('agreementService', () => {
 
     beforeEach(() => {
         db = createMockDb();
+    });
+
+    describe('createAgreement', () => {
+        const originalFetch = (globalThis as any).fetch;
+        const zip = new AdmZip(fs.readFileSync(path.join(__dirname, '../test/archives/late-delivery.cta')));
+        const archivePackage = JSON.parse(zip.readAsText('package.json'));
+        archivePackage.accordproject.cicero = '*';
+        zip.updateFile('package.json', Buffer.from(JSON.stringify(archivePackage)));
+        const archive = zip.toBuffer();
+        const templateUrl = 'https://templates.accordproject.org/late-delivery.cta';
+        const baseInput = {
+            $class: 'org.accordproject.protocol@1.0.0.Agreement',
+            uri: 'urn:agreement:late-delivery-1',
+            template: templateUrl,
+            agreementStatus: 'DRAFT' as const,
+            data: { $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel' },
+        };
+
+        function creationDb(options: { selectRows?: any[]; failure?: unknown } = {}) {
+            const insertedValues: any[] = [];
+            let activeTable: any;
+            const created = { id: 9 };
+            const mock: any = {
+                insertedValues,
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+                limit: jest.fn<any>().mockResolvedValue(options.selectRows ?? []),
+                insert: jest.fn((table: any) => { activeTable = table; return mock; }),
+                values: jest.fn((value: any) => { insertedValues.push({ table: activeTable, value }); return mock; }),
+                onConflictDoNothing: jest.fn<any>().mockResolvedValue(undefined),
+                returning: jest.fn<any>().mockImplementation(async () => {
+                    if (options.failure) throw options.failure;
+                    return [{ ...created, ...insertedValues[insertedValues.length - 1].value }];
+                }),
+            };
+            return mock;
+        }
+
+        const retriever = (fetchImpl: () => Promise<Buffer> = async () => archive) => ({
+            getURISchemes: () => ['http', 'https'],
+            fetch: jest.fn(fetchImpl),
+        });
+
+        beforeAll(() => {
+            (globalThis as any).fetch = jest.fn(async (url: any) => {
+                const source = String(url).includes('metamodel')
+                    ? 'namespace concerto.metamodel@0.4.0 abstract concept Property {} concept ConceptDeclaration {} concept Model {}'
+                    : String(url).includes('commonmark')
+                        ? 'namespace org.accordproject.commonmark@0.5.0 concept Document {}'
+                        : 'namespace org.accordproject.party@0.2.0 participant Party identified by partyId { o String partyId }';
+                return { ok: true, text: async () => source } as any;
+            });
+        });
+
+        afterAll(() => { (globalThis as any).fetch = originalFetch; });
+
+        it.each([
+            ['plain URL', templateUrl],
+            ['canonical resource', `${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${templateUrl}`],
+        ])('validates and persists a canonical template for a %s', async (_label, template) => {
+            const createDb = creationDb();
+            const result = await createAgreement(createDb, { ...baseInput, template }, { templateRetrievers: [retriever()] });
+            expect(result.template).toBe(`${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${templateUrl}`);
+            const agreementInsert = createDb.insertedValues[createDb.insertedValues.length - 1].value;
+            expect(agreementInsert.template).toBe(`${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${templateUrl}`);
+            expect(agreementInsert.templateHash).toEqual(expect.any(String));
+        });
+
+        it.each([
+            ['ftp://example.com/late-delivery.cta', ValidationError],   // Concerto: invalid URI scheme
+            ['', InvalidPayloadError],                                  // Zod: min(1)
+            ['https://[invalid-host/template.cta', InvalidPayloadError], // URL parser: malformed host
+            ['https:example.com/template.cta', InvalidPayloadError],    // URL parser: not absolute
+        ])('rejects invalid template %p', async (template, expected) => {
+            await expect(createAgreement(creationDb(), { ...baseInput, template } as any, { templateRetrievers: [retriever()] }))
+                .rejects.toBeInstanceOf(expected);
+        });
+
+        it('uses the platform URL parser to canonicalize an absolute HTTP template URL', async () => {
+            const createDb = creationDb();
+            const upperCaseUrl = 'HTTPS://templates.accordproject.org/late-delivery.cta';
+            const result = await createAgreement(
+                createDb,
+                { ...baseInput, template: upperCaseUrl },
+                { templateRetrievers: [retriever()] },
+            );
+
+            expect(result.template).toBe(`${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}${templateUrl}`);
+        });
+
+        // Status quo, asserted so it is a decision rather than an accident. A
+        // scheme-less string is a bare Concerto identifier, not a URI, so the
+        // validator has no scheme to reject and the value passes. The
+        // pre-refactor route behaved this way; nothing in this PR narrows it.
+        // No retriever matches, so the row lands with a null templateHash.
+        it('accepts a scheme-less template identifier and stores no template hash', async () => {
+            const createDb = creationDb();
+            const result = await createAgreement(
+                createDb, { ...baseInput, template: 'templates/late-delivery.cta' }, { templateRetrievers: [retriever()] },
+            );
+            expect(result.template).toBe('templates/late-delivery.cta');
+            expect(result.templateHash).toBeNull();
+        });
+
+        // `concertoValidation` JSON.stringify()s `data` and `state` in place (the
+        // "HACK" block in handlers/concertovalidation.ts). The pre-refactor route
+        // validated and then persisted the same object, so the row carried `data`
+        // as a *string* while every reader — processor.draft(agreement.data, ...)
+        // in convertAgreement and triggerAgreement — treats it as an object. The
+        // service validates a copy so the stored and returned forms stay objects.
+        it('persists and returns data and state as objects, not stringified JSON', async () => {
+            const createDb = creationDb();
+            const input = { ...baseInput, state: { $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModelState' } };
+            const result = await createAgreement(createDb, input as any, { templateRetrievers: [retriever()] });
+
+            expect(typeof result.data).toBe('object');
+            expect(result.data).toEqual(baseInput.data);
+            expect(typeof result.state).toBe('object');
+
+            const agreementInsert = createDb.insertedValues[createDb.insertedValues.length - 1].value;
+            expect(typeof agreementInsert.data).toBe('object');
+            expect(typeof agreementInsert.state).toBe('object');
+            // The caller's own object must not have been mutated either.
+            expect(typeof input.data).toBe('object');
+        });
+
+        it('accepts data as an object-encoding JSON string and persists the normalized object', async () => {
+            const createDb = creationDb();
+            const result = await createAgreement(
+                createDb,
+                { ...baseInput, data: JSON.stringify(baseInput.data) },
+                { templateRetrievers: [retriever()] },
+            );
+
+            expect(result.data).toEqual(baseInput.data);
+            expect(typeof result.data).toBe('object');
+            const agreementInsert = createDb.insertedValues[createDb.insertedValues.length - 1].value;
+            expect(agreementInsert.data).toEqual(baseInput.data);
+            expect(typeof agreementInsert.data).toBe('object');
+        });
+
+        it('normalizes object-encoding state strings without narrowing prior state inputs', async () => {
+            const state = { $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModelState' };
+            const stringStateDb = creationDb();
+            const stringStateResult = await createAgreement(
+                stringStateDb,
+                { ...baseInput, state: JSON.stringify(state) },
+                { templateRetrievers: [retriever()] },
+            );
+            expect(stringStateResult.state).toEqual(state);
+            expect(stringStateDb.insertedValues[stringStateDb.insertedValues.length - 1].value.state).toEqual(state);
+
+            for (const stateInput of ['pending', '{bad-json}', '[]', '42', 'null']) {
+                const preserved = await createAgreement(
+                    creationDb(),
+                    { ...baseInput, state: stateInput },
+                    { templateRetrievers: [retriever()] },
+                );
+                expect(preserved.state).toBe(stateInput);
+            }
+        });
+
+        it('rejects a data string encoding an array', async () => {
+            const error = await createAgreement(creationDb(), { ...baseInput, data: '[]' }).catch(e => e);
+            expect(error).toBeInstanceOf(InvalidPayloadError);
+            expect(error.details.issues[0].message).toBe('data string must encode a JSON object');
+        });
+
+        it('rejects a data string encoding a scalar', async () => {
+            await expect(createAgreement(creationDb(), { ...baseInput, data: '42' }))
+                .rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        it('rejects a data string encoding null', async () => {
+            await expect(createAgreement(creationDb(), { ...baseInput, data: 'null' }))
+                .rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        it('rejects an unparseable data string', async () => {
+            const error = await createAgreement(creationDb(), { ...baseInput, data: '{not-json}' }).catch(e => e);
+            expect(error).toBeInstanceOf(InvalidPayloadError);
+            expect(error.details.issues[0].message).toBe('data string must be valid JSON');
+        });
+
+        it('rejects bare non-object data values', async () => {
+            const invalidValues: unknown[] = [[], 42, true];
+            for (const data of invalidValues) {
+                await expect(createAgreement(creationDb(), { ...baseInput, data } as any))
+                    .rejects.toBeInstanceOf(InvalidPayloadError);
+            }
+        });
+
+        it('normalizes special keys consistently across object and string encodings', async () => {
+            const data = { ['__proto__']: { polluted: true }, ...baseInput.data };
+            for (const encoded of [data, JSON.stringify(data)]) {
+                const result = await createAgreement(
+                    creationDb(),
+                    { ...baseInput, data: encoded },
+                    { templateRetrievers: [retriever()] },
+                );
+                expect(result.data).toEqual(baseInput.data);
+                expect(Object.prototype.hasOwnProperty.call(result.data, '__proto__')).toBe(false);
+            }
+            expect((Object.prototype as any).polluted).toBeUndefined();
+        });
+
+        // A unique violation from the *template* cache names a different row than
+        // the agreement URI. `onConflictDoNothing` targets Template.hash, so the
+        // separate Template.uri constraint still surfaces — a re-published archive
+        // that keeps its URI but changes its hash trips it.
+        it('does not report a template unique violation as a duplicate agreement URI', async () => {
+            const createDb = creationDb();
+            createDb.onConflictDoNothing = jest.fn<any>().mockRejectedValue(
+                Object.assign(new Error('duplicate key'), { code: '23505', constraint: 'Template_uri_unique' }),
+            );
+            const error = await createAgreement(createDb, baseInput, { templateRetrievers: [retriever()] })
+                .catch((e: unknown) => e);
+
+            expect(error).toBeInstanceOf(AgreementCreationError);
+            expect(error).not.toBeInstanceOf(AgreementDuplicateError);
+        });
+
+        it.each(['id', 'templateHash'])('rejects caller-supplied persistence field %s', async field => {
+            await expect(createAgreement(creationDb(), { ...baseInput, [field]: field === 'id' ? 42 : 'hash' } as any))
+                .rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        it.each([
+            ['missing uri', { uri: undefined }],
+            ['missing agreementStatus', { agreementStatus: undefined }],
+            ['invalid agreementStatus', { agreementStatus: 'ACTIVE' }],
+            ['malformed data', { data: 'not-an-object' }],
+        ])('rejects %s', async (_label, override) => {
+            await expect(createAgreement(creationDb(), { ...baseInput, ...override } as any))
+                .rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        // Regression: an earlier cut of normalizeTemplate required the inner id to
+        // be an http(s) URL and threw ValidationError otherwise. That rejected
+        // agreements referencing an already-stored template under any other
+        // scheme — accepted before creation moved into this service. The retriever
+        // list is scheme-dispatched and extensible, so the inner id is not ours to
+        // constrain; no retriever matches and the row persists with a null hash.
+        it('passes a canonical relationship with a non-http template id through untouched', async () => {
+            const createDb = creationDb();
+            const template = `${AGREEMENT_TEMPLATE_RESOURCE_PREFIX}ap://latedeliveryandpenalty@0.1.0`;
+            const result = await createAgreement(createDb, { ...baseInput, template }, { templateRetrievers: [retriever()] });
+            expect(result.template).toBe(template);
+            const agreementInsert = createDb.insertedValues[createDb.insertedValues.length - 1].value;
+            expect(agreementInsert.templateHash).toBeNull();
+            // Only the Agreement row — no Template row, because nothing was fetched.
+            expect(createDb.insertedValues).toHaveLength(1);
+        });
+
+        it('types template retrieval failure and writes no rows', async () => {
+            const createDb = creationDb();
+            await expect(createAgreement(createDb, baseInput, {
+                templateRetrievers: [retriever(async () => { throw new Error('archive unavailable'); })],
+            })).rejects.toBeInstanceOf(AgreementCreationError);
+            expect(createDb.insert).not.toHaveBeenCalled();
+        });
+
+        it('types duplicate URI failures', async () => {
+            const createDb = creationDb({ failure: Object.assign(new Error('duplicate'), { code: '23505' }) });
+            await expect(createAgreement(createDb, baseInput, { templateRetrievers: [] }))
+                .rejects.toBeInstanceOf(AgreementDuplicateError);
+        });
+
+        it('types database failures', async () => {
+            const createDb = creationDb({ failure: new Error('database offline') });
+            await expect(createAgreement(createDb, baseInput, { templateRetrievers: [] }))
+                .rejects.toBeInstanceOf(AgreementCreationError);
+        });
+
     });
 
     describe('listAgreements', () => {

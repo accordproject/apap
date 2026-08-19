@@ -20,7 +20,6 @@ import {
     AgreementNotFoundError,
     AgreementConversionError,
     AgreementTriggerError,
-    UpstreamApiError,
 } from '../services/errors';
 import { listTemplates, getTemplateById } from '../services/templateService';
 import {
@@ -28,16 +27,12 @@ import {
     getAgreementById,
     convertAgreement,
     triggerAgreement as triggerAgreementService,
+    createAgreement,
+    AgreementCreateSchema,
+    type AgreementCreateInput,
 } from '../services/agreementService';
 import { InvalidPayloadError } from '../services/errors';
 import type { Database } from '../db/client';
-
-const HOST = process.env.HOST || 'localhost';
-const PORT = parseInt(process.env.PORT || '9000', 10);
-const API_BASE_URL = process.env.API_BASE_URL || `http://${HOST}:${PORT}`
-
-// Get API authorization header from environment variable (optional)
-const API_AUTH_HEADER = process.env.APAP_API_AUTH_HEADER;
 
 // Forward-looking cache hints for MCP `ReadResourceResult.contents[]`, mirroring
 // the shape proposed in SEP-2549 ("CacheableResult") in the MCP 2026-07-28 RC:
@@ -84,29 +79,6 @@ export const SERVER_INSTRUCTIONS = [
 // required to serve the `apap://schema/protocol.cto` resource.
 export const PROTOCOL_CTO = Buffer.from(MODEL, 'base64').toString('utf-8');
 
-/**
- * @param url The APAP REST endpoint to call.
- * @param options Optional fetch options such as method, headers, and request body.
- * @return The fetch response returned by the local APAP REST API.
- * @details Builds a JSON-based request to the local REST API and attaches the
- * optional static authorization header from `APAP_API_AUTH_HEADER` when it is configured.
- */
-async function makeApiRequest(url: string, options: RequestInit = {}) {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        ...(options.headers as Record<string, string> || {}),
-    };
-
-    if (API_AUTH_HEADER) {
-        headers['Authorization'] = API_AUTH_HEADER;
-    }
-
-    return fetch(url, {
-        ...options,
-        headers,
-    });
-}
-
 // Parses `{ limit, offset }` from RFC 6570 form-style template variables into
 // safe integers for the paged resource callbacks (#217). Non-numeric, partial,
 // or absent values become `undefined` so the service layer applies its own
@@ -130,6 +102,11 @@ export function pageOpts(variables: Record<string, string | string[]> | undefine
 // Builds a meaningful error message from a failed API response so that MCP clients
 // can tell apart a 404 (resource missing) from a 400 (bad input) or a 500 (server issue).
 // Without this, every failure just says "Failed to load ..." which is impossible to debug.
+//
+// No longer called from this module now that creation goes through the service
+// layer rather than an HTTP loopback, but it stays exported: it landed as its own
+// contribution (#153) and remains the helper for any handler that has to surface
+// a raw upstream `Response`. Removing it is a separate decision from this PR.
 export async function buildApiErrorMessage(result: globalThis.Response, context: string): Promise<string> {
     const body = await result.text().catch(() => 'No error details available');
     return `${context} (HTTP ${result.status}): ${body}`;
@@ -445,6 +422,42 @@ export const getServer = (db: Database) => {
                 throw error;
             }
         }
+    );
+
+    // Create an Agreement through the same service used by REST clients.
+    // Keeping creation generic lets output adapters (including the
+    // OpenAgreements DOCX adapter) consume the resulting Concerto data without
+    // coupling APAP to a particular document vendor or renderer.
+    server.registerTool(
+        "create-agreement",
+        {
+            description: `Creates an APAP Agreement from a template URI and Concerto agreement data.
+Supply the writable protocol Agreement fields, including uri, template, data, and agreementStatus.
+The template accepts either a plain https URL to a .cta archive or the canonical relationship form resource:org.accordproject.protocol@1.0.0.Template#<id>.
+Use the returned agreement data with a format converter or a configured output adapter such as OpenAgreements DOCX.`,
+            // Pass the complete Standard Schema so the SDK advertises and enforces
+            // object-level rules such as .strict(). Passing only .shape uses the
+            // deprecated raw-shape overload, whose non-strict wrapper strips unknown
+            // fields before the service can reject them.
+            inputSchema: AgreementCreateSchema,
+            annotations: {
+                readOnlyHint: false,
+                destructiveHint: false,
+                idempotentHint: false,
+                // Creation resolves the template archive over the network, so this
+                // tool does reach outside the server's own state.
+                openWorldHint: true,
+            },
+        },
+        async (input: AgreementCreateInput): Promise<CallToolResult> => {
+            try {
+                const created = await createAgreement(db, input);
+                return { content: [{ type: 'text', text: JSON.stringify(created) }] };
+            } catch (error) {
+                if (error instanceof ServiceError) return serviceErrorToCallToolResult(error);
+                throw error;
+            }
+        },
     );
 
     // register the trigger tool

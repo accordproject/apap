@@ -653,9 +653,26 @@ Response:
 
 # Model Context Protocol (MCP) Support (experimental)
 
-RI has **experimental** MCP support. We will be adding new resources and tools and the format of existing resources and tools may change.
+RI has **experimental** MCP support. Resources and tools may change while this interface stabilizes. Connect an MCP client to the server's Streamable HTTP endpoint at `/mcp`.
 
-To configure the location of the APAP server set the `API_BASE_URL` environment variable (defaults to http://localhost:9000).
+The `create-agreement` tool accepts structured arguments (not a JSON-encoded string):
+
+```json
+{
+  "uri": "urn:agreement:example-1",
+  "template": "https://example.com/templates/example.cta",
+  "agreementStatus": "DRAFT",
+  "data": { "$class": "org.example.ExampleData" }
+}
+```
+
+`uri`, `template`, `agreementStatus`, and object-valued `data` are required. The optional writable protocol fields are `$class`, `state`, `agreementParties`, `signatures`, `historyEntries`, `attachments`, `references`, and `metadata`. Persistence-managed fields such as `id` and `templateHash` are rejected.
+
+`POST /agreements` shares this schema, which changes two things about that endpoint. `data` must now be a JSON **object** — the model declares it as `JSON` and the previous table-derived schema accepted any JSON value, but an agreement's data is a Concerto instance and needs a `$class`. And validation failures are now reported through the typed-error contract (`{"error": {"code", "message", "details"}}`), so a Concerto rejection is a `422 VALIDATION_ERROR` rather than a `400` with a flat body.
+
+`template` accepts either an absolute `http://` or `https://` URL, or the canonical Concerto relationship form `resource:org.accordproject.protocol@1.0.0.Template#<id>`. A plain URL is normalized to the canonical form before validation and persistence, because Concerto rejects a bare URL as a relationship value. A canonical relationship is stored as given; if its scheme matches no registered `ITemplateRetriever`, no archive is fetched and the agreement is stored with a null `templateHash`.
+
+Other available agreement tools convert and trigger agreements; template and agreement lookup tools and resources expose the stored protocol data.
 
 To connect RI to Claude, follow the following steps:
 1. Start RI
@@ -663,7 +680,7 @@ To connect RI to Claude, follow the following steps:
 3. Add a new custom Integration, with integration name APAP and the integration URL set to the URL of your RI server plus `/sse`. Note that your RI server must be reachable from the Internet, so if you are running locally you will need
 to run ngrok (or similar) to tunnel Internet traffic.
 4. Sign-up for a new account in the login/authentication window
-5. Once connected you should see "1 tool, 2 resources" printed beneath the integration name in Claude settings
+5. Once connected you should see the registered tools and resources printed beneath the integration name in Claude settings
 6. Press the + button to start a new chat
 7. Press the + button inside the chat and select "Add from APAP", selecting either templates or agreements to be added to the chat context.
 8. Ask questions about your templates or agreements
@@ -677,8 +694,8 @@ To connect RI to MCP Inspector, follow the following steps:
 npx @modelcontextprotocol/inspector
 ```
 3. Open a http://127.0.0.1:6274 (this is the default MCP Inspector address and port)
-4. Select SSE from the Transport Type dropdown
-5. replace the url with http://localhost:9000/sse (the default RI port)
+4. Select Streamable HTTP from the Transport Type dropdown
+5. Replace the URL with http://localhost:9000/mcp (the default RI port)
 6. click Connect
 7. explore the available Resources, Prompts, Tools & Resource templates
 

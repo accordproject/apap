@@ -21,6 +21,11 @@ jest.mock('./inmemoryeventstore', () => {
     };
 });
 
+jest.mock('../services/agreementService', () => {
+    const actual = jest.requireActual('../services/agreementService') as any;
+    return { ...actual, createAgreement: jest.fn() };
+});
+
 import mcpRouter, {
     getServer,
     serviceErrorToCallToolResult,
@@ -37,8 +42,10 @@ import {
     AgreementNotFoundError,
     ServiceError,
     TemplateNotFoundError,
+    ValidationError,
 } from '../services/errors';
 import { Client } from '@modelcontextprotocol/client';
+import * as agreementService from '../services/agreementService';
 
 function createMockDb() {
     const mock: any = {
@@ -402,16 +409,6 @@ describe('pageOpts parser for paged resource URIs', () => {
 describe('MCP Handler', () => {
     let app: express.Application;
     let mockDb: ReturnType<typeof createMockDb>;
-    let originalFetch: any;
-
-    beforeAll(() => {
-        originalFetch = (global as any).fetch;
-    });
-
-    afterAll(() => {
-        (global as any).fetch = originalFetch;
-    });
-
     beforeEach(() => {
         jest.clearAllMocks();
         mockDb = createMockDb();
@@ -423,6 +420,10 @@ describe('MCP Handler', () => {
             next();
         });
         app.use('/', mcpRouter);
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
     });
 
     it('returns mcp-session-id header on initialization response', async () => {
@@ -493,6 +494,7 @@ describe('MCP Handler', () => {
 
         afterEach(async () => {
             await client.close();
+            jest.restoreAllMocks();
         });
 
         it('lists all registered tools', async () => {
@@ -500,9 +502,17 @@ describe('MCP Handler', () => {
             const toolNames = result.tools.map(t => t.name);
 
             expect(toolNames).toContain('convert-agreement-to-format');
+            expect(toolNames).toContain('create-agreement');
             expect(toolNames).toContain('trigger-agreement');
             expect(toolNames).toContain('getTemplate');
             expect(toolNames).toContain('getAgreement');
+
+            const createTool = result.tools.find(t => t.name === 'create-agreement');
+            expect(createTool?.inputSchema).toEqual(expect.objectContaining({
+                type: 'object',
+                additionalProperties: false,
+            }));
+            expect((createTool?.inputSchema as any).properties.data).toBeDefined();
         });
 
         it('lists all registered resources', async () => {
@@ -525,6 +535,113 @@ describe('MCP Handler', () => {
             expect(content[0].type).toBe('text');
             const parsed = JSON.parse(content[0].text as string);
             expect(parsed.uri).toBe('test://template/1');
+        });
+
+        it('executes create-agreement with structured input and the injected database', async () => {
+            const created = {
+                id: 7,
+                uri: 'urn:agreement:oa-ciiaa-001',
+                template: 'https://openagreements.org/templates/openagreements-confidentiality-invention-assignment-agreement/v0.4.0',
+                agreementStatus: 'DRAFT',
+                data: { $class: 'org.openagreements.custom.CIIAA', contractId: 'oa-ciiaa-001' },
+            };
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+            createMock.mockResolvedValue(created as any);
+
+            const input = {
+                $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                uri: created.uri,
+                template: created.template,
+                agreementStatus: 'DRAFT' as const,
+                data: created.data,
+            };
+
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: input,
+            });
+
+            expect(createMock).toHaveBeenCalledWith(mockDb, input);
+            const content = result.content as any[];
+            expect(JSON.parse(content[0].text).id).toBe(7);
+        });
+
+        it('rejects unknown create-agreement fields before the service runs', async () => {
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    uri: 'urn:agreement:unknown-field',
+                    template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                    agreementStatus: 'DRAFT',
+                    data: { $class: 'org.example.TemplateModel' },
+                    id: 123,
+                },
+            });
+
+            expect(result.isError).toBe(true);
+            expect(createMock).not.toHaveBeenCalled();
+        });
+
+        it('normalizes create-agreement string data before invoking the service', async () => {
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+            createMock.mockResolvedValue({ id: 8 } as any);
+            const data = { $class: 'org.openagreements.custom.CIIAA', contractId: 'oa-ciiaa-string' };
+
+            await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    uri: 'urn:agreement:oa-ciiaa-string',
+                    template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                    agreementStatus: 'DRAFT',
+                    data: JSON.stringify(data),
+                },
+            });
+
+            expect(createMock).toHaveBeenCalledWith(mockDb, expect.objectContaining({ data }));
+        });
+
+        it.each([
+            ['{not-json}', 'data string must be valid JSON'],
+            ['[1,2]', 'data string must encode a JSON object'],
+        ])('returns the custom create-agreement message for string data %p', async (data, message) => {
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    uri: 'urn:agreement:invalid-string-data',
+                    template: 'resource:org.accordproject.protocol@1.0.0.Template#urn:template:stored',
+                    agreementStatus: 'DRAFT',
+                    data,
+                },
+            });
+
+            expect(result.isError).toBe(true);
+            expect((result.content as any[])[0].text).toContain(message);
+        });
+
+        // A ServiceError raised by the shared service must come back as the typed
+        // `{ code, message, details }` contract the sibling tools honour. Before the
+        // service refactor this path threw out of the callback and the SDK handed
+        // the client a raw exception string instead.
+        it('returns create-agreement service failures as a typed MCP error', async () => {
+            const createMock = agreementService.createAgreement as jest.MockedFunction<typeof agreementService.createAgreement>;
+            createMock.mockRejectedValue(new ValidationError('Invalid request body', { errors: ['bad template'] }));
+
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    uri: 'urn:agreement:bad',
+                    template: 'ftp://example.com/t.cta',
+                    agreementStatus: 'DRAFT' as const,
+                    data: {},
+                },
+            });
+
+            expect(result.isError).toBe(true);
+            const payload = JSON.parse((result.content as any[])[0].text);
+            expect(payload.error.code).toBe('VALIDATION_ERROR');
+            expect(payload.error.details).toEqual({ errors: ['bad template'] });
         });
 
         it('executes trigger-agreement tool correctly', async () => {
