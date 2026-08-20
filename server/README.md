@@ -231,6 +231,86 @@ Response:
 }
 ```
 
+## Templates are immutable
+
+A template's content (`text`, `logic`, `templateModel`, `metadata`, `version`,
+`description`, `keywords`, `displayName`, ...) cannot be changed after
+creation. `PUT /templates/:id` always rejects with `409 TEMPLATE_IMMUTABLE`
+unless the body is a no-op resend of the template's current values — there is
+no allowlist of "safe to edit" fields, unlike agreements' immutability guard.
+
+There's no partial-patch semantics on `PUT` — the body must be a complete,
+Concerto-valid Template (same shape as "Creating a Template" above). A
+partial body like `{ "description": "a new description" }` never reaches
+the immutability guard at all: it fails schema validation with `400` first.
+A *complete* body still 409s if any field differs from the template's
+current values, e.g. reusing the body from "Creating a Template" above with
+only `description` changed:
+
+```bash
+curl --request PUT \
+  --url http://localhost:9000/templates/18 \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"uri": "resource:org.accordproject.protocol@1.0.0.Template#dan",
+	"author": "dan",
+	"displayName": "Late Delivery and Penalty",
+	"version": "1.0.0",
+	"description": "a new description",
+	"license": "Apache-2",
+	"keywords": [
+		"one",
+		"two"
+	],
+	"metadata": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
+		"runtime": "typescript",
+		"template": "clause",
+		"cicero": "2.x"
+	},
+	"logo": null,
+	"templateModel": {
+		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
+		"typeName": "foo",
+		"model": {
+			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+			"ctoFiles": [
+				{
+					"contents": "namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}",
+					"filename": "test.cto"
+				}
+			]
+		}
+	},
+	"text": {
+		"$class": "org.accordproject.protocol@1.0.0.Text",
+		"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
+	},
+	"logic": null,
+	"sampleRequest": null
+}'
+# 409 { "error": { "code": "TEMPLATE_IMMUTABLE", ... } }
+```
+
+This isn't arbitrary: there is no first-class notion of template versioning
+in this API — `version` is a free-text field with no relational meaning, and
+there's no endpoint to list or resolve versions of "the same" template.
+Templates are addressed by content (`hash`, for templates auto-fetched
+via `POST /agreements`) or by `uri` (for directly-posted ones); either way, a
+"new version" is meant to be a new template — a new row — not an edit to an
+existing one.
+
+`DELETE /templates/:id` is allowed, but only while nothing references the
+template — it rejects with `409 TEMPLATE_IN_USE` if any agreement resolves
+against it (by cached `templateHash` or by `uri`, matching either the agreement
+that auto-cached it or one that cites it directly):
+
+```bash
+curl --request DELETE --url http://localhost:9000/templates/18
+# 409 { "error": { "code": "TEMPLATE_IN_USE", ... } } — still referenced
+# 200 { "status": "deleted" } — safe to remove
+```
+
 ## Getting a Single Resource
 
 ```bash
@@ -356,60 +436,25 @@ curl --request GET \
 
 ## Updating Resources
 
+Templates are the one exception to generic `PUT` support — their content
+can't be changed after creation (see "Templates are immutable" above). This
+example updates a `SharedModel`, which supports `PUT` like any other CRUD
+resource:
+
 ```bash
 curl --request PUT \
-  --url http://localhost:9000/templates/31 \
+  --url http://localhost:9000/sharedmodels/5 \
   --header 'Content-Type: application/json' \
-  --header 'User-Agent: insomnia/11.0.2' \
   --data '{
-	"author": "matt"
+	"uri": "resource:org.example.MySharedModel",
+	"model": {
+		"$class": "org.accordproject.protocol@1.0.0.CtoModel",
+		"ctoFiles": []
+	}
 }'
 ```
 
-Response:
-
-```json
-{
-	"id": 31,
-	"uri": "resource:org.accordproject.protocol@1.0.0.Template#baz",
-	"author": "matt",
-	"displayName": "Late Delivery and Penalty",
-	"version": "1.0.0",
-	"description": "This is late delivery and penalty template",
-	"license": "Apache-2",
-	"keywords": [
-		"one",
-		"two"
-	],
-	"metadata": {
-		"$class": "org.accordproject.protocol@1.0.0.TemplateMetadata",
-		"runtime": "typescript",
-		"template": "clause",
-		"cicero": "2.x"
-	},
-	"logo": null,
-	"templateModel": {
-		"$class": "org.accordproject.protocol@1.0.0.TemplateModel",
-		"typeName": "foo",
-		"model": {
-			"$class": "org.accordproject.protocol@1.0.0.CtoModel",
-			"ctoFiles": [
-				{
-					"$class": "org.accordproject.protocol@1.0.0.CtoFile",
-					"contents": "namespace io.clause.latedeliveryandpenalty@0.1.0\r\n\r\nimport org.accordproject.time@0.3.0.{Duration, TemporalUnit} from https://models.accordproject.org/time@0.3.0.cto\r\n\r\nimport org.accordproject.contract@0.2.0.Clause from https://models.accordproject.org/accordproject/contract@0.2.0.cto\r\nimport org.accordproject.runtime@0.2.0.{Request,Response} from https://models.accordproject.org/accordproject/runtime@0.2.0.cto\r\n\r\n/**\r\n * Defines the data model for the LateDeliveryAndPenalty template.\r\n * This defines the structure of the abstract syntax tree that the parser for the template\r\n * must generate from input source text.\r\n */\r\n@template\r\nasset TemplateModel extends Clause {\r\n  /**\r\n   * Does the clause include a force majeure provision?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * For every penaltyDuration that the goods are late\r\n   */\r\n  o Duration penaltyDuration\r\n\r\n  /**\r\n   * Seller pays the buyer penaltyPercentage % of the value of the goods\r\n   */\r\n  o Double penaltyPercentage\r\n\r\n  /**\r\n   * Up to capPercentage % of the value of the goods\r\n   */\r\n  o Double capPercentage\r\n\r\n  /**\r\n   * If the goods are >= termination late then the buyer may terminate the contract\r\n   */\r\n  o Duration termination\r\n\r\n  /**\r\n   * Fractional part of a ... is considered a whole ...\r\n   */\r\n  o TemporalUnit fractionalPart\r\n}\r\n\r\n/**\r\n * Defines the input data required by the template\r\n */\r\ntransaction LateDeliveryAndPenaltyRequest extends Request {\r\n\r\n  /**\r\n   * Are we in a force majeure situation?\r\n   */\r\n  o Boolean forceMajeure\r\n\r\n  /**\r\n   * What was the agreed delivery date for the goods?\r\n   */\r\n  o DateTime agreedDelivery\r\n\r\n  /**\r\n   * If the goods have been delivered, when where they delivered?\r\n   */\r\n  o DateTime deliveredAt optional\r\n\r\n  /**\r\n   * What is the value of the goods?\r\n   */\r\n  o Double goodsValue\r\n}\r\n\r\n/**\r\n * Defines the output data for the template\r\n */\r\ntransaction LateDeliveryAndPenaltyResponse extends Response {\r\n  /**\r\n   * The penalty to be paid by the seller\r\n   */\r\n  o Double penalty\r\n\r\n  /**\r\n   * Whether the buyer may terminate the contract\r\n   */\r\n  o Boolean buyerMayTerminate\r\n}",
-					"filename": "test.cto"
-				}
-			]
-		}
-	},
-	"text": {
-		"$class": "org.accordproject.protocol@1.0.0.Text",
-		"templateText": "Late Delivery and Penalty – {{% return now.toLocaleString() %}}\r\n----\r\n\r\nIn case of delayed delivery{{#if forceMajeure}}, except for Force Majeure cases,{{/if}} the Seller shall pay to the Buyer for every _{{% return `${penaltyDuration.amount} ${penaltyDuration.unit}` %}} of delay_ ***Penalty*** amounting to {{penaltyPercentage}}% of the total value of the Equipment whose delivery has been delayed.\r\n\r\n1. Any fractional part of a {{fractionalPart}} is to be considered a full {{fractionalPart}}.\r\n1. The total amount of penalty shall not however, exceed {{capPercentage}}% of the total value of the Equipment involved in late delivery.\r\n1. If the delay is more than {{% return `${termination.amount} ${termination.unit}` %}}, the Buyer is entitled to terminate this Contract."
-	},
-	"logic": null,
-	"sampleRequest": null
-}
-```
+Response: `200` with the updated resource.
 
 ## Deleting a Single Resource
 

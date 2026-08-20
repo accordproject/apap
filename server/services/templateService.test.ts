@@ -11,10 +11,14 @@ import {
     createTemplateFromArchive,
     updateTemplate,
     deleteTemplate,
+    assertTemplateContentImmutable,
+    assertTemplateNotInUse,
 } from './templateService';
 import {
     TemplateNotFoundError,
     TemplateDuplicateError,
+    TemplateImmutableError,
+    TemplateInUseError,
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
 } from './errors';
@@ -348,14 +352,29 @@ describe('templateService', () => {
     });
 
     describe('updateTemplate', () => {
-        it('updates and returns the template', async () => {
-            const row = toTemplateRow({ ...lateDeliveryTemplate, description: 'Updated' }, 1);
-            db._setReturn([row]);
+        // updateTemplate now enforces assertTemplateContentImmutable itself
+        // (not just crud.ts's guardUpdate hook), so any caller that reaches
+        // this function directly -- not only PUT /templates/:id -- is
+        // protected. A real field change on an existing template must
+        // reject, matching the guard's own unit tests below.
+        it('throws TemplateImmutableError when the update would change a field', async () => {
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 1);
+            db._setReturn([existingRow]);
+
+            await expect(
+                updateTemplate(db, lateDeliveryTemplate.uri, { description: 'Updated' }),
+            ).rejects.toThrow(TemplateImmutableError);
+        });
+
+        it('resolves as a no-op resend of the current values', async () => {
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 1);
+            db.limit = jest.fn<any>().mockResolvedValueOnce([existingRow]);
+            db.returning = jest.fn<any>().mockResolvedValueOnce([existingRow]);
 
             const result = await updateTemplate(db, lateDeliveryTemplate.uri, {
-                description: 'Updated',
+                description: existingRow.description,
             });
-            expect(result.description).toBe('Updated');
+            expect(result).toEqual(existingRow);
         });
 
         it('throws TemplateNotFoundError when URI does not match', async () => {
@@ -368,11 +387,28 @@ describe('templateService', () => {
     });
 
     describe('deleteTemplate', () => {
-        it('resolves when the template exists', async () => {
+        // Same rationale as updateTemplate above: deleteTemplate now
+        // enforces assertTemplateNotInUse itself. Sequences two distinct
+        // `.limit()` results -- deleteTemplate's own pre-fetch, then
+        // assertTemplateNotInUse's cross-table check -- since the shared
+        // `_returnValue` mock can't tell those two selects apart.
+        it('resolves when the template exists and is not referenced by any agreement', async () => {
             const row = toTemplateRow(lateDeliveryTemplate, 1);
-            db._setReturn([row]);
+            db.limit = jest.fn<any>()
+                .mockResolvedValueOnce([row])
+                .mockResolvedValueOnce([]);
+            db.returning = jest.fn<any>().mockResolvedValueOnce([row]);
 
             await expect(deleteTemplate(db, lateDeliveryTemplate.uri)).resolves.toBeUndefined();
+        });
+
+        it('throws TemplateInUseError when an agreement still resolves against it', async () => {
+            const row = toTemplateRow(lateDeliveryTemplate, 1);
+            db.limit = jest.fn<any>()
+                .mockResolvedValueOnce([row])
+                .mockResolvedValueOnce([{ id: 42 }]);
+
+            await expect(deleteTemplate(db, lateDeliveryTemplate.uri)).rejects.toThrow(TemplateInUseError);
         });
 
         it('throws TemplateNotFoundError when URI does not match', async () => {
@@ -381,6 +417,86 @@ describe('templateService', () => {
             await expect(deleteTemplate(db, 'resource:ghost')).rejects.toThrow(
                 TemplateNotFoundError,
             );
+        });
+    });
+
+    describe('assertTemplateContentImmutable', () => {
+        const row = toTemplateRow(lateDeliveryTemplate, 1);
+
+        it('allows a no-op resend of the current, unchanged values', () => {
+            expect(() =>
+                assertTemplateContentImmutable(row, { description: lateDeliveryTemplate.description }),
+            ).not.toThrow();
+        });
+
+        it('allows an empty update body', () => {
+            expect(() => assertTemplateContentImmutable(row, {})).not.toThrow();
+        });
+
+        it('rejects any attempted change to a content field', () => {
+            expect(() =>
+                assertTemplateContentImmutable(row, { description: 'a different description' }),
+            ).toThrow(TemplateImmutableError);
+        });
+
+        it('rejects a change to a nested/object field (templateModel)', () => {
+            expect(() =>
+                assertTemplateContentImmutable(row, { templateModel: { changed: true } }),
+            ).toThrow(TemplateImmutableError);
+        });
+
+        it('rejects even a cosmetic-looking field like displayName — there is no allowlist', () => {
+            expect(() =>
+                assertTemplateContentImmutable(row, { displayName: 'New Name' }),
+            ).toThrow(TemplateImmutableError);
+        });
+
+        it('the thrown error carries the template id and a 409 status', () => {
+            try {
+                assertTemplateContentImmutable(row, { description: 'changed' });
+                throw new Error('expected assertTemplateContentImmutable to throw');
+            } catch (err) {
+                expect(err).toBeInstanceOf(TemplateImmutableError);
+                expect((err as TemplateImmutableError).statusCode).toBe(409);
+                expect((err as TemplateImmutableError).code).toBe('TEMPLATE_IMMUTABLE');
+            }
+        });
+    });
+
+    describe('assertTemplateNotInUse', () => {
+        const row = toTemplateRow(lateDeliveryTemplate, 1);
+        const rowWithHash = { ...row, hash: 'a'.repeat(64) };
+
+        it('resolves when no agreement references the template', async () => {
+            db._setReturn([]);
+            await expect(assertTemplateNotInUse(row, db)).resolves.toBeUndefined();
+        });
+
+        it('rejects when an agreement references the template by uri', async () => {
+            db._setReturn([{ id: 42 }]);
+            await expect(assertTemplateNotInUse(row, db)).rejects.toThrow(TemplateInUseError);
+        });
+
+        it('rejects when an agreement references the template by cached templateHash', async () => {
+            db._setReturn([{ id: 42 }]);
+            await expect(assertTemplateNotInUse(rowWithHash, db)).rejects.toThrow(TemplateInUseError);
+        });
+
+        it('resolves for a hash-less template with no referencing agreement', async () => {
+            db._setReturn([]);
+            await expect(assertTemplateNotInUse(row, db)).resolves.toBeUndefined();
+        });
+
+        it('the thrown error carries the template id and a 409 status', async () => {
+            db._setReturn([{ id: 42 }]);
+            try {
+                await assertTemplateNotInUse(row, db);
+                throw new Error('expected assertTemplateNotInUse to throw');
+            } catch (err) {
+                expect(err).toBeInstanceOf(TemplateInUseError);
+                expect((err as TemplateInUseError).statusCode).toBe(409);
+                expect((err as TemplateInUseError).code).toBe('TEMPLATE_IN_USE');
+            }
         });
     });
 

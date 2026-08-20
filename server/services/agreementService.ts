@@ -4,6 +4,8 @@ import type { Database } from '../db/client';
 import {
     AgreementNotFoundError,
     AgreementConversionError,
+    AgreementRecordImmutableError,
+    AgreementStatusTransitionError,
     AgreementTriggerError,
     InvalidPayloadError,
     ValidationError,
@@ -24,6 +26,121 @@ import { concertoValidation } from '../handlers/concertovalidation';
 // utility directory is a follow-up refactor.
 
 type AgreementRow = typeof Agreement.$inferSelect;
+
+// Once signing has finished (COMPLETED) or the agreement has been
+// superseded (SUPERSEDED), the agreement's record is frozen: deal terms
+// (`data`), the evidence of who signed (`signatures`, `agreementParties`),
+// and everything else that documents the deal (`attachments`,
+// `historyEntries`, `references`, `metadata`, `template`, `uri`, ...) must
+// stop changing. Mistakes are fixed by voiding and reinstantiating the
+// agreement, not by editing it in place.
+const FULLY_FROZEN_STATUSES: ReadonlySet<string> = new Set(['COMPLETED', 'SUPERSEDED']);
+
+// The only fields exempt from the freeze above: `agreementStatus` itself
+// still needs to move (e.g. COMPLETED -> SUPERSEDED when a later agreement
+// supersedes this one), and `state` is the trigger-driven runtime state
+// column — triggerAgreement (above) only ever writes that one column, so
+// post-completion trigger activity keeps working.
+const MUTABLE_FIELDS_ONCE_FULLY_FROZEN: ReadonlySet<string> = new Set(['agreementStatus', 'state']);
+
+// Deal terms lock earlier than the rest of the record: as soon as any
+// signatory has started signing (SIGNING), the terms they're signing
+// against must not move out from under them, even though the record as a
+// whole (more signatures arriving, parties, etc.) is still legitimately
+// changing. `data` therefore freezes from SIGNING onward, one status ahead
+// of every other field.
+const DATA_FROZEN_STATUS: string = 'SIGNING';
+
+// Every freeze above hinges on `agreementStatus` never moving backward --
+// otherwise a client unlocks a frozen record in two requests: PUT
+// { agreementStatus: 'DRAFT' } on a COMPLETED row (allowed on its own,
+// since agreementStatus is the one field the full-record freeze leaves
+// mutable), then the record is DRAFT and everything, including `data`, is
+// open again. `concertoValidation` only checks shape, not the state
+// machine, so this has to be enforced here. Ranks encode the one-way
+// lifecycle DRAFT -> SIGNING -> COMPLETED -> SUPERSEDED; a transition may
+// jump forward (e.g. DRAFT straight to COMPLETED, for a single-signatory
+// agreement) but never move to a lower rank.
+const STATUS_RANK: Readonly<Record<string, number>> = {
+    DRAFT: 0,
+    SIGNING: 1,
+    COMPLETED: 2,
+    SUPERSEDED: 3,
+};
+
+/**
+ * Deep-equality check used only to tell "no-op resend of the same value"
+ * apart from an actual attempted change, independent of key order.
+ */
+function deepEqual(a: unknown, b: unknown): boolean {
+    if (a === b) return true;
+    if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+        return false;
+    }
+    if (Array.isArray(a) || Array.isArray(b)) {
+        if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+        return a.every((item, i) => deepEqual(item, b[i]));
+    }
+    const aKeys = Object.keys(a as Record<string, unknown>);
+    const bKeys = Object.keys(b as Record<string, unknown>);
+    if (aKeys.length !== bKeys.length) return false;
+    return aKeys.every((key) =>
+        Object.prototype.hasOwnProperty.call(b, key) &&
+        deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]),
+    );
+}
+
+/**
+ * Guard for the generic CRUD PUT route (see `crud.ts`'s `guardUpdate` hook).
+ *
+ * - Any `agreementStatus` change must move to an equal-or-higher rank
+ *   (DRAFT < SIGNING < COMPLETED < SUPERSEDED) -- never a downgrade. Checked
+ *   first and unconditionally, since this is what stops the freezes below
+ *   from being reversible.
+ * - Once COMPLETED or SUPERSEDED, rejects a request that would change any
+ *   recorded field — only `agreementStatus` and `state` may still be
+ *   updated.
+ * - While SIGNING, rejects a request that would change `data` alone; every
+ *   other field (signatures arriving, parties, etc.) stays mutable, since
+ *   that's the whole point of the SIGNING status.
+ *
+ * A field is only rejected if the request would actually change its value;
+ * resending the current value (e.g. the same `data` with different key
+ * order) is a no-op, not a violation.
+ */
+export function assertAgreementRecordMutable(existing: AgreementRow, updates: Record<string, unknown>): void {
+    const status = existing.agreementStatus;
+
+    if (
+        Object.prototype.hasOwnProperty.call(updates, 'agreementStatus') &&
+        updates.agreementStatus !== status
+    ) {
+        const nextStatus = updates.agreementStatus as string;
+        const fromRank = STATUS_RANK[status];
+        const toRank = STATUS_RANK[nextStatus];
+        if (fromRank === undefined || toRank === undefined || toRank < fromRank) {
+            throw new AgreementStatusTransitionError(existing.id, status, nextStatus);
+        }
+    }
+
+    if (FULLY_FROZEN_STATUSES.has(status)) {
+        for (const key of Object.keys(updates)) {
+            if (MUTABLE_FIELDS_ONCE_FULLY_FROZEN.has(key)) continue;
+            if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
+
+            throw new AgreementRecordImmutableError(existing.id, status, key);
+        }
+        return;
+    }
+
+    if (
+        status === DATA_FROZEN_STATUS &&
+        Object.prototype.hasOwnProperty.call(updates, 'data') &&
+        !deepEqual(existing.data, updates.data)
+    ) {
+        throw new AgreementRecordImmutableError(existing.id, status, 'data');
+    }
+}
 
 /**
  * Replaces: makeApiRequest(`${API_BASE_URL}/agreements`)

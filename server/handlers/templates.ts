@@ -3,7 +3,12 @@ import { Template, TemplateInsertSchema, } from '../db/schema';
 import { buildCrudRouter, ValidationResult } from './crud';
 import { concertoValidation } from './concertovalidation';
 import { templateFromDatabase } from './templatebuilder';
-import { createTemplateFromArchive, listTemplatesPaged } from '../services/templateService';
+import {
+    assertTemplateContentImmutable,
+    assertTemplateNotInUse,
+    createTemplateFromArchive,
+    listTemplatesPaged,
+} from '../services/templateService';
 import { InvalidPayloadError } from '../services/errors';
 import { asyncHandler } from '../middleware/errorHandler';
 
@@ -58,6 +63,12 @@ const crudRouter = buildCrudRouter({
     // ponytail: cast TemplateInsertSchema to any due to zod v3 -> v4 upgrade
     // depth-instantiation issue with drizzle-zod. Runtime unaffected.
     validateBody: { schema: TemplateInsertSchema as any, custom: (body) => templateValidation(body) },
+    // Templates are content-addressed (by `hash`, for auto-fetched ones) or
+    // cited by `uri` (for directly-posted ones) — either way a template's
+    // content is not supposed to change after creation. A new version is a
+    // new template, not an edit in place. See templateService.ts.
+    guardUpdate: (existing, body) => assertTemplateContentImmutable(existing, body),
+    guardDelete: (existing, db) => assertTemplateNotInUse(existing, db),
     listService: (db, opts) => listTemplatesPaged(db, opts),
 });
 

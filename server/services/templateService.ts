@@ -1,12 +1,14 @@
-import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
+import { eq, or, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import AdmZip from 'adm-zip';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
-import { Template } from '../db/schema';
+import { Agreement, Template } from '../db/schema';
 import type { Database } from '../db/client';
 import { extractTemplateForDatabase } from '../handlers/templatebuilder';
 import {
     TemplateNotFoundError,
     TemplateDuplicateError,
+    TemplateImmutableError,
+    TemplateInUseError,
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
 } from './errors';
@@ -165,17 +167,36 @@ export async function createTemplateFromArchive(
     }
 }
 
+// Not called from the REST route today -- templates.ts's PUT goes through
+// crud.ts's generic router directly against the table, with its own
+// guardUpdate pre-check. This function enforces the same content-immutable
+// guard itself so any *other* caller (a future MCP tool, a slice-3 REST
+// unification) can't reach the table and silently skip it -- the freeze
+// belongs at the mutation chokepoint, not only at the current HTTP entry
+// point. See assertTemplateContentImmutable.
 export async function updateTemplate(
     db: Database,
     uri: string,
     data: Partial<TemplateInsert>,
 ): Promise<TemplateRow> {
+    const existingRows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
+    if (existingRows.length === 0) throw new TemplateNotFoundError(uri);
+    assertTemplateContentImmutable(existingRows[0], data);
+
     const rows = await db.update(Template).set(data).where(eq(Template.uri, uri)).returning();
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
     return rows[0];
 }
 
+// Same rationale as updateTemplate above: enforces assertTemplateNotInUse
+// itself rather than relying solely on crud.ts's guardDelete, so a caller
+// that bypasses the HTTP route still can't orphan an agreement's template
+// lookup.
 export async function deleteTemplate(db: Database, uri: string): Promise<void> {
+    const existingRows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
+    if (existingRows.length === 0) throw new TemplateNotFoundError(uri);
+    await assertTemplateNotInUse(existingRows[0], db);
+
     const rows = await db.delete(Template).where(eq(Template.uri, uri)).returning();
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
 }
@@ -183,6 +204,88 @@ export async function deleteTemplate(db: Database, uri: string): Promise<void> {
 function isUniqueViolation(err: unknown): boolean {
     return typeof err === 'object' && err !== null && 'code' in err
         && (err as { code: string }).code === '23505';
+}
+
+/**
+ * Deep-equality check used only to tell "no-op resend of the same value"
+ * apart from an actual attempted change, independent of key order. Mirrors
+ * agreementService.ts's deepEqual — duplicated rather than shared, since
+ * it's a small generic utility and importing it would couple the two
+ * services over something that isn't agreement- or template-specific.
+ */
+function deepEqual(a: unknown, b: unknown): boolean {
+    if (a === b) return true;
+    if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+        return false;
+    }
+    if (Array.isArray(a) || Array.isArray(b)) {
+        if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+        return a.every((item, i) => deepEqual(item, b[i]));
+    }
+    const aKeys = Object.keys(a as Record<string, unknown>);
+    const bKeys = Object.keys(b as Record<string, unknown>);
+    if (aKeys.length !== bKeys.length) return false;
+    return aKeys.every((key) =>
+        Object.prototype.hasOwnProperty.call(b, key) &&
+        deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]),
+    );
+}
+
+/**
+ * Guard for the generic CRUD PUT route (see crud.ts's `guardUpdate` hook).
+ * Templates have no first-class versioning: `version` is a free-text field
+ * with no relational meaning, and there is no endpoint to list or resolve
+ * versions of "the same" template (see the LCP atrHash PR discussion). The
+ * hash-cache pattern in agreements.ts's template-fetch flow already assumes
+ * a template's content is fixed once created — content-addressed by `hash`
+ * for auto-fetched templates, cited by `uri` for directly-posted ones — so
+ * rather than track which fields are "safe" to edit, a template's content is
+ * unconditionally frozen: a new version is a new template (a new row), never
+ * an edit in place. A resend of the current, unchanged value is still a
+ * no-op, not a violation — same courtesy assertAgreementRecordMutable gives.
+ */
+export function assertTemplateContentImmutable(existing: TemplateRow, updates: Record<string, unknown>): void {
+    for (const key of Object.keys(updates)) {
+        if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
+        throw new TemplateImmutableError(existing.id);
+    }
+}
+
+/**
+ * Guard for the generic CRUD DELETE route (see crud.ts's `guardDelete`
+ * hook). Deleting a template an agreement still resolves against would
+ * orphan that agreement's template lookup (resolveAgreementRuntime in
+ * agreementService.ts throws a bare Error, not a typed one, if it can't find
+ * the row). Checked two ways because an agreement's `templateHash` isn't
+ * always populated — POST /agreements only sets it when the template URI
+ * matched a registered retriever and got auto-fetched-and-cached; otherwise
+ * the agreement resolves by `template` (uri) directly:
+ *
+ *   Agreement.templateHash = Template.hash   (only when Template.hash is set)
+ *   OR Agreement.template = Template.uri
+ *
+ * Known gap, not closed here: POST /agreements strips a `resource:` prefix
+ * from the submitted template URI before *fetching*, but stores the
+ * caller's raw, unstripped string in `Agreement.template`. A template
+ * referenced that way won't uri-match here even though it's the same
+ * template logically — a pre-existing inconsistency in the URI handling,
+ * not introduced by this guard.
+ */
+export async function assertTemplateNotInUse(existing: TemplateRow, db: Database): Promise<void> {
+    const uriCondition = eq(Agreement.template, existing.uri);
+    const whereClause = existing.hash
+        ? or(uriCondition, eq(Agreement.templateHash, existing.hash))
+        : uriCondition;
+
+    const referencing = await db
+        .select({ id: Agreement.id })
+        .from(Agreement)
+        .where(whereClause)
+        .limit(1);
+
+    if (referencing.length > 0) {
+        throw new TemplateInUseError(existing.id);
+    }
 }
 
 /**

@@ -221,6 +221,21 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     validateBody?: InsertValidator;
     transformResponse?: (item: any) => any;
     transformRequest?: (req: Request) => any;
+    // Runs on PUT /:id, after body validation and before the row is written,
+    // with the row's current DB state and the (validated, transformed)
+    // request body. Throw a ServiceError to reject the update — e.g.
+    // Agreement uses this to freeze its record (data, signatures, etc.)
+    // once signing has completed or been superseded. Skipped when no row
+    // matches :id, so 404 handling below is unaffected.
+    guardUpdate?: (existing: any, body: any) => void | Promise<void>;
+    // Runs on DELETE /:id, after the row is confirmed to exist and before it
+    // is removed, with the row's current DB state and the request-scoped db
+    // handle (needed for cross-table "is this still referenced elsewhere"
+    // checks — e.g. Template uses this to block deleting a template an
+    // Agreement still resolves against). Throw a ServiceError to reject the
+    // delete. Skipped when no row matches :id, so 404 handling below is
+    // unaffected.
+    guardDelete?: (existing: any, db: any) => void | Promise<void>;
     /**
      * Optional service-layer list function. When provided, the GET / handler
      * delegates DB read + count to it instead of the inline path. Router
@@ -330,6 +345,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     validateBody,
     transformResponse,
     transformRequest,
+    guardUpdate,
+    guardDelete,
     listService,
 }: CrudRouterOptions<T>): Router {
     const router = Router();
@@ -607,18 +624,56 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    table.id.columnType === 'PgUUID' ? 
+                    table.id.columnType === 'PgUUID' ?
                         eq(table.id, req.params.id) :
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
 
+                // Deliberately runs after transformRequest (not before): the guard
+                // must see the exact payload that .set(req.body) below is about to
+                // persist, not the pre-transform one — otherwise a transformRequest
+                // that adds/renames a field could slip an unguarded change past the
+                // check. transformRequest output already skips re-validation against
+                // validateBody on this route (true for POST too, not new here); no
+                // current caller of guardUpdate (Agreement, Template) supplies a
+                // transformRequest, so this is inert today, but keep the ordering if
+                // one ever does.
+                //
+                // When a guard is configured, the existence-check select and the
+                // write below share a transaction with a row lock (`FOR UPDATE`),
+                // so a second PUT racing this one can't read the row, pass its own
+                // guard check, and write before this request's write lands — the
+                // lock blocks the second transaction's SELECT ... FOR UPDATE until
+                // this one commits or rolls back, so it always re-checks against
+                // this write's result. Scoped to guarded resources only (Agreement,
+                // Template today): a resource with no guard has nothing a race
+                // could bypass, so it keeps the simpler, non-transactional path.
                 let updated;
                 try {
-                    updated = await res.locals.db
-                        .update(table)
-                        .set(req.body)
-                        .where(and(...whereConditions))
-                        .returning();
+                    if (guardUpdate) {
+                        updated = await res.locals.db.transaction(async (tx: any) => {
+                            const existingRows = await tx
+                                .select()
+                                .from(table)
+                                .where(and(...whereConditions))
+                                .for('update')
+                                .limit(1);
+                            if (existingRows.length > 0) {
+                                await guardUpdate(existingRows[0], req.body);
+                            }
+                            return tx
+                                .update(table)
+                                .set(req.body)
+                                .where(and(...whereConditions))
+                                .returning();
+                        });
+                    } else {
+                        updated = await res.locals.db
+                            .update(table)
+                            .set(req.body)
+                            .where(and(...whereConditions))
+                            .returning();
+                    }
                 } catch (error: any) {
                     if (error?.code === '23505') {
                         const pgError = new Error('Unique constraint violation') as any;
@@ -646,15 +701,41 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         asyncHandler(async (req: Request, res: Response) => {
                 const queryParams = parseQueryParams(req);
                 const whereConditions = [
-                    table.id.columnType === 'PgUUID' ? 
+                    table.id.columnType === 'PgUUID' ?
                         eq(table.id, req.params.id) :
                         eq(table.id, parseInt(req.params.id))
                 ].filter(Boolean);
 
-                const result = await res.locals.db
-                    .delete(table)
-                    .where(and(...whereConditions))
-                    .returning();
+                // Same TOCTOU rationale as the guarded PUT path above: the guard's
+                // existence-check and the delete share a transaction with a row
+                // lock, so a concurrent request can't remove or edit the row
+                // between this request's check and its write. guardDelete now
+                // receives the transaction handle (`tx`), not the bare db, so any
+                // cross-table check it runs (e.g. Template's "still referenced by
+                // an agreement" lookup) is consistent with the locked row.
+                let result;
+                if (guardDelete) {
+                    result = await res.locals.db.transaction(async (tx: any) => {
+                        const existingRows = await tx
+                            .select()
+                            .from(table)
+                            .where(and(...whereConditions))
+                            .for('update')
+                            .limit(1);
+                        if (existingRows.length > 0) {
+                            await guardDelete(existingRows[0], tx);
+                        }
+                        return tx
+                            .delete(table)
+                            .where(and(...whereConditions))
+                            .returning();
+                    });
+                } else {
+                    result = await res.locals.db
+                        .delete(table)
+                        .where(and(...whereConditions))
+                        .returning();
+                }
 
                 if (!result.length) {
                     return res.status(404).json({ 

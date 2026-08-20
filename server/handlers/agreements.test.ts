@@ -641,7 +641,182 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(templateInsertPayload).toHaveProperty('text');
             expect(templateInsertPayload).toHaveProperty('logic');
             expect(templateInsertPayload).toHaveProperty('metadata');
-            expect(templateInsertPayload).toHaveProperty('logo'); 
+            expect(templateInsertPayload).toHaveProperty('logo');
+        });
+    });
+
+    describe('PUT /:id - agreement record immutability once COMPLETED/SUPERSEDED', () => {
+        let putApp: express.Application;
+        let putDb: any;
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+
+            putApp = express();
+            putApp.use(express.json());
+            putDb = {
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+                for: jest.fn().mockReturnThis(),
+                limit: jest.fn(),
+                update: jest.fn().mockReturnThis(),
+                set: jest.fn().mockReturnThis(),
+                returning: jest.fn(),
+            };
+            // Agreement now wires a guardUpdate hook, so PUT runs inside
+            // db.transaction(cb) — hand the callback this same mock.
+            putDb.transaction = jest.fn((cb: any) => cb(putDb));
+            putApp.use((req, res, next) => {
+                res.locals.db = putDb;
+                next();
+            });
+            putApp.use('/agreements', agreementsRouter);
+            putApp.use(globalErrorHandler);
+
+            (AgreementInsertSchema.safeParse as any) = jest.fn().mockImplementation((data: any) => ({
+                success: true,
+                data,
+            }));
+            const valModule = require('./concertovalidation');
+            valModule.concertoValidation.mockImplementation((_type: any, body: any) =>
+                Promise.resolve({ success: true, data: body }),
+            );
+        });
+
+        it('rejects a data change once the agreement is COMPLETED', async () => {
+            const existing = { id: 1, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/1')
+                .send({ data: { price: 999 } });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('rejects a data change once the agreement is SUPERSEDED', async () => {
+            const existing = { id: 2, agreementStatus: 'SUPERSEDED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/2')
+                .send({ data: { price: 999 } });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
+        });
+
+        it('rejects a signatures change once the agreement is COMPLETED', async () => {
+            const existing = { id: 4, agreementStatus: 'COMPLETED', data: { price: 10 }, signatures: [] as any[] };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/4')
+                .send({ signatures: [{ signatory: 'party-1' }] });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('still allows agreementStatus to move COMPLETED -> SUPERSEDED', async () => {
+            const existing = { id: 5, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+            putDb.returning.mockResolvedValueOnce([{ ...existing, agreementStatus: 'SUPERSEDED' }]);
+
+            const res = await request(putApp)
+                .put('/agreements/5')
+                .send({ agreementStatus: 'SUPERSEDED' });
+
+            expect(res.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
+        });
+
+        it('rejects reverting agreementStatus COMPLETED -> DRAFT (would reopen the freeze)', async () => {
+            const existing = { id: 8, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/8')
+                .send({ agreementStatus: 'DRAFT' });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_STATUS_TRANSITION_INVALID');
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('the COMPLETED -> DRAFT -> edit exploit is blocked at the first request', async () => {
+            // Confirms the two-request unlock the review flagged is actually
+            // closed end to end: even if this PUT had somehow been allowed
+            // to revert the status, a follow-up PUT changing `data` on the
+            // (no-longer-frozen) row would then succeed. The fix is that the
+            // FIRST request -- the revert itself -- never goes through.
+            const existing = { id: 9, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const revertRes = await request(putApp)
+                .put('/agreements/9')
+                .send({ agreementStatus: 'DRAFT' });
+
+            expect(revertRes.status).toBe(409);
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('still allows a trigger-driven state update once COMPLETED (no data key sent)', async () => {
+            const existing = { id: 1, agreementStatus: 'COMPLETED', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+            putDb.returning.mockResolvedValueOnce([{ ...existing, state: { step: 2 } }]);
+
+            const res = await request(putApp)
+                .put('/agreements/1')
+                .send({ state: { step: 2 } });
+
+            expect(res.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
+        });
+
+        it('allows changing data while the agreement is still DRAFT', async () => {
+            const existing = { id: 3, agreementStatus: 'DRAFT', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+            putDb.returning.mockResolvedValueOnce([{ ...existing, data: { price: 999 } }]);
+
+            const res = await request(putApp)
+                .put('/agreements/3')
+                .send({ data: { price: 999 } });
+
+            expect(res.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
+        });
+
+        it('rejects a data change once the agreement is SIGNING', async () => {
+            const existing = { id: 6, agreementStatus: 'SIGNING', data: { price: 10 } };
+            putDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(putApp)
+                .put('/agreements/6')
+                .send({ data: { price: 999 } });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_RECORD_IMMUTABLE');
+            expect(putDb.update).not.toHaveBeenCalled();
+        });
+
+        it('still allows a signature to be added while SIGNING (only data is frozen)', async () => {
+            const existing = { id: 7, agreementStatus: 'SIGNING', data: { price: 10 }, signatures: [] as any[] };
+            putDb.limit.mockResolvedValueOnce([existing]);
+            putDb.returning.mockResolvedValueOnce([
+                { ...existing, signatures: [{ signatory: 'party-1' }] },
+            ]);
+
+            const res = await request(putApp)
+                .put('/agreements/7')
+                .send({ signatures: [{ signatory: 'party-1' }] });
+
+            expect(res.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
         });
     });
 });

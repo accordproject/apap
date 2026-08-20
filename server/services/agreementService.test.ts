@@ -5,8 +5,13 @@ import {
     getAgreementById,
     getAgreementByUri,
     convertAgreement,
+    assertAgreementRecordMutable,
 } from './agreementService';
-import { AgreementNotFoundError } from './errors';
+import {
+    AgreementNotFoundError,
+    AgreementRecordImmutableError,
+    AgreementStatusTransitionError,
+} from './errors';
 
 // convertAgreement pulls in the real template engine and templatebuilder
 // utility; mock both so the service can be exercised without a real
@@ -109,7 +114,7 @@ describe('agreementService', () => {
 
     describe('getAgreementById', () => {
         it('returns the agreement when it exists', async () => {
-            const row = agreementRow(5, { agreementStatus: 'SIGNNG' });
+            const row = agreementRow(5, { agreementStatus: 'SIGNING' });
             db._setReturn([row]);
 
             const result = await getAgreementById(db, 5);
@@ -254,6 +259,193 @@ describe('agreementService', () => {
             }
             expect(caught).toBeInstanceOf(AgreementConversionError);
             expect(caught).toMatchObject({ code: 'AGREEMENT_CONVERSION_FAILED' });
+        });
+    });
+
+    describe('assertAgreementRecordMutable', () => {
+        it('allows changing data and signatures while status is DRAFT', () => {
+            const existing = agreementRow(1, { agreementStatus: 'DRAFT', data: { price: 10 }, signatures: [] });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, {
+                    data: { price: 20 },
+                    signatures: [{ signatory: 'party-1' }],
+                }),
+            ).not.toThrow();
+        });
+
+        it('rejects changing data once status is SIGNING', () => {
+            const existing = agreementRow(1, { agreementStatus: 'SIGNING', data: { price: 10 } });
+
+            let caught: unknown;
+            try {
+                assertAgreementRecordMutable(existing, { data: { price: 20 } });
+            } catch (err) {
+                caught = err;
+            }
+            expect(caught).toBeInstanceOf(AgreementRecordImmutableError);
+            expect(caught).toMatchObject({
+                code: 'AGREEMENT_RECORD_IMMUTABLE',
+                statusCode: 409,
+                details: { field: 'data', status: 'SIGNING' },
+            });
+        });
+
+        it('still allows signatures/agreementParties to change while SIGNING (only data is frozen)', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'SIGNING',
+                data: { price: 10 },
+                signatures: [],
+            });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, {
+                    signatures: [{ signatory: 'party-1' }],
+                    agreementParties: [{ name: 'party-1', signatory: true }],
+                }),
+            ).not.toThrow();
+        });
+
+        it('allows a no-op resend of the same data while SIGNING, regardless of key order', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'SIGNING',
+                data: { price: 10, currency: 'USD' },
+            });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, { data: { currency: 'USD', price: 10 } }),
+            ).not.toThrow();
+        });
+
+        it.each(['COMPLETED', 'SUPERSEDED'])(
+            'rejects changing data once status is %s',
+            (agreementStatus) => {
+                const existing = agreementRow(1, { agreementStatus, data: { price: 10 } });
+
+                let caught: unknown;
+                try {
+                    assertAgreementRecordMutable(existing, { data: { price: 20 } });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementRecordImmutableError);
+                expect(caught).toMatchObject({
+                    code: 'AGREEMENT_RECORD_IMMUTABLE',
+                    statusCode: 409,
+                    details: { field: 'data' },
+                });
+            },
+        );
+
+        it.each(['signatures', 'agreementParties', 'attachments', 'historyEntries', 'references', 'metadata'])(
+            'rejects changing %s once COMPLETED',
+            (field) => {
+                const existing = agreementRow(1, { agreementStatus: 'COMPLETED', [field]: [{ old: true }] });
+
+                let caught: unknown;
+                try {
+                    assertAgreementRecordMutable(existing, { [field]: [{ new: true }] });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementRecordImmutableError);
+                expect(caught).toMatchObject({ details: { field } });
+            },
+        );
+
+        it('allows a no-op resend of the same data once COMPLETED, regardless of key order', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'COMPLETED',
+                data: { price: 10, currency: 'USD' },
+            });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, { data: { currency: 'USD', price: 10 } }),
+            ).not.toThrow();
+        });
+
+        it('still allows agreementStatus to transition once COMPLETED (e.g. -> SUPERSEDED)', () => {
+            const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, { agreementStatus: 'SUPERSEDED' }),
+            ).not.toThrow();
+        });
+
+        it('still allows state updates once COMPLETED (trigger-driven)', () => {
+            const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 }, state: null });
+
+            expect(() =>
+                assertAgreementRecordMutable(existing, { state: { step: 1 } }),
+            ).not.toThrow();
+        });
+
+        // The freeze only holds if agreementStatus itself can't move
+        // backward -- otherwise a client unlocks a frozen record in two
+        // requests: revert agreementStatus, then edit the now-reopened
+        // record.
+        describe('agreementStatus cannot move backward (reopens the freeze otherwise)', () => {
+            it.each([
+                ['COMPLETED', 'DRAFT'],
+                ['COMPLETED', 'SIGNING'],
+                ['SUPERSEDED', 'COMPLETED'],
+                ['SUPERSEDED', 'DRAFT'],
+                ['SIGNING', 'DRAFT'],
+            ] as const)('rejects %s -> %s as a downgrade', (from, to) => {
+                const existing = agreementRow(1, { agreementStatus: from, data: { price: 10 } });
+
+                let caught: unknown;
+                try {
+                    assertAgreementRecordMutable(existing, { agreementStatus: to });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementStatusTransitionError);
+                expect(caught).toMatchObject({
+                    code: 'AGREEMENT_STATUS_TRANSITION_INVALID',
+                    statusCode: 409,
+                    details: { from, to },
+                });
+            });
+
+            it('a downgrade attempt is rejected even bundled with a data change -- the record stays frozen', () => {
+                // The two-request exploit relies on the revert succeeding on
+                // its own. Confirms it's rejected outright, not merely
+                // deferred to the data check.
+                const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
+
+                let caught: unknown;
+                try {
+                    assertAgreementRecordMutable(existing, {
+                        agreementStatus: 'DRAFT',
+                        data: { price: 999 },
+                    });
+                } catch (err) {
+                    caught = err;
+                }
+                expect(caught).toBeInstanceOf(AgreementStatusTransitionError);
+            });
+
+            it.each([
+                ['DRAFT', 'SIGNING'],
+                ['SIGNING', 'COMPLETED'],
+                ['COMPLETED', 'SUPERSEDED'],
+                ['DRAFT', 'COMPLETED'],
+            ] as const)('still allows the forward transition %s -> %s', (from, to) => {
+                const existing = agreementRow(1, { agreementStatus: from, data: { price: 10 } });
+
+                expect(() =>
+                    assertAgreementRecordMutable(existing, { agreementStatus: to }),
+                ).not.toThrow();
+            });
+
+            it('a same-status resend is not treated as a transition at all', () => {
+                const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
+
+                expect(() =>
+                    assertAgreementRecordMutable(existing, { agreementStatus: 'COMPLETED' }),
+                ).not.toThrow();
+            });
         });
     });
 

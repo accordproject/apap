@@ -66,6 +66,43 @@ export class TemplateDuplicateError extends ServiceError {
 }
 
 /**
+ * Raised by PUT /templates/:id. A template's `hash` (for auto-cached
+ * templates) or its role as a fixed, citable artifact (for directly-posted
+ * ones) both depend on its content never changing after creation — there is
+ * no first-class notion of "template versioning" elsewhere in this codebase
+ * (see assertTemplateContentImmutable), so a new version must be a new row,
+ * never an edit in place.
+ */
+export class TemplateImmutableError extends ServiceError {
+    constructor(identifier: string | number) {
+        super(
+            'TEMPLATE_IMMUTABLE',
+            409,
+            `Template ${identifier} is immutable: content cannot be changed after creation. Create a new template for a new version.`,
+            { identifier },
+        );
+        this.name = 'TemplateImmutableError';
+    }
+}
+
+/**
+ * Raised by DELETE /templates/:id when at least one Agreement still resolves
+ * against this template (by cached `templateHash` or by `uri`). Deleting it
+ * would orphan those agreements' template lookups.
+ */
+export class TemplateInUseError extends ServiceError {
+    constructor(identifier: string | number) {
+        super(
+            'TEMPLATE_IN_USE',
+            409,
+            `Template ${identifier} cannot be deleted: still referenced by at least one agreement`,
+            { identifier },
+        );
+        this.name = 'TemplateInUseError';
+    }
+}
+
+/**
  * Raised when an uploaded `.cta` archive declares a Cicero compatibility
  * range (`package.json.accordproject.cicero`) that the server's own pinned
  * `@accordproject/cicero-core` version does not satisfy, or declares none
@@ -94,6 +131,54 @@ export class AgreementNotFoundError extends ServiceError {
             identifier,
         });
         this.name = 'AgreementNotFoundError';
+    }
+}
+
+/**
+ * Raised when a PUT/PATCH attempts to change a field of an agreement that
+ * is no longer allowed to change given its `agreementStatus`:
+ *
+ * - COMPLETED or SUPERSEDED: the whole record (`data`, `signatures`,
+ *   `agreementParties`, `attachments`, `historyEntries`, `references`,
+ *   `metadata`, `template`, `uri`, ...) is frozen — only `agreementStatus`
+ *   itself (e.g. COMPLETED -> SUPERSEDED) and `state` (via the trigger
+ *   endpoint) may still change.
+ * - SIGNING: only `data` (the deal terms) is frozen, so a signature given
+ *   against those terms can't be invalidated by a later edit; every other
+ *   field stays mutable while signatures continue to arrive.
+ *
+ * Mistakes are fixed by voiding and reinstantiating the agreement, not by
+ * editing it in place.
+ */
+export class AgreementRecordImmutableError extends ServiceError {
+    constructor(agreementId: string | number, status: string, field: string) {
+        super(
+            'AGREEMENT_RECORD_IMMUTABLE',
+            409,
+            `Agreement ${agreementId} is immutable once its status is ${status} (attempted to change "${field}")`,
+            { agreementId, status, field },
+        );
+        this.name = 'AgreementRecordImmutableError';
+    }
+}
+
+/**
+ * Raised when a PUT attempts to move `agreementStatus` to a lower-ranked
+ * status than it's currently at (rank: DRAFT < SIGNING < COMPLETED <
+ * SUPERSEDED) -- e.g. COMPLETED back to DRAFT, or SUPERSEDED back to
+ * COMPLETED. The agreement lifecycle only moves forward; a downgrade would
+ * make the freezes AgreementRecordImmutableError enforces reversible in two
+ * requests (revert the status, then edit the now-reopened record).
+ */
+export class AgreementStatusTransitionError extends ServiceError {
+    constructor(agreementId: string | number, from: string, to: string) {
+        super(
+            'AGREEMENT_STATUS_TRANSITION_INVALID',
+            409,
+            `Agreement ${agreementId} cannot move agreementStatus from ${from} back to ${to}`,
+            { agreementId, from, to },
+        );
+        this.name = 'AgreementStatusTransitionError';
     }
 }
 
