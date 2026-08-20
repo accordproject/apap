@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
 import type { Database } from '../db/client';
 import {
@@ -157,7 +157,13 @@ export async function listAgreements(
 ): Promise<AgreementRow[]> {
     const limit = Math.min(100, Math.max(1, opts.limit ?? 100));
     const offset = Math.max(0, opts.offset ?? 0);
-    return db.select().from(Agreement).limit(limit).offset(offset);
+    // Stable pagination: without an explicit order, Postgres is free to return
+    // rows in any order between the (limit=50, offset=0) and (limit=50,
+    // offset=50) requests the paged `apap://agreements{?limit,offset}` MCP
+    // resource issues, which can duplicate or skip rows. Mirrors the
+    // asc(Agreement.id) default #225 landed for `listAgreementsPaged` so REST
+    // and MCP page over the same stable order.
+    return db.select().from(Agreement).orderBy(asc(Agreement.id)).limit(limit).offset(offset);
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/agreements/${id}`) */
@@ -327,4 +333,38 @@ export async function triggerAgreement(
         .where(eq(Agreement.id, agreementId));
 
     return triggerResult;
+}
+
+/**
+ * Paginated variant of `listAgreements` for slice-3 REST unification.
+ * Symmetric with `listTemplatesPaged`; see that function's doc for
+ * read-skew and pagination-determinism notes.
+ */
+export async function listAgreementsPaged(
+    db: Database,
+    opts: {
+        whereClause?: SQL;
+        orderClause?: SQLWrapper | null;
+        limit: number;
+        offset: number;
+    },
+): Promise<{ items: AgreementRow[]; total: number }> {
+    const limit = Math.min(100, Math.max(1, opts.limit));
+    const offset = Math.max(0, opts.offset);
+
+    const [{ count: totalRow }] = await db
+        .select({ count: count() })
+        .from(Agreement)
+        .where(opts.whereClause);
+
+    const orderClause: SQLWrapper = opts.orderClause ?? asc(Agreement.id);
+    const items = await db
+        .select()
+        .from(Agreement)
+        .where(opts.whereClause)
+        .orderBy(orderClause as SQL<unknown>)
+        .limit(limit)
+        .offset(offset);
+
+    return { items, total: totalRow };
 }

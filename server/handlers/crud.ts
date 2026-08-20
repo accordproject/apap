@@ -58,10 +58,14 @@ function defaultWhereClause<T extends PgTable<any>>(
 	for (const key of Object.keys(filters)) {
 		let value = filters[key];
 
-		// Use hasOwnProperty instead of `in` to prevent prototype pollution.
-		// The `in` operator traverses the prototype chain, so keys like
-		// "toString", "constructor", or "__proto__" would pass through.
-		if (table && !Object.prototype.hasOwnProperty.call(table, key)) {
+		// Prototype-pollution guard (fail-closed): use hasOwnProperty against
+		// the passed table, and reject the key outright if no table was
+		// provided. The `in` operator traverses the prototype chain, so
+		// unfiltered keys like "toString" / "constructor" / "__proto__" would
+		// pass through. Previously `if (table && ...)` meant a caller that
+		// omitted `table` silently skipped the guard, so any filter key would
+		// be interpolated. Now: no table -> no filters, ever.
+		if (!table || !Object.prototype.hasOwnProperty.call(table, key)) {
 			continue;
 		}
 
@@ -87,14 +91,23 @@ function defaultWhereClause<T extends PgTable<any>>(
 			const trimmed = value.trim();
 
 			// Case-insensitive equality via `~` prefix. `?author=~Rob` matches
-			// "rob", "ROB", "Rob", etc. via Postgres ILIKE. Placed before the
-			// standard operator match so `~` never collides with the numeric
-			// comparison operators. Operand is passed as a bound parameter so
+			// "rob", "ROB", "Rob", etc. Placed before the standard operator
+			// match so `~` never collides with the numeric comparison
+			// operators. Escapes ILIKE metacharacters (`%` `_` `\`) so
+			// `?author=~%admin%` matches the LITERAL string "%admin%" rather
+			// than silently becoming a wildcard contains-match, which was
+			// #228's follow-up bug. Operand is passed as a bound parameter so
 			// SQL injection is not a concern (identifier safety on the column
 			// is already enforced by SAFE_IDENTIFIER_RX above). Closes #125.
+			//
+			// TODO: `~` on a non-text column (e.g. `?id=~5`) still surfaces
+			// as a Postgres type error. Add a column-type check when a shared
+			// column-metadata accessor exists on the router. Tracked in the
+			// #228 follow-up scope.
 			if (trimmed.startsWith('~')) {
 				const operand = trimmed.slice(1).trim();
-				conditions.push(sql`${column} ILIKE ${operand}`);
+				const escaped = operand.replace(/[\\%_]/g, '\\$&');
+				conditions.push(sql`${column} ILIKE ${escaped} ESCAPE '\\'`);
 				continue;
 			}
 
@@ -186,6 +199,21 @@ export type InsertValidator = {
     custom?: (body:any) => Promise<ValidationResult>,
 }
 
+/**
+ * Signature for a service-layer list function that the router can delegate
+ * to. Returns `{ items, total }`; the router wraps that into the full
+ * PaginatedResponse envelope with page / limit / totalPages metadata.
+ */
+export type ListService<TRow> = (
+    db: any,
+    opts: {
+        whereClause?: SQL;
+        orderClause?: SQLWrapper | null;
+        limit: number;
+        offset: number;
+    },
+) => Promise<{ items: TRow[]; total: number }>;
+
 interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     table: T;
     typeName: string;
@@ -208,6 +236,15 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     // delete. Skipped when no row matches :id, so 404 handling below is
     // unaffected.
     guardDelete?: (existing: any, db: any) => void | Promise<void>;
+    /**
+     * Optional service-layer list function. When provided, the GET / handler
+     * delegates DB read + count to it instead of the inline path. Router
+     * still owns query-string parsing (`parseQueryParams`), `whereClause`
+     * construction (`defaultWhereClause` with `SAFE_IDENTIFIER_RX` /
+     * operator whitelist), and `orderClause` construction; the service owns
+     * the DB select + count. Keeps REST and MCP on one code path for reads.
+     */
+    listService?: ListService<any>;
 }
 
 function getSingleQueryParam(value: unknown): string | undefined {
@@ -309,7 +346,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     transformResponse,
     transformRequest,
     guardUpdate,
-    guardDelete
+    guardDelete,
+    listService,
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
@@ -371,25 +409,50 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 
 
 
-                // Get total count for pagination
-                const [{ count: total }] = await res.locals.db
-                    .select({ count: count() })
-                    .from(table)
-                    .where(whereClause);
+                // Slice-3 unification: delegate the DB read + count to a
+                // service-layer list function when one is registered on the
+                // router. The router still owns query parsing and clause
+                // construction so per-table filter/sort semantics stay
+                // uniform. When no listService is provided, keep the
+                // pre-slice-3 inline path so resources without a service
+                // layer (e.g. sharedmodels) work unchanged.
+                //
+                // TODO(#217): the inline fallback below does NOT get the
+                // clamping / default-order / read-skew safeguards that the
+                // service path enforces. `sharedmodels` is the only current
+                // caller of the fallback; once a `sharedModelService.ts` +
+                // `listSharedModelsPaged` land, delete the fallback branch
+                // and make `listService` required on the CrudRouterOptions
+                // shape. Follow-up tracked in #217.
+                let items: any[];
+                let total: number;
+                if (listService) {
+                    const paged = await listService(res.locals.db, {
+                        whereClause,
+                        orderClause,
+                        limit,
+                        offset: (page - 1) * limit,
+                    });
+                    items = paged.items;
+                    total = paged.total;
+                } else {
+                    const [{ count: countRow }] = await res.locals.db
+                        .select({ count: count() })
+                        .from(table)
+                        .where(whereClause);
+                    total = countRow;
 
-                // Get paginated results
-                let query = res.locals.db
-                    .select()
-                    .from(table)
-                    .where(whereClause)
-                    .limit(limit)
-                    .offset((page - 1) * limit);
-
-                if (orderClause !== null) {
-                    query = query.orderBy(orderClause as SQL<unknown>);
+                    let query = res.locals.db
+                        .select()
+                        .from(table)
+                        .where(whereClause)
+                        .limit(limit)
+                        .offset((page - 1) * limit);
+                    if (orderClause !== null) {
+                        query = query.orderBy(orderClause as SQL<unknown>);
+                    }
+                    items = await query;
                 }
-
-                const items = await query;
 
                 const response: PaginatedResponse<any> = {
                     items,

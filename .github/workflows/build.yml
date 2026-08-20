@@ -56,6 +56,110 @@ jobs:
           name: npm-logs
           path: C:\npm\cache\_logs\
 
+  # Postgres 18 smoke check. Standalone job (services: only run on Linux
+  # runners, cannot be attached to the matrix build above). Proves the pinned
+  # postgres:18-alpine image stands up cleanly and accepts the app's schema
+  # via drizzle-kit push. Follow-up to #229 review: "tested against PG18"
+  # is now true in CI, not just in local docker compose.
+  postgres-18-smoke:
+    name: Postgres 18 schema smoke
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: 1baddeed
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install server deps
+        working-directory: server
+        run: npm ci
+      - name: Apply schema to Postgres 18 via drizzle-kit push
+        working-directory: server
+        env:
+          POSTGRES_URL: postgres://postgres:1baddeed@localhost:5432/postgres
+        run: npx drizzle-kit push --config drizzle.config.ts
+
+      # Follow-up to Niall's #231 review: "postgres-18-smoke only applies the
+      # schema, not that RLS still isolates rows on 18." APAP itself does not
+      # yet enable ROW LEVEL SECURITY on any table (the auth chain in
+      # handlers/crud.ts is still commented pending the A2A + MCP auth PRs),
+      # so this step verifies that the *PG18 RLS feature itself* has not
+      # regressed by running a self-contained isolation test against a
+      # throwaway table. If PG18 ever ships a change that breaks RLS
+      # row-visibility semantics, this step catches it before APAP's own
+      # tables start using RLS.
+      - name: Verify PG18 RLS isolation semantics with a synthetic policy
+        env:
+          PGPASSWORD: 1baddeed
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql -h localhost -U postgres -d postgres -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE TABLE _rls_smoke (id int PRIMARY KEY, owner text NOT NULL);
+          ALTER TABLE _rls_smoke ENABLE ROW LEVEL SECURITY;
+          CREATE POLICY p_owner ON _rls_smoke
+              USING (owner = current_setting('app.user_id', true));
+          INSERT INTO _rls_smoke VALUES (1, 'alice'), (2, 'bob');
+
+          -- Superusers bypass RLS regardless of FORCE ROW LEVEL SECURITY, and
+          -- the CI service runs as `postgres` (SUPERUSER). Demote to a fresh
+          -- NOSUPERUSER NOBYPASSRLS role for the assertions so the policy
+          -- actually applies. GRANT SELECT so the role can read the throwaway
+          -- table.
+          CREATE ROLE rls_tester NOSUPERUSER NOBYPASSRLS;
+          GRANT SELECT ON _rls_smoke TO rls_tester;
+          SET ROLE rls_tester;
+
+          SELECT set_config('app.user_id', 'alice', false);
+          DO $$
+          DECLARE cnt int;
+          BEGIN
+              SELECT count(*) INTO cnt FROM _rls_smoke;
+              IF cnt <> 1 THEN
+                  RAISE EXCEPTION 'RLS regression: alice saw % rows, expected 1', cnt;
+              END IF;
+          END $$;
+
+          SELECT set_config('app.user_id', 'bob', false);
+          DO $$
+          DECLARE cnt int;
+          BEGIN
+              SELECT count(*) INTO cnt FROM _rls_smoke;
+              IF cnt <> 1 THEN
+                  RAISE EXCEPTION 'RLS regression: bob saw % rows, expected 1', cnt;
+              END IF;
+          END $$;
+
+          SELECT set_config('app.user_id', 'nobody', false);
+          DO $$
+          DECLARE cnt int;
+          BEGIN
+              SELECT count(*) INTO cnt FROM _rls_smoke;
+              IF cnt <> 0 THEN
+                  RAISE EXCEPTION 'RLS regression: unknown principal saw % rows, expected 0', cnt;
+              END IF;
+          END $$;
+
+          -- Return to the postgres superuser role before DROP: `rls_tester`
+          -- only has GRANT SELECT (not ownership) so a DROP as that role
+          -- fails with "must be owner of table _rls_smoke".
+          RESET ROLE;
+          DROP TABLE _rls_smoke;
+          SQL
+
   publish:
     needs:
       - build

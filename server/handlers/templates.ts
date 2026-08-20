@@ -7,6 +7,7 @@ import {
     assertTemplateContentImmutable,
     assertTemplateNotInUse,
     createTemplateFromArchive,
+    listTemplatesPaged,
 } from '../services/templateService';
 import { InvalidPayloadError } from '../services/errors';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -68,6 +69,7 @@ const crudRouter = buildCrudRouter({
     // new template, not an edit in place. See templateService.ts.
     guardUpdate: (existing, body) => assertTemplateContentImmutable(existing, body),
     guardDelete: (existing, db) => assertTemplateNotInUse(existing, db),
+    listService: (db, opts) => listTemplatesPaged(db, opts),
 });
 
 /**
