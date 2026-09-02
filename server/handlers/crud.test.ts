@@ -696,6 +696,16 @@ describe('parseQueryParams', () => {
         expect(queryParams.sortBy).toBe('createdAt');
         expect(queryParams.sortOrder).toBe('desc');
     });
+    it('uses the first repeated query param for filters', () => {
+        const req = {
+            query: {
+                author: ['Rob', 'Bob']
+            }
+        } as unknown as Request;
+        const result = parseQueryParams(req);
+
+        expect(result.filters?.author).toBe('Rob');
+    });
 });
 
 // Coverage additions for the CRUD router happy paths + boundary shapes that
