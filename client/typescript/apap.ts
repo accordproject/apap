@@ -636,13 +636,13 @@ export interface components {
             $class: string;
         };
         /**
-         * LcpDisputeResolution
-         * @description An instance of org.accordproject.protocol@1.0.0.LcpDisputeResolution
+         * DisputeResolution
+         * @description An instance of org.accordproject.protocol@1.0.0.DisputeResolution
          */
-        "org.accordproject.protocol@1.0.0.LcpDisputeResolution": {
+        "org.accordproject.protocol@1.0.0.DisputeResolution": {
             /**
-             * @description The class identifier for org.accordproject.protocol@1.0.0.LcpDisputeResolution
-             * @default org.accordproject.protocol@1.0.0.LcpDisputeResolution
+             * @description The class identifier for org.accordproject.protocol@1.0.0.DisputeResolution
+             * @default org.accordproject.protocol@1.0.0.DisputeResolution
              */
             $class: string;
             method?: string;
@@ -653,13 +653,13 @@ export interface components {
             catalog?: string;
         };
         /**
-         * LcpContact
-         * @description An instance of org.accordproject.protocol@1.0.0.LcpContact
+         * Contact
+         * @description An instance of org.accordproject.protocol@1.0.0.Contact
          */
-        "org.accordproject.protocol@1.0.0.LcpContact": {
+        "org.accordproject.protocol@1.0.0.Contact": {
             /**
-             * @description The class identifier for org.accordproject.protocol@1.0.0.LcpContact
-             * @default org.accordproject.protocol@1.0.0.LcpContact
+             * @description The class identifier for org.accordproject.protocol@1.0.0.Contact
+             * @default org.accordproject.protocol@1.0.0.Contact
              */
             $class: string;
             legal?: string;
@@ -680,9 +680,9 @@ export interface components {
             atrHash?: string;
             /** @default false */
             acceptanceRequired: boolean;
-            disputeResolution?: components["schemas"]["org.accordproject.protocol@1.0.0.LcpDisputeResolution"];
+            disputeResolution?: components["schemas"]["org.accordproject.protocol@1.0.0.DisputeResolution"];
             returns?: string;
-            contact?: components["schemas"]["org.accordproject.protocol@1.0.0.LcpContact"];
+            contact?: components["schemas"]["org.accordproject.protocol@1.0.0.Contact"];
             api?: string;
         };
         /**

@@ -10974,7 +10974,7 @@ Fetch the Legal Context Protocol discovery document for an existing agreement.
   "atrHash": "string",
   "acceptanceRequired": false,
   "disputeResolution": {
-    "$class": "org.accordproject.protocol@1.0.0.LcpDisputeResolution",
+    "$class": "org.accordproject.protocol@1.0.0.DisputeResolution",
     "method": "string",
     "jurisdiction": "string",
     "contact": "string",
@@ -10984,7 +10984,7 @@ Fetch the Legal Context Protocol discovery document for an existing agreement.
   },
   "returns": "string",
   "contact": {
-    "$class": "org.accordproject.protocol@1.0.0.LcpContact",
+    "$class": "org.accordproject.protocol@1.0.0.Contact",
     "legal": "string",
     "technical": "string"
   },
@@ -12287,16 +12287,16 @@ HtmlConversionOptions
 |---|---|---|---|---|
 |$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.HtmlConversionOptions|
 
-<h2 id="tocS_org.accordproject.protocol@1.0.0.LcpDisputeResolution">org.accordproject.protocol@1.0.0.LcpDisputeResolution</h2>
+<h2 id="tocS_org.accordproject.protocol@1.0.0.DisputeResolution">org.accordproject.protocol@1.0.0.DisputeResolution</h2>
 <!-- backwards compatibility -->
 <a id="schemaorg.accordproject.protocol@1.0.0.lcpdisputeresolution"></a>
-<a id="schema_org.accordproject.protocol@1.0.0.LcpDisputeResolution"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.DisputeResolution"></a>
 <a id="tocSorg.accordproject.protocol@1.0.0.lcpdisputeresolution"></a>
 <a id="tocsorg.accordproject.protocol@1.0.0.lcpdisputeresolution"></a>
 
 ```json
 {
-  "$class": "org.accordproject.protocol@1.0.0.LcpDisputeResolution",
+  "$class": "org.accordproject.protocol@1.0.0.DisputeResolution",
   "method": "string",
   "jurisdiction": "string",
   "contact": "string",
@@ -12307,13 +12307,13 @@ HtmlConversionOptions
 
 ```
 
-LcpDisputeResolution
+DisputeResolution
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.LcpDisputeResolution|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.DisputeResolution|
 |method|string|false|none|none|
 |jurisdiction|string|false|none|none|
 |contact|string|false|none|none|
@@ -12321,29 +12321,29 @@ LcpDisputeResolution
 |source|string|false|none|none|
 |catalog|string|false|none|none|
 
-<h2 id="tocS_org.accordproject.protocol@1.0.0.LcpContact">org.accordproject.protocol@1.0.0.LcpContact</h2>
+<h2 id="tocS_org.accordproject.protocol@1.0.0.Contact">org.accordproject.protocol@1.0.0.Contact</h2>
 <!-- backwards compatibility -->
 <a id="schemaorg.accordproject.protocol@1.0.0.lcpcontact"></a>
-<a id="schema_org.accordproject.protocol@1.0.0.LcpContact"></a>
+<a id="schema_org.accordproject.protocol@1.0.0.Contact"></a>
 <a id="tocSorg.accordproject.protocol@1.0.0.lcpcontact"></a>
 <a id="tocsorg.accordproject.protocol@1.0.0.lcpcontact"></a>
 
 ```json
 {
-  "$class": "org.accordproject.protocol@1.0.0.LcpContact",
+  "$class": "org.accordproject.protocol@1.0.0.Contact",
   "legal": "string",
   "technical": "string"
 }
 
 ```
 
-LcpContact
+Contact
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.LcpContact|
+|$class|string|true|none|The class identifier for org.accordproject.protocol@1.0.0.Contact|
 |legal|string|false|none|none|
 |technical|string|false|none|none|
 
@@ -12362,7 +12362,7 @@ LcpContact
   "atrHash": "string",
   "acceptanceRequired": false,
   "disputeResolution": {
-    "$class": "org.accordproject.protocol@1.0.0.LcpDisputeResolution",
+    "$class": "org.accordproject.protocol@1.0.0.DisputeResolution",
     "method": "string",
     "jurisdiction": "string",
     "contact": "string",
@@ -12372,7 +12372,7 @@ LcpContact
   },
   "returns": "string",
   "contact": {
-    "$class": "org.accordproject.protocol@1.0.0.LcpContact",
+    "$class": "org.accordproject.protocol@1.0.0.Contact",
     "legal": "string",
     "technical": "string"
   },
@@ -12392,9 +12392,9 @@ LegalContext
 |termsFormat|string|false|none|none|
 |atrHash|string|false|none|none|
 |acceptanceRequired|boolean|true|none|none|
-|disputeResolution|[org.accordproject.protocol@1.0.0.LcpDisputeResolution](#schemaorg.accordproject.protocol@1.0.0.lcpdisputeresolution)|false|none|An instance of org.accordproject.protocol@1.0.0.LcpDisputeResolution|
+|disputeResolution|[org.accordproject.protocol@1.0.0.DisputeResolution](#schemaorg.accordproject.protocol@1.0.0.lcpdisputeresolution)|false|none|An instance of org.accordproject.protocol@1.0.0.DisputeResolution|
 |returns|string|false|none|none|
-|contact|[org.accordproject.protocol@1.0.0.LcpContact](#schemaorg.accordproject.protocol@1.0.0.lcpcontact)|false|none|An instance of org.accordproject.protocol@1.0.0.LcpContact|
+|contact|[org.accordproject.protocol@1.0.0.Contact](#schemaorg.accordproject.protocol@1.0.0.lcpcontact)|false|none|An instance of org.accordproject.protocol@1.0.0.Contact|
 |api|string|false|none|none|
 
 <h2 id="tocS_org.accordproject.protocol@1.0.0.FeatureType">org.accordproject.protocol@1.0.0.FeatureType</h2>

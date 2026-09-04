@@ -38,7 +38,7 @@ export interface AgreementTerms {
     contentType: string;
 }
 
-export interface LcpDisputeResolution {
+export interface DisputeResolution {
     method?: string;
     jurisdiction?: string;
     contact?: string;
@@ -47,7 +47,7 @@ export interface LcpDisputeResolution {
     catalog?: string;
 }
 
-export interface LcpContact {
+export interface Contact {
     legal?: string;
     technical?: string;
 }
@@ -57,9 +57,9 @@ export interface LegalContextDocument {
     termsFormat?: string;
     atrHash?: string;
     acceptanceRequired: boolean;
-    disputeResolution?: LcpDisputeResolution;
+    disputeResolution?: DisputeResolution;
     returns?: string;
-    contact?: LcpContact;
+    contact?: Contact;
     api?: string;
 }
 
@@ -168,8 +168,8 @@ function omitIfEmpty<T extends Record<string, unknown>>(obj: T): T | undefined {
 
 interface AdvisoryFields {
     acceptanceRequired: boolean;
-    disputeResolution?: LcpDisputeResolution;
-    contact?: LcpContact;
+    disputeResolution?: DisputeResolution;
+    contact?: Contact;
     returns?: string;
 }
 

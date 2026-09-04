@@ -181,7 +181,7 @@ concept HtmlConversionOptions extends ConversionOptions {
 }
 
 @description("Dispute resolution metadata for a Legal Context Protocol document")
-concept LcpDisputeResolution {
+concept DisputeResolution {
     o String method optional          // e.g. "Dispute Resolution Service Rules"
     o String jurisdiction optional    // e.g. "New York, USA"
     o String contact optional         // email or URL for dispute filing
@@ -191,7 +191,7 @@ concept LcpDisputeResolution {
 }
 
 @description("Service contact information for a Legal Context Protocol document")
-concept LcpContact {
+concept Contact {
     o String legal optional           // legal department contact
     o String technical optional       // technical support contact
 }
@@ -202,9 +202,9 @@ concept LegalContext {
     o String termsFormat optional                       // markdown | json | plain | html | pdf
     o String atrHash optional                            // SHA-256 of the terms doc: "0x" + 64 lowercase hex
     o Boolean acceptanceRequired default=false
-    o LcpDisputeResolution disputeResolution optional
+    o DisputeResolution disputeResolution optional
     o String returns optional                             // URL of a returns/claims API or process
-    o LcpContact contact optional
+    o Contact contact optional
     o String api optional                                 // legal-context API entry point (L4)
 }
 

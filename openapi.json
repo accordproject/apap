@@ -789,16 +789,16 @@
           ]
         }
       },
-      "org.accordproject.protocol@1.0.0.LcpDisputeResolution": {
-        "title": "LcpDisputeResolution",
-        "description": "An instance of org.accordproject.protocol@1.0.0.LcpDisputeResolution",
+      "org.accordproject.protocol@1.0.0.DisputeResolution": {
+        "title": "DisputeResolution",
+        "description": "An instance of org.accordproject.protocol@1.0.0.DisputeResolution",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.protocol@1.0.0.LcpDisputeResolution",
-            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.LcpDisputeResolution$",
-            "description": "The class identifier for org.accordproject.protocol@1.0.0.LcpDisputeResolution"
+            "default": "org.accordproject.protocol@1.0.0.DisputeResolution",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.DisputeResolution$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.DisputeResolution"
           },
           "method": {
             "type": "string"
@@ -828,16 +828,16 @@
           ]
         }
       },
-      "org.accordproject.protocol@1.0.0.LcpContact": {
-        "title": "LcpContact",
-        "description": "An instance of org.accordproject.protocol@1.0.0.LcpContact",
+      "org.accordproject.protocol@1.0.0.Contact": {
+        "title": "Contact",
+        "description": "An instance of org.accordproject.protocol@1.0.0.Contact",
         "type": "object",
         "properties": {
           "$class": {
             "type": "string",
-            "default": "org.accordproject.protocol@1.0.0.LcpContact",
-            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.LcpContact$",
-            "description": "The class identifier for org.accordproject.protocol@1.0.0.LcpContact"
+            "default": "org.accordproject.protocol@1.0.0.Contact",
+            "pattern": "^org\\.accordproject\\.protocol@1\\.0\\.0\\.Contact$",
+            "description": "The class identifier for org.accordproject.protocol@1.0.0.Contact"
           },
           "legal": {
             "type": "string"
@@ -880,13 +880,13 @@
             "type": "boolean"
           },
           "disputeResolution": {
-            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.LcpDisputeResolution"
+            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.DisputeResolution"
           },
           "returns": {
             "type": "string"
           },
           "contact": {
-            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.LcpContact"
+            "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.Contact"
           },
           "api": {
             "type": "string"
