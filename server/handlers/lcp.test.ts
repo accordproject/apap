@@ -37,6 +37,7 @@ describe('GET /.well-known/legal-context.json', () => {
 
     it('serves the configured document with CORS enabled', async () => {
         mockedBuildServerLegalContext.mockResolvedValue({
+            $class: 'org.accordproject.protocol@1.0.0.LegalContext',
             terms: 'https://terms.example/agreement.md',
             acceptanceRequired: false,
         });

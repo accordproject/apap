@@ -287,6 +287,32 @@ describe('lcpService', () => {
             expect(doc.termsFormat).toBe('markdown');
             expect(doc.api).toBe('https://apap.example/agreements/42');
         });
+
+        it('stamps $class on the document and on nested disputeResolution/contact, matching the generated OpenAPI schema', async () => {
+            const db = createMockDb();
+            db._setReturn([{
+                id: 1,
+                agreementStatus: 'DRAFT',
+                metadata: {
+                    values: [
+                        { key: 'lcp.disputeResolution.jurisdiction', value: 'New York, USA' },
+                        { key: 'lcp.contact.legal', value: 'legal@apap.example' },
+                    ],
+                },
+            }]);
+            const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
+            expect(doc.$class).toBe('org.accordproject.protocol@1.0.0.LegalContext');
+            expect(doc.disputeResolution?.$class).toBe('org.accordproject.protocol@1.0.0.DisputeResolution');
+            expect(doc.contact?.$class).toBe('org.accordproject.protocol@1.0.0.Contact');
+        });
+
+        it('omits disputeResolution/contact entirely (no bare $class wrapper) when neither has any fields set', async () => {
+            const db = createMockDb();
+            db._setReturn([{ id: 1, agreementStatus: 'DRAFT', metadata: null }]);
+            const doc = await buildAgreementLegalContext(db, 1, 'https://apap.example');
+            expect(doc.disputeResolution).toBeUndefined();
+            expect(doc.contact).toBeUndefined();
+        });
     });
 
     describe('buildServerLegalContext', () => {
@@ -355,6 +381,19 @@ describe('lcpService', () => {
             const doc = await buildServerLegalContext(db, 'https://apap.example');
 
             expect(doc?.terms).toBe('https://terms.example/agreement.md');
+        });
+
+        it('stamps $class on the external-URL document and its nested disputeResolution/contact', async () => {
+            process.env.LCP_TERMS_URL = 'https://terms.example/agreement.md';
+            process.env.LCP_DISPUTE_JURISDICTION = 'New York, USA';
+            process.env.LCP_CONTACT_LEGAL = 'legal@apap.example';
+            const db = createMockDb();
+
+            const doc = await buildServerLegalContext(db, 'https://apap.example');
+
+            expect(doc?.$class).toBe('org.accordproject.protocol@1.0.0.LegalContext');
+            expect(doc?.disputeResolution?.$class).toBe('org.accordproject.protocol@1.0.0.DisputeResolution');
+            expect(doc?.contact?.$class).toBe('org.accordproject.protocol@1.0.0.Contact');
         });
     });
 });

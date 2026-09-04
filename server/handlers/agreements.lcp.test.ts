@@ -88,6 +88,7 @@ describe('GET /agreements/:id/terms', () => {
 describe('GET /agreements/:id/legal-context', () => {
     it('returns the LegalContext document as JSON with CORS enabled', async () => {
         mockedBuildAgreementLegalContext.mockResolvedValue({
+            $class: 'org.accordproject.protocol@1.0.0.LegalContext',
             terms: 'https://apap.example/agreements/1/terms',
             termsFormat: 'markdown',
             acceptanceRequired: false,

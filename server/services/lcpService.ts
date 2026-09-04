@@ -32,6 +32,25 @@ const DRAFT_STATUS = 'DRAFT';
 
 const DEFAULT_TERMS_FORMAT = 'markdown';
 
+// The generated OpenAPI schema (derived from model/protocol.cto) marks
+// `$class` as a required discriminator on LegalContext and on its nested
+// DisputeResolution/Contact concepts, matching every other Concerto-typed
+// payload this server emits (see templatebuilder.ts's CtoModel stamping and
+// concertovalidation.ts's fromJSON/toJSON round-trip). These documents are
+// assembled fresh per request rather than round-tripped from a DB row, so
+// nothing stamps `$class` automatically — it's added explicitly here instead.
+const LEGAL_CONTEXT_CLASS = 'org.accordproject.protocol@1.0.0.LegalContext';
+const DISPUTE_RESOLUTION_CLASS = 'org.accordproject.protocol@1.0.0.DisputeResolution';
+const CONTACT_CLASS = 'org.accordproject.protocol@1.0.0.Contact';
+
+/** Stamps `$class` onto a nested concept, or passes `undefined` through unchanged. */
+function withClass<T extends object>(
+    obj: T | undefined,
+    $class: string,
+): (T & { $class: string }) | undefined {
+    return obj === undefined ? undefined : { $class, ...obj };
+}
+
 export interface AgreementTerms {
     body: string;
     atrHash: string;
@@ -53,13 +72,14 @@ export interface Contact {
 }
 
 export interface LegalContextDocument {
+    $class: string;
     terms: string;
     termsFormat?: string;
     atrHash?: string;
     acceptanceRequired: boolean;
-    disputeResolution?: DisputeResolution;
+    disputeResolution?: DisputeResolution & { $class: string };
     returns?: string;
-    contact?: Contact;
+    contact?: Contact & { $class: string };
     api?: string;
 }
 
@@ -238,13 +258,14 @@ export async function buildAgreementLegalContext(
         : undefined;
 
     return {
+        $class: LEGAL_CONTEXT_CLASS,
         terms: new URL(`/agreements/${agreementId}/terms`, baseUrl).toString(),
         termsFormat: DEFAULT_TERMS_FORMAT,
         atrHash,
         acceptanceRequired: advisory.acceptanceRequired,
-        disputeResolution: advisory.disputeResolution,
+        disputeResolution: withClass(advisory.disputeResolution, DISPUTE_RESOLUTION_CLASS),
         returns: advisory.returns,
-        contact: advisory.contact,
+        contact: withClass(advisory.contact, CONTACT_CLASS),
         api: new URL(`/agreements/${agreementId}`, baseUrl).toString(),
     };
 }
@@ -281,19 +302,20 @@ export async function buildServerLegalContext(
         const termsHash = process.env.LCP_TERMS_HASH;
         const apiUrl = process.env.LCP_API_URL;
         return {
+            $class: LEGAL_CONTEXT_CLASS,
             terms: assertAbsoluteHttpsUrl(termsUrl, 'LCP_TERMS_URL'),
             termsFormat: process.env.LCP_TERMS_FORMAT ?? DEFAULT_TERMS_FORMAT,
             atrHash: termsHash ? assertAtrHash(termsHash) : undefined,
             acceptanceRequired: process.env.LCP_ACCEPTANCE_REQUIRED === 'true',
-            disputeResolution: omitIfEmpty({
+            disputeResolution: withClass(omitIfEmpty({
                 method: process.env.LCP_DISPUTE_METHOD,
                 jurisdiction: process.env.LCP_DISPUTE_JURISDICTION,
                 contact: process.env.LCP_DISPUTE_CONTACT,
-            }),
-            contact: omitIfEmpty({
+            }), DISPUTE_RESOLUTION_CLASS),
+            contact: withClass(omitIfEmpty({
                 legal: process.env.LCP_CONTACT_LEGAL,
                 technical: process.env.LCP_CONTACT_TECHNICAL,
-            }),
+            }), CONTACT_CLASS),
             api: apiUrl ? assertAbsoluteHttpsUrl(apiUrl, 'LCP_API_URL') : undefined,
         };
     }

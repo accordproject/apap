@@ -593,6 +593,7 @@ produces). `/agreements/:id/legal-context` is the LCP document describing it:
 
 ```json
 {
+  "$class": "org.accordproject.protocol@1.0.0.LegalContext",
   "terms": "http://localhost:9000/agreements/1/terms",
   "termsFormat": "markdown",
   "acceptanceRequired": false,
@@ -619,6 +620,7 @@ terms — really is pinned, and `atrHash` becomes a real L2 claim:
 
 ```json
 {
+  "$class": "org.accordproject.protocol@1.0.0.LegalContext",
   "terms": "http://localhost:9000/agreements/1/terms",
   "termsFormat": "markdown",
   "atrHash": "0x1f3d...c2",
