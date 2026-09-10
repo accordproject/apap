@@ -98,6 +98,14 @@ npm start
 
 > Note: `npm run dev` will start a dev server that will hot-reload code changes.
 
+## Agent-to-Agent (A2A)
+
+The server exposes an authenticated A2A Protocol v1.0 JSON-RPC endpoint at
+`POST /a2a` and a public discovery card at
+`GET /.well-known/agent-card.json`. See [docs/a2a.md](docs/a2a.md) for request
+examples, supported skills, and configuration, and [docs/auth.md](docs/auth.md)
+for the reference JWT adapter's security posture.
+
 # Creating Database Schema
 
 When a new datbase is created the database schema needs to be pushed to the Postgres database.
