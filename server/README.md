@@ -106,6 +106,16 @@ The server exposes an authenticated A2A Protocol v1.0 JSON-RPC endpoint at
 examples, supported skills, and configuration, and [docs/auth.md](docs/auth.md)
 for the reference JWT adapter's security posture.
 
+To start PostgreSQL, initialize and build the server, run A2A smoke tests, and
+keep the development server running:
+
+```bash
+npm run a2a:dev
+```
+
+The script uses only the local Compose database and preserves an existing
+`.env`. Run `npm run a2a:dev -- --help` for its optional flags.
+
 # Creating Database Schema
 
 When a new datbase is created the database schema needs to be pushed to the Postgres database.

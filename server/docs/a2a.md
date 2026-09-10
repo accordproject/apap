@@ -30,6 +30,21 @@ Production fails at startup when `AUTH_ADAPTER` is absent or `none`, or when
 The built-in HS256 adapter is deliberately demo-grade. See [auth.md](auth.md)
 before exposing this endpoint outside a development environment.
 
+### One-command local environment
+
+From `server/`, run:
+
+```bash
+npm run a2a:dev
+```
+
+This starts the local Compose PostgreSQL service, prepares dependencies and the
+schema, builds and starts APAP in development mode, then checks the agent card
+and sends a `list-templates` A2A request. It does not overwrite an existing
+`.env`, connect to a `POSTGRES_URL` from that file, or advertise
+`create-agreement`. Press Ctrl-C to stop APAP; the script prints the separate
+command for stopping PostgreSQL.
+
 ## Invoking a skill
 
 Send a data part containing a `skillId` and an optional `input` object. A JSON
