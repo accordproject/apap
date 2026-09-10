@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import OAuthServer from 'express-oauth-server';
+import * as schema from './db/schema';
 
 // Load environment variables from .env file
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -18,9 +19,10 @@ import sharedModelsRouter from './handlers/sharedmodels';
 import capabilitiesRouter from './handlers/capabilities';
 import mcpRouter, { startSessionCleanup } from './handlers/mcp';
 import authRouter from './handlers/auth';
+import { createA2AComponents } from './handlers/a2a';
+import { loadA2AConfig } from './config';
 
 const app = Express();
-app.use(Express.json());
 
 // Database middleware
 const requiredPostgresEnvVars = [
@@ -53,7 +55,18 @@ const queryClient = postgres(dbUrl);
 const db = drizzle({
   client: queryClient,
   casing: 'snake_case',
+  schema,
 });
+
+// A2A owns its 1MB JSON limit and is mounted before the application's
+// default JSON parser. The executor receives this same shared database
+// handle and calls services directly; it never loops back over HTTP.
+const a2a = createA2AComponents(db, loadA2AConfig());
+// The SDK handler is itself a router and constrains this mount to GET /.
+app.use('/.well-known/agent-card.json', a2a.agentCardHandler);
+app.use('/a2a', a2a.router);
+
+app.use(Express.json());
 
 app.use((req, res, next) => {
   res.locals.db = db;

@@ -28,6 +28,7 @@
     "axios": "1.19.0"
   },
   "dependencies": {
+    "@a2a-js/sdk": "1.0.1",
     "@accordproject/cicero-core": "2.1.1",
     "@accordproject/concerto-core": "4.1.5",
     "@accordproject/concerto-util": "4.1.5",
@@ -43,6 +44,7 @@
     "drizzle-zod": "0.7.1",
     "express": "4.22.0",
     "express-oauth-server": "2.0.0",
+    "jose": "5.9.6",
     "morgan": "1.11.0",
     "openapi-backend": "5.12.0",
     "postgres": "3.4.5",
