@@ -39,6 +39,7 @@ import {
     TemplateNotFoundError,
 } from '../services/errors';
 import { Client } from '@modelcontextprotocol/client';
+import { createLegacyPolicyContext } from '../services/policy';
 
 function createMockDb() {
     const mock: any = {
@@ -483,7 +484,7 @@ describe('MCP Handler', () => {
             serverTransport = transports[1];
 
             // Instantiate and connect server
-            const mcpServer = getServer(mockDb);
+            const mcpServer = getServer(createLegacyPolicyContext(mockDb));
             await mcpServer.connect(serverTransport);
 
             // Connect client

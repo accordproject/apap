@@ -12,9 +12,17 @@ services:
     build:
       context: .
     environment:
-      NODE_ENV: production
+      # This Compose file is the documented local-development stack. A real
+      # deployment must use NODE_ENV=production plus an authenticated adapter.
+      NODE_ENV: development
       HOST: 0.0.0.0
+      POSTGRES_DATABASE: postgres
+      POSTGRES_USER: postgres
       POSTGRES_HOST: db # Docker Compose mounts the db service under this DNS name
+      POSTGRES_PASSWORD: 1baddeed
+      POSTGRES_PORT: 5432
+      PUBLIC_BASE_URL: http://localhost:9000
+      AUTH_ADAPTER: none
     ports:
       - 9000:9000
     depends_on:

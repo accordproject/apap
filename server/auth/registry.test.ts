@@ -4,7 +4,7 @@ import { NoneAdapter } from './noneAdapter';
 
 describe('auth adapter registry', () => {
     test('contains the built-in adapters', () => {
-        expect(registeredAdapterNames()).toEqual(expect.arrayContaining(['jwt', 'none']));
+        expect(registeredAdapterNames()).toEqual(expect.arrayContaining(['hs256', 'none']));
     });
 
     test('allows a custom adapter without changing the factory', () => {
@@ -15,6 +15,6 @@ describe('auth adapter registry', () => {
 
     test('names all registered options for an unknown adapter', () => {
         expect(() => createAuthAdapter(loadA2AConfig({ AUTH_ADAPTER: 'missing' })))
-            .toThrow(/Registered options:.*jwt.*none/);
+            .toThrow(/Registered options:.*hs256.*none/);
     });
 });

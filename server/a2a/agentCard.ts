@@ -55,7 +55,7 @@ function cardWithScheme(
             id: skill.id,
             name: skill.name,
             description: skill.description,
-            tags: ['apap', skill.id.split('-').pop() as string],
+            tags: [...skill.tags],
             examples: [JSON.stringify(skill.example)],
             inputModes: ['application/json'],
             outputModes: ['application/json'],
@@ -79,7 +79,7 @@ export function composeAgentCardSafely(
         return composeAgentCard(config, adapter);
     } catch (_error) {
         warn({ event: 'a2a_agent_card_fallback', adapter: adapter.name });
-        const fallbackName = config.authAdapter === 'jwt' ? 'Bearer' : undefined;
+        const fallbackName = config.authAdapter === 'hs256' ? 'Bearer' : undefined;
         return cardWithScheme(config, fallbackName, fallbackName ? bearerFallback() : undefined);
     }
 }

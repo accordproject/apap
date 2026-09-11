@@ -12,6 +12,7 @@ import {
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
 } from './errors';
+import { authorize, type PolicyContext } from './policy';
 
 // The exact cicero-core version this server parses/executes `.cta` archives
 // with (server/package.json's direct dependency, not a nested copy pulled in
@@ -35,11 +36,8 @@ const CICERO_VERSION_RANGE_RX = /targets Cicero(?: version)? \(?([^\s)]+)\)?/i;
 // before cicero-core ever decompresses a byte.
 const MAX_ARCHIVE_UNCOMPRESSED_BYTES = 50 * 1024 * 1024;
 
-// Each function takes `db` as the first arg so both the MCP handler and the REST
-// routes can call the same code path without an internal HTTP loop. This is the
-// slice-1 port of the shared-service pattern proven in apap-mcp-poc; slice 2
-// will bring across the agreement service and slice 3 will rewire the REST
-// routes to call these functions directly.
+// Each function takes PolicyContext first so every REST, MCP, and A2A caller
+// uses the same authorization and database path without an internal HTTP loop.
 
 type TemplateRow = typeof Template.$inferSelect;
 type TemplateInsert = typeof Template.$inferInsert;
@@ -54,9 +52,11 @@ type TemplateInsert = typeof Template.$inferInsert;
  * pass `limit` / `offset` through from `parseQueryParams`.
  */
 export async function listTemplates(
-    db: Database,
+    context: PolicyContext,
     opts: { limit?: number; offset?: number } = {},
 ): Promise<TemplateRow[]> {
+    await authorize(context, 'templates:list', { type: 'template-collection' });
+    const { db } = context;
     const limit = Math.min(100, Math.max(1, opts.limit ?? 100));
     const offset = Math.max(0, opts.offset ?? 0);
     // Stable pagination: without an explicit order, Postgres is free to return
@@ -69,7 +69,9 @@ export async function listTemplates(
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/templates/${id}`) */
-export async function getTemplateById(db: Database, id: number): Promise<TemplateRow> {
+export async function getTemplateById(context: PolicyContext, id: number): Promise<TemplateRow> {
+    await authorize(context, 'templates:read', { type: 'template', id });
+    const { db } = context;
     const rows = await db.select().from(Template).where(eq(Template.id, id)).limit(1);
     if (rows.length === 0) throw new TemplateNotFoundError(String(id));
     return rows[0];
@@ -78,7 +80,9 @@ export async function getTemplateById(db: Database, id: number): Promise<Templat
 // Lookup by URI. The RI uses URIs as external identifiers while MCP tools pass
 // numeric ids. Supporting both avoids a class of "which id format?" bugs once
 // slice 3 unifies the REST routes.
-export async function getTemplateByUri(db: Database, uri: string): Promise<TemplateRow> {
+export async function getTemplateByUri(context: PolicyContext, uri: string): Promise<TemplateRow> {
+    await authorize(context, 'templates:read', { type: 'template', id: uri });
+    const { db } = context;
     const rows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
     return rows[0];
@@ -87,9 +91,11 @@ export async function getTemplateByUri(db: Database, uri: string): Promise<Templ
 // Insert a new template. Catches PG unique constraint violations (23505) and
 // surfaces them as TemplateDuplicateError so the caller can map to a clean 409.
 export async function createTemplate(
-    db: Database,
+    context: PolicyContext,
     data: TemplateInsert,
 ): Promise<TemplateRow> {
+    await authorize(context, 'templates:create', { type: 'template', id: data.uri });
+    const { db } = context;
     try {
         const rows = await db.insert(Template).values(data).returning();
         return rows[0];
@@ -108,9 +114,11 @@ export async function createTemplate(
  * already does.
  */
 export async function createTemplateFromArchive(
-    db: Database,
+    context: PolicyContext,
     archive: Buffer,
 ): Promise<TemplateRow> {
+    await authorize(context, 'templates:create', { type: 'template-collection' });
+    const { db } = context;
     let entries;
     try {
         entries = new AdmZip(archive).getEntries();
@@ -152,7 +160,7 @@ export async function createTemplateFromArchive(
     const uri = `archive:${packageJson.name}@${packageJson.version}`;
     const data = extractTemplateForDatabase(apTemplate, uri, hash) as TemplateInsert;
     try {
-        return await createTemplate(db, data);
+        return await createTemplate(context, data);
     } catch (err) {
         // Select-then-insert race: a concurrent upload of the same archive
         // may have inserted between our dedupe check above and this insert,
@@ -175,10 +183,12 @@ export async function createTemplateFromArchive(
 // belongs at the mutation chokepoint, not only at the current HTTP entry
 // point. See assertTemplateContentImmutable.
 export async function updateTemplate(
-    db: Database,
+    context: PolicyContext,
     uri: string,
     data: Partial<TemplateInsert>,
 ): Promise<TemplateRow> {
+    await authorize(context, 'templates:update', { type: 'template', id: uri });
+    const { db } = context;
     const existingRows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
     if (existingRows.length === 0) throw new TemplateNotFoundError(uri);
     assertTemplateContentImmutable(existingRows[0], data);
@@ -192,7 +202,9 @@ export async function updateTemplate(
 // itself rather than relying solely on crud.ts's guardDelete, so a caller
 // that bypasses the HTTP route still can't orphan an agreement's template
 // lookup.
-export async function deleteTemplate(db: Database, uri: string): Promise<void> {
+export async function deleteTemplate(context: PolicyContext, uri: string): Promise<void> {
+    await authorize(context, 'templates:delete', { type: 'template', id: uri });
+    const { db } = context;
     const existingRows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
     if (existingRows.length === 0) throw new TemplateNotFoundError(uri);
     await assertTemplateNotInUse(existingRows[0], db);
@@ -303,7 +315,7 @@ export async function assertTemplateNotInUse(existing: TemplateRow, db: Database
  * so callers do not need to run a second query themselves.
  */
 export async function listTemplatesPaged(
-    db: Database,
+    context: PolicyContext,
     opts: {
         whereClause?: SQL;
         orderClause?: SQLWrapper | null;
@@ -311,6 +323,8 @@ export async function listTemplatesPaged(
         offset: number;
     },
 ): Promise<{ items: TemplateRow[]; total: number }> {
+    await authorize(context, 'templates:list', { type: 'template-collection' });
+    const { db } = context;
     const limit = Math.min(100, Math.max(1, opts.limit));
     const offset = Math.max(0, opts.offset);
 

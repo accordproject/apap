@@ -5,7 +5,7 @@ import {
 } from 'jose';
 import type { SecurityScheme } from '@a2a-js/sdk';
 import type { RequestHeaders } from '@a2a-js/sdk/server';
-import type { A2AJwtConfig } from '../config';
+import type { A2AHs256Config } from '../config';
 import {
     A2AAuthError,
     AuthAdapter,
@@ -65,11 +65,11 @@ function mapJoseError(error: unknown): A2AAuthError {
  * deployments should register an asymmetric OIDC/JWKS or wallet/DID adapter.
  */
 export class JwtAdapter implements AuthAdapter {
-    public readonly name = 'jwt';
+    public readonly name = 'hs256';
     public readonly securitySchemeName = 'Bearer';
     private readonly key: Uint8Array;
 
-    constructor(private readonly config: A2AJwtConfig) {
+    constructor(private readonly config: A2AHs256Config) {
         this.key = new TextEncoder().encode(config.secret);
     }
 

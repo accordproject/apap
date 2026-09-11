@@ -1,8 +1,8 @@
 import { loadA2AConfig } from './config';
 
 describe('loadA2AConfig', () => {
-    test('defaults to local, unauthenticated development mode', () => {
-        expect(loadA2AConfig({})).toMatchObject({
+    test('uses the explicit local unauthenticated development configuration', () => {
+        expect(loadA2AConfig({ NODE_ENV: 'development', AUTH_ADAPTER: 'none' })).toMatchObject({
             authAdapter: 'none',
             publicBaseUrl: 'http://localhost:9000',
             isProduction: false,
@@ -14,7 +14,13 @@ describe('loadA2AConfig', () => {
             NODE_ENV: 'production',
             PUBLIC_BASE_URL: 'https://apap.example.com',
             ...(adapter && { AUTH_ADAPTER: adapter }),
-        })).toThrow(/AUTH_ADAPTER must be explicitly set/);
+        })).toThrow(/AUTH_ADAPTER must be explicitly set|allowed only/);
+    });
+
+    test('requires an explicit adapter and confines none to development or test', () => {
+        expect(() => loadA2AConfig({})).toThrow(/AUTH_ADAPTER must be explicitly set/);
+        expect(() => loadA2AConfig({ AUTH_ADAPTER: 'none' })).toThrow(/development or test/);
+        expect(loadA2AConfig({ NODE_ENV: 'test', AUTH_ADAPTER: 'none' }).authAdapter).toBe('none');
     });
 
     test('requires a stable public URL in production', () => {
@@ -28,9 +34,9 @@ describe('loadA2AConfig', () => {
     });
 
     test('validates JWT configuration eagerly', () => {
-        expect(() => loadA2AConfig({ AUTH_ADAPTER: 'jwt' })).toThrow(/requires A2A_JWT_SECRET/);
+        expect(() => loadA2AConfig({ AUTH_ADAPTER: 'hs256' })).toThrow(/requires A2A_JWT_SECRET/);
         expect(() => loadA2AConfig({
-            AUTH_ADAPTER: 'jwt',
+            AUTH_ADAPTER: 'hs256',
             A2A_JWT_SECRET: 'short',
             A2A_JWT_ISSUER: 'issuer',
             A2A_JWT_AUDIENCE: 'audience',

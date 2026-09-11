@@ -67,9 +67,11 @@ require_command docker
 require_command node
 require_command npm
 
-NODE_MAJOR="$(node -p 'Number(process.versions.node.split(".")[0])')"
-if ((NODE_MAJOR < 22)); then
-    echo "Node.js 22 or newer is required; found $(node --version)." >&2
+if ! node -e '
+    const [major, minor] = process.versions.node.split(".").map(Number);
+    process.exit(major > 22 || (major === 22 && minor >= 12) ? 0 : 1);
+'; then
+    echo "Node.js 22.12 or newer is required; found $(node --version)." >&2
     exit 1
 fi
 
@@ -92,6 +94,7 @@ else
     log "Preserving existing server/.env"
 fi
 
+DID_INSTALL=0
 if [[ ! -d node_modules || ! -f node_modules/@a2a-js/sdk/package.json ]]; then
     if ((SKIP_INSTALL == 1)); then
         echo "Dependencies are missing and --skip-install was supplied." >&2
@@ -99,6 +102,7 @@ if [[ ! -d node_modules || ! -f node_modules/@a2a-js/sdk/package.json ]]; then
     fi
     log "Installing dependencies with npm ci"
     npm ci
+    DID_INSTALL=1
 else
     log "Dependencies already installed; skipping npm ci"
 fi
@@ -120,6 +124,22 @@ export PORT="${A2A_DEV_PORT:-9000}"
 export PUBLIC_BASE_URL="http://${HOST}:${PORT}"
 export AUTH_ADAPTER=none
 
+# Refuse to probe an unrelated process. Without this preflight an existing
+# APAP on the same port could satisfy /health after this server fails to bind.
+if ! node -e '
+    const net = require("node:net");
+    const host = process.argv[1];
+    const port = Number(process.argv[2]);
+    const probe = net.createServer();
+    probe.once("error", (error) => {
+        console.error(`Cannot start APAP on ${host}:${port}: ${error.code ?? error.message}`);
+        process.exit(1);
+    });
+    probe.listen({ host, port }, () => probe.close());
+' "$HOST" "$PORT"; then
+    exit 1
+fi
+
 log "Starting the local PostgreSQL service"
 docker compose up -d db
 
@@ -140,8 +160,12 @@ fi
 log "Applying the database schema"
 npx drizzle-kit push
 
-log "Building the APAP server"
-npm run build
+if ((DID_INSTALL == 0)); then
+    log "Building the APAP server"
+    npm run build
+else
+    log "npm ci already built the APAP server through postinstall"
+fi
 
 SERVER_PID=""
 cleanup() {

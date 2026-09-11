@@ -22,6 +22,7 @@ import {
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
 } from './errors';
+import { DevelopmentPrincipal } from '../auth/types';
 
 // Builds a real `.cta` archive buffer from the late-delivery-and-penalty test
 // fixture, optionally overriding the `package.json.accordproject.cicero`
@@ -145,6 +146,10 @@ function createMockDb() {
         return Promise.resolve(this._returnValue).then(onFulfilled, onRejected);
     };
     mock._setReturn = (val: any[]) => { mock._returnValue = val; };
+    // The shared-service API receives a PolicyContext. Point its db field at
+    // this fluent mock so existing query assertions remain readable.
+    mock.db = mock;
+    mock.principal = new DevelopmentPrincipal();
     return mock;
 }
 

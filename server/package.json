@@ -6,7 +6,7 @@
   "license": "Apache-2",
   "keywords": [],
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "db:studio": "drizzle-kit studio",
@@ -22,6 +22,7 @@
     "watch-start": "nodemon --delay 2 -w dist/ -x 'npm run start'",
     "dev": "concurrently -k -p '[{name}]' -n 'typescript,api' -c 'yellow.bold,cyan.bold' npm:watch-build npm:watch-start",
     "lint": "tslint --format prose --project .",
+    "pretest": "node scripts/check-a2a-runtime.cjs",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "overrides": {

@@ -11,6 +11,7 @@ import {
 } from '../services/templateService';
 import { InvalidPayloadError } from '../services/errors';
 import { asyncHandler } from '../middleware/errorHandler';
+import { createLegacyPolicyContext } from '../services/policy';
 
 const router = express.Router();
 
@@ -86,7 +87,8 @@ crudRouter.post('/archive',
         if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
             throw new InvalidPayloadError('Missing .cta archive body');
         }
-        const template = await createTemplateFromArchive(res.locals.db, req.body);
+        const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
+        const template = await createTemplateFromArchive(context, req.body);
         res.status(201).json(template);
     })
 );

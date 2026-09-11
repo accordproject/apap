@@ -7,7 +7,6 @@ import {
 import { agentCardHandler, jsonRpcHandler } from '@a2a-js/sdk/server/express';
 import type { Database } from '../db/client';
 import type { A2AConfig } from '../config';
-import { createAuthAdapter } from '../auth/registry';
 import { authenticatedUserBuilder, createA2AAuthMiddleware } from '../auth/middleware';
 import type { AuthAdapter, Principal } from '../auth/types';
 import { composeAgentCardSafely } from '../a2a/agentCard';
@@ -22,7 +21,6 @@ export interface A2AComponents {
 }
 
 export interface A2AComponentOverrides {
-    adapter?: AuthAdapter;
     service?: ApapA2AService;
 }
 
@@ -35,10 +33,10 @@ export function resolvePrincipalOwner(context: ServerCallContext): string {
 export function createA2AComponents(
     db: Database,
     config: A2AConfig,
+    adapter: AuthAdapter,
     overrides: A2AComponentOverrides = {},
 ): A2AComponents {
-    const adapter = overrides.adapter ?? createAuthAdapter(config);
-    if (config.isProduction && adapter.name === 'jwt') {
+    if (config.isProduction && adapter.name === 'hs256') {
         console.warn({
             event: 'a2a_demo_auth_in_production',
             message: 'The built-in HS256 adapter is demo-grade; register an asymmetric adapter for production.',
@@ -46,8 +44,8 @@ export function createA2AComponents(
     }
 
     const initialCard = composeAgentCardSafely(config, adapter);
-    const service = overrides.service ?? new ApapA2AService(db);
-    const executor = new ApapAgentExecutor(service);
+    const service = overrides.service ?? new ApapA2AService();
+    const executor = new ApapAgentExecutor(db, service);
     const taskStore = new InMemoryTaskStore(resolvePrincipalOwner);
     const requestHandler = new DefaultRequestHandler(initialCard, taskStore, executor);
 

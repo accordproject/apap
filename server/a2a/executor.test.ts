@@ -1,6 +1,8 @@
 import { Role, TaskState, type Message } from '@a2a-js/sdk';
 import { RequestContext, ServerCallContext } from '@a2a-js/sdk/server';
 import { AuthenticatedPrincipal } from '../auth/types';
+import type { Database } from '../db/client';
+import { AgreementTriggerError } from '../services/errors';
 import { ApapAgentExecutor, parseSkillInvocation } from './executor';
 
 function userMessage(value: unknown): Message {
@@ -32,8 +34,8 @@ function context(message: Message) {
 }
 
 describe('ApapAgentExecutor', () => {
-    test('accepts data, JSON text, and skill-name text invocations', () => {
-        expect(parseSkillInvocation(userMessage({ skill: 'list-templates', arguments: { limit: 1 } })))
+    test('accepts only structured data or JSON text invocations', () => {
+        expect(parseSkillInvocation(userMessage({ skillId: 'list-templates', input: { limit: 1 } })))
             .toEqual({ skillId: 'list-templates', input: { limit: 1 } });
 
         const textMessage = userMessage({});
@@ -44,13 +46,16 @@ describe('ApapAgentExecutor', () => {
             mediaType: 'text/plain',
         }];
         expect(parseSkillInvocation(textMessage)).toEqual({ skillId: 'get-template', input: { id: 1 } });
+
         textMessage.parts[0].content = { $case: 'text', value: 'list-agreements' };
-        expect(parseSkillInvocation(textMessage)).toEqual({ skillId: 'list-agreements', input: {} });
+        expect(() => parseSkillInvocation(textMessage)).toThrow(/must contain a JSON skill invocation/);
+        expect(() => parseSkillInvocation(userMessage({ skill: 'list-templates', arguments: {} })))
+            .toThrow(/skillId/);
     });
 
     test('publishes task, working, artifact, and completed in order', async () => {
         const service = { execute: jest.fn().mockResolvedValue({ skillId: 'list-templates', result: [{ id: 1 }] }) };
-        const executor = new ApapAgentExecutor(service as any);
+        const executor = new ApapAgentExecutor({} as Database, service as any);
         const publish = jest.fn();
 
         await executor.execute(context(userMessage({ skillId: 'list-templates', input: {} })), { publish } as any);
@@ -63,10 +68,28 @@ describe('ApapAgentExecutor', () => {
         expect(publish.mock.calls[3][0].data.status.state).toBe(TaskState.TASK_STATE_COMPLETED);
     });
 
-    test('converts service failures to a terminal task without echoing the request', async () => {
+    test('rejects invalid requests without invoking the service', async () => {
+        const service = { execute: jest.fn() };
+        const executor = new ApapAgentExecutor({} as Database, service as any);
+        const publish = jest.fn();
+
+        await executor.execute(context(userMessage({ skill: 'list-templates' })), { publish } as any);
+
+        const rejected = publish.mock.calls[publish.mock.calls.length - 1][0];
+        expect(rejected.data.status.state).toBe(TaskState.TASK_STATE_REJECTED);
+        expect(rejected.data.status.message.parts[0].content.value.error).toEqual({
+            code: 'INVALID_PAYLOAD',
+            message: 'The A2A request is invalid.',
+        });
+        expect(service.execute).not.toHaveBeenCalled();
+    });
+
+    test('converts service failures to a stable terminal error without echoing details', async () => {
         const secret = 'do-not-echo-this';
-        const service = { execute: jest.fn().mockRejectedValue(new Error(secret)) };
-        const executor = new ApapAgentExecutor(service as any);
+        const service = {
+            execute: jest.fn().mockRejectedValue(new AgreementTriggerError('7', secret)),
+        };
+        const executor = new ApapAgentExecutor({} as Database, service as any);
         const publish = jest.fn();
 
         await executor.execute(context(userMessage({ skillId: 'list-templates', input: { secret } })), { publish } as any);
@@ -75,6 +98,9 @@ describe('ApapAgentExecutor', () => {
         expect(failed.kind).toBe('statusUpdate');
         expect(failed.data.status.state).toBe(TaskState.TASK_STATE_FAILED);
         expect(JSON.stringify(failed)).not.toContain(secret);
-        expect(JSON.stringify(failed)).toContain('INTERNAL_ERROR');
+        expect(failed.data.status.message.parts[0].content.value.error).toEqual({
+            code: 'AGREEMENT_TRIGGER_FAILED',
+            message: 'Agreement execution failed.',
+        });
     });
 });
