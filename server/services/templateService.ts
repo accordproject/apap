@@ -36,8 +36,10 @@ const CICERO_VERSION_RANGE_RX = /targets Cicero(?: version)? \(?([^\s)]+)\)?/i;
 // before cicero-core ever decompresses a byte.
 const MAX_ARCHIVE_UNCOMPRESSED_BYTES = 50 * 1024 * 1024;
 
-// Each function takes PolicyContext first so every REST, MCP, and A2A caller
-// uses the same authorization and database path without an internal HTTP loop.
+// Each function takes PolicyContext first so every caller of these shared
+// operations uses the same authorization and database path without an internal
+// HTTP loop. Some generic REST CRUD paths do not call these functions yet; see
+// docs/a2a-release-notes.md before enabling PR 2 authentication.
 
 type TemplateRow = typeof Template.$inferSelect;
 type TemplateInsert = typeof Template.$inferInsert;

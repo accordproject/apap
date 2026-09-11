@@ -100,13 +100,27 @@ npm start
 
 > Note: `npm run dev` will start a dev server that will hot-reload code changes.
 
+## Testing
+
+Run tests through the package script:
+
+```bash
+npm test
+```
+
+On Node.js 22, invoking `npx jest` directly omits the
+`--experimental-vm-modules` runtime flag required by the template-engine
+trigger tests. The package script supplies it and is the supported test entry
+point.
+
 ## Agent-to-Agent (A2A)
 
 The server exposes an authenticated A2A Protocol v1.0 JSON-RPC endpoint at
 `POST /a2a` and a public discovery card at
 `GET /.well-known/agent-card.json`. See [docs/a2a.md](docs/a2a.md) for request
 examples, supported skills, and configuration, and [docs/auth.md](docs/auth.md)
-for the reference JWT adapter's security posture.
+for the reference JWT adapter's security posture. Existing deployments should
+also read the [A2A release notes](docs/a2a-release-notes.md) before upgrading.
 
 To start PostgreSQL, initialize and build the server, run A2A smoke tests, and
 keep the development server running:
