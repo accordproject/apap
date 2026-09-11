@@ -70,7 +70,7 @@ const crudRouter = buildCrudRouter({
     // new template, not an edit in place. See templateService.ts.
     guardUpdate: (existing, body) => assertTemplateContentImmutable(existing, body),
     guardDelete: (existing, db) => assertTemplateNotInUse(existing, db),
-    listService: (db, opts) => listTemplatesPaged(db, opts),
+    listService: (context, opts) => listTemplatesPaged(context, opts),
 });
 
 /**

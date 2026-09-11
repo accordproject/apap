@@ -353,6 +353,11 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
+    // PR 2 blocker: the generic get/create/update/delete implementations below
+    // still access res.locals.db directly. They must move behind shared service
+    // operations (and their authorize(context, action, resource) calls) before
+    // authentication is enabled for REST. See docs/a2a-release-notes.md.
+
     // router.use(authCheckJwt);
 
     // Secure middleware to check for org_id

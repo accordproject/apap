@@ -31,7 +31,9 @@ never derived from `Host` or `X-Forwarded-Host`, preventing discovery-card
 poisoning.
 
 The built-in HS256 adapter is deliberately demo-grade. See [auth.md](auth.md)
-before exposing this endpoint outside a development environment.
+before exposing this endpoint outside a development environment. Existing
+deployments should also apply the configuration changes in
+[a2a-release-notes.md](a2a-release-notes.md).
 
 ### One-command local environment
 

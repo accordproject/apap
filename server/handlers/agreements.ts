@@ -96,7 +96,7 @@ const crudRouter = buildCrudRouter({
     // issue with drizzle-zod. Runtime unaffected.
     validateBody: { schema: AgreementInsertSchema as any, custom: (body) => concertoValidation('Agreement', body) },
     guardUpdate: (existing, body) => assertAgreementRecordMutable(existing, body),
-    listService: (db, opts) => listAgreementsPaged(db, opts),
+    listService: (context, opts) => listAgreementsPaged(context, opts),
 });
 
 /**

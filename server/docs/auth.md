@@ -75,3 +75,8 @@ This change only secures the new `/a2a` endpoint. Existing REST and MCP auth
 remains unchanged. Wiring the same adapter into those routes is intentionally a
 separate, potentially breaking deployment step because current unauthenticated
 clients would begin receiving authentication failures.
+
+The generic REST CRUD get/create/update/delete handlers still access
+`res.locals.db` directly. Before PR 2 enables a shared auth guard, those paths
+must move behind shared services and `authorize(context, action, resource)`;
+mounting authentication middleware alone would not apply the policy to them.
