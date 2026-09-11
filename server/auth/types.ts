@@ -7,7 +7,7 @@ export interface Principal extends User {
     readonly orgId?: string;
     readonly roles: readonly string[];
     readonly scopes: readonly string[];
-    readonly raw: Readonly<Record<string, unknown>>;
+    readonly raw: unknown;
 }
 
 /** Verification-agnostic authentication seam for the A2A transport. */
@@ -26,7 +26,7 @@ export class AuthenticatedPrincipal implements Principal {
         public readonly orgId: string | undefined,
         public readonly roles: readonly string[],
         public readonly scopes: readonly string[],
-        public readonly raw: Readonly<Record<string, unknown>>,
+        public readonly raw: unknown,
     ) {}
 
     public get userName(): string {
@@ -39,7 +39,7 @@ export class DevelopmentPrincipal implements Principal {
     public readonly orgId: undefined = undefined;
     public readonly roles: readonly string[] = [];
     public readonly scopes: readonly string[] = ['*'];
-    public readonly raw: Readonly<Record<string, unknown>> = {};
+    public readonly raw: unknown = {};
     public readonly isAuthenticated = false;
 
     public get userName(): string {

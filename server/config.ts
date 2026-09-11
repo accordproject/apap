@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export interface A2AJwtConfig {
+export interface A2AHs256Config {
     secret: string;
     issuer: string;
     audience: string;
@@ -9,7 +9,7 @@ export interface A2AJwtConfig {
 export interface A2AConfig {
     authAdapter: string;
     publicBaseUrl: string;
-    jwt?: A2AJwtConfig;
+    hs256?: A2AHs256Config;
     isProduction: boolean;
 }
 
@@ -35,8 +35,8 @@ function missingJwtVariables(env: z.infer<typeof envSchema>): string[] {
 /**
  * Loads the small amount of configuration owned by the A2A transport.
  * Production is fail-closed: both an explicit auth adapter and a stable
- * public base URL are required. Development and tests default to the
- * deliberately insecure `none` adapter and the local server URL.
+ * public base URL are required. Every environment must explicitly select an
+ * adapter; the deliberately insecure `none` adapter is confined to dev/test.
  */
 export function loadA2AConfig(source: NodeJS.ProcessEnv = process.env): A2AConfig {
     const parsed = envSchema.safeParse(source);
@@ -46,13 +46,17 @@ export function loadA2AConfig(source: NodeJS.ProcessEnv = process.env): A2AConfi
 
     const env = parsed.data;
     const isProduction = env.NODE_ENV === 'production';
-    const authAdapter = (env.AUTH_ADAPTER ?? 'none').toLowerCase();
+    const authAdapter = env.AUTH_ADAPTER?.toLowerCase();
 
-    if (isProduction && authAdapter === 'none') {
+    if (!authAdapter) {
         throw new Error(
-            'A2A configuration error: AUTH_ADAPTER must be explicitly set in production. ' +
-            'Built-in options: jwt. Additional registered adapter names are also accepted.',
+            'A2A configuration error: AUTH_ADAPTER must be explicitly set. ' +
+            'Built-in options: hs256, none. Additional registered adapter names are also accepted.',
         );
+    }
+
+    if (authAdapter === 'none' && env.NODE_ENV !== 'development' && env.NODE_ENV !== 'test') {
+        throw new Error('A2A configuration error: AUTH_ADAPTER=none is allowed only in development or test.');
     }
 
     if (isProduction && !env.PUBLIC_BASE_URL) {
@@ -65,21 +69,21 @@ export function loadA2AConfig(source: NodeJS.ProcessEnv = process.env): A2AConfi
         throw new Error('A2A configuration error: PUBLIC_BASE_URL must use HTTPS in production.');
     }
 
-    let jwt: A2AJwtConfig | undefined;
-    if (authAdapter === 'jwt') {
+    let hs256: A2AHs256Config | undefined;
+    if (authAdapter === 'hs256') {
         const missing = missingJwtVariables(env);
         if (missing.length > 0) {
-            throw new Error(`A2A configuration error: AUTH_ADAPTER=jwt requires ${missing.join(', ')}.`);
+            throw new Error(`A2A configuration error: AUTH_ADAPTER=hs256 requires ${missing.join(', ')}.`);
         }
         if ((env.A2A_JWT_SECRET as string).length < 32) {
             throw new Error('A2A configuration error: A2A_JWT_SECRET must be at least 32 characters.');
         }
-        jwt = {
+        hs256 = {
             secret: env.A2A_JWT_SECRET as string,
             issuer: env.A2A_JWT_ISSUER as string,
             audience: env.A2A_JWT_AUDIENCE as string,
         };
     }
 
-    return { authAdapter, publicBaseUrl, jwt, isProduction };
+    return { authAdapter, publicBaseUrl, hs256, isProduction };
 }

@@ -1,9 +1,8 @@
 import { z } from 'zod';
-import type { Database } from '../db/client';
-import type { Principal } from '../auth/types';
 import { getTemplateById, listTemplates } from './templateService';
 import { getAgreementById, listAgreements, triggerAgreement } from './agreementService';
-import { InvalidPayloadError, ServiceError } from './errors';
+import { InvalidPayloadError } from './errors';
+import type { PolicyContext } from './policy';
 
 export const A2A_SKILLS = [
     {
@@ -11,6 +10,7 @@ export const A2A_SKILLS = [
         name: 'List templates',
         description: 'List APAP templates with bounded pagination.',
         scope: 'apap:templates:read',
+        tags: ['apap', 'templates'],
         example: { skillId: 'list-templates', input: { limit: 20, offset: 0 } },
     },
     {
@@ -18,6 +18,7 @@ export const A2A_SKILLS = [
         name: 'Get template',
         description: 'Get one APAP template by numeric identifier.',
         scope: 'apap:templates:read',
+        tags: ['apap', 'templates'],
         example: { skillId: 'get-template', input: { id: 1 } },
     },
     {
@@ -25,6 +26,7 @@ export const A2A_SKILLS = [
         name: 'List agreements',
         description: 'List APAP agreements with bounded pagination.',
         scope: 'apap:agreements:read',
+        tags: ['apap', 'agreements'],
         example: { skillId: 'list-agreements', input: { limit: 20, offset: 0 } },
     },
     {
@@ -32,6 +34,7 @@ export const A2A_SKILLS = [
         name: 'Get agreement',
         description: 'Get one APAP agreement by numeric identifier.',
         scope: 'apap:agreements:read',
+        tags: ['apap', 'agreements'],
         example: { skillId: 'get-agreement', input: { id: 1 } },
     },
     {
@@ -39,6 +42,7 @@ export const A2A_SKILLS = [
         name: 'Trigger agreement',
         description: 'Execute an agreement request and persist its resulting state.',
         scope: 'apap:trigger:invoke',
+        tags: ['apap', 'agreements', 'execution'],
         example: {
             skillId: 'trigger-agreement',
             input: { id: 1, request: { $class: 'org.example.Request' } },
@@ -56,29 +60,6 @@ export interface SkillInvocation {
 export interface SkillResult {
     skillId: A2ASkillId;
     result: unknown;
-}
-
-export interface ServiceAuthorizationPolicy {
-    assertAuthorized(principal: Principal, requiredScope: string): void | Promise<void>;
-}
-
-function scopeMatches(granted: string, required: string): boolean {
-    if (granted === '*' || granted === required) return true;
-    if (!granted.endsWith('*')) return false;
-    return required.startsWith(granted.slice(0, -1));
-}
-
-/** The RI policy is intentionally thin but keeps identity inside the service seam. */
-export class ScopeAuthorizationPolicy implements ServiceAuthorizationPolicy {
-    public assertAuthorized(principal: Principal, requiredScope: string): void {
-        if (principal.scopes.some((scope) => scopeMatches(scope, requiredScope))) return;
-        throw new ServiceError(
-            'INSUFFICIENT_SCOPE',
-            403,
-            `Scope ${requiredScope} is required for this operation.`,
-            { requiredScope },
-        );
-    }
 }
 
 const pageSchema = z.object({
@@ -129,15 +110,11 @@ function parseInput<T>(schema: z.ZodType<T>, input: unknown, skillId: string): T
 export class ApapA2AService {
     private readonly operations: Operations;
 
-    constructor(
-        private readonly db: Database,
-        private readonly authorization: ServiceAuthorizationPolicy = new ScopeAuthorizationPolicy(),
-        operations: Partial<Operations> = {},
-    ) {
+    constructor(operations: Partial<Operations> = {}) {
         this.operations = { ...defaultOperations, ...operations };
     }
 
-    public async execute(principal: Principal, invocation: SkillInvocation): Promise<SkillResult> {
+    public async execute(context: PolicyContext, invocation: SkillInvocation): Promise<SkillResult> {
         const skill = A2A_SKILLS.find((candidate) => candidate.id === invocation.skillId);
         if (!skill) {
             throw new InvalidPayloadError(`Unknown A2A skill: ${invocation.skillId}`, {
@@ -145,30 +122,28 @@ export class ApapA2AService {
             });
         }
 
-        await this.authorization.assertAuthorized(principal, skill.scope);
-
         switch (skill.id) {
             case 'list-templates': {
                 const input = parseInput(pageSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.listTemplates(this.db, input) };
+                return { skillId: skill.id, result: await this.operations.listTemplates(context, input) };
             }
             case 'get-template': {
                 const input = parseInput(idSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.getTemplateById(this.db, input.id) };
+                return { skillId: skill.id, result: await this.operations.getTemplateById(context, input.id) };
             }
             case 'list-agreements': {
                 const input = parseInput(pageSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.listAgreements(this.db, input) };
+                return { skillId: skill.id, result: await this.operations.listAgreements(context, input) };
             }
             case 'get-agreement': {
                 const input = parseInput(idSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.getAgreementById(this.db, input.id) };
+                return { skillId: skill.id, result: await this.operations.getAgreementById(context, input.id) };
             }
             case 'trigger-agreement': {
                 const input = parseInput(triggerSchema, invocation.input, skill.id);
                 return {
                     skillId: skill.id,
-                    result: await this.operations.triggerAgreement(this.db, input.id, input.request),
+                    result: await this.operations.triggerAgreement(context, input.id, input.request),
                 };
             }
         }

@@ -80,6 +80,8 @@ will NOT auto-migrate. Pick one path:
 
 # Running Locally without Docker
 
+Node.js 22.12 or newer is required.
+
 The RI uses a Postgres database for persistence. Set the POSTGRES_URL environment variable to a Postgres connection string. If you are running
 a developer server you can create a file called `.env` in the root of the server directory to store this value.
 

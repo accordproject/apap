@@ -22,8 +22,11 @@ import authRouter from './handlers/auth';
 import lcpRouter from './handlers/lcp';
 import { createA2AComponents } from './handlers/a2a';
 import { loadA2AConfig } from './config';
+import { createLegacyPolicyContext } from './services/policy';
+import { createAuthAdapter } from './auth/registry';
 
 const app = Express();
+app.use(morgan('combined'));
 
 // Database middleware
 const requiredPostgresEnvVars = [
@@ -62,7 +65,11 @@ const db = drizzle({
 // A2A owns its 1MB JSON limit and is mounted before the application's
 // default JSON parser. The executor receives this same shared database
 // handle and calls services directly; it never loops back over HTTP.
-const a2a = createA2AComponents(db, loadA2AConfig());
+const a2aConfig = loadA2AConfig();
+// One adapter instance is shared by every protocol entry point. PR 2 reuses
+// this instance when it enables the REST and MCP authentication guards.
+const authAdapter = createAuthAdapter(a2aConfig);
+const a2a = createA2AComponents(db, a2aConfig, authAdapter);
 // The SDK handler is itself a router and constrains this mount to GET /.
 app.use('/.well-known/agent-card.json', a2a.agentCardHandler);
 app.use('/a2a', a2a.router);
@@ -71,6 +78,9 @@ app.use(Express.json());
 
 app.use((req, res, next) => {
   res.locals.db = db;
+  // PR 2 replaces this compatibility principal with the shared AuthAdapter
+  // result, while service call sites continue receiving the same context.
+  res.locals.policyContext = createLegacyPolicyContext(db);
   next();
 });
 
@@ -86,9 +96,6 @@ app.use('/', lcpRouter);
 
 // Start MCP session cleanup
 startSessionCleanup();
-
-// logging
-app.use(morgan('combined'));
 
 // Global error handler — registered AFTER all routes
 app.use(globalErrorHandler);

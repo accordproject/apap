@@ -12,6 +12,7 @@ import {
     AgreementRecordImmutableError,
     AgreementStatusTransitionError,
 } from './errors';
+import { DevelopmentPrincipal } from '../auth/types';
 
 // convertAgreement pulls in the real template engine and templatebuilder
 // utility; mock both so the service can be exercised without a real
@@ -41,6 +42,8 @@ function createMockDb() {
         return Promise.resolve(this._returnValue).then(onFulfilled, onRejected);
     };
     mock._setReturn = (val: any[]) => { mock._returnValue = val; };
+    mock.db = mock;
+    mock.principal = new DevelopmentPrincipal();
     return mock;
 }
 
@@ -160,12 +163,15 @@ describe('agreementService', () => {
             const limitMock = jest.fn<any>()
                 .mockResolvedValueOnce(firstResult)
                 .mockResolvedValueOnce(secondResult);
-            return {
+            const mock: any = {
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
                 limit: limitMock,
             };
+            mock.db = mock;
+            mock.principal = new DevelopmentPrincipal();
+            return mock;
         }
 
         beforeEach(() => {

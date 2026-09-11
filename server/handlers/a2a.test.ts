@@ -5,6 +5,7 @@ import type { AuthAdapter } from '../auth/types';
 import { JwtAdapter } from '../auth/jwtAdapter';
 import type { A2AConfig } from '../config';
 import type { Database } from '../db/client';
+import { ApapA2AService } from '../services/a2aService';
 import { createA2AComponents } from './a2a';
 
 const jwt = {
@@ -14,14 +15,18 @@ const jwt = {
 };
 
 const config: A2AConfig = {
-    authAdapter: 'jwt',
+    authAdapter: 'hs256',
     publicBaseUrl: 'https://apap.example.com',
-    jwt,
+    hs256: jwt,
     isProduction: false,
 };
 
-async function bearer(subject = 'agent-1', orgId?: string): Promise<string> {
-    const value = await new SignJWT({ scope: 'apap:templates:read', ...(orgId && { orgId }) })
+async function bearer(
+    subject = 'agent-1',
+    orgId?: string,
+    scope = 'apap:templates:read',
+): Promise<string> {
+    const value = await new SignJWT({ scope, ...(orgId && { orgId }) })
         .setProtectedHeader({ alg: 'HS256' })
         .setSubject(subject)
         .setIssuer(jwt.issuer)
@@ -33,8 +38,7 @@ async function bearer(subject = 'agent-1', orgId?: string): Promise<string> {
 }
 
 function buildApp(adapter: AuthAdapter = new JwtAdapter(jwt), service?: unknown) {
-    const components = createA2AComponents({} as Database, config, {
-        adapter,
+    const components = createA2AComponents({} as Database, config, adapter, {
         service: (service ?? { execute: jest.fn().mockResolvedValue({ skillId: 'list-templates', result: [{ id: 1 }] }) }) as any,
     });
     const app = express();
@@ -67,6 +71,8 @@ describe('A2A Express integration', () => {
         expect(JSON.stringify(response.body)).not.toContain('attacker.example');
         expect(response.body.capabilities.streaming).toBe(false);
         expect(response.body.skills.map((skill: any) => skill.id)).not.toContain('create-agreement');
+        expect(response.body.skills.find((skill: any) => skill.id === 'get-template').tags)
+            .toEqual(['apap', 'templates']);
     });
 
     test('returns a static card when an adapter card hook fails', async () => {
@@ -114,6 +120,47 @@ describe('A2A Express integration', () => {
         expect(response.body.jsonrpc).toBe('2.0');
         expect(response.body.result.task.status.state).toBe('TASK_STATE_COMPLETED');
         expect(response.body.result.task.artifacts[0].parts[0].data).toEqual([{ id: 1 }]);
+    });
+
+    test('rejects a skill when the principal lacks its exact scope', async () => {
+        const response = await request(buildApp(new JwtAdapter(jwt), new ApapA2AService()))
+            .post('/a2a')
+            .set('Authorization', await bearer('agent-1', undefined, 'apap:agreements:read'))
+            .set('A2A-Version', '1.0')
+            .send(sendMessage);
+
+        expect(response.status).toBe(200);
+        expect(response.body.result.task.status.state).toBe('TASK_STATE_REJECTED');
+        expect(response.body.result.task.status.message.parts[0].data.error).toEqual({
+            code: 'INSUFFICIENT_SCOPE',
+            message: 'The authenticated principal is not authorized for this operation.',
+        });
+    });
+
+    test('passes trigger input and authenticated org context to the shared-service facade', async () => {
+        const triggerAgreement = jest.fn().mockResolvedValue({ response: 'ok', state: { count: 1 } });
+        const service = new ApapA2AService({ triggerAgreement } as any);
+        const triggerMessage = structuredClone(sendMessage);
+        const triggerInput = { id: 3, request: { $class: 'org.example.Request', amount: 10 } };
+        triggerMessage.params.message.parts[0].data = {
+            skillId: 'trigger-agreement',
+            input: triggerInput,
+        };
+
+        const response = await request(buildApp(new JwtAdapter(jwt), service))
+            .post('/a2a')
+            .set('Authorization', await bearer('agent-7', 'org-4', 'apap:trigger:invoke'))
+            .set('A2A-Version', '1.0')
+            .send(triggerMessage);
+
+        expect(response.body.result.task.status.state).toBe('TASK_STATE_COMPLETED');
+        expect(triggerAgreement).toHaveBeenCalledWith(
+            expect.objectContaining({
+                principal: expect.objectContaining({ sub: 'agent-7', orgId: 'org-4' }),
+            }),
+            3,
+            triggerInput.request,
+        );
     });
 
     test('isolates stored tasks by principal and organization', async () => {

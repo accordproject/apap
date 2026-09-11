@@ -14,8 +14,10 @@ import {
 } from '@a2a-js/sdk/server';
 import { UnsupportedOperationError } from '@a2a-js/sdk/errors';
 import type { Principal } from '../auth/types';
+import type { Database } from '../db/client';
 import { ApapA2AService, type SkillInvocation } from '../services/a2aService';
 import { InvalidPayloadError, ServiceError } from '../services/errors';
+import { createPolicyContext } from '../services/policy';
 
 function id(): string {
     return randomBytes(16).toString('hex');
@@ -67,7 +69,7 @@ export function parseSkillInvocation(message: Message): SkillInvocation {
             try {
                 candidate = JSON.parse(value);
             } catch (_error) {
-                candidate = { skillId: value, input: {} };
+                throw new InvalidPayloadError('A2A text parts must contain a JSON skill invocation.');
             }
         }
     }
@@ -76,26 +78,52 @@ export function parseSkillInvocation(message: Message): SkillInvocation {
         throw new InvalidPayloadError('A2A message must contain a JSON skill invocation.');
     }
 
-    const skillId = candidate.skillId ?? candidate.skill;
-    if (typeof skillId !== 'string' || skillId.length === 0) {
+    const skillId = candidate.skillId;
+    if (typeof skillId !== 'string' || skillId.trim().length === 0) {
         throw new InvalidPayloadError('A2A invocation must include a non-empty skillId.');
     }
 
     return {
-        skillId,
-        input: candidate.input ?? candidate.arguments ?? {},
+        skillId: skillId.trim(),
+        input: candidate.input ?? {},
     };
 }
 
-function safeError(error: unknown): { code: string; message: string; details?: Record<string, unknown> } {
+const PUBLIC_SERVICE_ERRORS: Readonly<Record<string, string>> = {
+    INVALID_PAYLOAD: 'The A2A request is invalid.',
+    VALIDATION_ERROR: 'The A2A request failed validation.',
+    INSUFFICIENT_SCOPE: 'The authenticated principal is not authorized for this operation.',
+    TEMPLATE_NOT_FOUND: 'Template not found.',
+    AGREEMENT_NOT_FOUND: 'Agreement not found.',
+    AGREEMENT_TRIGGER_FAILED: 'Agreement execution failed.',
+    AGREEMENT_CONVERSION_FAILED: 'Agreement conversion failed.',
+};
+
+function safeError(error: unknown): { code: string; message: string } {
     if (error instanceof ServiceError) {
-        return { code: error.code, message: error.message, ...(error.details && { details: error.details }) };
+        const message = PUBLIC_SERVICE_ERRORS[error.code];
+        if (message) return { code: error.code, message };
+        return { code: 'OPERATION_FAILED', message: 'The A2A operation could not be completed.' };
     }
     return { code: 'INTERNAL_ERROR', message: 'The A2A operation failed unexpectedly.' };
 }
 
+function terminalState(error: unknown): TaskState {
+    if (error instanceof ServiceError && [
+        'INVALID_PAYLOAD',
+        'VALIDATION_ERROR',
+        'INSUFFICIENT_SCOPE',
+    ].includes(error.code)) {
+        return TaskState.TASK_STATE_REJECTED;
+    }
+    return TaskState.TASK_STATE_FAILED;
+}
+
 export class ApapAgentExecutor implements AgentExecutor {
-    constructor(private readonly service: ApapA2AService) {}
+    constructor(
+        private readonly db: Database,
+        private readonly service: ApapA2AService,
+    ) {}
 
     public cancelTask = async (): Promise<void> => {
         throw new UnsupportedOperationError('APAP A2A task cancellation is not supported.');
@@ -120,7 +148,7 @@ export class ApapAgentExecutor implements AgentExecutor {
         eventBus.publish(AgentEvent.task(task));
 
         try {
-            if (!principal || !('sub' in principal)) {
+            if (!principal || typeof principal !== 'object' || !('sub' in principal)) {
                 throw new InvalidPayloadError('Authenticated principal is missing from the A2A context.');
             }
 
@@ -136,7 +164,7 @@ export class ApapAgentExecutor implements AgentExecutor {
                 metadata: { skillId: invocation.skillId },
             }));
 
-            const result = await this.service.execute(principal, invocation);
+            const result = await this.service.execute(createPolicyContext(this.db, principal), invocation);
             eventBus.publish(AgentEvent.artifactUpdate({
                 taskId,
                 contextId,
@@ -165,17 +193,22 @@ export class ApapAgentExecutor implements AgentExecutor {
             console.info({ event: 'a2a_task_completed', taskId, skillId: result.skillId });
         } catch (error) {
             const serialized = safeError(error);
+            const state = terminalState(error);
             eventBus.publish(AgentEvent.statusUpdate({
                 taskId,
                 contextId,
                 status: {
-                    state: TaskState.TASK_STATE_FAILED,
+                    state,
                     timestamp: new Date().toISOString(),
                     message: agentMessage(taskId, contextId, [dataPart({ error: serialized })]),
                 },
                 metadata: { errorCode: serialized.code },
             }));
-            console.warn({ event: 'a2a_task_failed', taskId, code: serialized.code });
+            console.warn({
+                event: state === TaskState.TASK_STATE_REJECTED ? 'a2a_task_rejected' : 'a2a_task_failed',
+                taskId,
+                code: serialized.code,
+            });
         }
     }
 }

@@ -31,7 +31,7 @@ export function createAuthAdapter(config: A2AConfig): AuthAdapter {
 }
 
 registerAdapter('none', () => new NoneAdapter());
-registerAdapter('jwt', (config) => {
-    if (!config.jwt) throw new Error('A2A configuration error: missing validated JWT configuration.');
-    return new JwtAdapter(config.jwt);
+registerAdapter('hs256', (config) => {
+    if (!config.hs256) throw new Error('A2A configuration error: missing validated HS256 configuration.');
+    return new JwtAdapter(config.hs256);
 });
