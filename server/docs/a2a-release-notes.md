@@ -29,8 +29,9 @@ A2A development runner, so they must be updated manually.
 - Rejected input, validation, and authorization decisions use
   `TASK_STATE_REJECTED`. Failures after execution begins use
   `TASK_STATE_FAILED`.
-- Public A2A errors expose stable codes and messages without raw request,
-  validation, database, or template-runtime details.
+- A2A errors return the service error's `code`, `message`, and `details`
+  (including validation and template-logic feedback) so callers can correct
+  their requests. Unexpected internal faults return a generic `INTERNAL_ERROR`.
 
 ## Follow-up requirements
 
@@ -40,5 +41,5 @@ in PR 2, the remaining generic REST CRUD get/create/update/delete paths must be
 moved behind shared services and the central authorization policy. Enabling an
 auth guard alone would leave those direct database paths outside the policy.
 
-The in-memory task store and trigger idempotency limitations remain deferred as
-described in [a2a.md](a2a.md).
+The unbounded in-memory task store and the lack of trigger idempotency are
+known, accepted limitations of this release, as described in [a2a.md](a2a.md).

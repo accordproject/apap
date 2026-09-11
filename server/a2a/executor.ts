@@ -89,21 +89,15 @@ export function parseSkillInvocation(message: Message): SkillInvocation {
     };
 }
 
-const PUBLIC_SERVICE_ERRORS: Readonly<Record<string, string>> = {
-    INVALID_PAYLOAD: 'The A2A request is invalid.',
-    VALIDATION_ERROR: 'The A2A request failed validation.',
-    INSUFFICIENT_SCOPE: 'The authenticated principal is not authorized for this operation.',
-    TEMPLATE_NOT_FOUND: 'Template not found.',
-    AGREEMENT_NOT_FOUND: 'Agreement not found.',
-    AGREEMENT_TRIGGER_FAILED: 'Agreement execution failed.',
-    AGREEMENT_CONVERSION_FAILED: 'Agreement conversion failed.',
-};
-
-function safeError(error: unknown): { code: string; message: string } {
+/**
+ * Service errors are the caller's feedback (input and Concerto validation
+ * failures, template-logic rejections, missing records) and are returned in
+ * full so an agent can correct its request. Anything else is an unexpected
+ * fault whose text may carry internals, so it stays generic.
+ */
+function safeError(error: unknown): { code: string; message: string; details?: Record<string, unknown> } {
     if (error instanceof ServiceError) {
-        const message = PUBLIC_SERVICE_ERRORS[error.code];
-        if (message) return { code: error.code, message };
-        return { code: 'OPERATION_FAILED', message: 'The A2A operation could not be completed.' };
+        return { code: error.code, message: error.message, ...(error.details && { details: error.details }) };
     }
     return { code: 'INTERNAL_ERROR', message: 'The A2A operation failed unexpectedly.' };
 }

@@ -79,28 +79,45 @@ describe('ApapAgentExecutor', () => {
         expect(rejected.data.status.state).toBe(TaskState.TASK_STATE_REJECTED);
         expect(rejected.data.status.message.parts[0].content.value.error).toEqual({
             code: 'INVALID_PAYLOAD',
-            message: 'The A2A request is invalid.',
+            message: 'A2A invocation must include a non-empty skillId.',
         });
         expect(service.execute).not.toHaveBeenCalled();
     });
 
-    test('converts service failures to a stable terminal error without echoing details', async () => {
-        const secret = 'do-not-echo-this';
+    test('returns service error feedback to the caller', async () => {
+        const reason = 'Cannot exercise late delivery before delivery date';
         const service = {
-            execute: jest.fn().mockRejectedValue(new AgreementTriggerError('7', secret)),
+            execute: jest.fn().mockRejectedValue(new AgreementTriggerError('7', reason)),
         };
         const executor = new ApapAgentExecutor({} as Database, service as any);
         const publish = jest.fn();
 
-        await executor.execute(context(userMessage({ skillId: 'list-templates', input: { secret } })), { publish } as any);
+        await executor.execute(context(userMessage({ skillId: 'trigger-agreement', input: {} })), { publish } as any);
 
         const failed = publish.mock.calls[publish.mock.calls.length - 1][0];
         expect(failed.kind).toBe('statusUpdate');
         expect(failed.data.status.state).toBe(TaskState.TASK_STATE_FAILED);
-        expect(JSON.stringify(failed)).not.toContain(secret);
         expect(failed.data.status.message.parts[0].content.value.error).toEqual({
             code: 'AGREEMENT_TRIGGER_FAILED',
-            message: 'Agreement execution failed.',
+            message: `Failed to trigger agreement 7: ${reason}`,
+            details: { agreementId: '7', upstreamMessage: reason },
+        });
+    });
+
+    test('keeps unexpected failures generic', async () => {
+        const internal = 'connect ECONNREFUSED postgres://user:secret@db:5432';
+        const service = { execute: jest.fn().mockRejectedValue(new Error(internal)) };
+        const executor = new ApapAgentExecutor({} as Database, service as any);
+        const publish = jest.fn();
+
+        await executor.execute(context(userMessage({ skillId: 'list-templates', input: {} })), { publish } as any);
+
+        const failed = publish.mock.calls[publish.mock.calls.length - 1][0];
+        expect(failed.data.status.state).toBe(TaskState.TASK_STATE_FAILED);
+        expect(JSON.stringify(failed)).not.toContain(internal);
+        expect(failed.data.status.message.parts[0].content.value.error).toEqual({
+            code: 'INTERNAL_ERROR',
+            message: 'The A2A operation failed unexpectedly.',
         });
     });
 });

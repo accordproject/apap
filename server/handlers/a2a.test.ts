@@ -134,6 +134,11 @@ describe('A2A Express integration', () => {
         expect(response.body.result.task.status.message.parts[0].data.error).toEqual({
             code: 'INSUFFICIENT_SCOPE',
             message: 'The authenticated principal is not authorized for this operation.',
+            details: {
+                action: 'templates:list',
+                resource: { type: 'template-collection' },
+                requiredScope: 'apap:templates:read',
+            },
         });
     });
 

@@ -84,8 +84,11 @@ Successful operations return a task whose final status is
 `TASK_STATE_COMPLETED`; the service result is an `application/json` artifact.
 Invalid skill input, validation failures, and insufficient scope return a
 terminal `TASK_STATE_REJECTED`. Operational service errors return
-`TASK_STATE_FAILED`. Both use stable, structured messages that omit request,
-validation, database, and upstream error details. Missing or invalid HTTP
+`TASK_STATE_FAILED`. Both carry the service error's `code`, `message`, and
+`details` so the calling agent can correct its request: for example, the
+Concerto validation errors for a malformed trigger request, or the
+template-logic message explaining why a trigger was refused. Unexpected
+internal faults return only a generic `INTERNAL_ERROR`. Missing or invalid HTTP
 credentials are rejected with HTTP 401 before JSON-RPC dispatch.
 
 Requests larger than 1MB are rejected with HTTP 413. Streaming, push
@@ -115,9 +118,12 @@ available through a shared service rather than handler-only code.
 The SDK's in-memory task store is scoped by authenticated principal. When a
 principal has an `orgId`, its task owner key is `<orgId>:<sub>`; otherwise it is
 `sub`. The store is process-local, so tasks do not survive restarts and are not
-shared across replicas. It also has no deployment-grade retention or capacity
-controls. A persistent, bounded task store is required before horizontally
-scaling this endpoint; the issue intentionally defers that adapter.
+shared across replicas. It also has no retention or capacity limit: every task,
+including its request history and result artifact, stays in memory until the
+process restarts, so memory grows with request volume even on a single
+instance. This is a known and accepted limitation of this release, as the spec
+defers a custom `TaskStore`. A persistent, bounded task store is required
+before long-running or horizontally scaled deployments.
 
 ## Trigger delivery semantics
 
