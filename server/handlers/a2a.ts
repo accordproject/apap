@@ -24,10 +24,16 @@ export interface A2AComponentOverrides {
     service?: ApapA2AService;
 }
 
+/**
+ * Task-store bucket key. The SDK uses this string directly as the bucket key,
+ * so the (orgId, sub) tuple is encoded unambiguously: a `${orgId}:${sub}`
+ * join let {orgId: 'acme', sub: 'agent'} and {sub: 'acme:agent'} land in one
+ * bucket and read each other's tasks.
+ */
 export function resolvePrincipalOwner(context: ServerCallContext): string {
     const principal = context.user as Principal | undefined;
     if (!principal || !('sub' in principal)) return 'unknown';
-    return principal.orgId ? `${principal.orgId}:${principal.sub}` : principal.sub;
+    return JSON.stringify([principal.orgId ?? null, principal.sub]);
 }
 
 export function createA2AComponents(

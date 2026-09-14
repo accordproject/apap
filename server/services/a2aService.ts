@@ -2,12 +2,13 @@ import { z } from 'zod';
 import { getTemplateById, listTemplates } from './templateService';
 import { getAgreementById, listAgreements, triggerAgreement } from './agreementService';
 import { InvalidPayloadError } from './errors';
-import type { PolicyContext } from './policy';
+import { authorize, type PolicyAction, type PolicyContext, type PolicyResource } from './policy';
 
 export const A2A_SKILLS = [
     {
         id: 'list-templates',
         name: 'List templates',
+        action: 'templates:list',
         description: 'List APAP templates with bounded pagination.',
         scope: 'apap:templates:read',
         tags: ['apap', 'templates'],
@@ -16,6 +17,7 @@ export const A2A_SKILLS = [
     {
         id: 'get-template',
         name: 'Get template',
+        action: 'templates:read',
         description: 'Get one APAP template by numeric identifier.',
         scope: 'apap:templates:read',
         tags: ['apap', 'templates'],
@@ -24,6 +26,7 @@ export const A2A_SKILLS = [
     {
         id: 'list-agreements',
         name: 'List agreements',
+        action: 'agreements:list',
         description: 'List APAP agreements with bounded pagination.',
         scope: 'apap:agreements:read',
         tags: ['apap', 'agreements'],
@@ -32,6 +35,7 @@ export const A2A_SKILLS = [
     {
         id: 'get-agreement',
         name: 'Get agreement',
+        action: 'agreements:read',
         description: 'Get one APAP agreement by numeric identifier.',
         scope: 'apap:agreements:read',
         tags: ['apap', 'agreements'],
@@ -40,6 +44,7 @@ export const A2A_SKILLS = [
     {
         id: 'trigger-agreement',
         name: 'Trigger agreement',
+        action: 'agreements:trigger',
         description: 'Execute an agreement request and persist its resulting state.',
         scope: 'apap:trigger:invoke',
         tags: ['apap', 'agreements', 'execution'],
@@ -102,6 +107,64 @@ function parseInput<T>(schema: z.ZodType<T>, input: unknown, skillId: string): T
     return parsed.data;
 }
 
+export interface PreparedSkill {
+    readonly skillId: A2ASkillId;
+    readonly action: PolicyAction;
+    readonly resource: PolicyResource;
+    readonly invoke: (operations: Operations, context: PolicyContext) => Promise<unknown>;
+}
+
+/** Parses the skill's input and names the resource its policy decision covers. */
+function prepareSkill(skill: typeof A2A_SKILLS[number], rawInput: unknown): PreparedSkill {
+    switch (skill.id) {
+        case 'list-templates': {
+            const input = parseInput(pageSchema, rawInput, skill.id);
+            return {
+                skillId: skill.id,
+                action: skill.action,
+                resource: { type: 'template-collection' },
+                invoke: (operations, context) => operations.listTemplates(context, input),
+            };
+        }
+        case 'get-template': {
+            const input = parseInput(idSchema, rawInput, skill.id);
+            return {
+                skillId: skill.id,
+                action: skill.action,
+                resource: { type: 'template', id: input.id },
+                invoke: (operations, context) => operations.getTemplateById(context, input.id),
+            };
+        }
+        case 'list-agreements': {
+            const input = parseInput(pageSchema, rawInput, skill.id);
+            return {
+                skillId: skill.id,
+                action: skill.action,
+                resource: { type: 'agreement-collection' },
+                invoke: (operations, context) => operations.listAgreements(context, input),
+            };
+        }
+        case 'get-agreement': {
+            const input = parseInput(idSchema, rawInput, skill.id);
+            return {
+                skillId: skill.id,
+                action: skill.action,
+                resource: { type: 'agreement', id: input.id },
+                invoke: (operations, context) => operations.getAgreementById(context, input.id),
+            };
+        }
+        case 'trigger-agreement': {
+            const input = parseInput(triggerSchema, rawInput, skill.id);
+            return {
+                skillId: skill.id,
+                action: skill.action,
+                resource: { type: 'agreement', id: input.id },
+                invoke: (operations, context) => operations.triggerAgreement(context, input.id, input.request),
+            };
+        }
+    }
+}
+
 /**
  * Transport-neutral A2A service facade. The principal is deliberately passed
  * across this boundary so richer org/RLS policies can replace the RI policy
@@ -114,7 +177,13 @@ export class ApapA2AService {
         this.operations = { ...defaultOperations, ...operations };
     }
 
-    public async execute(context: PolicyContext, invocation: SkillInvocation): Promise<SkillResult> {
+    /**
+     * Validates input and authorizes the skill WITHOUT running it, so the
+     * transport can refuse an unknown skill, malformed input, or insufficient
+     * scope before it reports the task as working. Shared services authorize
+     * again at their own boundary; this preflight never replaces that check.
+     */
+    public async prepare(context: PolicyContext, invocation: SkillInvocation): Promise<PreparedSkill> {
         const skill = A2A_SKILLS.find((candidate) => candidate.id === invocation.skillId);
         if (!skill) {
             throw new InvalidPayloadError(`Unknown A2A skill: ${invocation.skillId}`, {
@@ -122,30 +191,16 @@ export class ApapA2AService {
             });
         }
 
-        switch (skill.id) {
-            case 'list-templates': {
-                const input = parseInput(pageSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.listTemplates(context, input) };
-            }
-            case 'get-template': {
-                const input = parseInput(idSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.getTemplateById(context, input.id) };
-            }
-            case 'list-agreements': {
-                const input = parseInput(pageSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.listAgreements(context, input) };
-            }
-            case 'get-agreement': {
-                const input = parseInput(idSchema, invocation.input, skill.id);
-                return { skillId: skill.id, result: await this.operations.getAgreementById(context, input.id) };
-            }
-            case 'trigger-agreement': {
-                const input = parseInput(triggerSchema, invocation.input, skill.id);
-                return {
-                    skillId: skill.id,
-                    result: await this.operations.triggerAgreement(context, input.id, input.request),
-                };
-            }
-        }
+        const prepared = prepareSkill(skill, invocation.input);
+        await authorize(context, prepared.action, prepared.resource);
+        return prepared;
+    }
+
+    public async run(context: PolicyContext, prepared: PreparedSkill): Promise<SkillResult> {
+        return { skillId: prepared.skillId, result: await prepared.invoke(this.operations, context) };
+    }
+
+    public async execute(context: PolicyContext, invocation: SkillInvocation): Promise<SkillResult> {
+        return this.run(context, await this.prepare(context, invocation));
     }
 }
