@@ -84,12 +84,24 @@ Successful operations return a task whose final status is
 `TASK_STATE_COMPLETED`; the service result is an `application/json` artifact.
 Invalid skill input, validation failures, and insufficient scope return a
 terminal `TASK_STATE_REJECTED`. Operational service errors return
-`TASK_STATE_FAILED`. Both carry the service error's `code`, `message`, and
-`details` so the calling agent can correct its request: for example, the
-Concerto validation errors for a malformed trigger request, or the
-template-logic message explaining why a trigger was refused. Unexpected
-internal faults return only a generic `INTERNAL_ERROR`. Missing or invalid HTTP
-credentials are rejected with HTTP 401 before JSON-RPC dispatch.
+`TASK_STATE_FAILED`. Errors are serialized through an allowlist, so a caller
+gets actionable feedback without receiving data its scopes do not cover:
+
+- Input and authorization errors carry APAP's own message, with details reduced
+  to structure: the failing path and expected type for schema issues, and the
+  action plus required scope for authorization ones.
+- Concerto validation failures are reduced to the violated path and expected
+  type. The raw validation text is not forwarded, because it can quote the
+  submitted instance.
+- Wrapped template-runtime and upstream messages, such as
+  `AGREEMENT_TRIGGER_FAILED`, are reported by code with a fixed message. A
+  service error type may opt in to sending its own message by implementing
+  `ClientSafeError`, which is a deliberate decision per error type.
+- Unexpected internal faults return only a generic `INTERNAL_ERROR`.
+
+Missing or invalid HTTP credentials are rejected with HTTP 401 before JSON-RPC
+dispatch. Validation and authorization both run before the task is reported as
+`TASK_STATE_WORKING`, so a refused request never appears to have started.
 
 Requests larger than 1MB are rejected with HTTP 413. Streaming, push
 notifications, and task cancellation are not advertised or supported in this
@@ -115,9 +127,11 @@ available through a shared service rather than handler-only code.
 
 ## Task ownership
 
-The SDK's in-memory task store is scoped by authenticated principal. When a
-principal has an `orgId`, its task owner key is `<orgId>:<sub>`; otherwise it is
-`sub`. The store is process-local, so tasks do not survive restarts and are not
+The SDK's in-memory task store is scoped by authenticated principal. The owner
+key encodes the `(orgId, sub)` tuple unambiguously as `JSON.stringify([orgId ??
+null, sub])`, so principals whose fields could concatenate to the same string
+(`{orgId: 'acme', sub: 'agent'}` and `{sub: 'acme:agent'}`) never share a
+bucket. The store is process-local, so tasks do not survive restarts and are not
 shared across replicas. It also has no retention or capacity limit: every task,
 including its request history and result artifact, stays in memory until the
 process restarts, so memory grows with request volume even on a single

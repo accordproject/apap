@@ -39,7 +39,7 @@ async function bearer(
 
 function buildApp(adapter: AuthAdapter = new JwtAdapter(jwt), service?: unknown) {
     const components = createA2AComponents({} as Database, config, adapter, {
-        service: (service ?? { execute: jest.fn().mockResolvedValue({ skillId: 'list-templates', result: [{ id: 1 }] }) }) as any,
+        service: (service ?? new ApapA2AService({ listTemplates: async () => [{ id: 1 }] } as any)) as any,
     });
     const app = express();
     app.use('/.well-known/agent-card.json', components.agentCardHandler);
@@ -136,7 +136,6 @@ describe('A2A Express integration', () => {
             message: 'The authenticated principal is not authorized for this operation.',
             details: {
                 action: 'templates:list',
-                resource: { type: 'template-collection' },
                 requiredScope: 'apap:templates:read',
             },
         });
@@ -208,5 +207,26 @@ describe('A2A Express integration', () => {
             .set('Content-Type', 'application/json')
             .send(JSON.stringify({ ...sendMessage, padding: 'x'.repeat(1024 * 1024) }));
         expect(response.status).toBe(413);
+    });
+    test('keeps task buckets distinct when org and subject could concatenate alike', async () => {
+        const app = buildApp();
+        const created = await request(app)
+            .post('/a2a')
+            .set('Authorization', await bearer('acme:agent'))
+            .set('A2A-Version', '1.0')
+            .send(sendMessage);
+        const taskId = created.body.result.task.id;
+        expect(taskId).toBeTruthy();
+
+        // {orgId: 'acme', sub: 'agent'} once joined to the same 'acme:agent'
+        // key as {sub: 'acme:agent'}, letting this principal read those tasks.
+        const collider = await request(app)
+            .post('/a2a')
+            .set('Authorization', await bearer('agent', 'acme'))
+            .set('A2A-Version', '1.0')
+            .send({ jsonrpc: '2.0', id: 'get-task-collision', method: 'GetTask', params: { id: taskId } });
+
+        expect(collider.body.result).toBeUndefined();
+        expect(collider.body.error.code).toBeLessThan(0);
     });
 });

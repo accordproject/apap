@@ -29,9 +29,12 @@ A2A development runner, so they must be updated manually.
 - Rejected input, validation, and authorization decisions use
   `TASK_STATE_REJECTED`. Failures after execution begins use
   `TASK_STATE_FAILED`.
-- A2A errors return the service error's `code`, `message`, and `details`
-  (including validation and template-logic feedback) so callers can correct
-  their requests. Unexpected internal faults return a generic `INTERNAL_ERROR`.
+- A2A errors are serialized through an allowlist: APAP-authored messages with
+  structural details (failing path and expected type, or action and required
+  scope) so callers can correct their requests. Raw validation text, wrapped
+  template-runtime messages, and unexpected faults are reported by code only.
+- Input validation and authorization run before a task reports
+  `TASK_STATE_WORKING`, so refused requests never transition through it.
 
 ## Follow-up requirements
 

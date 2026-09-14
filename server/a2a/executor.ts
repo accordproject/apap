@@ -16,7 +16,7 @@ import { UnsupportedOperationError } from '@a2a-js/sdk/errors';
 import type { Principal } from '../auth/types';
 import type { Database } from '../db/client';
 import { ApapA2AService, type SkillInvocation } from '../services/a2aService';
-import { InvalidPayloadError, ServiceError } from '../services/errors';
+import { InvalidPayloadError, isClientSafeError, ServiceError } from '../services/errors';
 import { createPolicyContext } from '../services/policy';
 
 function id(): string {
@@ -89,15 +89,99 @@ export function parseSkillInvocation(message: Message): SkillInvocation {
     };
 }
 
+interface PublicError {
+    code: string;
+    message: string;
+    details?: Record<string, unknown>;
+}
+
+function withDetails(details: Record<string, unknown> | undefined) {
+    return details ? { details } : {};
+}
+
+// Zod reports a structural path plus type names. The caller's submitted values
+// are never forwarded, only the shape of what failed.
+function sanitizeIssues(details?: Record<string, unknown>): Record<string, unknown> | undefined {
+    const issues = details?.issues;
+    if (!Array.isArray(issues)) return undefined;
+    return {
+        issues: issues.map((issue: any) => ({
+            ...(Array.isArray(issue?.path) && { path: issue.path.join('.') }),
+            ...(typeof issue?.code === 'string' && { code: issue.code }),
+            ...(issue?.code === 'invalid_type' && { expected: issue.expected, received: issue.received }),
+            ...(issue?.code === 'unrecognized_keys' && { keys: issue.keys }),
+        })),
+    };
+}
+
+// Concerto violations arrive as a raw exception message that can quote the
+// submitted instance, so only the JSON path and expected type are forwarded.
+const CONCERTO_PATH_RX = /path `(\$[^`]*)`/i;
+const CONCERTO_TYPE_RX = /type `([^`]+)`/i;
+
+function sanitizeViolations(details?: Record<string, unknown>): Record<string, unknown> | undefined {
+    const errors = details?.errors;
+    if (!Array.isArray(errors)) return undefined;
+    return {
+        violations: errors.map((entry: any) => {
+            const message = typeof entry?.message === 'string' ? entry.message : '';
+            const path = CONCERTO_PATH_RX.exec(message)?.[1];
+            const expectedType = CONCERTO_TYPE_RX.exec(message)?.[1];
+            return { ...(path && { path }), ...(expectedType && { expectedType }) };
+        }),
+    };
+}
+
+function pick(details: Record<string, unknown> | undefined, keys: string[]): Record<string, unknown> | undefined {
+    if (!details) return undefined;
+    const picked = Object.fromEntries(keys.filter((key) => key in details).map((key) => [key, details[key]]));
+    return Object.keys(picked).length > 0 ? picked : undefined;
+}
+
 /**
- * Service errors are the caller's feedback (input and Concerto validation
- * failures, template-logic rejections, missing records) and are returned in
- * full so an agent can correct its request. Anything else is an unexpected
- * fault whose text may carry internals, so it stays generic.
+ * Allowlist of errors whose message APAP authors itself, with details reduced
+ * to structural facts. Anything absent here is reported by code alone, because
+ * messages such as AgreementTriggerError's wrapped template-runtime exception
+ * can embed agreement or request data that the caller's scopes may not cover.
  */
-function safeError(error: unknown): { code: string; message: string; details?: Record<string, unknown> } {
+const PUBLIC_ERRORS: Readonly<Record<string, (error: ServiceError) => PublicError>> = {
+    INVALID_PAYLOAD: (error) => ({
+        code: error.code,
+        message: error.message,
+        ...withDetails(sanitizeIssues(error.details)),
+    }),
+    VALIDATION_ERROR: (error) => ({
+        code: error.code,
+        message: error.message,
+        ...withDetails(sanitizeViolations(error.details)),
+    }),
+    INSUFFICIENT_SCOPE: (error) => ({
+        code: error.code,
+        message: error.message,
+        ...withDetails(pick(error.details, ['action', 'requiredScope'])),
+    }),
+    TEMPLATE_NOT_FOUND: (error) => ({ code: error.code, message: error.message }),
+    AGREEMENT_NOT_FOUND: (error) => ({ code: error.code, message: error.message }),
+};
+
+const CODE_ONLY_MESSAGES: Readonly<Record<string, string>> = {
+    AGREEMENT_TRIGGER_FAILED: 'Agreement execution failed.',
+    AGREEMENT_CONVERSION_FAILED: 'Agreement conversion failed.',
+};
+
+function safeError(error: unknown): PublicError {
     if (error instanceof ServiceError) {
-        return { code: error.code, message: error.message, ...(error.details && { details: error.details }) };
+        const serialize = PUBLIC_ERRORS[error.code];
+        if (serialize) return serialize(error);
+        // Opt-in seam: an error type that declares its own text client-safe
+        // (a future TemplateLogicError, say) is forwarded as authored.
+        if (isClientSafeError(error)) {
+            return { code: error.code, message: error.message, ...withDetails(error.details) };
+        }
+        return {
+            code: error.code,
+            message: CODE_ONLY_MESSAGES[error.code] ?? 'The A2A operation could not be completed.',
+        };
     }
     return { code: 'INTERNAL_ERROR', message: 'The A2A operation failed unexpectedly.' };
 }
@@ -147,6 +231,10 @@ export class ApapAgentExecutor implements AgentExecutor {
             }
 
             const invocation = parseSkillInvocation(userMessage);
+            // Validate and authorize before announcing work: an unknown skill,
+            // malformed input, or missing scope must never pass through WORKING.
+            const policyContext = createPolicyContext(this.db, principal);
+            const prepared = await this.service.prepare(policyContext, invocation);
             eventBus.publish(AgentEvent.statusUpdate({
                 taskId,
                 contextId,
@@ -158,7 +246,7 @@ export class ApapAgentExecutor implements AgentExecutor {
                 metadata: { skillId: invocation.skillId },
             }));
 
-            const result = await this.service.execute(createPolicyContext(this.db, principal), invocation);
+            const result = await this.service.run(policyContext, prepared);
             eventBus.publish(AgentEvent.artifactUpdate({
                 taskId,
                 contextId,
