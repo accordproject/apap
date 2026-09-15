@@ -6,10 +6,16 @@ export interface A2AHs256Config {
     audience: string;
 }
 
+export interface A2ARateLimitConfig {
+    windowMs: number;
+    max: number;
+}
+
 export interface A2AConfig {
     authAdapter: string;
     publicBaseUrl: string;
     hs256?: A2AHs256Config;
+    rateLimit: A2ARateLimitConfig;
     isProduction: boolean;
 }
 
@@ -22,7 +28,21 @@ const envSchema = z.object({
     A2A_JWT_SECRET: z.string().optional(),
     A2A_JWT_ISSUER: z.string().trim().min(1).optional(),
     A2A_JWT_AUDIENCE: z.string().trim().min(1).optional(),
+    A2A_RATE_LIMIT_WINDOW_MS: z.string().optional(),
+    A2A_RATE_LIMIT_MAX: z.string().optional(),
 }).passthrough();
+
+/** In-process backstop only; the edge proxy remains the first line of defence. */
+const DEFAULT_RATE_LIMIT: A2ARateLimitConfig = { windowMs: 60_000, max: 120 };
+
+function positiveInt(name: string, raw: string | undefined, fallback: number): number {
+    if (raw === undefined) return fallback;
+    const value = Number(raw);
+    if (!Number.isInteger(value) || value <= 0) {
+        throw new Error(`A2A configuration error: ${name} must be a positive integer.`);
+    }
+    return value;
+}
 
 function missingJwtVariables(env: z.infer<typeof envSchema>): string[] {
     const missing: string[] = [];
@@ -85,5 +105,10 @@ export function loadA2AConfig(source: NodeJS.ProcessEnv = process.env): A2AConfi
         };
     }
 
-    return { authAdapter, publicBaseUrl, hs256, isProduction };
+    const rateLimit: A2ARateLimitConfig = {
+        windowMs: positiveInt('A2A_RATE_LIMIT_WINDOW_MS', env.A2A_RATE_LIMIT_WINDOW_MS, DEFAULT_RATE_LIMIT.windowMs),
+        max: positiveInt('A2A_RATE_LIMIT_MAX', env.A2A_RATE_LIMIT_MAX, DEFAULT_RATE_LIMIT.max),
+    };
+
+    return { authAdapter, publicBaseUrl, hs256, rateLimit, isProduction };
 }

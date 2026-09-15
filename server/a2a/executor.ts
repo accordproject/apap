@@ -116,6 +116,9 @@ function sanitizeIssues(details?: Record<string, unknown>): Record<string, unkno
 
 // Concerto violations arrive as a raw exception message that can quote the
 // submitted instance, so only the JSON path and expected type are forwarded.
+// Parsing prose is a workaround: structured validation errors are tracked
+// upstream in accordproject/concerto#1325, and this should read the fields
+// directly once that lands.
 const CONCERTO_PATH_RX = /path `(\$[^`]*)`/i;
 const CONCERTO_TYPE_RX = /type `([^`]+)`/i;
 

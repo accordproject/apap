@@ -103,9 +103,13 @@ Missing or invalid HTTP credentials are rejected with HTTP 401 before JSON-RPC
 dispatch. Validation and authorization both run before the task is reported as
 `TASK_STATE_WORKING`, so a refused request never appears to have started.
 
-Requests larger than 1MB are rejected with HTTP 413. Streaming, push
-notifications, and task cancellation are not advertised or supported in this
-version.
+Requests larger than 1MB are rejected with HTTP 413. The route also applies an
+in-process rate limit ahead of authentication, so token verification is covered
+too; exceeding it returns HTTP 429 with a `RATE_LIMITED` error. It defaults to
+120 requests per minute per client address and is tuned with
+`A2A_RATE_LIMIT_MAX` and `A2A_RATE_LIMIT_WINDOW_MS`. This is a backstop, not a
+replacement for rate limiting at the edge proxy. Streaming, push notifications,
+and task cancellation are not advertised or supported in this version.
 
 This deliberately differs from implementations that model authentication
 failure as a failed A2A task: APAP rejects credentials at the HTTP boundary so

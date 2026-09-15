@@ -1,4 +1,5 @@
 import express, { type RequestHandler, type Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import {
     DefaultRequestHandler,
     InMemoryTaskStore,
@@ -56,7 +57,20 @@ export function createA2AComponents(
     const requestHandler = new DefaultRequestHandler(initialCard, taskStore, executor);
 
     const router = express.Router();
-    router.use(createA2AAuthMiddleware(adapter));
+    // Ahead of authentication so token verification is covered too. This is an
+    // in-process backstop; the edge proxy stays the first line of defence.
+    router.use(rateLimit({
+        windowMs: config.rateLimit.windowMs,
+        limit: config.rateLimit.max,
+        standardHeaders: 'draft-7',
+        legacyHeaders: false,
+        handler: (_req, res) => {
+            res.status(429).json({
+                error: { code: 'RATE_LIMITED', message: 'Too many A2A requests.' },
+            });
+        },
+    }));
+    router.use(createA2AAuthMiddleware(adapter, { rejectUnauthenticated: config.isProduction }));
     router.use(express.json({ limit: '1mb' }));
     router.post('/', jsonRpcHandler({ requestHandler, userBuilder: authenticatedUserBuilder }));
 

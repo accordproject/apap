@@ -7,10 +7,30 @@ export interface AuthenticatedA2ARequest extends Request {
     a2aPrincipal?: Principal;
 }
 
-export function createA2AAuthMiddleware(adapter: AuthAdapter): RequestHandler {
+export interface A2AAuthMiddlewareOptions {
+    /**
+     * Second lock on the "every authorization is bypassed" path. config.ts
+     * already refuses AUTH_ADAPTER=none outside development/test; this rejects
+     * an unauthenticated principal at the transport even if some other adapter
+     * returns one. REST and MCP keep their own legacy behaviour until PR 2.
+     */
+    readonly rejectUnauthenticated?: boolean;
+}
+
+export function createA2AAuthMiddleware(
+    adapter: AuthAdapter,
+    options: A2AAuthMiddlewareOptions = {},
+): RequestHandler {
     return async (req: AuthenticatedA2ARequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            req.a2aPrincipal = await adapter.authenticate(req.headers);
+            const principal = await adapter.authenticate(req.headers);
+            if (options.rejectUnauthenticated && principal.isAuthenticated !== true) {
+                throw new A2AAuthError(
+                    'UNAUTHENTICATED_PRINCIPAL',
+                    'An unauthenticated principal is not accepted by this deployment.',
+                );
+            }
+            req.a2aPrincipal = principal;
             next();
         } catch (error) {
             const authError = error instanceof A2AAuthError

@@ -40,6 +40,12 @@ central policy before accessing the database. Authenticated principals must
 hold the exact scope listed in the agent card; token-supplied `*` or
 `apap:templates:*` wildcards are not accepted.
 
+Production has two independent locks on the unauthenticated path: `loadA2AConfig`
+refuses `AUTH_ADAPTER=none` outside development and test, and the A2A transport
+rejects any adapter's unauthenticated principal with HTTP 401 when
+`NODE_ENV=production`. The second lock holds even if a custom adapter returns
+one.
+
 Existing unauthenticated REST and MCP callers receive a compatibility-only
 `DevelopmentPrincipal`, which preserves their current behavior. Replacing
 those compatibility principals with results from this same adapter instance is
