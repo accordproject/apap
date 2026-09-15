@@ -6,6 +6,9 @@ export interface A2AHs256Config {
     audience: string;
 }
 
+/** Express's `trust proxy`: false, true, a hop count, or a list/preset. */
+export type TrustProxySetting = boolean | number | string;
+
 export interface A2ARateLimitConfig {
     windowMs: number;
     max: number;
@@ -16,6 +19,7 @@ export interface A2AConfig {
     publicBaseUrl: string;
     hs256?: A2AHs256Config;
     rateLimit: A2ARateLimitConfig;
+    trustProxy: TrustProxySetting;
     isProduction: boolean;
 }
 
@@ -30,10 +34,27 @@ const envSchema = z.object({
     A2A_JWT_AUDIENCE: z.string().trim().min(1).optional(),
     A2A_RATE_LIMIT_WINDOW_MS: z.string().optional(),
     A2A_RATE_LIMIT_MAX: z.string().optional(),
+    TRUST_PROXY: z.string().optional(),
 }).passthrough();
 
 /** In-process backstop only; the edge proxy remains the first line of defence. */
 const DEFAULT_RATE_LIMIT: A2ARateLimitConfig = { windowMs: 60_000, max: 120 };
+
+/**
+ * How many proxies sit in front of this server. It decides what `req.ip` is,
+ * and the A2A rate limiter keys on `req.ip`: left at `false` behind an ingress,
+ * every caller shares the proxy's address and therefore one rate-limit bucket.
+ * `true` trusts a client-supplied X-Forwarded-For outright, so prefer a hop
+ * count (`1`) or an explicit subnet list.
+ */
+function parseTrustProxy(raw: string | undefined): TrustProxySetting {
+    if (raw === undefined) return false;
+    const value = raw.trim();
+    if (value === '' || value.toLowerCase() === 'false') return false;
+    if (value.toLowerCase() === 'true') return true;
+    if (/^\d+$/.test(value)) return Number(value);
+    return value;
+}
 
 function positiveInt(name: string, raw: string | undefined, fallback: number): number {
     if (raw === undefined) return fallback;
@@ -110,5 +131,12 @@ export function loadA2AConfig(source: NodeJS.ProcessEnv = process.env): A2AConfi
         max: positiveInt('A2A_RATE_LIMIT_MAX', env.A2A_RATE_LIMIT_MAX, DEFAULT_RATE_LIMIT.max),
     };
 
-    return { authAdapter, publicBaseUrl, hs256, rateLimit, isProduction };
+    return {
+        authAdapter,
+        publicBaseUrl,
+        hs256,
+        rateLimit,
+        trustProxy: parseTrustProxy(env.TRUST_PROXY),
+        isProduction,
+    };
 }

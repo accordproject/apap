@@ -18,6 +18,7 @@ describe('auth adapter registry', () => {
             authAdapter: 'none',
             publicBaseUrl: 'https://apap.example.com',
             rateLimit: { windowMs: 60_000, max: 120 },
+            trustProxy: false,
             isProduction: true,
         })).toThrow(/never available in production/);
     });

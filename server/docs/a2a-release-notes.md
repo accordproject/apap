@@ -18,6 +18,9 @@ is fail-closed and can require changes to an existing deployment:
   principal at the transport even if an adapter returns one.
 - `A2A_RATE_LIMIT_MAX` (default 120) and `A2A_RATE_LIMIT_WINDOW_MS` (default
   60000) tune the in-process rate limit on `/a2a`; both are optional.
+- `TRUST_PROXY` (default `false`) sets Express's `trust proxy`. Deployments
+  behind an ingress must set it, or all callers share one rate-limit bucket.
+  It applies to the whole app, so `req.ip` in REST and MCP logs follows it too.
 - The server now requires Node.js 22.12 or newer.
 
 The checked-in `.env_example` and local `compose.yaml` contain an explicit

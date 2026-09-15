@@ -51,6 +51,19 @@ describe('loadA2AConfig', () => {
         }
     });
 
+    test('parses TRUST_PROXY into an Express trust-proxy setting', () => {
+        const load = (TRUST_PROXY?: string) =>
+            loadA2AConfig({ NODE_ENV: 'test', AUTH_ADAPTER: 'none', ...(TRUST_PROXY !== undefined && { TRUST_PROXY }) }).trustProxy;
+
+        expect(load()).toBe(false);
+        expect(load('false')).toBe(false);
+        expect(load('')).toBe(false);
+        expect(load('true')).toBe(true);
+        expect(load('1')).toBe(1);
+        expect(load('loopback')).toBe('loopback');
+        expect(load('10.0.0.0/8, 192.168.0.0/16')).toBe('10.0.0.0/8, 192.168.0.0/16');
+    });
+
     test('validates JWT configuration eagerly', () => {
         expect(() => loadA2AConfig({ AUTH_ADAPTER: 'hs256' })).toThrow(/requires A2A_JWT_SECRET/);
         expect(() => loadA2AConfig({
