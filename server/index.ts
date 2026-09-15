@@ -65,6 +65,11 @@ const db = drizzle({
 // default JSON parser. The executor receives this same shared database
 // handle and calls services directly; it never loops back over HTTP.
 const a2aConfig = loadA2AConfig();
+// Express must know how many proxies front this server before anything reads
+// req.ip: the A2A rate limiter keys on it, so behind an unconfigured ingress
+// every caller would share the proxy's address and one bucket. Defaults to
+// false, i.e. direct connections, which is the pre-existing behaviour.
+app.set('trust proxy', a2aConfig.trustProxy);
 // One adapter instance is shared by every protocol entry point. PR 2 reuses
 // this instance when it enables the REST and MCP authentication guards.
 const authAdapter = createAuthAdapter(a2aConfig);

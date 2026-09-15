@@ -20,6 +20,7 @@ const config: A2AConfig = {
     publicBaseUrl: 'https://apap.example.com',
     hs256: jwt,
     rateLimit: { windowMs: 60_000, max: 120 },
+    trustProxy: false,
     isProduction: false,
 };
 
@@ -44,10 +45,13 @@ function buildApp(
     service?: unknown,
     configOverrides: Partial<A2AConfig> = {},
 ) {
-    const components = createA2AComponents({} as Database, { ...config, ...configOverrides }, adapter, {
+    const merged = { ...config, ...configOverrides };
+    const components = createA2AComponents({} as Database, merged, adapter, {
         service: (service ?? new ApapA2AService({ listTemplates: async () => [{ id: 1 }] } as any)) as any,
     });
     const app = express();
+    // Mirrors index.ts: req.ip, and therefore the limiter's bucket, depends on this.
+    app.set('trust proxy', merged.trustProxy);
     app.use('/.well-known/agent-card.json', components.agentCardHandler);
     app.use('/a2a', components.router);
     return app;
@@ -271,5 +275,38 @@ describe('A2A Express integration', () => {
             .send(sendMessage);
         expect(allowed.status).toBe(200);
         expect(allowed.body.result.task.status.state).toBe('TASK_STATE_COMPLETED');
+    });
+    test('keys the rate limit per forwarded client when a proxy is trusted', async () => {
+        const app = buildApp(new JwtAdapter(jwt), undefined, {
+            rateLimit: { windowMs: 60_000, max: 1 },
+            trustProxy: 1,
+        });
+        const send = async (forwardedFor: string) => request(app)
+            .post('/a2a')
+            .set('Authorization', await bearer())
+            .set('X-Forwarded-For', forwardedFor)
+            .set('A2A-Version', '1.0')
+            .send(sendMessage);
+
+        expect((await send('203.0.113.1')).status).toBe(200);
+        // A different caller behind the same proxy must get its own bucket.
+        expect((await send('203.0.113.2')).status).toBe(200);
+        expect((await send('203.0.113.1')).status).toBe(429);
+    });
+
+    test('shares one bucket when no proxy is trusted', async () => {
+        const app = buildApp(new JwtAdapter(jwt), undefined, {
+            rateLimit: { windowMs: 60_000, max: 1 },
+        });
+        const send = async (forwardedFor: string) => request(app)
+            .post('/a2a')
+            .set('Authorization', await bearer())
+            .set('X-Forwarded-For', forwardedFor)
+            .set('A2A-Version', '1.0')
+            .send(sendMessage);
+
+        expect((await send('203.0.113.1')).status).toBe(200);
+        // Untrusted forwarded headers are ignored, so this is the same bucket.
+        expect((await send('203.0.113.2')).status).toBe(429);
     });
 });

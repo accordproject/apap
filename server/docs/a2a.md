@@ -108,7 +108,15 @@ in-process rate limit ahead of authentication, so token verification is covered
 too; exceeding it returns HTTP 429 with a `RATE_LIMITED` error. It defaults to
 120 requests per minute per client address and is tuned with
 `A2A_RATE_LIMIT_MAX` and `A2A_RATE_LIMIT_WINDOW_MS`. This is a backstop, not a
-replacement for rate limiting at the edge proxy. Streaming, push notifications,
+replacement for rate limiting at the edge proxy.
+
+Because the limit is keyed on the client address, a deployment behind a proxy
+must set `TRUST_PROXY` so Express resolves the real caller: leave it unset and
+every caller arrives as the proxy's address and shares a single bucket, where
+one noisy client rate-limits everyone. Set it to the number of proxies in front
+of the server (`TRUST_PROXY=1`), or to an explicit subnet list. `true` trusts a
+client-supplied `X-Forwarded-For` outright and lets a caller forge its own key,
+so avoid it. Production logs a warning when it is unset. Streaming, push notifications,
 and task cancellation are not advertised or supported in this version.
 
 This deliberately differs from implementations that model authentication

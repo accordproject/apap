@@ -50,6 +50,13 @@ export function createA2AComponents(
         });
     }
 
+    if (config.isProduction && config.trustProxy === false) {
+        console.warn({
+            event: 'a2a_rate_limit_shared_bucket',
+            message: 'TRUST_PROXY is unset: behind a proxy every caller shares one rate-limit bucket.',
+        });
+    }
+
     const initialCard = composeAgentCardSafely(config, adapter);
     const service = overrides.service ?? new ApapA2AService();
     const executor = new ApapAgentExecutor(db, service);
