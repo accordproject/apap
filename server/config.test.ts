@@ -33,6 +33,24 @@ describe('loadA2AConfig', () => {
         })).toThrow(/must use HTTPS/);
     });
 
+    test('defaults the in-process rate limit and accepts overrides', () => {
+        expect(loadA2AConfig({ NODE_ENV: 'test', AUTH_ADAPTER: 'none' }).rateLimit)
+            .toEqual({ windowMs: 60_000, max: 120 });
+        expect(loadA2AConfig({
+            NODE_ENV: 'test',
+            AUTH_ADAPTER: 'none',
+            A2A_RATE_LIMIT_WINDOW_MS: '1000',
+            A2A_RATE_LIMIT_MAX: '5',
+        }).rateLimit).toEqual({ windowMs: 1000, max: 5 });
+    });
+
+    test('rejects a non-positive rate limit', () => {
+        for (const A2A_RATE_LIMIT_MAX of ['0', '-1', 'lots', '1.5']) {
+            expect(() => loadA2AConfig({ NODE_ENV: 'test', AUTH_ADAPTER: 'none', A2A_RATE_LIMIT_MAX }))
+                .toThrow(/A2A_RATE_LIMIT_MAX must be a positive integer/);
+        }
+    });
+
     test('validates JWT configuration eagerly', () => {
         expect(() => loadA2AConfig({ AUTH_ADAPTER: 'hs256' })).toThrow(/requires A2A_JWT_SECRET/);
         expect(() => loadA2AConfig({

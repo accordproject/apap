@@ -13,6 +13,15 @@ describe('auth adapter registry', () => {
         expect(adapter).toBeInstanceOf(NoneAdapter);
     });
 
+    test('refuses the none adapter in production', () => {
+        expect(() => createAuthAdapter({
+            authAdapter: 'none',
+            publicBaseUrl: 'https://apap.example.com',
+            rateLimit: { windowMs: 60_000, max: 120 },
+            isProduction: true,
+        })).toThrow(/never available in production/);
+    });
+
     test('names all registered options for an unknown adapter', () => {
         expect(() => createAuthAdapter(loadA2AConfig({ AUTH_ADAPTER: 'missing' })))
             .toThrow(/Registered options:.*hs256.*none/);

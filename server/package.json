@@ -46,6 +46,7 @@
     "drizzle-zod": "0.7.1",
     "express": "4.22.0",
     "express-oauth-server": "2.0.0",
+    "express-rate-limit": "8.7.0",
     "jose": "5.9.6",
     "morgan": "1.11.0",
     "openapi-backend": "5.12.0",

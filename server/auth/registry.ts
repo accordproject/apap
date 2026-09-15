@@ -30,7 +30,14 @@ export function createAuthAdapter(config: A2AConfig): AuthAdapter {
     return factory(config);
 }
 
-registerAdapter('none', () => new NoneAdapter());
+registerAdapter('none', (config) => {
+    // Second lock: loadA2AConfig already refuses `none` outside development and
+    // test, so reaching here in production means that check was bypassed.
+    if (config.isProduction) {
+        throw new Error('A2A configuration error: AUTH_ADAPTER=none is never available in production.');
+    }
+    return new NoneAdapter();
+});
 registerAdapter('hs256', (config) => {
     if (!config.hs256) throw new Error('A2A configuration error: missing validated HS256 configuration.');
     return new JwtAdapter(config.hs256);

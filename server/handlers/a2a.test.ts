@@ -3,6 +3,7 @@ import request from 'supertest';
 import { SignJWT } from 'jose';
 import type { AuthAdapter } from '../auth/types';
 import { JwtAdapter } from '../auth/jwtAdapter';
+import { NoneAdapter } from '../auth/noneAdapter';
 import type { A2AConfig } from '../config';
 import type { Database } from '../db/client';
 import { ApapA2AService } from '../services/a2aService';
@@ -18,6 +19,7 @@ const config: A2AConfig = {
     authAdapter: 'hs256',
     publicBaseUrl: 'https://apap.example.com',
     hs256: jwt,
+    rateLimit: { windowMs: 60_000, max: 120 },
     isProduction: false,
 };
 
@@ -37,8 +39,12 @@ async function bearer(
     return `Bearer ${value}`;
 }
 
-function buildApp(adapter: AuthAdapter = new JwtAdapter(jwt), service?: unknown) {
-    const components = createA2AComponents({} as Database, config, adapter, {
+function buildApp(
+    adapter: AuthAdapter = new JwtAdapter(jwt),
+    service?: unknown,
+    configOverrides: Partial<A2AConfig> = {},
+) {
+    const components = createA2AComponents({} as Database, { ...config, ...configOverrides }, adapter, {
         service: (service ?? new ApapA2AService({ listTemplates: async () => [{ id: 1 }] } as any)) as any,
     });
     const app = express();
@@ -228,5 +234,42 @@ describe('A2A Express integration', () => {
 
         expect(collider.body.result).toBeUndefined();
         expect(collider.body.error.code).toBeLessThan(0);
+    });
+    test('rate-limits the authenticated route', async () => {
+        const app = buildApp(new JwtAdapter(jwt), undefined, { rateLimit: { windowMs: 60_000, max: 2 } });
+        const send = async () => request(app)
+            .post('/a2a')
+            .set('Authorization', await bearer())
+            .set('A2A-Version', '1.0')
+            .send(sendMessage);
+
+        expect((await send()).status).toBe(200);
+        expect((await send()).status).toBe(200);
+
+        const limited = await send();
+        expect(limited.status).toBe(429);
+        expect(limited.body).toEqual({
+            error: { code: 'RATE_LIMITED', message: 'Too many A2A requests.' },
+        });
+    });
+
+    test('refuses an unauthenticated principal in production', async () => {
+        const production = buildApp(new NoneAdapter(), undefined, { authAdapter: 'none', isProduction: true });
+        const response = await request(production)
+            .post('/a2a')
+            .set('A2A-Version', '1.0')
+            .send(sendMessage);
+
+        expect(response.status).toBe(401);
+        expect(response.body.error.code).toBe('UNAUTHENTICATED_PRINCIPAL');
+
+        // The same adapter stays usable outside production.
+        const development = buildApp(new NoneAdapter(), undefined, { authAdapter: 'none' });
+        const allowed = await request(development)
+            .post('/a2a')
+            .set('A2A-Version', '1.0')
+            .send(sendMessage);
+        expect(allowed.status).toBe(200);
+        expect(allowed.body.result.task.status.state).toBe('TASK_STATE_COMPLETED');
     });
 });

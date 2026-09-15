@@ -14,7 +14,10 @@ is fail-closed and can require changes to an existing deployment:
   value.
 - `AUTH_ADAPTER=hs256` requires `A2A_JWT_SECRET`, `A2A_JWT_ISSUER`, and
   `A2A_JWT_AUDIENCE`. The secret must contain at least 32 characters.
-- Production requires an HTTPS `PUBLIC_BASE_URL`.
+- Production requires an HTTPS `PUBLIC_BASE_URL`, and rejects an unauthenticated
+  principal at the transport even if an adapter returns one.
+- `A2A_RATE_LIMIT_MAX` (default 120) and `A2A_RATE_LIMIT_WINDOW_MS` (default
+  60000) tune the in-process rate limit on `/a2a`; both are optional.
 - The server now requires Node.js 22.12 or newer.
 
 The checked-in `.env_example` and local `compose.yaml` contain an explicit
