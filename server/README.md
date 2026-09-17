@@ -154,7 +154,11 @@ Archives are published at
 `https://templates.accordproject.org/archives/<name>@<version>.cta`, and the
 full index of names, versions and descriptions is at
 [template-library.json](https://templates.accordproject.org/template-library.json).
-The examples below use `latedeliveryandpenalty`.
+The examples below use `latedeliveryandpenalty`. The exact name and version in
+them are illustrative: an archive is only usable here if the Cicero range it
+declares covers the version this server runs, so pick one that does — see
+[Cicero version compatibility](#cicero-version-compatibility) — and substitute
+its URL throughout.
 
 ### Quick start: point an agreement at a hosted archive
 
@@ -287,8 +291,10 @@ curl --request POST \
 ```
 
 Response (`201`, abridged — the model, text and logic of the archive are stored
-in full). `hash` is the archive's content hash and `metadata` is its
-`package.json.accordproject` block, so both follow the exact bytes uploaded:
+in full) for an archive this server accepts; one whose declared Cicero range it
+does not satisfy gets the `422` below instead. `hash` is the archive's content
+hash and `metadata` is its `package.json.accordproject` block, so both follow
+the exact bytes uploaded:
 
 ```json
 {

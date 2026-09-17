@@ -83,7 +83,8 @@ A new server starts with an empty database, so there is nothing to draft until a
 template is loaded. The shortest way in is to point an agreement straight at a
 Cicero Template Archive (`.cta`) hosted on
 [templates.accordproject.org](https://templates.accordproject.org) — the server
-fetches and caches the template for you, so there is no separate deploy step:
+fetches and caches the template for you, so there is no separate deploy step.
+The shape of the request, with two placeholders to fill in:
 
 ```bash
 curl --request POST \
@@ -91,17 +92,19 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
 	"uri": "apap://agreement-ldp",
-	"template": "https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta",
+	"template": "<URL of a .cta whose declared Cicero range this server supports>",
 	"agreementStatus": "DRAFT",
-	"data": { "...": "an instance of the template model" }
+	"data": { "<an instance of that template model, Concerto-serialized>": "" }
 }'
 
 curl http://localhost:9000/agreements/1/convert/html
 ```
 
-See
+`template` and `data` go together — `data` has to validate against the model in
+the archive `template` points at — so the snippet above is a skeleton, not a
+runnable command. See
 [Using a Template from templates.accordproject.org](./server/README.md#using-a-template-from-templatesaccordprojectorg)
-for the full agreement body, the Cicero version compatibility check, and
+for a complete worked request, the Cicero version compatibility check, and
 `POST /templates/archive` — the explicit upload path for custom archives or
 servers without network egress.
 
