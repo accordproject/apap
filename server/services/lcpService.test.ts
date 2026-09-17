@@ -111,22 +111,19 @@ describe('lcpService', () => {
     });
 
     describe('resolvePublicBaseUrl', () => {
-        it('prefers the configured APAP_PUBLIC_BASE_URL', () => {
+        it('uses the configured APAP_PUBLIC_BASE_URL', () => {
             process.env.APAP_PUBLIC_BASE_URL = 'https://apap.example';
-            const base = resolvePublicBaseUrl({ requestProtocol: 'http', requestHost: 'localhost:9000' });
+            const base = resolvePublicBaseUrl();
             expect(base).toBe('https://apap.example/');
         });
 
         it('rejects a configured base URL that is not https', () => {
             process.env.APAP_PUBLIC_BASE_URL = 'http://apap.example';
-            expect(() =>
-                resolvePublicBaseUrl({ requestProtocol: 'http', requestHost: 'localhost:9000' }),
-            ).toThrow(/https/);
+            expect(() => resolvePublicBaseUrl()).toThrow(/https/);
         });
 
-        it('falls back to the request protocol/host when unconfigured', () => {
-            const base = resolvePublicBaseUrl({ requestProtocol: 'http', requestHost: 'localhost:9000' });
-            expect(base).toBe('http://localhost:9000');
+        it('throws instead of deriving the base URL from a request (Host is client-controlled)', () => {
+            expect(() => resolvePublicBaseUrl()).toThrow(/APAP_PUBLIC_BASE_URL must be set/);
         });
     });
 
@@ -370,7 +367,15 @@ describe('lcpService', () => {
         it('rejects a non-numeric LCP_ROOT_AGREEMENT_ID', async () => {
             process.env.LCP_ROOT_AGREEMENT_ID = 'not-a-number';
             const db = createMockDb();
-            await expect(buildServerLegalContext(db, 'https://apap.example')).rejects.toThrow(/numeric/);
+            await expect(buildServerLegalContext(db, 'https://apap.example')).rejects.toThrow(/non-negative integer/);
+        });
+
+        it('rejects a decimal or negative LCP_ROOT_AGREEMENT_ID (agreement ids are non-negative integers)', async () => {
+            const db = createMockDb();
+            for (const invalid of ['1.5', '-1', '1e3']) {
+                process.env.LCP_ROOT_AGREEMENT_ID = invalid;
+                await expect(buildServerLegalContext(db, 'https://apap.example')).rejects.toThrow(/non-negative integer/);
+            }
         });
 
         it('prefers LCP_TERMS_URL over LCP_ROOT_AGREEMENT_ID when both are set', async () => {

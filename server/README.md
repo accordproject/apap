@@ -580,11 +580,13 @@ discovery documents for hosted agreements. LCP defines exactly one
 `/.well-known/legal-context.json` per origin (RFC 8615) with a REQUIRED `terms`
 field — but APAP is a multi-tenant registry hosting many agreements per origin,
 and there is no agreement-neutral value that honestly satisfies that field. So
-the **primary** LCP surface here is per-agreement, at ordinary resource paths:
+the **primary** LCP surface here is per-agreement, at ordinary resource paths.
+`APAP_PUBLIC_BASE_URL` must be set (see below) — these endpoints 500 without
+it:
 
 ```bash
-curl http://localhost:9000/agreements/1/legal-context
-curl http://localhost:9000/agreements/1/terms
+curl https://apap.example/agreements/1/legal-context
+curl https://apap.example/agreements/1/terms
 ```
 
 `/agreements/:id/terms` is the byte-pinned terms artifact — a Markdown
@@ -594,10 +596,10 @@ produces). `/agreements/:id/legal-context` is the LCP document describing it:
 ```json
 {
   "$class": "org.accordproject.protocol@1.0.0.LegalContext",
-  "terms": "http://localhost:9000/agreements/1/terms",
+  "terms": "https://apap.example/agreements/1/terms",
   "termsFormat": "markdown",
   "acceptanceRequired": false,
-  "api": "http://localhost:9000/agreements/1"
+  "api": "https://apap.example/agreements/1"
 }
 ```
 
@@ -621,11 +623,11 @@ terms — really is pinned, and `atrHash` becomes a real L2 claim:
 ```json
 {
   "$class": "org.accordproject.protocol@1.0.0.LegalContext",
-  "terms": "http://localhost:9000/agreements/1/terms",
+  "terms": "https://apap.example/agreements/1/terms",
   "termsFormat": "markdown",
   "atrHash": "0x1f3d...c2",
   "acceptanceRequired": false,
-  "api": "http://localhost:9000/agreements/1"
+  "api": "https://apap.example/agreements/1"
 }
 ```
 
@@ -678,12 +680,15 @@ LCP_ROOT_AGREEMENT_ID=1 npm start
 and (as with the per-agreement documents) it is never populated from a hash
 that doesn't authenticate the exact bytes served at `LCP_TERMS_URL`.
 
-Every URL an LCP document emits must be absolute `https://`, per the spec. Set
-`APAP_PUBLIC_BASE_URL` (e.g. `https://apap.example`) in any deployment an agent
-can reach. Without it, URLs fall back to the incoming request's protocol/host —
-convenient for local development, but non-compliant (typically `http://`) and
-not something to rely on the `Host` header for once the server is reachable by
-anyone else.
+Every URL an LCP document emits must be absolute `https://`, per the spec, and
+`APAP_PUBLIC_BASE_URL` (e.g. `https://apap.example`) is **required** to serve
+one: `/agreements/:id/legal-context`, `/agreements/:id/terms`, and
+`/.well-known/legal-context.json` all 500 without it. There is no fallback to
+the incoming request's protocol/host — `Host` is client-controlled and this
+server has no `trust proxy` configuration, so deriving the base URL from a
+request would let any caller point a served document's `terms`/`api` fields
+at an origin of their choosing, which defeats the whole point of a
+byte-pinned, hash-verifiable terms document.
 
 ## Trigger an Agreement
 

@@ -67,6 +67,7 @@ describe('GET /agreements/:id/terms', () => {
         expect(res.headers['content-type']).toContain('text/markdown');
         expect(res.headers['etag']).toBe(`"0x${'a'.repeat(64)}"`);
         expect(res.headers['access-control-allow-origin']).toBe('*');
+        expect(res.headers['access-control-expose-headers']).toBe('ETag');
     });
 
     it('404s for a non-numeric id without calling the service', async () => {

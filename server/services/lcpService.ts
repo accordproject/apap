@@ -108,36 +108,31 @@ export function assertAbsoluteHttpsUrl(value: string, label: string): string {
     return url.toString();
 }
 
-let warnedAboutMissingBaseUrl = false;
-
 /**
  * Resolves the absolute origin used to build every URL in an emitted LCP
  * document. LCP requires `terms` (and any URL field) to be an absolute
- * https:// URL, so this always prefers the explicit APAP_PUBLIC_BASE_URL env
+ * https:// URL, so this only ever uses the explicit APAP_PUBLIC_BASE_URL env
  * var, validated as https.
  *
- * Falling back to the inbound request's protocol/host is a dev-only
- * convenience: it produces a document that is not spec-compliant when the
- * request wasn't https, and trusting a client-supplied Host header for a URL
- * that gets hashed and re-fetched is not something to do in anything an
- * agent can actually reach. Callers pass the raw request protocol/host
- * (rather than an Express Request) to keep this module transport-agnostic.
+ * There is deliberately no fallback to the inbound request's protocol/host:
+ * `Host` is client-controlled, and this server has no `trust proxy`
+ * configuration to make `req.protocol` trustworthy either, so deriving the
+ * base URL from the request would let any caller point a served LCP
+ * document's `terms`/`api` fields at an origin of their choosing — exactly
+ * the kind of forged integrity claim this feature exists to prevent. Failing
+ * closed (a 500 via the thrown error) when the deployer hasn't configured a
+ * trusted base is safer than silently emitting a spoofable document.
  */
-export function resolvePublicBaseUrl(opts: { requestProtocol: string; requestHost: string | undefined }): string {
+export function resolvePublicBaseUrl(): string {
     const configured = process.env.APAP_PUBLIC_BASE_URL;
-    if (configured) {
-        return assertAbsoluteHttpsUrl(configured, 'APAP_PUBLIC_BASE_URL');
-    }
-    if (!warnedAboutMissingBaseUrl) {
-        console.warn(
-            '[lcp] APAP_PUBLIC_BASE_URL is not set; deriving the base URL for LCP documents from the ' +
-            'incoming request. This produces non-compliant (non-https) documents and trusts the Host ' +
-            'header for a URL that gets hashed and re-fetched by clients. Set APAP_PUBLIC_BASE_URL in ' +
-            'any deployment an agent can reach.',
+    if (!configured) {
+        throw new Error(
+            'APAP_PUBLIC_BASE_URL must be set to serve Legal Context Protocol documents. ' +
+            'Deriving the base URL from the incoming request is not safe: the Host header ' +
+            'is client-controlled, so it could point a served document at an attacker-chosen origin.',
         );
-        warnedAboutMissingBaseUrl = true;
     }
-    return `${opts.requestProtocol}://${opts.requestHost ?? 'localhost'}`;
+    return assertAbsoluteHttpsUrl(configured, 'APAP_PUBLIC_BASE_URL');
 }
 
 /**
@@ -287,9 +282,10 @@ export async function buildAgreementLegalContext(
  *   accord-x402-contract-server's env vars so a deployment can move between
  *   the two servers.
  * - LCP_ROOT_AGREEMENT_ID: the root document mirrors one locally-hosted
- *   agreement's legal-context document. Useful for single-agreement
- *   deployments; still omits atrHash for the same reason
- *   buildAgreementLegalContext does.
+ *   agreement's legal-context document, including `atrHash` under the exact
+ *   same SIGNING-onward gating buildAgreementLegalContext applies — it is
+ *   not always omitted, only while that agreement is still DRAFT. Useful
+ *   for single-agreement deployments.
  *
  * When neither is set, callers should respond 404 — see handlers/lcp.ts.
  */
@@ -322,11 +318,14 @@ export async function buildServerLegalContext(
 
     const rootAgreementId = process.env.LCP_ROOT_AGREEMENT_ID;
     if (rootAgreementId) {
-        const id = Number(rootAgreementId);
-        if (!Number.isFinite(id)) {
-            throw new Error('LCP_ROOT_AGREEMENT_ID must be a numeric agreement id');
+        // Same positive-integer-string format the agreement routes require
+        // (agreements.ts's `/^\d+$/` id check) — Number.isFinite alone would
+        // also accept "1.5" or "-1", which would reach the Drizzle query
+        // below as a non-serial value instead of failing as a config error.
+        if (!/^\d+$/.test(rootAgreementId)) {
+            throw new Error('LCP_ROOT_AGREEMENT_ID must be a non-negative integer agreement id');
         }
-        return buildAgreementLegalContext(db, id, baseUrl);
+        return buildAgreementLegalContext(db, Number(rootAgreementId), baseUrl);
     }
 
     return undefined;

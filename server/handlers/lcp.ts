@@ -16,7 +16,7 @@ const router = express.Router();
  * regardless of this configuration.
  */
 router.get('/.well-known/legal-context.json', asyncHandler(async function (req, res) {
-    const baseUrl = resolvePublicBaseUrl({ requestProtocol: req.protocol, requestHost: req.get('host') });
+    const baseUrl = resolvePublicBaseUrl();
     const legalContext = await buildServerLegalContext(res.locals.db, baseUrl);
     if (!legalContext) {
         res.status(404).json({ error: 'No server-level Legal Context Protocol document is configured' });

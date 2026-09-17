@@ -189,6 +189,10 @@ crudRouter.get('/:id/terms', asyncHandler(async function (req, res) {
     res.setHeader('Content-Type', terms.contentType);
     res.setHeader('ETag', `"${terms.atrHash}"`);
     res.setHeader('Access-Control-Allow-Origin', '*');
+    // ETag is not a CORS-safelisted response header — without this, a
+    // cross-origin client can read the body but not the digest, defeating
+    // the hash/ETag verification this endpoint's docs promise.
+    res.setHeader('Access-Control-Expose-Headers', 'ETag');
     res.send(terms.body);
 }));
 
@@ -208,7 +212,7 @@ crudRouter.get('/:id/legal-context', asyncHandler(async function (req, res) {
     if (!Number.isFinite(id)) {
         throw new AgreementNotFoundError(req.params.id);
     }
-    const baseUrl = resolvePublicBaseUrl({ requestProtocol: req.protocol, requestHost: req.get('host') });
+    const baseUrl = resolvePublicBaseUrl();
     const legalContext = await buildAgreementLegalContext(res.locals.db, id, baseUrl);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.json(legalContext);
