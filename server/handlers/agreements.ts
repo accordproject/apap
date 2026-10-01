@@ -14,6 +14,7 @@ import {
 } from '../services/errors';
 import {
     assertAgreementRecordMutable,
+    assertAgreementRecordDeletable,
     convertAgreement,
     listAgreementsPaged,
     triggerAgreement,
@@ -129,6 +130,7 @@ const crudRouter = buildCrudRouter({
     // issue with drizzle-zod. Runtime unaffected.
     validateBody: { schema: AgreementInsertSchema as any, custom: (body) => validateAgreementBody(body) },
     guardUpdate: (existing, body) => assertAgreementRecordMutable(existing, body),
+    guardDelete: (existing) => assertAgreementRecordDeletable(existing),
     listService: (context, opts) => listAgreementsPaged(context, opts),
 });
 
