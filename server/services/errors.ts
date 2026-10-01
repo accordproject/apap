@@ -163,6 +163,26 @@ export class AgreementRecordImmutableError extends ServiceError {
 }
 
 /**
+ * Raised when a DELETE attempts to remove an agreement that
+ * is in a fully frozen/finalized state or contains signature evidence.
+ */
+export class AgreementNotDeletableError extends ServiceError {
+    constructor(agreementId: string | number, status: string, reason: 'status' | 'signatures' = 'status') {
+        const message = reason === 'signatures'
+            ? `Agreement ${agreementId} cannot be deleted because it contains signature evidence`
+            : `Agreement ${agreementId} cannot be deleted because it is in a fully frozen/finalized state (${status})`;
+
+        super(
+            'AGREEMENT_NOT_DELETABLE',
+            409,
+            message,
+            { agreementId, status, reason },
+        );
+        this.name = 'AgreementNotDeletableError';
+    }
+}
+
+/**
  * Raised when a PUT attempts to move `agreementStatus` to a lower-ranked
  * status than it's currently at (rank: DRAFT < SIGNING < COMPLETED <
  * SUPERSEDED) -- e.g. COMPLETED back to DRAFT, or SUPERSEDED back to
