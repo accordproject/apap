@@ -1,11 +1,28 @@
 import type { A2AConfig } from '../config';
 import { JwtAdapter } from './jwtAdapter';
 import { NoneAdapter } from './noneAdapter';
-import type { AuthAdapter } from './types';
+import type { AdapterEnv, AuthAdapter } from './types';
 
-export type AuthAdapterFactory = (config: A2AConfig) => AuthAdapter;
+/**
+ * Factories receive only their own config slice plus cross-cutting runtime
+ * flags, never the full A2AConfig. This prevents sibling-adapter secret leaks
+ * when third-party adapters register alongside the built-ins.
+ */
+export type AuthAdapterFactory = (
+    adapterConfig: unknown,
+    env: AdapterEnv,
+) => AuthAdapter;
 
 const factories = new Map<string, AuthAdapterFactory>();
+
+/**
+ * Each built-in declares the A2AConfig field that carries its sub-config.
+ * Entries not listed here receive `undefined` from the registry and are
+ * expected to read their own environment variables.
+ */
+const BUILT_IN_CONFIG_FIELD: Readonly<Record<string, keyof A2AConfig>> = {
+    hs256: 'hs256',
+};
 
 /** Registers an adapter without requiring a patch to APAP core. */
 export function registerAdapter(name: string, factory: AuthAdapterFactory): void {
@@ -27,18 +44,25 @@ export function createAuthAdapter(config: A2AConfig): AuthAdapter {
             `Registered options: ${registeredAdapterNames().join(', ')}.`,
         );
     }
-    return factory(config);
+    const env: AdapterEnv = {
+        isProduction: config.isProduction,
+        publicBaseUrl: config.publicBaseUrl,
+    };
+    const field = BUILT_IN_CONFIG_FIELD[config.authAdapter];
+    const adapterConfig = field ? config[field] : undefined;
+    return factory(adapterConfig, env);
 }
 
-registerAdapter('none', (config) => {
+registerAdapter('none', (_adapterConfig, env) => {
     // Second lock: loadA2AConfig already refuses `none` outside development and
     // test, so reaching here in production means that check was bypassed.
-    if (config.isProduction) {
+    if (env.isProduction) {
         throw new Error('A2A configuration error: AUTH_ADAPTER=none is never available in production.');
     }
     return new NoneAdapter();
 });
-registerAdapter('hs256', (config) => {
-    if (!config.hs256) throw new Error('A2A configuration error: missing validated HS256 configuration.');
-    return new JwtAdapter(config.hs256);
+registerAdapter('hs256', (adapterConfig) => {
+    const hs256 = adapterConfig as A2AConfig['hs256'];
+    if (!hs256) throw new Error('A2A configuration error: missing validated HS256 configuration.');
+    return new JwtAdapter(hs256);
 });

@@ -1,6 +1,7 @@
 import { loadA2AConfig } from '../config';
 import { createAuthAdapter, registerAdapter, registeredAdapterNames } from './registry';
 import { NoneAdapter } from './noneAdapter';
+import type { AdapterEnv, AuthAdapter } from './types';
 
 describe('auth adapter registry', () => {
     test('contains the built-in adapters', () => {
@@ -27,4 +28,29 @@ describe('auth adapter registry', () => {
         expect(() => createAuthAdapter(loadA2AConfig({ AUTH_ADAPTER: 'missing' })))
             .toThrow(/Registered options:.*hs256.*none/);
     });
+
+    test('third-party factories do not receive sibling adapter secrets', () => {
+        let receivedConfig: unknown;
+        let receivedEnv: AdapterEnv | undefined;
+        registerAdapter('test-isolated', (adapterConfig, env): AuthAdapter => {
+            receivedConfig = adapterConfig;
+            receivedEnv = env;
+            return new NoneAdapter();
+        });
+
+        createAuthAdapter(loadA2AConfig({
+            AUTH_ADAPTER: 'test-isolated',
+            A2A_JWT_SECRET: 'this-should-never-be-visible-to-sibling-adapters-xyz',
+            A2A_JWT_ISSUER: 'issuer.example',
+            A2A_JWT_AUDIENCE: 'audience.example',
+            PUBLIC_BASE_URL: 'https://apap.example.com',
+        }));
+
+        expect(receivedConfig).toBeUndefined();
+        expect(receivedEnv).toEqual({
+            isProduction: false,
+            publicBaseUrl: 'https://apap.example.com',
+        });
+    });
+
 });
