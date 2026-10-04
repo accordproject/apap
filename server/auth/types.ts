@@ -18,6 +18,17 @@ export interface AuthAdapter {
     describeScheme(): SecurityScheme | undefined;
 }
 
+/**
+ * Cross-cutting runtime flags handed to every adapter factory alongside its
+ * own config slice. Factories receive this instead of the full A2AConfig so
+ * one adapter cannot read sibling adapters' private config (e.g. a custom
+ * adapter would otherwise see the hs256 JWT secret in `config.hs256`).
+ */
+export interface AdapterEnv {
+    readonly isProduction: boolean;
+    readonly publicBaseUrl: string;
+}
+
 export class AuthenticatedPrincipal implements Principal {
     public readonly isAuthenticated = true;
 

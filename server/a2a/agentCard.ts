@@ -69,7 +69,12 @@ export function composeAgentCard(config: A2AConfig, adapter: AuthAdapter): Agent
     return cardWithScheme(config, adapter.securitySchemeName, adapter.describeScheme());
 }
 
-/** Discovery stays available even if a custom adapter's card hook fails. */
+/**
+ * Discovery stays available even if a custom adapter's card hook fails. The
+ * fallback always advertises a generic Bearer scheme so a card consumer sees
+ * "some auth required" rather than an empty securitySchemes map that reads
+ * as "no auth required" when the transport still enforces authentication.
+ */
 export function composeAgentCardSafely(
     config: A2AConfig,
     adapter: AuthAdapter,
@@ -77,9 +82,14 @@ export function composeAgentCardSafely(
 ): AgentCard {
     try {
         return composeAgentCard(config, adapter);
-    } catch (_error) {
-        warn({ event: 'a2a_agent_card_fallback', adapter: adapter.name });
-        const fallbackName = config.authAdapter === 'hs256' ? 'Bearer' : undefined;
-        return cardWithScheme(config, fallbackName, fallbackName ? bearerFallback() : undefined);
+    } catch (error) {
+        warn({
+            event: 'a2a_agent_card_fallback',
+            adapter: adapter.name,
+            error: error instanceof Error
+                ? { name: error.name, message: error.message }
+                : String(error),
+        });
+        return cardWithScheme(config, 'Bearer', bearerFallback());
     }
 }
