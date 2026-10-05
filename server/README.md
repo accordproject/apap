@@ -690,6 +690,13 @@ request would let any caller point a served document's `terms`/`api` fields
 at an origin of their choosing, which defeats the whole point of a
 byte-pinned, hash-verifiable terms document.
 
+These endpoints are public and unauthenticated, and `/agreements/:id/terms`
+(and `/agreements/:id/legal-context` for any non-`DRAFT` agreement, which
+hashes the rendered terms) re-render the agreement's template on every
+request. The RI applies no rate limiting of its own — like authentication, it
+is expected to be enforced at the edge (reverse proxy / gateway) in any
+deployment reachable by untrusted clients.
+
 ## Trigger an Agreement
 
 ### Create a Template with Logic
