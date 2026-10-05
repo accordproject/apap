@@ -525,6 +525,26 @@ describe('MCP Handler', () => {
             expect(content[0].type).toBe('text');
             const parsed = JSON.parse(content[0].text as string);
             expect(parsed.uri).toBe('test://template/1');
+            expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Template');
+            expect(parsed.$identifier).toBe('test://template/1');
+        });
+
+        it('executes getAgreement tool correctly', async () => {
+            const mockAgreement = { id: 2, uri: 'test://agreement/2', agreementStatus: 'active', data: { foo: 'bar' } };
+            mockDb._setReturn([mockAgreement]);
+
+            const result = await client.callTool({
+                name: 'getAgreement',
+                arguments: { agreementId: '2' }
+            });
+
+            const content = result.content as any[];
+            expect(content[0].type).toBe('text');
+            const parsed = JSON.parse(content[0].text as string);
+            expect(parsed.uri).toBe('test://agreement/2');
+            expect(parsed.agreementStatus).toBe('active');
+            expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
+            expect(parsed.$identifier).toBe('test://agreement/2');
         });
 
         it('executes trigger-agreement tool correctly', async () => {
@@ -569,7 +589,7 @@ describe('MCP Handler', () => {
         // integers.
         describe('paged resource URIs (#217)', () => {
             const templateRow = { id: 1, uri: 'test://template/1', author: 'A' };
-            const agreementRow = { id: 2, uri: 'test://agreement/2', data: { foo: 'bar' } };
+            const agreementRow = { id: 2, uri: 'test://agreement/2', template: 'test://template/1', agreementStatus: 'active', data: { foo: 'bar' } };
 
             it('apap://templates?limit=50&offset=100 threads paging into the service', async () => {
                 mockDb._setReturn([templateRow]);
@@ -579,6 +599,10 @@ describe('MCP Handler', () => {
                 expect(mockDb.offset).toHaveBeenCalledWith(100);
                 expect(result.contents).toHaveLength(1);
                 expect((result.contents[0] as any).uri).toBe('apap://templates/1');
+
+                const parsed = JSON.parse((result.contents[0] as any).text);
+                expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Template');
+                expect(parsed.$identifier).toBe('test://template/1');
             });
 
             // Regression guard for the stable-ordering fix Niall asked for in
@@ -644,6 +668,14 @@ describe('MCP Handler', () => {
                 expect(mockDb.offset).toHaveBeenCalledWith(100);
                 expect(result.contents).toHaveLength(1);
                 expect((result.contents[0] as any).uri).toBe('apap://agreements/2');
+
+                const parsed = JSON.parse((result.contents[0] as any).text);
+                expect(parsed.uri).toBe('test://agreement/2');
+                expect(parsed.template).toBe('test://template/1');
+                expect(parsed.agreementStatus).toBe('active');
+                expect(parsed.data.foo).toBe('bar');
+                expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
+                expect(parsed.$identifier).toBe('test://agreement/2');
             });
 
             it('apap://agreements (bare URI) still returns limit=100 offset=0 (backwards compat)', async () => {
