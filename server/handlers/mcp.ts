@@ -196,7 +196,11 @@ async function getAgreement(context: PolicyContext, uri: string, variables: { ag
             contents: [{
                 uri: url.toString(),
                 mimeType: "application/json",
-                text: JSON.stringify(agreement),
+                text: JSON.stringify({
+                    ...agreement,
+                    $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                    $identifier: agreement.uri
+                }),
                 ...CACHE_HINTS.agreementItem,
             }]
         };
@@ -244,7 +248,11 @@ async function getTemplates(context: PolicyContext, uri: URL, opts: { limit?: nu
         contents: templates.map((t) => ({
             uri: `apap://templates/${t.id}`,
             mimeType: "application/json",
-            text: JSON.stringify(t),
+            text: JSON.stringify({
+                ...t,
+                $class: 'org.accordproject.protocol@1.0.0.Template',
+                $identifier: t.uri
+            }),
             ...CACHE_HINTS.templateList,
         })),
     };
@@ -279,7 +287,11 @@ async function getAgreements(context: PolicyContext, uri: URL, opts: { limit?: n
         // inside the `text` property as JSON, which is where MCP clients read it from.
         contents: agreements.map((a) => ({
             mimeType: "application/json",
-            text: JSON.stringify({ ...(a.data as Record<string, unknown> ?? {}), $identifier: a.id }, null, 2),
+            text: JSON.stringify({
+                ...a,
+                $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                $identifier: a.uri
+            }, null, 2),
             uri: `apap://agreements/${a.id}`,
             ...CACHE_HINTS.agreementList,
         })),
@@ -422,7 +434,11 @@ export const getServer = (context: PolicyContext) => {
                     contents: [{
                         uri: uri.toString(),
                         mimeType: "application/json",
-                        text: JSON.stringify(template),
+                        text: JSON.stringify({
+                            ...template,
+                            $class: 'org.accordproject.protocol@1.0.0.Template',
+                            $identifier: template.uri
+                        }),
                         ...CACHE_HINTS.templateItem,
                     }]
                 };
@@ -525,7 +541,14 @@ Refer to the agreement's template model to determine which fields are required o
             try {
                 const template = await getTemplateById(context, id);
                 return {
-                    content: [{ type: "text", text: JSON.stringify(template) }]
+                    content: [{
+                        type: "text",
+                        text: JSON.stringify({
+                            ...template,
+                            $class: 'org.accordproject.protocol@1.0.0.Template',
+                            $identifier: template.uri
+                        })
+                    }]
                 };
             } catch (err) {
                 if (err instanceof ServiceError) {
@@ -557,7 +580,14 @@ Refer to the agreement's template model to determine which fields are required o
             try {
                 const agreement = await getAgreementById(context, id);
                 return {
-                    content: [{ type: "text", text: JSON.stringify(agreement) }]
+                    content: [{
+                        type: "text",
+                        text: JSON.stringify({
+                            ...agreement,
+                            $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                            $identifier: agreement.uri
+                        })
+                    }]
                 };
             } catch (err) {
                 if (err instanceof ServiceError) {
