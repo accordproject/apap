@@ -680,6 +680,40 @@ describe('MCP Handler', () => {
                     client.readResource({ uri: 'apap://templates?limit=50' }),
                 ).rejects.toThrow(/apap:\/\/templates\?limit=50/);
             });
+
+            // #244: paged reads carry `_meta.hasMore` so an LLM client paging
+            // over the collection can stop without probing the next page.
+            // Heuristic is `rows.length === effectiveLimit` per Satvik's
+            // "no extra query" scoping in #248/#244; the service clamps limit
+            // to [1, 100] identically to the handler's `effectiveLimit`, so
+            // the two agree on the boundary.
+            describe('_meta.hasMore signal (#244)', () => {
+                it('apap://templates paged read where returned count == limit reports hasMore: true', async () => {
+                    // limit=2, DB returns 2 rows -> page filled, more may exist.
+                    mockDb._setReturn([templateRow, { ...templateRow, id: 2, uri: 'test://template/2' }]);
+                    const result = await client.readResource({ uri: 'apap://templates?limit=2&offset=0' });
+                    expect((result as { _meta?: { hasMore?: boolean } })._meta?.hasMore).toBe(true);
+                });
+
+                it('apap://templates paged read where returned count < limit reports hasMore: false', async () => {
+                    // limit=10, DB returns 1 row -> page short, no more.
+                    mockDb._setReturn([templateRow]);
+                    const result = await client.readResource({ uri: 'apap://templates?limit=10&offset=0' });
+                    expect((result as { _meta?: { hasMore?: boolean } })._meta?.hasMore).toBe(false);
+                });
+
+                it('apap://agreements paged read where returned count == limit reports hasMore: true', async () => {
+                    mockDb._setReturn([agreementRow, { ...agreementRow, id: 3 }]);
+                    const result = await client.readResource({ uri: 'apap://agreements?limit=2&offset=0' });
+                    expect((result as { _meta?: { hasMore?: boolean } })._meta?.hasMore).toBe(true);
+                });
+
+                it('apap://agreements paged read where returned count < limit reports hasMore: false', async () => {
+                    mockDb._setReturn([agreementRow]);
+                    const result = await client.readResource({ uri: 'apap://agreements?limit=10&offset=0' });
+                    expect((result as { _meta?: { hasMore?: boolean } })._meta?.hasMore).toBe(false);
+                });
+            });
         });
     });
 });

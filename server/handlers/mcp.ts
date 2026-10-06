@@ -221,11 +221,25 @@ async function getAgreement(db: Database, uri: string, variables: { agreementId:
 // per RFC 6570 form-style expansion. The service clamps to [1, 100] internally
 // so we never double-clamp here; `undefined` values fall back to the same
 // full-page default the bare `apap://templates` URI uses (limit=100, offset=0).
+//
+// `_meta.hasMore` closes #244: a client paging `apap://templates{?limit,offset}`
+// otherwise has to probe an extra page to discover the collection ends. The
+// service clamps `limit` to [1, 100] identically to the effectiveLimit computed
+// here, so `rows.length === effectiveLimit` is a sound "page filled" signal.
+// ponytail: heuristic. A total that is an exact multiple of the effective
+// limit still costs the client one probe (rows.length === limit and hasMore
+// reports true; the next page returns 0 rows and hasMore false). Upgrade path:
+// fetch `limit + 1` inside the service and drop the peek, at the cost of one
+// extra row's bytes per read. Deferred here to match Satvik's "no extra query"
+// scoping in #244; upgrade if the boundary case surfaces in real traffic.
 async function getTemplates(db: Database, uri: URL, opts: { limit?: number; offset?: number } = {}) {
     console.log({ type: 'get_templates_requested', uri: uri.toString(), ...opts });
     const templates = await listTemplates(db, opts);
-    console.log({ type: 'fetched_templates_success', count: templates.length });
+    const effectiveLimit = Math.min(100, Math.max(1, opts.limit ?? 100));
+    const hasMore = templates.length === effectiveLimit;
+    console.log({ type: 'fetched_templates_success', count: templates.length, hasMore });
     return {
+        _meta: { hasMore },
         contents: templates.map((t) => ({
             uri: `apap://templates/${t.id}`,
             mimeType: "application/json",
@@ -244,8 +258,13 @@ async function getTemplates(db: Database, uri: URL, opts: { limit?: number; offs
 async function getAgreements(db: Database, uri: URL, opts: { limit?: number; offset?: number } = {}) {
     console.log({ type: 'get_agreements_requested', uri: uri.toString(), ...opts });
     const agreements = await listAgreements(db, opts);
-    console.log({ type: 'fetched_agreements_success', count: agreements.length });
+    // `_meta.hasMore` closes #244; see getTemplates above for the heuristic
+    // and its upgrade path.
+    const effectiveLimit = Math.min(100, Math.max(1, opts.limit ?? 100));
+    const hasMore = agreements.length === effectiveLimit;
+    console.log({ type: 'fetched_agreements_success', count: agreements.length, hasMore });
     return {
+        _meta: { hasMore },
         // FIX for issue #128: The previous version spread the full agreement object
         // (...a) after setting the uri field. Because the Agreement row from the
         // database carries its own `uri` property (e.g. "resource:org.accordproject..."),
