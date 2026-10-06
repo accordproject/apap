@@ -64,8 +64,17 @@ Register an adapter before the application resolves `AUTH_ADAPTER`:
 ```typescript
 import { registerAdapter } from './auth/registry';
 
-registerAdapter('oidc', (config) => new OidcAdapter(config));
+registerAdapter('oidc', (adapterConfig, env) => new OidcAdapter({
+    issuer: process.env.OIDC_ISSUER,
+    isProduction: env.isProduction,
+}));
 ```
+
+A factory receives only its own config slice and `env`, the cross-cutting
+`{ isProduction, publicBaseUrl }`, never the whole `A2AConfig`: one adapter
+must not be able to read another's secrets. Only the built-ins declare a
+config slice today, so a third-party factory gets `undefined` for
+`adapterConfig` and reads its own environment variables.
 
 The agent card derives its security declaration from the active adapter. A
 custom adapter should therefore implement both verification and
