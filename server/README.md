@@ -259,7 +259,7 @@ A range the server cannot satisfy is rejected. `POST /agreements` surfaces that
 as a plain `500` carrying cicero's own message:
 
 ```
-The template targets Cicero version ^1.0.0 but the current Cicero version is 2.1.1.
+The template targets Cicero version ^1.0.0 but the current Cicero version is <the cicero-core version this server pins>.
 ```
 
 `POST /templates/archive` reports the same condition as a typed `422`
@@ -353,17 +353,18 @@ Errors:
 {
 	"error": {
 		"code": "TEMPLATE_CICERO_VERSION_MISMATCH",
-		"message": "Template requires Cicero ^1.0.0, server supports 2.1.1",
+		"message": "Template requires Cicero ^1.0.0, server supports <the cicero-core version this server pins>",
 		"details": {
 			"declaredRange": "^1.0.0",
-			"serverVersion": "2.1.1"
+			"serverVersion": "<the cicero-core version this server pins>"
 		}
 	}
 }
 ```
 
-`serverVersion` is whatever `@accordproject/cicero-core` version this RI pins,
-so the exact numbers depend on the checkout.
+`declaredRange` is read from the archive and `serverVersion` is the
+`@accordproject/cicero-core` version in [`package.json`](./package.json), so
+both are whatever the archive and the checkout happen to carry.
 
 ## Creating a Template
 
