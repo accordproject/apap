@@ -1,4 +1,4 @@
-import { extractTemplateForDatabase } from './templatebuilder';
+import { extractTemplateForDatabase, templateNameFromUri } from './templatebuilder';
 
 describe('Template Builder - extractTemplateForDatabase', () => {
     it('should perfectly extract ALL attributes from a template instance including logo and metadata', () => {
@@ -67,5 +67,29 @@ describe('Template Builder - extractTemplateForDatabase', () => {
         expect(result.logic.codes).toHaveLength(1);
         expect(result.logic.codes[0].id).toBe('logic/main.ts');
         expect(result.logic.codes[0].value).toContain('function execute()');
+    });
+});
+describe('Template Builder - templateNameFromUri', () => {
+    it.each([
+        // Archive uploads store `archive:<name>@<version>`; used verbatim this
+        // made Cicero reject the rebuilt archive, so the template could never run.
+        ['archive:latedeliveryandpenalty-typescript@0.0.1', 'latedeliveryandpenalty-typescript'],
+        ['https://templates.accordproject.org/helloworld@0.14.0.cta', 'helloworld'],
+        ['resource:org.accordproject.protocol@1.0.0.Template#latedelivery', 'latedelivery'],
+        ['demo://template/late-delivery', 'late-delivery'],
+        ['https://example.org/My.Template.cta', 'my-template'],
+    ])('derives a Cicero-safe name from %s', (uri, expected) => {
+        expect(templateNameFromUri(uri)).toBe(expected);
+    });
+
+    it('falls back when nothing usable remains', () => {
+        expect(templateNameFromUri('')).toBe('dynamic-template');
+        expect(templateNameFromUri('archive:@1.0.0')).toBe('dynamic-template');
+    });
+
+    it('only ever produces names Cicero accepts', () => {
+        for (const uri of ['archive:Weird Name!@2', 'x://a/b/%%%', 'resource:ns.T#Á-é_1']) {
+            expect(templateNameFromUri(uri)).toMatch(/^[a-z0-9_-]+$/);
+        }
     });
 });

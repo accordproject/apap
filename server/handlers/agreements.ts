@@ -17,6 +17,7 @@ import {
     convertAgreement,
     listAgreementsPaged,
     triggerAgreement,
+    templateUriFromReference,
 } from '../services/agreementService';
 import { asyncHandler } from '../middleware/errorHandler';
 
@@ -45,10 +46,7 @@ router.post('/', asyncHandler(async (req, res) => {
             return res.status(400).json({ error: 'Invalid request body', details: error.errors });
         }
 
-        let templateUri = req.body.template;
-        if (templateUri && templateUri.startsWith('resource:')) {
-            templateUri = templateUri.split('#').slice(1).join('#');
-        }
+        const templateUri = templateUriFromReference(req.body.template);
 
         let currentHash = null;
 

@@ -6,6 +6,7 @@ import {
     getAgreementByUri,
     convertAgreement,
     assertAgreementRecordMutable,
+    templateUriFromReference,
 } from './agreementService';
 import {
     AgreementNotFoundError,
@@ -61,6 +62,36 @@ function agreementRow(id: number, overrides: Record<string, unknown> = {}): any 
         ...overrides,
     };
 }
+
+describe('templateUriFromReference', () => {
+    it('passes a plain template URI through unchanged', () => {
+        expect(templateUriFromReference('demo://template/late-delivery')).toBe('demo://template/late-delivery');
+        expect(templateUriFromReference(null)).toBeNull();
+    });
+
+    it('extracts an unencoded relationship identifier', () => {
+        expect(templateUriFromReference('resource:org.accordproject.protocol@1.0.0.Template#demo://template/x'))
+            .toBe('demo://template/x');
+    });
+
+    it('decodes a percent-encoded relationship identifier', () => {
+        // Concerto validates this form too; looking it up verbatim found no
+        // template, so every trigger on such an agreement failed.
+        expect(templateUriFromReference(
+            'resource:org.accordproject.protocol@1.0.0.Template#demo%3A%2F%2Ftemplate%2Flate-delivery',
+        )).toBe('demo://template/late-delivery');
+    });
+
+    it('keeps an identifier containing a literal % that is not an escape', () => {
+        expect(templateUriFromReference('resource:ns.Template#https://x.org/100%-done'))
+            .toBe('https://x.org/100%-done');
+    });
+
+    it('keeps a # inside the identifier', () => {
+        expect(templateUriFromReference('resource:ns.Template#https://x.org/t#frag'))
+            .toBe('https://x.org/t#frag');
+    });
+});
 
 describe('agreementService', () => {
     let db: ReturnType<typeof createMockDb>;
