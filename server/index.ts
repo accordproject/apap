@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import OAuthServer from 'express-oauth-server';
+import * as schema from './db/schema';
 
 // Load environment variables from .env file
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -16,7 +17,7 @@ import templatesRouter from './handlers/templates';
 import agreementsRouter from './handlers/agreements';
 import sharedModelsRouter from './handlers/sharedmodels';
 import capabilitiesRouter from './handlers/capabilities';
-import mcpRouter, { startSessionCleanup } from './handlers/mcp';
+import { createMcpRouter } from './handlers/mcp';
 import authRouter from './handlers/auth';
 
 const app = Express();
@@ -53,6 +54,7 @@ const queryClient = postgres(dbUrl);
 const db = drizzle({
   client: queryClient,
   casing: 'snake_case',
+  schema,
 });
 
 app.use((req, res, next) => {
@@ -66,11 +68,8 @@ app.use('/templates', templatesRouter);
 app.use('/agreements', agreementsRouter);
 app.use('/sharedmodels', sharedModelsRouter);
 app.use('/capabilities', capabilitiesRouter);
-app.use('/', mcpRouter);
+app.use('/', createMcpRouter(db));
 app.use('/', authRouter);
-
-// Start MCP session cleanup
-startSessionCleanup();
 
 // logging
 app.use(morgan('combined'));
