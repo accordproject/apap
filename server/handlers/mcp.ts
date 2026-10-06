@@ -7,13 +7,13 @@ import {
     INVALID_PARAMS,
     InMemoryServerEventBus,
     createMcpHandler,
-    type ServerNotifier,
     type CallToolResult,
     type ReadResourceResult,
 } from '@modelcontextprotocol/server';
 import { toNodeHandler } from '@modelcontextprotocol/node';
 import { z } from 'zod';
 import { Agreement, MODEL, Template } from '../db/schema';
+import { setNotifier } from '../services/notify';
 import {
     ServiceError,
     TemplateNotFoundError,
@@ -601,29 +601,15 @@ Refer to the agreement's template model to determine which fields are required o
 
 const SUBSCRIPTION_CAP_PER_SESSION = 100;
 
-let notifier: ServerNotifier | undefined;
-
-/**
- * Access the handler's publish-side notifier. Services call this from write
- * paths (`templateService`, `agreementService`) to emit
- * `notifications/resources/updated` on the shared bus.
- *
- * Throws if the MCP router has not been constructed yet (ordering bug), which
- * is only reachable if a service module is imported and invoked before
- * `createMcpRouter(db)` runs in `index.ts`.
- */
-export function getNotifier(): ServerNotifier {
-    if (!notifier) {
-        throw new Error('MCP notifier not initialized: createMcpRouter(db) must run before any service write path');
-    }
-    return notifier;
-}
-
 /**
  * Build the Express router that owns `/mcp`. Called once at startup from
  * `index.ts` with the shared `Database` instance; the handler constructs a
  * fresh `McpServer` per request via the factory, so `getServer(db)` runs on
  * each inbound call rather than at module load.
+ *
+ * Side effect: installs the handler's publish-side notifier on the services
+ * module so write paths can emit `notifications/resources/updated` on the
+ * shared bus without importing from `handlers/`. See `services/notify.ts`.
  */
 export function createMcpRouter(db: Database): express.Router {
     const bus = new InMemoryServerEventBus((err: Error) => {
@@ -639,7 +625,7 @@ export function createMcpRouter(db: Database): express.Router {
         },
     );
 
-    notifier = handler.notify;
+    setNotifier(handler.notify);
 
     const router = express.Router();
     router.all('/mcp', toNodeHandler(handler));

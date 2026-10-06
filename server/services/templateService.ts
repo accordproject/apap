@@ -12,6 +12,32 @@ import {
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
 } from './errors';
+import { getNotifier } from './notify';
+
+// SECURITY (SEP-2575 fail-closed contract, #232):
+//
+// Mutations below call `getNotifier().resourceUpdated(uri)` on success. The
+// handler fans the event out to every open `subscriptions/listen` on the
+// matching URI, and each notification is thin (uri only) so the client has
+// to re-fetch via `resources/read`, where authorization re-enforces at the
+// resource boundary.
+//
+// Invariant the caller MUST uphold once auth lands upstream: the same
+// authorization check that gates `resources/read` for `apap://templates/{id}`
+// gates every mutation here. Without that, a caller who can mutate but not
+// read would leak existence via the subscription fan-out. The RI treats
+// itself as unauthenticated locally today (see server/CLAUDE.md); production
+// deployments terminating auth at the edge MUST route all template writes
+// through this file (not the generic `crud.ts` router) so the gate applies.
+//
+// The MCP URI is intentionally built from the DB row's `id`, not its own
+// `uri` field: the row's `uri` is the Concerto resource URI
+// (`archive:...` / `resource:...`), not the MCP resource URI clients
+// subscribed against (`apap://templates/{id}`). Mixing the two would miss
+// every open subscription. Same mapping as `handlers/mcp.ts:getTemplates`.
+function templateMcpUri(id: number): string {
+    return `apap://templates/${id}`;
+}
 
 // The exact cicero-core version this server parses/executes `.cta` archives
 // with (server/package.json's direct dependency, not a nested copy pulled in
@@ -92,7 +118,9 @@ export async function createTemplate(
 ): Promise<TemplateRow> {
     try {
         const rows = await db.insert(Template).values(data).returning();
-        return rows[0];
+        const row = rows[0];
+        getNotifier().resourceUpdated(templateMcpUri(row.id));
+        return row;
     } catch (err: unknown) {
         if (isUniqueViolation(err)) throw new TemplateDuplicateError(data.uri);
         throw err;
@@ -185,7 +213,9 @@ export async function updateTemplate(
 
     const rows = await db.update(Template).set(data).where(eq(Template.uri, uri)).returning();
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
-    return rows[0];
+    const row = rows[0];
+    getNotifier().resourceUpdated(templateMcpUri(row.id));
+    return row;
 }
 
 // Same rationale as updateTemplate above: enforces assertTemplateNotInUse
@@ -199,6 +229,7 @@ export async function deleteTemplate(db: Database, uri: string): Promise<void> {
 
     const rows = await db.delete(Template).where(eq(Template.uri, uri)).returning();
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
+    getNotifier().resourceUpdated(templateMcpUri(rows[0].id));
 }
 
 function isUniqueViolation(err: unknown): boolean {

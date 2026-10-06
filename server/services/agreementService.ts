@@ -13,6 +13,16 @@ import {
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { templateFromDatabase } from '../handlers/templatebuilder';
 import { concertoValidation } from '../handlers/concertovalidation';
+import { getNotifier } from './notify';
+
+// SECURITY (SEP-2575 fail-closed contract, #232): see templateService.ts for
+// the full contract. In short: mutations below publish on the MCP bus; the
+// payload is thin (uri only) so re-reads re-enforce auth. The caller MUST
+// gate every mutation here behind the same authorization check that gates
+// `resources/read` for `apap://agreements/{id}` once auth lands upstream.
+function agreementMcpUri(id: number): string {
+    return `apap://agreements/${id}`;
+}
 
 // Slice 2 ported the CRUD lookup half. Slice 2b + 2c add the runtime half —
 // convertAgreement + triggerAgreement — which wrap the real
@@ -331,6 +341,8 @@ export async function triggerAgreement(
         .update(Agreement)
         .set({ state: triggerResult.state })
         .where(eq(Agreement.id, agreementId));
+
+    getNotifier().resourceUpdated(agreementMcpUri(agreementId));
 
     return triggerResult;
 }

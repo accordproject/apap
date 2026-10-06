@@ -2,24 +2,11 @@ import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
 
-// Mock crypto.randomUUID
-jest.mock('crypto', () => {
-    const actualCrypto = jest.requireActual('crypto') as any;
-    return {
-        ...actualCrypto,
-        randomUUID: jest.fn().mockReturnValue('test-session-123')
-    };
-});
-
-// Mock the InMemoryEventStore before importing the router
-jest.mock('./inmemoryeventstore', () => {
-    return {
-        InMemoryEventStore: jest.fn().mockImplementation(() => ({
-            storeEvent: jest.fn<any>().mockResolvedValue('event-1'),
-            replayEventsAfter: jest.fn<any>().mockResolvedValue(undefined),
-        })),
-    };
-});
+// The pre-#232 fixed-session-id mock (`crypto.randomUUID` -> `'test-session-123'`)
+// and the InMemoryEventStore mock are both gone with the custom transport dict.
+// The SDK now owns session-id generation and event replay; mocking them at the
+// `crypto` or `./inmemoryeventstore` boundary no longer intercepts the SDK's
+// internals, so the mocks were removed rather than ported.
 
 import {
     createMcpRouter,
