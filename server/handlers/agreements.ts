@@ -19,6 +19,7 @@ import {
     triggerAgreement,
 } from '../services/agreementService';
 import { asyncHandler } from '../middleware/errorHandler';
+import { createLegacyPolicyContext } from '../services/policy';
 
 const router = express.Router();
 
@@ -95,7 +96,7 @@ const crudRouter = buildCrudRouter({
     // issue with drizzle-zod. Runtime unaffected.
     validateBody: { schema: AgreementInsertSchema as any, custom: (body) => concertoValidation('Agreement', body) },
     guardUpdate: (existing, body) => assertAgreementRecordMutable(existing, body),
-    listService: (db, opts) => listAgreementsPaged(db, opts),
+    listService: (context, opts) => listAgreementsPaged(context, opts),
 });
 
 /**
@@ -110,7 +111,8 @@ crudRouter.get('/:id/convert/:format', asyncHandler(async function (req, res) {
     if (!Number.isFinite(id)) {
         throw new AgreementNotFoundError(req.params.id);
     }
-    const draftResult = await convertAgreement(res.locals.db, id, req.params.format);
+    const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
+    const draftResult = await convertAgreement(context, id, req.params.format);
     res.setHeader("Content-Type", `text/${req.params.format}`);
     res.send(draftResult);
 }));
@@ -129,7 +131,8 @@ crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
         throw new AgreementNotFoundError(req.params.id);
     }
     try {
-        const triggerResult = await triggerAgreement(res.locals.db, id, req.body);
+        const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
+        const triggerResult = await triggerAgreement(context, id, req.body);
         res.json(triggerResult);
     } catch (err: any) {
         // Preserve the legacy `{ isError: true }` at HTTP 200 for the error

@@ -11,6 +11,8 @@ import { count } from 'drizzle-orm';
 // identifiers. Column-name safety is enforced by SAFE_IDENTIFIER_RX below.
 // import { getUserRoles } from '../auth0/client';
 import { asyncHandler } from '../middleware/errorHandler';
+import type { PolicyContext } from '../services/policy';
+import { createLegacyPolicyContext } from '../services/policy';
 
 /**
  * Regex that matches only characters safe for a SQL column identifier.
@@ -205,7 +207,7 @@ export type InsertValidator = {
  * PaginatedResponse envelope with page / limit / totalPages metadata.
  */
 export type ListService<TRow> = (
-    db: any,
+    context: PolicyContext,
     opts: {
         whereClause?: SQL;
         orderClause?: SQLWrapper | null;
@@ -351,6 +353,11 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
+    // PR 2 blocker: the generic get/create/update/delete implementations below
+    // still access res.locals.db directly. They must move behind shared service
+    // operations (and their authorize(context, action, resource) calls) before
+    // authentication is enabled for REST. See docs/a2a-release-notes.md.
+
     // router.use(authCheckJwt);
 
     // Secure middleware to check for org_id
@@ -427,7 +434,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 let items: any[];
                 let total: number;
                 if (listService) {
-                    const paged = await listService(res.locals.db, {
+                    const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
+                    const paged = await listService(context, {
                         whereClause,
                         orderClause,
                         limit,

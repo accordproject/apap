@@ -22,6 +22,8 @@ import {
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
 } from './errors';
+import { DevelopmentPrincipal } from '../auth/types';
+import { createPolicyContext } from './policy';
 
 // Builds a real `.cta` archive buffer from the late-delivery-and-penalty test
 // fixture, optionally overriding the `package.json.accordproject.cicero`
@@ -148,6 +150,10 @@ function createMockDb() {
     return mock;
 }
 
+function context(db: ReturnType<typeof createMockDb>) {
+    return createPolicyContext(db, new DevelopmentPrincipal());
+}
+
 describe('templateService', () => {
     let db: ReturnType<typeof createMockDb>;
 
@@ -160,7 +166,7 @@ describe('templateService', () => {
             const rows = [toTemplateRow(lateDeliveryTemplate, 1), toTemplateRow(helloWorldTemplate, 2)];
             db._setReturn(rows);
 
-            const result = await listTemplates(db);
+            const result = await listTemplates(context(db));
             expect(result).toEqual(rows);
             expect(result).toHaveLength(2);
         });
@@ -168,31 +174,31 @@ describe('templateService', () => {
         it('returns an empty array when no templates exist', async () => {
             db._setReturn([]);
 
-            const result = await listTemplates(db);
+            const result = await listTemplates(context(db));
             expect(result).toEqual([]);
         });
 
         it('clamps limit to 100 when caller requests more', async () => {
             db._setReturn([]);
-            await listTemplates(db, { limit: 500 });
+            await listTemplates(context(db), { limit: 500 });
             expect(db.limit).toHaveBeenCalledWith(100);
         });
 
         it('clamps limit to at least 1 when caller requests less', async () => {
             db._setReturn([]);
-            await listTemplates(db, { limit: 0 });
+            await listTemplates(context(db), { limit: 0 });
             expect(db.limit).toHaveBeenCalledWith(1);
         });
 
         it('clamps offset to at least 0 when caller passes negative', async () => {
             db._setReturn([]);
-            await listTemplates(db, { offset: -5 });
+            await listTemplates(context(db), { offset: -5 });
             expect(db.offset).toHaveBeenCalledWith(0);
         });
 
         it('defaults to limit=100 and offset=0 when no opts provided', async () => {
             db._setReturn([]);
-            await listTemplates(db);
+            await listTemplates(context(db));
             expect(db.limit).toHaveBeenCalledWith(100);
             expect(db.offset).toHaveBeenCalledWith(0);
         });
@@ -203,7 +209,7 @@ describe('templateService', () => {
             const row = toTemplateRow(lateDeliveryTemplate, 5);
             db._setReturn([row]);
 
-            const result = await getTemplateById(db, 5);
+            const result = await getTemplateById(context(db), 5);
             expect(result).toEqual(row);
             expect(db.select).toHaveBeenCalled();
         });
@@ -211,8 +217,8 @@ describe('templateService', () => {
         it('throws TemplateNotFoundError when the id does not exist', async () => {
             db._setReturn([]);
 
-            await expect(getTemplateById(db, 999)).rejects.toThrow(TemplateNotFoundError);
-            await expect(getTemplateById(db, 999)).rejects.toMatchObject({
+            await expect(getTemplateById(context(db), 999)).rejects.toThrow(TemplateNotFoundError);
+            await expect(getTemplateById(context(db), 999)).rejects.toMatchObject({
                 code: 'TEMPLATE_NOT_FOUND',
                 statusCode: 404,
             });
@@ -224,7 +230,7 @@ describe('templateService', () => {
             const row = toTemplateRow(helloWorldTemplate, 2);
             db._setReturn([row]);
 
-            const result = await getTemplateByUri(db, helloWorldTemplate.uri);
+            const result = await getTemplateByUri(context(db), helloWorldTemplate.uri);
             expect(result.uri).toBe(helloWorldTemplate.uri);
         });
 
@@ -232,7 +238,7 @@ describe('templateService', () => {
             db._setReturn([]);
 
             await expect(
-                getTemplateByUri(db, 'resource:nonexistent'),
+                getTemplateByUri(context(db), 'resource:nonexistent'),
             ).rejects.toThrow(TemplateNotFoundError);
         });
     });
@@ -242,7 +248,7 @@ describe('templateService', () => {
             const row = toTemplateRow(lateDeliveryTemplate, 10);
             db._setReturn([row]);
 
-            const result = await createTemplate(db, lateDeliveryTemplate);
+            const result = await createTemplate(context(db), lateDeliveryTemplate);
             expect(result.id).toBe(10);
             expect(db.insert).toHaveBeenCalled();
         });
@@ -251,7 +257,7 @@ describe('templateService', () => {
             db.returning.mockRejectedValue({ code: '23505' });
 
             await expect(
-                createTemplate(db, lateDeliveryTemplate),
+                createTemplate(context(db), lateDeliveryTemplate),
             ).rejects.toThrow(TemplateDuplicateError);
         });
 
@@ -260,7 +266,7 @@ describe('templateService', () => {
             db.returning.mockRejectedValue(genericError);
 
             await expect(
-                createTemplate(db, lateDeliveryTemplate),
+                createTemplate(context(db), lateDeliveryTemplate),
             ).rejects.toThrow('connection lost');
         });
     });
@@ -276,7 +282,7 @@ describe('templateService', () => {
             db.returning = jest.fn(() => Promise.resolve([{ id: 99, ...insertedValues }]));
 
             const archive = buildArchive();
-            const result = await createTemplateFromArchive(db, archive);
+            const result = await createTemplateFromArchive(context(db), archive);
 
             expect(db.insert).toHaveBeenCalled();
             expect(result.hash).toBeTruthy();
@@ -289,7 +295,7 @@ describe('templateService', () => {
             const existingRow = toTemplateRow(lateDeliveryTemplate, 42);
             db._setReturn([existingRow]);
 
-            const result = await createTemplateFromArchive(db, archive);
+            const result = await createTemplateFromArchive(context(db), archive);
 
             expect(result).toEqual(existingRow);
             expect(db.insert).not.toHaveBeenCalled();
@@ -297,7 +303,7 @@ describe('templateService', () => {
 
         it('throws InvalidPayloadError for bytes that are not a valid .cta archive', async () => {
             await expect(
-                createTemplateFromArchive(db, Buffer.from('not a zip file')),
+                createTemplateFromArchive(context(db), Buffer.from('not a zip file')),
             ).rejects.toThrow(InvalidPayloadError);
         });
 
@@ -305,7 +311,7 @@ describe('templateService', () => {
             const archive = buildArchive({ cicero: '^99.0.0' });
 
             await expect(
-                createTemplateFromArchive(db, archive),
+                createTemplateFromArchive(context(db), archive),
             ).rejects.toThrow(TemplateCiceroVersionMismatchError);
         });
 
@@ -313,7 +319,7 @@ describe('templateService', () => {
             const archive = buildArchive({ cicero: '' });
 
             await expect(
-                createTemplateFromArchive(db, archive),
+                createTemplateFromArchive(context(db), archive),
             ).rejects.toThrow(TemplateCiceroVersionMismatchError);
         });
 
@@ -321,7 +327,7 @@ describe('templateService', () => {
             const archive = buildOversizedArchive();
 
             await expect(
-                createTemplateFromArchive(db, archive),
+                createTemplateFromArchive(context(db), archive),
             ).rejects.toThrow(InvalidPayloadError);
 
             // Rejected before cicero-core ever gets to decompress anything.
@@ -344,7 +350,7 @@ describe('templateService', () => {
             };
             db.returning = jest.fn(() => Promise.reject({ code: '23505' }));
 
-            const result = await createTemplateFromArchive(db, archive);
+            const result = await createTemplateFromArchive(context(db), archive);
 
             expect(result).toEqual(existingRow);
             expect(selectCalls).toBe(2);
@@ -362,7 +368,7 @@ describe('templateService', () => {
             db._setReturn([existingRow]);
 
             await expect(
-                updateTemplate(db, lateDeliveryTemplate.uri, { description: 'Updated' }),
+                updateTemplate(context(db), lateDeliveryTemplate.uri, { description: 'Updated' }),
             ).rejects.toThrow(TemplateImmutableError);
         });
 
@@ -371,7 +377,7 @@ describe('templateService', () => {
             db.limit = jest.fn<any>().mockResolvedValueOnce([existingRow]);
             db.returning = jest.fn<any>().mockResolvedValueOnce([existingRow]);
 
-            const result = await updateTemplate(db, lateDeliveryTemplate.uri, {
+            const result = await updateTemplate(context(db), lateDeliveryTemplate.uri, {
                 description: existingRow.description,
             });
             expect(result).toEqual(existingRow);
@@ -381,7 +387,7 @@ describe('templateService', () => {
             db._setReturn([]);
 
             await expect(
-                updateTemplate(db, 'resource:ghost', { description: 'nope' }),
+                updateTemplate(context(db), 'resource:ghost', { description: 'nope' }),
             ).rejects.toThrow(TemplateNotFoundError);
         });
     });
@@ -399,7 +405,7 @@ describe('templateService', () => {
                 .mockResolvedValueOnce([]);
             db.returning = jest.fn<any>().mockResolvedValueOnce([row]);
 
-            await expect(deleteTemplate(db, lateDeliveryTemplate.uri)).resolves.toBeUndefined();
+            await expect(deleteTemplate(context(db), lateDeliveryTemplate.uri)).resolves.toBeUndefined();
         });
 
         it('throws TemplateInUseError when an agreement still resolves against it', async () => {
@@ -408,13 +414,13 @@ describe('templateService', () => {
                 .mockResolvedValueOnce([row])
                 .mockResolvedValueOnce([{ id: 42 }]);
 
-            await expect(deleteTemplate(db, lateDeliveryTemplate.uri)).rejects.toThrow(TemplateInUseError);
+            await expect(deleteTemplate(context(db), lateDeliveryTemplate.uri)).rejects.toThrow(TemplateInUseError);
         });
 
         it('throws TemplateNotFoundError when URI does not match', async () => {
             db._setReturn([]);
 
-            await expect(deleteTemplate(db, 'resource:ghost')).rejects.toThrow(
+            await expect(deleteTemplate(context(db), 'resource:ghost')).rejects.toThrow(
                 TemplateNotFoundError,
             );
         });
@@ -512,17 +518,17 @@ describe('templateService', () => {
         });
 
         it('clamps limit to 100 when caller requests more', async () => {
-            await listTemplatesPaged(db, { limit: 500, offset: 0 });
+            await listTemplatesPaged(context(db), { limit: 500, offset: 0 });
             expect(db.limit).toHaveBeenCalledWith(100);
         });
 
         it('clamps limit to at least 1 when caller requests less', async () => {
-            await listTemplatesPaged(db, { limit: 0, offset: 0 });
+            await listTemplatesPaged(context(db), { limit: 0, offset: 0 });
             expect(db.limit).toHaveBeenCalledWith(1);
         });
 
         it('clamps offset to at least 0 when caller passes negative', async () => {
-            await listTemplatesPaged(db, { limit: 10, offset: -5 });
+            await listTemplatesPaged(context(db), { limit: 10, offset: -5 });
             expect(db.offset).toHaveBeenCalledWith(0);
         });
 
@@ -531,19 +537,19 @@ describe('templateService', () => {
             // set can repeat or skip rows across pages. The service defaults
             // to `asc(Template.id)` so this test proves `orderBy` fires even
             // when the caller passes explicit null.
-            await listTemplatesPaged(db, { limit: 10, offset: 0, orderClause: null });
+            await listTemplatesPaged(context(db), { limit: 10, offset: 0, orderClause: null });
             expect(db.orderBy).toHaveBeenCalled();
         });
 
         it('honours a caller-provided orderClause without overriding it', async () => {
             const customClause = { fake: 'orderBy' } as any;
-            await listTemplatesPaged(db, { limit: 10, offset: 0, orderClause: customClause });
+            await listTemplatesPaged(context(db), { limit: 10, offset: 0, orderClause: customClause });
             expect(db.orderBy).toHaveBeenCalledWith(customClause);
         });
 
         it('surfaces total from the count-query result destructure', async () => {
             db._setReturn([{ count: 42 }]);
-            const result = await listTemplatesPaged(db, { limit: 10, offset: 0 });
+            const result = await listTemplatesPaged(context(db), { limit: 10, offset: 0 });
             expect(result.total).toBe(42);
         });
     });

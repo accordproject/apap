@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import OAuthServer from 'express-oauth-server';
+import * as schema from './db/schema';
 
 // Load environment variables from .env file
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -18,9 +19,13 @@ import sharedModelsRouter from './handlers/sharedmodels';
 import capabilitiesRouter from './handlers/capabilities';
 import mcpRouter, { startSessionCleanup } from './handlers/mcp';
 import authRouter from './handlers/auth';
+import { createA2AComponents } from './handlers/a2a';
+import { loadA2AConfig } from './config';
+import { createLegacyPolicyContext } from './services/policy';
+import { createAuthAdapter } from './auth/registry';
 
 const app = Express();
-app.use(Express.json());
+app.use(morgan('combined'));
 
 // Database middleware
 const requiredPostgresEnvVars = [
@@ -53,10 +58,33 @@ const queryClient = postgres(dbUrl);
 const db = drizzle({
   client: queryClient,
   casing: 'snake_case',
+  schema,
 });
+
+// A2A owns its 1MB JSON limit and is mounted before the application's
+// default JSON parser. The executor receives this same shared database
+// handle and calls services directly; it never loops back over HTTP.
+const a2aConfig = loadA2AConfig();
+// Express must know how many proxies front this server before anything reads
+// req.ip: the A2A rate limiter keys on it, so behind an unconfigured ingress
+// every caller would share the proxy's address and one bucket. Defaults to
+// false, i.e. direct connections, which is the pre-existing behaviour.
+app.set('trust proxy', a2aConfig.trustProxy);
+// One adapter instance is shared by every protocol entry point. PR 2 reuses
+// this instance when it enables the REST and MCP authentication guards.
+const authAdapter = createAuthAdapter(a2aConfig);
+const a2a = createA2AComponents(db, a2aConfig, authAdapter);
+// The SDK handler is itself a router and constrains this mount to GET /.
+app.use('/.well-known/agent-card.json', a2a.agentCardHandler);
+app.use('/a2a', a2a.router);
+
+app.use(Express.json());
 
 app.use((req, res, next) => {
   res.locals.db = db;
+  // PR 2 replaces this compatibility principal with the shared AuthAdapter
+  // result, while service call sites continue receiving the same context.
+  res.locals.policyContext = createLegacyPolicyContext(db);
   next();
 });
 
@@ -71,9 +99,6 @@ app.use('/', authRouter);
 
 // Start MCP session cleanup
 startSessionCleanup();
-
-// logging
-app.use(morgan('combined'));
 
 // Global error handler — registered AFTER all routes
 app.use(globalErrorHandler);

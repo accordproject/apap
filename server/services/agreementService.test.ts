@@ -12,6 +12,8 @@ import {
     AgreementRecordImmutableError,
     AgreementStatusTransitionError,
 } from './errors';
+import { DevelopmentPrincipal } from '../auth/types';
+import { createPolicyContext } from './policy';
 
 // convertAgreement pulls in the real template engine and templatebuilder
 // utility; mock both so the service can be exercised without a real
@@ -44,6 +46,10 @@ function createMockDb() {
     return mock;
 }
 
+function context<T>(db: T) {
+    return createPolicyContext(db as any, new DevelopmentPrincipal());
+}
+
 function agreementRow(id: number, overrides: Record<string, unknown> = {}): any {
     return {
         id,
@@ -74,32 +80,32 @@ describe('agreementService', () => {
             const rows = [agreementRow(1), agreementRow(2)];
             db._setReturn(rows);
 
-            const result = await listAgreements(db);
+            const result = await listAgreements(context(db));
             expect(result).toEqual(rows);
             expect(result).toHaveLength(2);
         });
 
         it('clamps limit to 100 when caller requests more', async () => {
             db._setReturn([]);
-            await listAgreements(db, { limit: 500 });
+            await listAgreements(context(db), { limit: 500 });
             expect(db.limit).toHaveBeenCalledWith(100);
         });
 
         it('clamps limit to at least 1 when caller requests less', async () => {
             db._setReturn([]);
-            await listAgreements(db, { limit: 0 });
+            await listAgreements(context(db), { limit: 0 });
             expect(db.limit).toHaveBeenCalledWith(1);
         });
 
         it('clamps offset to at least 0 when caller passes negative', async () => {
             db._setReturn([]);
-            await listAgreements(db, { offset: -5 });
+            await listAgreements(context(db), { offset: -5 });
             expect(db.offset).toHaveBeenCalledWith(0);
         });
 
         it('defaults to limit=100 and offset=0 when no opts provided', async () => {
             db._setReturn([]);
-            await listAgreements(db);
+            await listAgreements(context(db));
             expect(db.limit).toHaveBeenCalledWith(100);
             expect(db.offset).toHaveBeenCalledWith(0);
         });
@@ -107,7 +113,7 @@ describe('agreementService', () => {
         it('returns an empty array when no agreements exist', async () => {
             db._setReturn([]);
 
-            const result = await listAgreements(db);
+            const result = await listAgreements(context(db));
             expect(result).toEqual([]);
         });
     });
@@ -117,7 +123,7 @@ describe('agreementService', () => {
             const row = agreementRow(5, { agreementStatus: 'SIGNING' });
             db._setReturn([row]);
 
-            const result = await getAgreementById(db, 5);
+            const result = await getAgreementById(context(db), 5);
             expect(result).toEqual(row);
             expect(db.select).toHaveBeenCalled();
         });
@@ -125,8 +131,8 @@ describe('agreementService', () => {
         it('throws AgreementNotFoundError when the id does not exist', async () => {
             db._setReturn([]);
 
-            await expect(getAgreementById(db, 999)).rejects.toThrow(AgreementNotFoundError);
-            await expect(getAgreementById(db, 999)).rejects.toMatchObject({
+            await expect(getAgreementById(context(db), 999)).rejects.toThrow(AgreementNotFoundError);
+            await expect(getAgreementById(context(db), 999)).rejects.toMatchObject({
                 code: 'AGREEMENT_NOT_FOUND',
                 statusCode: 404,
             });
@@ -138,7 +144,7 @@ describe('agreementService', () => {
             const row = agreementRow(2, { uri: 'apap://agreements/2' });
             db._setReturn([row]);
 
-            const result = await getAgreementByUri(db, 'apap://agreements/2');
+            const result = await getAgreementByUri(context(db), 'apap://agreements/2');
             expect(result).toEqual(row);
         });
 
@@ -146,7 +152,7 @@ describe('agreementService', () => {
             db._setReturn([]);
 
             await expect(
-                getAgreementByUri(db, 'apap://agreements/ghost'),
+                getAgreementByUri(context(db), 'apap://agreements/ghost'),
             ).rejects.toThrow(AgreementNotFoundError);
         });
     });
@@ -160,12 +166,13 @@ describe('agreementService', () => {
             const limitMock = jest.fn<any>()
                 .mockResolvedValueOnce(firstResult)
                 .mockResolvedValueOnce(secondResult);
-            return {
+            const mock: any = {
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
                 limit: limitMock,
             };
+            return mock;
         }
 
         beforeEach(() => {
@@ -185,7 +192,7 @@ describe('agreementService', () => {
             const draftMock = jest.fn<any>().mockResolvedValue('<html>drafted</html>');
             (TemplateArchiveProcessor as any).mockImplementation(() => ({ draft: draftMock }));
 
-            const result = await convertAgreement(convertDb, 1, 'html');
+            const result = await convertAgreement(context(convertDb), 1, 'html');
 
             expect(result).toBe('<html>drafted</html>');
             expect(draftMock).toHaveBeenCalledWith(agreementData, 'html', {});
@@ -212,7 +219,7 @@ describe('agreementService', () => {
             const draftMock = jest.fn<any>().mockResolvedValue('drafted');
             (TemplateArchiveProcessor as any).mockImplementation(() => ({ draft: draftMock }));
 
-            await expect(convertAgreement(convertDb, 1, 'html')).resolves.toBe('drafted');
+            await expect(convertAgreement(context(convertDb), 1, 'html')).resolves.toBe('drafted');
             // The `where(eq(Template.uri, templateUri))` call sees the trimmed URI.
             expect(templateBuilder.templateFromDatabase).toHaveBeenCalledWith(template);
         });
@@ -225,7 +232,7 @@ describe('agreementService', () => {
             const agreement = agreementRow(1);
             const convertDb = twoCallDb([agreement], []);
 
-            await expect(convertAgreement(convertDb, 1, 'html')).rejects.toThrow(
+            await expect(convertAgreement(context(convertDb), 1, 'html')).rejects.toThrow(
                 /Template with uri .* referenced by agreement 1 does not exist/,
             );
         });
@@ -233,7 +240,7 @@ describe('agreementService', () => {
         it('throws AgreementNotFoundError when the agreement itself is missing', async () => {
             const convertDb = twoCallDb([], []);
 
-            await expect(convertAgreement(convertDb, 999, 'html')).rejects.toThrow(
+            await expect(convertAgreement(context(convertDb), 999, 'html')).rejects.toThrow(
                 AgreementNotFoundError,
             );
         });
@@ -253,7 +260,7 @@ describe('agreementService', () => {
             const { AgreementConversionError } = require('./errors');
             let caught: unknown;
             try {
-                await convertAgreement(convertDb, 1, 'markdown');
+                await convertAgreement(context(convertDb), 1, 'markdown');
             } catch (err) {
                 caught = err;
             }
@@ -458,34 +465,34 @@ describe('agreementService', () => {
         });
 
         it('clamps limit to 100 when caller requests more', async () => {
-            await listAgreementsPaged(db, { limit: 500, offset: 0 });
+            await listAgreementsPaged(context(db), { limit: 500, offset: 0 });
             expect(db.limit).toHaveBeenCalledWith(100);
         });
 
         it('clamps limit to at least 1 when caller requests less', async () => {
-            await listAgreementsPaged(db, { limit: 0, offset: 0 });
+            await listAgreementsPaged(context(db), { limit: 0, offset: 0 });
             expect(db.limit).toHaveBeenCalledWith(1);
         });
 
         it('clamps offset to at least 0 when caller passes negative', async () => {
-            await listAgreementsPaged(db, { limit: 10, offset: -5 });
+            await listAgreementsPaged(context(db), { limit: 10, offset: -5 });
             expect(db.offset).toHaveBeenCalledWith(0);
         });
 
         it('applies a default orderClause when caller passes null (pagination determinism)', async () => {
-            await listAgreementsPaged(db, { limit: 10, offset: 0, orderClause: null });
+            await listAgreementsPaged(context(db), { limit: 10, offset: 0, orderClause: null });
             expect(db.orderBy).toHaveBeenCalled();
         });
 
         it('honours a caller-provided orderClause without overriding it', async () => {
             const customClause = { fake: 'orderBy' } as any;
-            await listAgreementsPaged(db, { limit: 10, offset: 0, orderClause: customClause });
+            await listAgreementsPaged(context(db), { limit: 10, offset: 0, orderClause: customClause });
             expect(db.orderBy).toHaveBeenCalledWith(customClause);
         });
 
         it('surfaces total from the count-query result destructure', async () => {
             db._setReturn([{ count: 42 }]);
-            const result = await listAgreementsPaged(db, { limit: 10, offset: 0 });
+            const result = await listAgreementsPaged(context(db), { limit: 10, offset: 0 });
             expect(result.total).toBe(42);
         });
     });

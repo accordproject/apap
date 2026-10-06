@@ -1,6 +1,5 @@
 import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
-import type { Database } from '../db/client';
 import {
     AgreementNotFoundError,
     AgreementConversionError,
@@ -13,6 +12,7 @@ import {
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { templateFromDatabase } from '../handlers/templatebuilder';
 import { concertoValidation } from '../handlers/concertovalidation';
+import { authorize, type PolicyContext } from './policy';
 
 // Slice 2 ported the CRUD lookup half. Slice 2b + 2c add the runtime half —
 // convertAgreement + triggerAgreement — which wrap the real
@@ -152,9 +152,11 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
  * unification will pass `limit` / `offset` through from `parseQueryParams`.
  */
 export async function listAgreements(
-    db: Database,
+    context: PolicyContext,
     opts: { limit?: number; offset?: number } = {},
 ): Promise<AgreementRow[]> {
+    await authorize(context, 'agreements:list', { type: 'agreement-collection' });
+    const { db } = context;
     const limit = Math.min(100, Math.max(1, opts.limit ?? 100));
     const offset = Math.max(0, opts.offset ?? 0);
     // Stable pagination: without an explicit order, Postgres is free to return
@@ -167,7 +169,9 @@ export async function listAgreements(
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/agreements/${id}`) */
-export async function getAgreementById(db: Database, id: number): Promise<AgreementRow> {
+export async function getAgreementById(context: PolicyContext, id: number): Promise<AgreementRow> {
+    await authorize(context, 'agreements:read', { type: 'agreement', id });
+    const { db } = context;
     const rows = await db.select().from(Agreement).where(eq(Agreement.id, id)).limit(1);
     if (rows.length === 0) throw new AgreementNotFoundError(String(id));
     return rows[0];
@@ -178,7 +182,9 @@ export async function getAgreementById(db: Database, id: number): Promise<Agreem
  * that hold a resource URI (e.g. `apap://agreements/{id}` clients or a future
  * REST resource-URI route) do not have to reconstruct the numeric id first.
  */
-export async function getAgreementByUri(db: Database, uri: string): Promise<AgreementRow> {
+export async function getAgreementByUri(context: PolicyContext, uri: string): Promise<AgreementRow> {
+    await authorize(context, 'agreements:read', { type: 'agreement', id: uri });
+    const { db } = context;
     const rows = await db.select().from(Agreement).where(eq(Agreement.uri, uri)).limit(1);
     if (rows.length === 0) throw new AgreementNotFoundError(uri);
     return rows[0];
@@ -193,7 +199,8 @@ export async function getAgreementByUri(db: Database, uri: string): Promise<Agre
 // `{ error: message }`. Preserves the wire shape existing REST clients
 // depend on, inherited from the inline resolveAgreement helper. Applies to
 // both convert and trigger REST routes so the two paths stay consistent.
-async function resolveAgreementRuntime(db: Database, agreementId: number) {
+async function resolveAgreementRuntime(context: PolicyContext, agreementId: number) {
+    const { db } = context;
     const agreementRows = await db
         .select()
         .from(Agreement)
@@ -242,11 +249,12 @@ async function resolveAgreementRuntime(db: Database, agreementId: number) {
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/agreements/${id}/convert/${format}`) */
 export async function convertAgreement(
-    db: Database,
+    context: PolicyContext,
     agreementId: number,
     format: string,
 ): Promise<string> {
-    const { agreement, apTemplate } = await resolveAgreementRuntime(db, agreementId);
+    await authorize(context, 'agreements:convert', { type: 'agreement', id: agreementId });
+    const { agreement, apTemplate } = await resolveAgreementRuntime(context, agreementId);
     const processor = new TemplateArchiveProcessor(apTemplate);
     try {
         return await processor.draft(agreement.data, format, {});
@@ -258,11 +266,13 @@ export async function convertAgreement(
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/agreements/${id}/trigger`, POST) */
 export async function triggerAgreement(
-    db: Database,
+    context: PolicyContext,
     agreementId: number,
     requestBody: any,
 ): Promise<any> {
-    const { agreement, apTemplate } = await resolveAgreementRuntime(db, agreementId);
+    await authorize(context, 'agreements:trigger', { type: 'agreement', id: agreementId });
+    const { db } = context;
+    const { agreement, apTemplate } = await resolveAgreementRuntime(context, agreementId);
     const processor = new TemplateArchiveProcessor(apTemplate);
 
     if (!requestBody || typeof requestBody !== 'object' || !requestBody.$class) {
@@ -341,7 +351,7 @@ export async function triggerAgreement(
  * read-skew and pagination-determinism notes.
  */
 export async function listAgreementsPaged(
-    db: Database,
+    context: PolicyContext,
     opts: {
         whereClause?: SQL;
         orderClause?: SQLWrapper | null;
@@ -349,6 +359,8 @@ export async function listAgreementsPaged(
         offset: number;
     },
 ): Promise<{ items: AgreementRow[]; total: number }> {
+    await authorize(context, 'agreements:list', { type: 'agreement-collection' });
+    const { db } = context;
     const limit = Math.min(100, Math.max(1, opts.limit));
     const offset = Math.max(0, opts.offset);
 
