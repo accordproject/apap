@@ -45,7 +45,9 @@ async function main() {
     const ctoFiles = modelFiles.map(mf => ({
       $class: 'org.accordproject.protocol@1.0.0.CtoFile',
       contents: mf.definitions,
-      filename: mf.fileName || `${mf.namespace}.cto`
+      filename: mf.fileName && path.isAbsolute(mf.fileName)
+        ? path.relative(templateDir, mf.fileName)
+        : mf.fileName || `${mf.namespace}.cto`
     }));
     
     // Get template text (grammar)
