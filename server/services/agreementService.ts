@@ -15,11 +15,23 @@ import { templateFromDatabase } from '../handlers/templatebuilder';
 import { concertoValidation } from '../handlers/concertovalidation';
 import { getNotifier } from './notify';
 
-// SECURITY (SEP-2575 fail-closed contract, #232): see templateService.ts for
-// the full contract. In short: mutations below publish on the MCP bus; the
-// payload is thin (uri only) so re-reads re-enforce auth. The caller MUST
-// gate every mutation here behind the same authorization check that gates
-// `resources/read` for `apap://agreements/{id}` once auth lands upstream.
+// SECURITY (SEP-2575 fail-closed contract, #232):
+//
+// Mutations below call `getNotifier().resourceUpdated(uri)` on success. The
+// handler fans the event out to every open `subscriptions/listen` on the
+// matching URI; each notification is thin (uri only) so the client has to
+// re-fetch via `resources/read`, where authorization re-enforces at the
+// resource boundary.
+//
+// Invariant the caller MUST uphold once auth lands upstream: the same
+// authorization check that gates `resources/read` for
+// `apap://agreements/{id}` gates every mutation here.
+//
+// The MCP URI is intentionally built from the DB row's `id`, not its own
+// `uri` or `template` field: the row carries Concerto URIs
+// (`resource:...`), not the MCP resource URI clients subscribed against
+// (`apap://agreements/{id}`). Mixing the two would miss every open
+// subscription. Same mapping as `handlers/mcp.ts::getAgreements`.
 function agreementMcpUri(id: number): string {
     return `apap://agreements/${id}`;
 }

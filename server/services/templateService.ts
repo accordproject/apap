@@ -174,6 +174,9 @@ export async function createTemplateFromArchive(
     const hash = apTemplate.getHash();
     const existing = await db.select().from(Template).where(eq(Template.hash, hash)).limit(1);
     if (existing.length > 0) {
+        // Dedup hit: no row was inserted, no state change on this URI, so
+        // intentionally skip `resourceUpdated`. Only `createTemplate` below
+        // (the insert branch) fires the notification.
         return existing[0];
     }
 

@@ -39,7 +39,7 @@ export function getNotifier(): ServerNotifier {
     return notifier;
 }
 
-// Test helper: reset the singleton between test suites.
+/** @internal Test helper: reset the singleton between test suites. */
 export function resetNotifier(): void {
     notifier = undefined;
     warnedOnce = false;

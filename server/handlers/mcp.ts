@@ -299,12 +299,26 @@ export const getServer = (db: Database) => {
         capabilities: {
             logging: {},
             // SEP-2575 subscriptions/listen is routed natively by createMcpHandler
-            // against the shared bus; capability flags advertise it to clients.
-            resources: { subscribe: true, listChanged: true },
+            // against the shared bus. `listChanged` is intentionally omitted:
+            // services fire `resourceUpdated(uri)` on single-row writes but no
+            // caller currently emits `resourcesChanged()` list-level fan-out,
+            // and advertising a capability the handler never serves is the same
+            // kind of wire-shape dishonesty that killed #224. Add `listChanged`
+            // back the day a service wires `getNotifier().resourcesChanged()`.
+            resources: { subscribe: true },
         },
         instructions: SERVER_INSTRUCTIONS,
     });
 
+    // CONTRIBUTOR NOTE: resources registered below are subscribable
+    // (`capabilities.resources.subscribe: true`). If a resource is mutable,
+    // the owning service MUST call `getNotifier().resourceUpdated(uri)` on
+    // every successful write so open `subscriptions/listen` clients are
+    // notified. See `services/templateService.ts` and
+    // `services/agreementService.ts` for the pattern and the SECURITY
+    // contract. The protocol-schema resource below is immutable per deploy
+    // and therefore does not emit updates.
+    //
     // register the Concerto protocol model as a readable resource so a
     // client (or any LLM behind it) can resolve `$class` discriminators to
     // type definitions without external lookup.
@@ -616,10 +630,11 @@ export function createMcpRouter(db: Database): express.Router {
         console.error({ type: 'mcp_event_bus_listener_error', error: err.message });
     });
 
+    // `legacy` defaults to `'stateless'`; omitting it keeps 2025-era clients
+    // served by a fresh factory per request without re-stating the SDK default.
     const handler = createMcpHandler(
         () => getServer(db),
         {
-            legacy: 'stateless',
             bus,
             maxSubscriptions: SUBSCRIPTION_CAP_PER_SESSION,
         },
@@ -628,6 +643,11 @@ export function createMcpRouter(db: Database): express.Router {
     setNotifier(handler.notify);
 
     const router = express.Router();
-    router.all('/mcp', toNodeHandler(handler));
+    // `toNodeHandler` adapts the SDK's Fetch-shaped `McpHttpHandler` to
+    // Express `(req, res)`. The third argument forwards the already-parsed
+    // body: `index.ts` mounts `express.json()` ahead of this router, so the
+    // Node stream is drained by the time we reach here. Omitting
+    // `req.body` hangs the request because the SDK re-reads a consumed stream.
+    router.all('/mcp', (req, res) => toNodeHandler(handler)(req, res, req.body));
     return router;
 }
