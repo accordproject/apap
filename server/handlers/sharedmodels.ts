@@ -9,18 +9,27 @@ import { HttpModelRetriever, assertAllowedUrl } from './retrievers/HttpModelRetr
 const router = express.Router();
 
 class SecureFileLoader {
+    private modelManager: ModelManager;
+
+    constructor(modelManager: ModelManager) {
+        this.modelManager = modelManager;
+    }
+
     accepts(url: string): boolean {
         return url.startsWith('http://') || url.startsWith('https://');
     }
 
-    async load(url: string, options: any): Promise<string> {
+    async load(url: string, options: any): Promise<any> {
         try {
             assertAllowedUrl(url);
         } catch (e) {
             throw new Error(`SSRF Prevention: Transitive import domain or URL not allowed: ${url}`);
         }
+        
         const retriever = new HttpModelRetriever();
-        return await retriever.fetchModel(url);
+        const ctoText = await retriever.fetchModel(url);
+        
+        return this.modelManager.addCTOModel(ctoText, url, true);
     }
 }
 
@@ -48,7 +57,7 @@ router.post('/', async (req, res, next) => {
             const modelManager = new ModelManager({ addMetamodel: true });
             const modelFile = modelManager.addCTOModel(ctoText, 'external.cto', true);
 
-            const fileDownloader = new FileDownloader(new SecureFileLoader() as any, getExternalImports);
+            const fileDownloader = new FileDownloader(new SecureFileLoader(modelManager) as any, getExternalImports);
             await modelManager.updateExternalModels({}, fileDownloader);
 
             const namespace = modelFile.getNamespace() || 'external';
