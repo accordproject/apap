@@ -22,6 +22,7 @@ import {
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
 } from './errors';
+import { setNotifier, resetNotifier } from './notify';
 
 // Builds a real `.cta` archive buffer from the late-delivery-and-penalty test
 // fixture, optionally overriding the `package.json.accordproject.cicero`
@@ -148,6 +149,10 @@ function createMockDb() {
     return mock;
 }
 
+afterEach(() => {
+    resetNotifier();
+});
+
 describe('templateService', () => {
     let db: ReturnType<typeof createMockDb>;
 
@@ -263,6 +268,36 @@ describe('templateService', () => {
                 createTemplate(db, lateDeliveryTemplate),
             ).rejects.toThrow('connection lost');
         });
+
+        it('emits resourceUpdated(apap://templates/{id}) on successful insert (#232)', async () => {
+            const row = toTemplateRow(lateDeliveryTemplate, 10);
+            db._setReturn([row]);
+            const resourceUpdated = jest.fn();
+            setNotifier({
+                toolsChanged() { /* unused */ },
+                promptsChanged() { /* unused */ },
+                resourcesChanged() { /* unused */ },
+                resourceUpdated: resourceUpdated as (uri: string) => void,
+            });
+
+            await createTemplate(db, lateDeliveryTemplate);
+
+            expect(resourceUpdated).toHaveBeenCalledWith('apap://templates/10');
+        });
+
+        it('does NOT emit resourceUpdated when the insert fails', async () => {
+            db.returning.mockRejectedValue({ code: '23505' });
+            const resourceUpdated = jest.fn();
+            setNotifier({
+                toolsChanged() { /* unused */ },
+                promptsChanged() { /* unused */ },
+                resourcesChanged() { /* unused */ },
+                resourceUpdated: resourceUpdated as (uri: string) => void,
+            });
+
+            await expect(createTemplate(db, lateDeliveryTemplate)).rejects.toThrow(TemplateDuplicateError);
+            expect(resourceUpdated).not.toHaveBeenCalled();
+        });
     });
 
     describe('createTemplateFromArchive', () => {
@@ -293,6 +328,24 @@ describe('templateService', () => {
 
             expect(result).toEqual(existingRow);
             expect(db.insert).not.toHaveBeenCalled();
+        });
+
+        it('does NOT emit resourceUpdated on the dedup hit path (#232)', async () => {
+            const archive = buildArchive();
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 42);
+            db._setReturn([existingRow]);
+            const resourceUpdated = jest.fn();
+            setNotifier({
+                toolsChanged() { /* unused */ },
+                promptsChanged() { /* unused */ },
+                resourcesChanged() { /* unused */ },
+                resourceUpdated: resourceUpdated as (uri: string) => void,
+            });
+
+            await createTemplateFromArchive(db, archive);
+
+            // No row was inserted, no state change, nothing to notify.
+            expect(resourceUpdated).not.toHaveBeenCalled();
         });
 
         it('throws InvalidPayloadError for bytes that are not a valid .cta archive', async () => {
@@ -384,6 +437,25 @@ describe('templateService', () => {
                 updateTemplate(db, 'resource:ghost', { description: 'nope' }),
             ).rejects.toThrow(TemplateNotFoundError);
         });
+
+        it('emits resourceUpdated(apap://templates/{id}) on successful update (#232)', async () => {
+            const existingRow = toTemplateRow(lateDeliveryTemplate, 1);
+            db.limit = jest.fn<any>().mockResolvedValueOnce([existingRow]);
+            db.returning = jest.fn<any>().mockResolvedValueOnce([existingRow]);
+            const resourceUpdated = jest.fn();
+            setNotifier({
+                toolsChanged() { /* unused */ },
+                promptsChanged() { /* unused */ },
+                resourcesChanged() { /* unused */ },
+                resourceUpdated: resourceUpdated as (uri: string) => void,
+            });
+
+            await updateTemplate(db, lateDeliveryTemplate.uri, {
+                description: existingRow.description,
+            });
+
+            expect(resourceUpdated).toHaveBeenCalledWith('apap://templates/1');
+        });
     });
 
     describe('deleteTemplate', () => {
@@ -409,6 +481,25 @@ describe('templateService', () => {
                 .mockResolvedValueOnce([{ id: 42 }]);
 
             await expect(deleteTemplate(db, lateDeliveryTemplate.uri)).rejects.toThrow(TemplateInUseError);
+        });
+
+        it('emits resourceUpdated(apap://templates/{id}) on successful delete (#232)', async () => {
+            const row = toTemplateRow(lateDeliveryTemplate, 1);
+            db.limit = jest.fn<any>()
+                .mockResolvedValueOnce([row])
+                .mockResolvedValueOnce([]);
+            db.returning = jest.fn<any>().mockResolvedValueOnce([row]);
+            const resourceUpdated = jest.fn();
+            setNotifier({
+                toolsChanged() { /* unused */ },
+                promptsChanged() { /* unused */ },
+                resourcesChanged() { /* unused */ },
+                resourceUpdated: resourceUpdated as (uri: string) => void,
+            });
+
+            await deleteTemplate(db, lateDeliveryTemplate.uri);
+
+            expect(resourceUpdated).toHaveBeenCalledWith('apap://templates/1');
         });
 
         it('throws TemplateNotFoundError when URI does not match', async () => {
