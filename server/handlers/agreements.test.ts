@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import * as validationModule from './concertovalidation';
 import { globalErrorHandler } from '../middleware/errorHandler';
+import { setNotifier, resetNotifier } from '../services/notify';
 jest.setTimeout(30000);
 
 // Mock dependencies (but not TemplateArchiveProcessor)
@@ -185,6 +186,14 @@ describe('Agreements Router - POST /:id/trigger', () => {
             mockDb.update.mockReturnValue(mockDb);
             mockDb.set.mockReturnValue(mockDb);
 
+            const resourceUpdated = jest.fn();
+            setNotifier({
+                toolsChanged() { /* unused */ },
+                promptsChanged() { /* unused */ },
+                resourcesChanged() { /* unused */ },
+                resourceUpdated: resourceUpdated as (uri: string) => void,
+            });
+
             const triggerRequest = {
                 $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
                 forceMajeure: false,
@@ -204,7 +213,13 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(response.body.result).toHaveProperty('buyerMayTerminate');
             expect(typeof response.body.result.penalty).toBe('number');
             expect(typeof response.body.result.buyerMayTerminate).toBe('boolean');
-            expect(response.body.state.count).toBe(1); 
+            expect(response.body.state.count).toBe(1);
+
+            // #232: a successful trigger must fan out an apap:// resource
+            // update on the shared MCP bus. Payload is the MCP URI only;
+            // clients re-fetch via resources/read.
+            expect(resourceUpdated).toHaveBeenCalledWith('apap://agreements/1');
+            resetNotifier();
         });
 
         it('should handle trigger with goods delivered on time', async () => {

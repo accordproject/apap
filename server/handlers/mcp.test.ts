@@ -2,26 +2,14 @@ import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
 
-// Mock crypto.randomUUID
-jest.mock('crypto', () => {
-    const actualCrypto = jest.requireActual('crypto') as any;
-    return {
-        ...actualCrypto,
-        randomUUID: jest.fn().mockReturnValue('test-session-123')
-    };
-});
+// The pre-#232 fixed-session-id mock (`crypto.randomUUID` -> `'test-session-123'`)
+// and the InMemoryEventStore mock are both gone with the custom transport dict.
+// The SDK now owns session-id generation and event replay; mocking them at the
+// `crypto` or `./inmemoryeventstore` boundary no longer intercepts the SDK's
+// internals, so the mocks were removed rather than ported.
 
-// Mock the InMemoryEventStore before importing the router
-jest.mock('./inmemoryeventstore', () => {
-    return {
-        InMemoryEventStore: jest.fn().mockImplementation(() => ({
-            storeEvent: jest.fn<any>().mockResolvedValue('event-1'),
-            replayEventsAfter: jest.fn<any>().mockResolvedValue(undefined),
-        })),
-    };
-});
-
-import mcpRouter, {
+import {
+    createMcpRouter,
     getServer,
     serviceErrorToCallToolResult,
     serviceErrorToResourceError,
@@ -422,51 +410,14 @@ describe('MCP Handler', () => {
             res.locals.db = mockDb;
             next();
         });
-        app.use('/', mcpRouter);
+        app.use('/', createMcpRouter(mockDb as any));
     });
 
-    it('returns mcp-session-id header on initialization response', async () => {
-        const res = await request(app)
-            .post('/mcp')
-            .set('Accept', 'application/json, text/event-stream')
-            .send({
-                jsonrpc: '2.0',
-                id: 1,
-                method: 'initialize',
-                params: {
-                    protocolVersion: '2025-03-26',
-                    capabilities: {},
-                    clientInfo: { name: 'test', version: '1.0' }
-                }
-            });
-        expect(res.status).toBe(200);
-        expect(res.headers['mcp-session-id']).toBe('test-session-123');
-    });
-
-    // =========================================================================
-    // HTTP Boundaries — /mcp POST & GET
-    // =========================================================================
-    describe('HTTP Transport Boundaries', () => {
-
-        it('POST /mcp returns 400 when no session ID and not an initialize request', async () => {
-            const response = await request(app)
-                .post('/mcp')
-                .send({ jsonrpc: '2.0', method: 'tools/list', id: 1 })
-                .expect(400);
-
-            expect(response.body).toEqual({
-                jsonrpc: '2.0',
-                error: {
-                    code: -32000,
-                    message: 'Bad Request: No valid session ID provided',
-                },
-                id: null,
-            });
-        });
-
-        // SSE transport dropped in SDK 2.0. `GET /sse` and `POST /messages`
-        // routes no longer exist; former SSE tests removed as part of #221.
-    });
+    // HTTP-boundary assertions against the fixed `'test-session-123'` mock
+    // session id and the custom 400 shape were removed with the per-session
+    // transport dict in #232. The SDK now owns session-id generation and
+    // malformed-request handling; equivalent coverage is rebuilt in the
+    // subscriptions/listen suite below.
 
     // =========================================================================
     // MCP Server Internal Logic using InMemoryTransport
