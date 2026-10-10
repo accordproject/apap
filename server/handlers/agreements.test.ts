@@ -819,4 +819,100 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(putDb.update).toHaveBeenCalled();
         });
     });
+
+    describe('DELETE /:id - agreement deletion immutability', () => {
+        let delApp: express.Application;
+        let delDb: any;
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+
+            delApp = express();
+            delApp.use(express.json());
+            delDb = {
+                select: jest.fn().mockReturnThis(),
+                from: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+                for: jest.fn().mockReturnThis(),
+                limit: jest.fn(),
+                delete: jest.fn().mockReturnThis(),
+                returning: jest.fn(),
+            };
+            delDb.transaction = jest.fn((cb: any) => cb(delDb));
+            delApp.use((req, res, next) => {
+                res.locals.db = delDb;
+                next();
+            });
+            delApp.use('/agreements', agreementsRouter);
+            delApp.use(globalErrorHandler);
+        });
+
+        it('rejects deletion once the agreement is COMPLETED', async () => {
+            const existing = { id: 10, agreementStatus: 'COMPLETED' };
+            delDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(delApp).delete('/agreements/10');
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_NOT_DELETABLE');
+            expect(delDb.delete).not.toHaveBeenCalled();
+        });
+
+        it('rejects deletion once the agreement is SUPERSEDED', async () => {
+            const existing = { id: 11, agreementStatus: 'SUPERSEDED' };
+            delDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(delApp).delete('/agreements/11');
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_NOT_DELETABLE');
+            expect(delDb.delete).not.toHaveBeenCalled();
+        });
+
+        it('allows deletion while the agreement is DRAFT', async () => {
+            const existing = { id: 12, agreementStatus: 'DRAFT' };
+            delDb.limit.mockResolvedValueOnce([existing]);
+            delDb.returning.mockResolvedValueOnce([existing]);
+
+            const res = await request(delApp).delete('/agreements/12');
+
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({ status: 'deleted' });
+            expect(delDb.delete).toHaveBeenCalled();
+        });
+
+        it('allows deletion while the agreement is SIGNING with no signatures', async () => {
+            const existing = { id: 13, agreementStatus: 'SIGNING', signatures: [] as any[] };
+            delDb.limit.mockResolvedValueOnce([existing]);
+            delDb.returning.mockResolvedValueOnce([existing]);
+
+            const res = await request(delApp).delete('/agreements/13');
+
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({ status: 'deleted' });
+            expect(delDb.delete).toHaveBeenCalled();
+        });
+
+        it('rejects deletion while the agreement is SIGNING with at least one signature', async () => {
+            const existing = { id: 14, agreementStatus: 'SIGNING', signatures: [{ signatory: 'party-1' }] };
+            delDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(delApp).delete('/agreements/14');
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_NOT_DELETABLE');
+            expect(delDb.delete).not.toHaveBeenCalled();
+        });
+
+        it('rejects deletion while the agreement is DRAFT with at least one signature', async () => {
+            const existing = { id: 15, agreementStatus: 'DRAFT', signatures: [{ signatory: 'party-1' }] };
+            delDb.limit.mockResolvedValueOnce([existing]);
+
+            const res = await request(delApp).delete('/agreements/15');
+
+            expect(res.status).toBe(409);
+            expect(res.body.error.code).toBe('AGREEMENT_NOT_DELETABLE');
+            expect(delDb.delete).not.toHaveBeenCalled();
+        });
+    });
 });
