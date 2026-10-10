@@ -1,4 +1,4 @@
-import { Template as ApTemplate } from '@accordproject/cicero-core';
+import { Template as ApTemplate, TemplateLibrary } from '@accordproject/cicero-core';
 import AdmZip from "adm-zip";
 import { Template } from '../db/schema';
 
@@ -29,6 +29,59 @@ interface ApTemplateInstance {
 }
 
 /**
+ * Derives a Cicero-legal template package name from a stored template URI.
+ *
+ * cicero-core only accepts `[a-z0-9_-]` in `package.json.name`, so the raw last
+ * segment of a URI cannot be used as-is: every URI shape the RI stores carries
+ * characters cicero rejects — `ap://latedeliveryandpenalty@1.0.1#<hash>` (the
+ * URI `POST /templates/archive` assigns) keeps its scheme, `@version` and hash
+ * fragment, and
+ * `https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta`
+ * (the URI `POST /agreements` assigns when it fetches a remote archive) keeps
+ * `@1.0.0` after the `.cta` is stripped. Feeding either back through
+ * `Template.fromArchive` threw `template name can only contain lowercase
+ * alphanumerics, _ or -`, which broke every convert/trigger call on such a row.
+ *
+ * @param uri - The template row's URI
+ * @returns A name safe to write into the reconstructed archive's package.json
+ */
+export function templateNameFromUri(uri: string): string {
+    const fallback = 'dynamic-template';
+    if (!uri) {
+        return fallback;
+    }
+
+    const sanitize = (value: string) =>
+        value.toLowerCase().replace(/[^a-z0-9_-]/g, '-').replace(/^-+|-+$/g, '');
+
+    // An `ap://` URI's fragment is the archive's content hash, not its name, so
+    // it is the one shape where the fragment must be ignored. Let cicero parse
+    // it rather than second-guessing the syntax it defines.
+    if (TemplateLibrary.acceptsURI(uri)) {
+        try {
+            const { templateName } = TemplateLibrary.parseURI(uri) as { templateName: string };
+            return sanitize(templateName) || fallback;
+        } catch (err) {
+            // Malformed `ap://` URI — fall through to the generic handling.
+        }
+    }
+
+    // `resource:...#name` identifies the template after the fragment; every
+    // other shape puts it in the last path segment.
+    let name = uri.includes('#')
+        ? uri.split('#').pop() || ''
+        : uri.split('/').pop() || '';
+
+    name = name.replace(/\.cta$/i, '');
+    name = name.replace(/^[a-z][a-z0-9+.\-]*:/i, '');
+    // Drop a trailing `@version`, keeping npm-style scopes (`@scope/name` has
+    // already lost its scope to the path split above).
+    name = name.replace(/@[^@]*$/, '');
+
+    return sanitize(name) || fallback;
+}
+
+/**
  * Reconstructs a Cicero Template instance from a database template record by creating
  * an in-memory zip archive containing the template's package.json, grammar, models, and logic.
  * 
@@ -42,14 +95,8 @@ interface ApTemplateInstance {
 export async function templateFromDatabase(db: typeof Template | any): Promise<ApTemplate> {
     const zip = new AdmZip();
     
-    let templateName = 'dynamic-template';
     const uriString = db.uri ? db.uri.toString() : '';
-    
-    if (uriString.includes('#')) {
-        templateName = uriString.split('#').pop() || templateName;
-    } else {
-        templateName = uriString.split('/').pop()?.replace('.cta', '') || templateName;
-    }
+    const templateName = templateNameFromUri(uriString);
 
     const packageJson = {
         name: templateName,

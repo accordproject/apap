@@ -77,5 +77,35 @@ curl http://localhost:9000/capabilities
 # or https://my-apap.up.railway.app/capabilities
 ```
 
+### Draft your first agreement
+
+A new server starts with an empty database, so there is nothing to draft until a
+template is loaded. The shortest way in is to point an agreement straight at a
+Cicero Template Archive (`.cta`) hosted on
+[templates.accordproject.org](https://templates.accordproject.org) — the server
+fetches and caches the template for you, so there is no separate deploy step.
+The shape of the request, with two placeholders to fill in:
+
+```bash
+curl --request POST \
+  --url http://localhost:9000/agreements \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"uri": "apap://agreement-ldp",
+	"template": "<URL of a .cta whose declared Cicero range this server supports>",
+	"agreementStatus": "DRAFT",
+	"data": { "<an instance of that template model, Concerto-serialized>": "" }
+}'
+
+curl http://localhost:9000/agreements/1/convert/html
+```
+
+`template` and `data` go together — `data` has to validate against the model in
+the archive `template` points at — so the snippet above is a skeleton, not a
+runnable command. See
+[Using a Template from templates.accordproject.org](./server/README.md#using-a-template-from-templatesaccordprojectorg)
+for a complete worked request, the Cicero version compatibility check, and
+`POST /templates/archive` — the explicit upload path for custom archives or
+servers without network egress.
 
 For full API documentation see [docs.accordproject.org/docs/ref-apap](https://docs.accordproject.org/docs/ref-apap).
