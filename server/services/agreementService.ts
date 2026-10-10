@@ -193,6 +193,24 @@ export async function getAgreementByUri(db: Database, uri: string): Promise<Agre
 // `{ error: message }`. Preserves the wire shape existing REST clients
 // depend on, inherited from the inline resolveAgreement helper. Applies to
 // both convert and trigger REST routes so the two paths stay consistent.
+/**
+ * Resolves an agreement's `template` field to the template URI it names. The
+ * field is either a plain URI or a Concerto relationship,
+ * `resource:{ns}.Template#{identifier}`, whose identifier may be
+ * percent-encoded: Concerto accepts both `#demo://x` and `#demo%3A%2F%2Fx`.
+ * Looking up the encoded form verbatim finds no template.
+ */
+export function templateUriFromReference<T extends string | null | undefined>(reference: T): T | string {
+    if (!reference || !reference.startsWith('resource:')) return reference;
+    const identifier = reference.split('#').slice(1).join('#');
+    try {
+        return decodeURIComponent(identifier);
+    } catch {
+        // A literal '%' that is not an escape: the identifier was never encoded.
+        return identifier;
+    }
+}
+
 async function resolveAgreementRuntime(db: Database, agreementId: number) {
     const agreementRows = await db
         .select()
@@ -221,10 +239,7 @@ async function resolveAgreementRuntime(db: Database, agreementId: number) {
         }
         templateRow = cached[0];
     } else {
-        let templateUri = agreement.template;
-        if (templateUri && templateUri.startsWith('resource:')) {
-            templateUri = templateUri.split('#').slice(1).join('#');
-        }
+        const templateUri = templateUriFromReference(agreement.template);
         const found = await db
             .select()
             .from(Template)

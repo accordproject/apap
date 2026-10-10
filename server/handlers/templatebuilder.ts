@@ -29,6 +29,24 @@ interface ApTemplateInstance {
 }
 
 /**
+ * Derives a Cicero package name from a stored template URI. Cicero only
+ * accepts lowercase alphanumerics, `_` and `-`, but stored URIs take several
+ * shapes: `archive:<name>@<version>` from archive uploads,
+ * `https://host/<name>@<version>.cta` from retrieved templates, and
+ * `resource:<ns>.Template#<id>` references. Using those verbatim made Cicero
+ * reject the rebuilt archive, so such templates could never be triggered.
+ */
+export function templateNameFromUri(uri: string): string {
+    const lastSegment = (uri.split('#').pop() ?? '').split('/').pop() ?? '';
+    const bare = lastSegment
+        .replace(/^[a-z][a-z0-9+.-]*:/i, '') // scheme, e.g. `archive:`
+        .replace(/\.cta$/i, '')
+        .replace(/@[^@]*$/, ''); // version
+    const name = bare.toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+    return name || 'dynamic-template';
+}
+
+/**
  * Reconstructs a Cicero Template instance from a database template record by creating
  * an in-memory zip archive containing the template's package.json, grammar, models, and logic.
  * 
@@ -42,14 +60,7 @@ interface ApTemplateInstance {
 export async function templateFromDatabase(db: typeof Template | any): Promise<ApTemplate> {
     const zip = new AdmZip();
     
-    let templateName = 'dynamic-template';
-    const uriString = db.uri ? db.uri.toString() : '';
-    
-    if (uriString.includes('#')) {
-        templateName = uriString.split('#').pop() || templateName;
-    } else {
-        templateName = uriString.split('/').pop()?.replace('.cta', '') || templateName;
-    }
+    const templateName = templateNameFromUri(db.uri ? db.uri.toString() : '');
 
     const packageJson = {
         name: templateName,
