@@ -288,12 +288,19 @@ export function parseQueryParams(req: Request): QueryParams {
         ...filters
     } = req.query;
 
+    const normalizedFilters = Object.fromEntries(
+        Object.entries(filters).map(([key, value]) => [
+            key,
+            getSingleQueryParam(value)
+        ])
+    );
+
     return {
         page: Math.max(1, parsePositiveIntegerQueryParam(page, 1)),
         limit: Math.min(100, Math.max(1, parsePositiveIntegerQueryParam(limit, 100))),
         sortBy: getSingleQueryParam(sortBy),
         sortOrder: getSingleQueryParam(sortOrder)?.toLowerCase() === 'desc' ? 'desc' : 'asc',
-        filters
+        filters: normalizedFilters
     };
 }
 
