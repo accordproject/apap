@@ -49,6 +49,9 @@ behavior through `DevelopmentPrincipal`. Before enabling shared authentication
 in PR 2, the remaining generic REST CRUD get/create/update/delete paths must be
 moved behind shared services and the central authorization policy. Enabling an
 auth guard alone would leave those direct database paths outside the policy.
+The optional root LCP builder also reads the database directly; move it behind
+an explicitly public policy context rather than the authenticated REST/MCP
+context, because LCP discovery and terms remain public by design.
 
 The unbounded in-memory task store and the lack of trigger idempotency are
 known, accepted limitations of this release, as described in [a2a.md](a2a.md).

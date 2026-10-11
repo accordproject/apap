@@ -134,8 +134,10 @@ unauthenticated requests never enter JSON-RPC dispatch. It also requires
 | `get-agreement` | `{ id: positive integer }` | `apap:agreements:read` |
 | `trigger-agreement` | `{ id: positive integer, request: object }` | `apap:trigger:invoke` |
 
-`create-agreement` is intentionally omitted until agreement creation is
-available through a shared service rather than handler-only code.
+`create-agreement` is deliberately not exposed over A2A in this release.
+A shared agreement-creation service is a prerequisite, not an automatic
+opt-in: adding the skill remains a separate maintainer decision because it
+introduces a higher-impact write capability and authorization scope.
 
 ## Task ownership
 

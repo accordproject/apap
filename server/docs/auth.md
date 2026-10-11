@@ -95,3 +95,8 @@ The generic REST CRUD get/create/update/delete handlers still access
 `res.locals.db` directly. Before PR 2 enables a shared auth guard, those paths
 must move behind shared services and `authorize(context, action, resource)`;
 mounting authentication middleware alone would not apply the policy to them.
+
+`buildServerLegalContext` also queries the database directly for the optional
+root LCP document. That path must move behind an explicit public-policy service
+boundary during the same cleanup; LCP discovery and terms are public by
+protocol contract and must not inherit an authenticated principal in PR 2.

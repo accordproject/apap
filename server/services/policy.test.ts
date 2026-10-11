@@ -3,6 +3,7 @@ import type { Database } from '../db/client';
 import {
     authorize,
     createPolicyContext,
+    createPublicPolicyContext,
     registerAuthorizationPolicy,
     ScopeAuthorizationPolicy,
 } from './policy';
@@ -52,6 +53,16 @@ describe('central authorization policy', () => {
             'agreements:trigger',
             { type: 'agreement', id: 7 },
         )).not.toThrow();
+    });
+
+    test('keeps intentionally public protocol access authorized independently of legacy migration', async () => {
+        const context = createPublicPolicyContext(db);
+
+        await expect(authorize(
+            context,
+            'agreements:convert',
+            { type: 'agreement', id: 7 },
+        )).resolves.toBeUndefined();
     });
 
     test('passes context, action, and resource through the central seam', async () => {

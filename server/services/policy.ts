@@ -91,3 +91,14 @@ export function createPolicyContext(db: Database, principal: Principal): PolicyC
 export function createLegacyPolicyContext(db: Database): PolicyContext {
     return createPolicyContext(db, new DevelopmentPrincipal());
 }
+
+/**
+ * Deliberately unauthenticated context for protocol surfaces that are public
+ * by contract, such as Legal Context Protocol discovery and terms documents.
+ * Unlike createLegacyPolicyContext, this is not a PR 2 migration placeholder:
+ * callers using it must remain public when REST/MCP compatibility contexts are
+ * replaced with authenticated principals.
+ */
+export function createPublicPolicyContext(db: Database): PolicyContext {
+    return createPolicyContext(db, new DevelopmentPrincipal());
+}
