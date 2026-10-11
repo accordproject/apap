@@ -1,4 +1,4 @@
-import { extractTemplateForDatabase } from './templatebuilder';
+import { extractTemplateForDatabase, templateNameFromUri } from './templatebuilder';
 
 describe('Template Builder - extractTemplateForDatabase', () => {
     it('should perfectly extract ALL attributes from a template instance including logo and metadata', () => {
@@ -67,5 +67,44 @@ describe('Template Builder - extractTemplateForDatabase', () => {
         expect(result.logic.codes).toHaveLength(1);
         expect(result.logic.codes[0].id).toBe('logic/main.ts');
         expect(result.logic.codes[0].value).toContain('function execute()');
+    });
+});
+
+// cicero-core validates `package.json.name` against `[a-z0-9_-]` when
+// `templateFromDatabase` feeds the reconstructed archive back through
+// `Template.fromArchive`. Every URI shape the RI stores carries characters
+// outside that set, so an unsanitized name made convert/trigger fail with
+// "template name can only contain lowercase alphanumerics, _ or -".
+describe('Template Builder - templateNameFromUri', () => {
+    it('takes the name out of an ap:// URI, ignoring the hash fragment', () => {
+        // The URI POST /templates/archive assigns.
+        expect(templateNameFromUri('ap://latedeliveryandpenalty@1.0.1#e29682ed71694106c8d22d4e66b895af55a3e6e2823197c4f6251d2e294dc712'))
+            .toBe('latedeliveryandpenalty');
+    });
+
+    it('falls back to generic parsing for an ap:// URI missing its hash', () => {
+        // TemplateLibrary.parseURI rejects these, so the generic path handles it.
+        expect(templateNameFromUri('ap://latedeliveryandpenalty@1.0.1'))
+            .toBe('latedeliveryandpenalty');
+    });
+
+    it('strips the .cta extension and version from a remote archive URL', () => {
+        // The URI POST /agreements assigns when it fetches a remote template.
+        expect(templateNameFromUri('https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta'))
+            .toBe('latedeliveryandpenalty');
+    });
+
+    it('uses the fragment of a resource URI', () => {
+        expect(templateNameFromUri('resource:org.accordproject.protocol@1.0.0.Template#dan2'))
+            .toBe('dan2');
+    });
+
+    it('lowercases and replaces characters cicero rejects', () => {
+        expect(templateNameFromUri('ap://My Template!@2.0.0')).toBe('my-template');
+    });
+
+    it('falls back to a default name when the URI yields nothing usable', () => {
+        expect(templateNameFromUri('')).toBe('dynamic-template');
+        expect(templateNameFromUri('ap://@1.0.0')).toBe('dynamic-template');
     });
 });
