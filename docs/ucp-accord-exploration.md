@@ -1,7 +1,9 @@
 # Accord Project × UCP: exploration and demo plan
 
-Status: **ON HOLD, pending validation from the UCP maintainers** (see §8). This is
-an exploration and draft for discussion. Nothing here is committed scope.
+Status: **ON HOLD, pending validation from the UCP maintainers** (see §8, which maps
+each question to an existing UCP thread). This is an exploration and draft for
+discussion. Nothing here is committed scope. UCP community activity was last checked
+on 2026-10-13 (§2.4).
 
 This document takes the idea behind
 [`accord-x402-contract-server`](https://github.com/The-Building-Blocks/accord-x402-contract-server)
@@ -97,7 +99,8 @@ A good use case has:
 | **B2B wholesale order on trade terms** | ✓ volume pricing, Net-30/60, delivery-by date, PO number | ✓ seller delivers by date; buyer pays by due date; inspection window | ✓ late-delivery credit, late-payment interest, rejection of non-conforming goods | checkout + **`dev.ucp.common.payment.terms`** (Net-30 is a spec example) + identity linking (its B2B wholesaler example) + order fulfilment events and adjustments | Stretch: only half of it is in UCP scope (§2.4) |
 | Lodging / group booking | ✓ dates, room block, deposit schedule | ✓ deposit, balance, attrition, cutoff | ✓ cancellation penalty by date, attrition fee | `dev.ucp.lodging.booking`, `dev.ucp.lodging.policy.cancellation`, payment terms (deposit + balance is a spec example) | Weaker: Booking has no lifecycle after completion |
 | Equipment rental / hire | ✓ duration, deposit | ✓ return by date, damage | ✓ late-return fees, deposit release | none (no rental vertical) | Needs a new vertical |
-| Subscriptions / SaaS | ✓ plan, term | ✓ renewals | ✓ SLA credits | **explicitly out of scope** in the payment-terms spec ("Schedules settle the current checkout. They do not create future purchases, renewals") | Avoid for now |
+| **Local services** (appointments, classes, reservations, rentals) | ✓ slot, duration, deposit, cancellation window | ✓ attend / provide; reschedule; no-show | ✓ no-show and late-cancellation fees, deposit forfeit or release | **Proposed**, not merged: Local Services DTC charter (#922) extends checkout with service, slot, hold and policy context. Cancellation and no-show are its Phase 2 | **Watch: strongest fit if #922 lands** (§2.4) |
+| Subscriptions / SaaS | ✓ plan, term | ✓ renewals | ✓ SLA credits | Excluded by today's payment-terms spec ("Schedules settle the current checkout. They do not create future purchases, renewals"), but a subscription policy and purchase options are in draft (#890) | Avoid for now; track #890 |
 | **Delivery guarantee / price protection** | ✓ delivery-by date, credit rate, scope | ✓ business-borne performance | ✓ late credit, price-drop refund | fulfilment expectations and events, `policies[]` (price match is UCP's own example), Order `adjustments[]` | **Recommended (§2.5)** |
 | Digital content licence (the x402 case) | ~ plan choice | ~ entitlement metering | ~ | checkout only | Already covered by x402 |
 
@@ -124,9 +127,24 @@ B2B looks like the best *contract* use case, but UCP covers only part of it.
   says "post-purchase true-ups are not payment schedules; they are authorizations
   and order adjustments".
 - **The Order is the business's record for the platform.** It has a business→platform
-  webhook and `get_order`, and no platform→business write channel.
+  webhook and `get_order`, and no platform→business write channel, as of the merged
+  spec. Proposals #641, #943 and #944 would change this; see Community activity below.
 - **Lodging Booking has no lifecycle after completion.** "Cancel booking session"
   only works before completion.
+
+**Community activity (as of 2026-10-13).** Several of the "against" points are
+being actively worked on. This evidence comes from the public issue pages, read
+without API access, so some comments may be missing. None of the threads below
+has merged into `main` yet.
+
+| Thread | What it proposes | Bearing on this design |
+|---|---|---|
+| [#922](https://github.com/Universal-Commerce-Protocol/ucp/issues/922) *DTC Charter: Local Services* (Stripe, 2026-10-09; named participants Meta, Wix, Squarespace, Shopify, Jobber, Housecall Pro, HoneyBook) | A new domain for appointments, group sessions, reservations and rentals. A booking extends checkout with service, slot, hold and policy context, and payment and booking settle together in `complete_checkout`. **Phase 1:** catalog, availability and TTL holds, create/get/confirm/cancel, signed lifecycle webhooks, full payment at booking. **Phase 2:** reschedule under policy, no-shows, waitlists, cancellation schedules reusing Lodging's, card-guarantee and authorise-then-capture payment models. **Phase 3:** memberships and class packs | The first UCP domain with a **lifecycle after booking** and **remedies that depend on the transaction** (no-show and late-cancellation fees). This is the strongest contract fit found so far. Phase 2's cancellation and no-show policy is the natural place for clause-backed, executable policies. Labelled `gov:needs-gc-review`; no maintainer response yet |
+| [#317](https://github.com/Universal-Commerce-Protocol/ucp/issues/317) *Universal Appointment Scheduling* (2026-03) | An earlier search → hold → book flow under a vendor namespace, with deposits through ordinary checkout | Precursor to #922. It doesn't model services as line items. No maintainer engagement |
+| [#845](https://github.com/Universal-Commerce-Protocol/ucp/issues/845) *Accepted commercial term handoff into Cart/Checkout* (2026-09-19) | Semantics for binding terms formed **outside** UCP (B2B quotes, RFQs, awards, contracted rates) into checkout: identity and revision, provenance, accepted scope, commitment status. It notes that buyer acceptance does not prove the business authorised the terms. It deliberately asks only where this belongs, with no wire format, and targets the 2027-03-30 milestone. A "quote extension" draft is linked from a fork | **The closest existing thread to Accord's role.** An Accord agreement is exactly such an artifact. This is where to raise the agreement reference, hash and acceptance design (§3.2, §3.5) |
+| [#641](https://github.com/Universal-Commerce-Protocol/ucp/issues/641) *Order-level actions + `order.payment_status`* (2026-07-27) | Adopt Actions on Order for payments settled after the session closes (boleto, Pix), with settlement through the order webhook | **Order Actions are already proposed.** We should not propose them separately (§3.3b). No maintainer response yet |
+| [#943](https://github.com/Universal-Commerce-Protocol/ucp/issues/943) / [#944](https://github.com/Universal-Commerce-Protocol/ucp/issues/944) *Order modification* and *business-initiated post-order consultation* (2026-10-13) | Platform-initiated cancellation and modification, plus versioned business proposals that the buyer approves with decision receipts (e.g. a rental rate increase). #944 notes Order Actions (#641) could surface pending work but "is not a substitute for" the recorded decision | Writes from the platform to an existing Order are now on the table. That would give buyer-borne performance a UCP path. Amendments to an agreement map onto versioned consultations |
+| [#629](https://github.com/Universal-Commerce-Protocol/ucp/issues/629) *Recurring billing* and #890 / [#901](https://github.com/Universal-Commerce-Protocol/ucp/pull/901) *subscription policy and purchase options* | A maintainer wants subscriptions expressed through `policies[]` and purchase options, with "no recurrence engine on the wire". Purchase options are frozen onto the Order line | Supports modelling contract terms as typed policies (§3.4), and suggests the recurrence exclusion is softening |
 
 **What follows from this:**
 
@@ -137,7 +155,8 @@ B2B looks like the best *contract* use case, but UCP covers only part of it.
 | Policies snapshotted on the Order, pinned to clauses | Yes |
 | **Business-borne** obligations: delivery promises, warranty, price protection | Yes. They map to `fulfillment.expectations`/`events`, with remedies as `adjustments[]` (credit, refund) |
 | **Buyer-borne** obligations after execution: invoices, interest, disputes | No. These are for APAP or an invoicing/payment rail, linked from the Order |
-| Renewals, standing agreements | No |
+| Renewals, standing agreements | No, today. A subscription policy is in draft (#890) |
+| Service bookings with a lifecycle after booking (no-show, reschedule, cancellation fees) | Proposed (#922), not yet chartered |
 
 So the defensible framing is: **Accord makes the promises a business already
 publishes through UCP executable.** UCP policies and fulfilment expectations are
@@ -338,8 +357,10 @@ message whose `path` selects that Action, as UCP requires.
 
 #### (b) After execution: obligations on Order
 
-Order does not adopt Actions, and UCP has no platform→business write channel on
-Order (only the business→platform webhook and `get_order`). The scope check (§2.4)
+In the merged spec, Order does not adopt Actions, and UCP has no platform→business
+write channel on Order (only the business→platform webhook and `get_order`). Both are
+under proposal: #641 (Order Actions), #943 (order modification) and #944 (versioned,
+business-initiated consultations with buyer decision receipts). The scope check (§2.4)
 splits obligations by who bears them:
 
 - **Business-borne** obligations stay entirely within UCP:
@@ -383,20 +404,26 @@ feedback (§8):
    }
    ```
 
-2. **Proposal to UCP (deprioritised).** This would push against a deliberate
-   boundary in UCP, so it should only be raised if the maintainers signal interest.
-   The idea is a UCP Enhancement Proposal for **Order Actions**, i.e.
-   adopting the Actions shape on Order for post-purchase work the platform must
-   process (pay an invoice, confirm receipt, approve a substitution, start a
-   return). Accord obligations are the motivating case, but the proposal is
-   generic. If it is accepted, (1) becomes `actions` entries on Order with the same
-   `config`.
+2. **Align with existing proposals instead of writing our own.** Order Actions are
+   already proposed in [#641](https://github.com/Universal-Commerce-Protocol/ucp/issues/641),
+   motivated by payments settled after the session (boleto, Pix). Buyer-borne Accord
+   obligations (pay an invoice, confirm receipt, submit evidence) are further use
+   cases for it, so we would comment there rather than open a competing proposal.
+   If it lands, (1) becomes `actions` entries on Order with the same `config`.
+   Amendments to an executed agreement (a rate change, a substitution beyond the
+   original authority) fit [#944](https://github.com/Universal-Commerce-Protocol/ucp/issues/944)'s
+   versioned consultations:
+   - a consultation revision becomes a proposed amendment, with its own agreement
+     hash;
+   - the buyer's decision receipt becomes the acceptance evidence (§3.5);
+   - the change applied to the Order becomes the supersession of the earlier
+     revision.
 
 **Obligation type mapping** (bearer → UCP surface):
 
 | `obligation@1.0.0` type | Bearer = business | Bearer = buyer |
 |---|---|---|
-| `PaymentObligation` | Credit or refund → `adjustments[]` (`credit` or `refund`, negative totals) | Pre-execution: `payment.terms[]` schedule. Post-execution: an `obligations[]` entry with `perform` (an Order Action under the proposal) |
+| `PaymentObligation` | Credit or refund → `adjustments[]` (`credit` or `refund`, negative totals) | Pre-execution: `payment.terms[]` schedule. Post-execution: an `obligations[]` entry with `perform` (an Order Action if #641 lands) |
 | `PerformanceObligation` | Delivery → `fulfillment.expectations[]` (description generated from the clause; `fulfillable_on` / date from the data) | Checkout Action `org.accordproject.obligation.performance` |
 | `NotificationObligation` | Order `messages[]` (`info`/`warning`); `presentation: disclosure` where the clause makes notice mandatory | Action (e.g. notice of rejection) |
 | `RemediationObligation` | `adjustments[]` + a new fulfilment expectation (replace) | Action |
@@ -828,9 +855,11 @@ a scripted platform agent. It mirrors the x402 repo's layout and test discipline
 **Phase 5 (optional).**
 - AP2 acceptance path: a stub trusted-platform-provider mandate, so acceptance is
   `VERIFIED`.
-- The lodging group-block template on `dev.ucp.lodging.booking`.
-- Draft the UCP Enhancement Proposal for Order Actions, with the demo as the
-  motivating implementation.
+- A service-booking template (cancellation, no-show and deposit clauses) on the
+  Local Services booking object, if #922 is chartered. This replaces the lodging
+  group block, which has no lifecycle after booking.
+- Offer the demo as a worked use case on #845 (term handoff) and #641 (Order
+  Actions), rather than as a separate proposal.
 
 ### 5.3 Changes likely needed in this repo (APAP RI)
 
@@ -867,9 +896,13 @@ These are small and can be split out as separate PRs:
 - **Q1. Use case.** The proposed lead is now the delivery guarantee (§2.5), with
   price protection as a variant and B2B trade terms as the stretch. Lodging is
   weaker than it first looked: Booking has no lifecycle after completion.
-- **Q2. Order Actions.** These are deprioritised (§3.3b). Buyer-borne
-  post-execution obligations stay out of UCP unless the maintainers signal
-  otherwise.
+- **Q2. Order Actions.** Already proposed in #641; we would support that proposal
+  rather than write our own (§3.3b). Buyer-borne post-execution obligations stay
+  out of UCP until #641 or #943/#944 land.
+- **Q9. Services.** Should the lead use case move to local services (a service
+  booking with cancellation, no-show and deposit clauses) if the #922 Local
+  Services council is chartered? It has the strongest contract fit, but would
+  build on a domain that is not yet specified.
 - **Q3. Field key.** Should the extension field be `"org.accordproject.agreement"`
   (collision-proof) or a bare `agreement`? UCP core extensions use bare names
   (`discounts`, `consent`); vendor guidance is less explicit.
@@ -896,31 +929,19 @@ These are small and can be split out as separate PRs:
 ## 8. Questions for the UCP maintainers
 
 These are the questions to validate before the work continues. Each one names the
-part of the design its answer decides.
+part of the design its answer decides, and **where to ask**: an existing thread
+where one fits (§2.4, Community activity), so we join a discussion instead of
+opening a new one.
 
-1. **Scope fit.** Is a vendor extension that turns a Business's published promises
-   (policies, fulfilment expectations) into executable, hash-pinned agreement terms
-   welcome in UCP? Or is contract semantics something UCP deliberately leaves to the
-   Business's own systems? *(Decides whether this is pursued at all.)*
-2. **Policy annotations.** Is adding a vendor-namespaced field
-   (`org.accordproject.clause`) to an entry of a **well-known** policy type, such as
-   `dev.ucp.shopping.policy.return`, acceptable? Or should clause-backed policies
-   always use a custom `type`? *(§3.4)*
-3. **Extension field naming.** For extension data added at the top level of
-   Checkout/Order, is a reverse-domain key (`"org.accordproject.agreement"`)
-   preferred over a bare name? *(§3.2, Q3)*
-4. **Extending Order.** Is extending `dev.ucp.shopping.order` with an `obligations[]`
-   projection, pushed in the order webhook snapshot, consistent with the Order's
-   role? Or should that state stay behind a link? *(§3.3b)*
-5. **Link integrity.** Would UCP consider an optional digest on `links[]` and
-   `policies[].url`, so a platform can verify that the terms it showed are the
-   terms that were served? Or should that stay extension-local? *(§3.4)*
-6. **AP2 and terms.** Is it in the spirit of AP2 that a checkout mandate over a
-   checkout containing an agreement hash evidences acceptance of those terms? Is
-   there any guidance on terms acceptance beyond `links[]`? *(§3.5, Q5)*
-7. **Deferred obligations.** Is the "Payment execution" exclusion in payment terms,
-   and the absence of a platform→business channel on Order, a firm boundary? Or is
-   post-purchase, platform-initiated work (Actions on Order) on the roadmap?
-   *(§3.3b, the B2B stretch)*
-8. **B2B.** Is B2B procurement (quotes, POs, trade terms) an intended direction for
-   UCP, or incidental to the role model? *(§2.6)*
+| # | Question | Decides | Where to ask |
+|---|---|---|---|
+| 1 | **Scope fit.** Is a vendor extension that turns a Business's published promises and accepted terms into executable, hash-pinned agreement terms welcome? Or are contract semantics deliberately left to the Business's own systems? | Whether this is pursued at all | [#845](https://github.com/Universal-Commerce-Protocol/ucp/issues/845). Its "accepted commercial artifact" is the same question asked generically |
+| 2 | **Policy annotations.** Can a well-known policy type such as `dev.ucp.shopping.policy.return` carry a vendor-namespaced field (`org.accordproject.clause`)? Or should clause-backed policies always use a custom `type`? | §3.4 | #890 (subscription policy), where a maintainer is steering terms into `policies[]` |
+| 3 | **Extension field naming.** For extension data at the top level of Checkout/Order, is a reverse-domain key (`"org.accordproject.agreement"`) preferred over a bare name? | §3.2, Q3 | New question, or #915 (`declared_fields` for extensible checkout data) |
+| 4 | **Extending Order.** Is an `obligations[]` projection on `dev.ucp.shopping.order`, pushed in the webhook snapshot, consistent with the Order's role? | §3.3b | [#641](https://github.com/Universal-Commerce-Protocol/ucp/issues/641) (Order Actions, `payment_status`) |
+| 5 | **Link integrity.** Would UCP consider an optional digest on `links[]` and `policies[].url`, so a platform can verify that the terms it showed were the terms served? | §3.4 | #845. Its commitment-status and provenance properties need the same thing |
+| 6 | **AP2 and terms.** Does a checkout mandate over a checkout containing an agreement hash evidence acceptance of those terms? Is there guidance beyond `links[]`? | §3.5, Q5 | #845 (it notes buyer acceptance ≠ business authorisation) and the AP2 extension owners |
+| 7 | **Post-purchase writes.** Will Order gain Actions or platform-initiated operations, and on what timeline? | §3.3b, B2B stretch | [#641](https://github.com/Universal-Commerce-Protocol/ucp/issues/641), [#943](https://github.com/Universal-Commerce-Protocol/ucp/issues/943), [#944](https://github.com/Universal-Commerce-Protocol/ucp/issues/944) |
+| 8 | **Amendments.** Can #944's versioned consultations carry an agreement amendment, with the decision receipt as acceptance evidence? | §3.3b | [#944](https://github.com/Universal-Commerce-Protocol/ucp/issues/944) |
+| 9 | **Services.** Would the Local Services council welcome executable cancellation, no-show and deposit clauses as its Phase 2 policy format, reusing Lodging's cancellation schedule? | Q9, lead use case | [#922](https://github.com/Universal-Commerce-Protocol/ucp/issues/922) |
+| 10 | **B2B.** Is B2B procurement (quotes, POs, trade terms) an intended direction, or incidental to the role model? | §2.6 | #845, and the "quote extension" draft linked there |
