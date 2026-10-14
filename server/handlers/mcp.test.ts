@@ -715,5 +715,146 @@ describe('MCP Handler', () => {
                 });
             });
         });
+
+        // Field selection on the single-agreement read (#248). Covers both MCP
+        // surfaces the issue names: the `getAgreement` tool's optional `fields`
+        // argument and the `apap://agreements/{id}{?fields}` resource template.
+        describe('agreement field selection (#248)', () => {
+            const fullAgreement: any = {
+                id: 5,
+                uri: 'apap://agreements/5',
+                data: { price: 10 },
+                template: 'test://template/1',
+                templateHash: 'h',
+                state: null,
+                agreementStatus: 'DRAFT',
+                agreementParties: [],
+                signatures: [],
+                historyEntries: [{ seq: 1 }],
+                attachments: [],
+                references: [],
+                metadata: null,
+            };
+
+            const parseToolText = (result: any) => JSON.parse((result.content as any[])[0].text as string);
+
+            describe('getAgreement tool', () => {
+                it('returns the whole agreement when fields is omitted', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.callTool({
+                        name: 'getAgreement',
+                        arguments: { agreementId: '5' },
+                    });
+                    expect(parseToolText(result)).toEqual(fullAgreement);
+                });
+
+                it('returns only the selected fields for a comma-separated string', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.callTool({
+                        name: 'getAgreement',
+                        arguments: { agreementId: '5', fields: 'data,state' },
+                    });
+                    expect(parseToolText(result)).toEqual({ data: { price: 10 }, state: null });
+                });
+
+                it('accepts the array form of fields', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.callTool({
+                        name: 'getAgreement',
+                        arguments: { agreementId: '5', fields: ['data', 'template'] },
+                    });
+                    expect(parseToolText(result))
+                        .toEqual({ data: { price: 10 }, template: 'test://template/1' });
+                });
+
+                it('reports an unknown field as a tool error listing the valid fields', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.callTool({
+                        name: 'getAgreement',
+                        arguments: { agreementId: '5', fields: 'data,stat' },
+                    });
+                    expect(result.isError).toBe(true);
+                    const text = (result.content as any[])[0].text as string;
+                    expect(text).toContain('stat');
+                    expect(text).toContain('agreementStatus');
+                });
+
+                it('advertises fields as an optional input', async () => {
+                    const { tools } = await client.listTools();
+                    const getAgreement = tools.find((t) => t.name === 'getAgreement') as any;
+                    expect(getAgreement.inputSchema.properties.fields).toBeDefined();
+                    expect(getAgreement.inputSchema.required ?? []).not.toContain('fields');
+                });
+            });
+
+            describe('apap://agreements/{agreementId}{?fields} resource', () => {
+                it('returns the whole agreement for a selection-free read', async () => {
+                    // Backward compatibility: the bare template still serves
+                    // `apap://agreements/5` with the full payload.
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.readResource({ uri: 'apap://agreements/5' });
+                    expect(JSON.parse((result.contents[0] as any).text)).toEqual(fullAgreement);
+                });
+
+                it('returns only the selected fields when ?fields= is present', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.readResource({
+                        uri: 'apap://agreements/5?fields=data,state',
+                    });
+                    expect(JSON.parse((result.contents[0] as any).text))
+                        .toEqual({ data: { price: 10 }, state: null });
+                });
+
+                // Regression guard for the dispatch-order bug found while
+                // writing these tests: the bare `{agreementId}` template also
+                // matches a single-valued query string, capturing the id as
+                // "5?fields=data". With `agreement-fields` registered after the
+                // bare template, a one-field selection 404'd while a two-field
+                // one worked. Keep `agreement-fields` registered first.
+                it('honours a single-field selection (no comma)', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.readResource({
+                        uri: 'apap://agreements/5?fields=data',
+                    });
+                    expect(JSON.parse((result.contents[0] as any).text))
+                        .toEqual({ data: { price: 10 } });
+                });
+
+                it('echoes the requested URI, query string included', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    const result = await client.readResource({
+                        uri: 'apap://agreements/5?fields=data',
+                    });
+                    expect((result.contents[0] as any).uri).toBe('apap://agreements/5?fields=data');
+                });
+
+                it('rejects an unknown field with INVALID_PARAMS', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    await expect(
+                        client.readResource({ uri: 'apap://agreements/5?fields=nope' }),
+                    ).rejects.toThrow(/nope/);
+                });
+
+                it('still errors for a non-numeric agreement id', async () => {
+                    mockDb._setReturn([]);
+                    await expect(
+                        client.readResource({ uri: 'apap://agreements/abc?fields=data' }),
+                    ).rejects.toThrow();
+                });
+
+                // Out-of-band URI, matching the `?limit=&offset=` case #217
+                // documented: a trailing empty `?fields=` is swallowed by the
+                // bare template as the literal id "5?fields=", which the
+                // strict-numeric guard turns into a not-found. Pinned so a
+                // future SDK change to UriTemplate surfaces here rather than
+                // silently altering the dispatch.
+                it('surfaces a trailing empty ?fields= as an error, not a full read', async () => {
+                    mockDb._setReturn([fullAgreement]);
+                    await expect(
+                        client.readResource({ uri: 'apap://agreements/5?fields=' }),
+                    ).rejects.toThrow();
+                });
+            });
+        });
     });
 });

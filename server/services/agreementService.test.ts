@@ -7,11 +7,15 @@ import {
     convertAgreement,
     assertAgreementRecordMutable,
     templateUriFromReference,
+    AGREEMENT_FIELDS,
+    parseAgreementFields,
+    projectFields,
 } from './agreementService';
 import {
     AgreementNotFoundError,
     AgreementRecordImmutableError,
     AgreementStatusTransitionError,
+    InvalidPayloadError,
 } from './errors';
 
 // convertAgreement pulls in the real template engine and templatebuilder
@@ -519,5 +523,155 @@ describe('agreementService', () => {
             const result = await listAgreementsPaged(db, { limit: 10, offset: 0 });
             expect(result.total).toBe(42);
         });
+    });
+});
+
+// -- Field selection (#248) --
+//
+// parseAgreementFields owns validation, projectFields owns the narrowing, and
+// they are tested apart for that reason: the parser's contract is "what is a
+// legal selection", the projector's is "what does a selection do to a row".
+
+describe('AGREEMENT_FIELDS', () => {
+    it('is derived from the generated Drizzle table, not a hand-written list', () => {
+        // Guards against the allow-list drifting from db/schema.ts, which is
+        // regenerated from model/protocol.cto. If the protocol gains a field
+        // and this fails, the fix is to re-run drizzle-gen — not to edit a
+        // literal here.
+        expect(AGREEMENT_FIELDS).toEqual([
+            'id', 'uri', 'data', 'template', 'templateHash', 'state',
+            'agreementStatus', 'agreementParties', 'signatures',
+            'historyEntries', 'attachments', 'references', 'metadata',
+        ]);
+    });
+
+    it('is frozen so a caller cannot mutate the shared allow-list', () => {
+        expect(Object.isFrozen(AGREEMENT_FIELDS)).toBe(true);
+    });
+});
+
+describe('parseAgreementFields', () => {
+    it('returns undefined when no selection is supplied', () => {
+        expect(parseAgreementFields(undefined)).toBeUndefined();
+        expect(parseAgreementFields(null)).toBeUndefined();
+    });
+
+    it('treats a present-but-empty selection as no selection', () => {
+        // `?fields=` is what a client sends when it builds the query string
+        // from an unset variable; it must not mean "return nothing".
+        expect(parseAgreementFields('')).toBeUndefined();
+        expect(parseAgreementFields('   ')).toBeUndefined();
+        expect(parseAgreementFields(',,')).toBeUndefined();
+        expect(parseAgreementFields([])).toBeUndefined();
+    });
+
+    it('parses a comma-separated string', () => {
+        expect(parseAgreementFields('data,state')).toEqual(['data', 'state']);
+    });
+
+    it('trims whitespace around names', () => {
+        expect(parseAgreementFields(' data , state ')).toEqual(['data', 'state']);
+    });
+
+    it('accepts an array, as the MCP tool schema and a repeated ?fields= both produce', () => {
+        expect(parseAgreementFields(['data', 'state'])).toEqual(['data', 'state']);
+        expect(parseAgreementFields(['data', 'state,template']))
+            .toEqual(['data', 'state', 'template']);
+    });
+
+    it('de-duplicates while preserving first-seen order', () => {
+        expect(parseAgreementFields('state,data,state')).toEqual(['state', 'data']);
+    });
+
+    it('ignores non-string entries rather than coercing them', () => {
+        expect(parseAgreementFields([42, 'data'] as any)).toEqual(['data']);
+    });
+
+    it('rejects an unknown field with a 400 that lists the valid ones', () => {
+        // Loud failure is the point: a silently dropped typo returns a payload
+        // missing the field with nothing to explain why.
+        expect(() => parseAgreementFields('data,stat')).toThrow(InvalidPayloadError);
+        try {
+            parseAgreementFields('data,stat');
+        } catch (err: any) {
+            expect(err.statusCode).toBe(400);
+            expect(err.code).toBe('INVALID_PAYLOAD');
+            expect(err.message).toContain('stat');
+            expect(err.details.unknownFields).toEqual(['stat']);
+            expect(err.details.validFields).toEqual(AGREEMENT_FIELDS);
+        }
+    });
+
+    it('reports every unknown field, not just the first', () => {
+        try {
+            parseAgreementFields('nope,data,alsoNope');
+        } catch (err: any) {
+            expect(err.details.unknownFields).toEqual(['nope', 'alsoNope']);
+        }
+    });
+
+    it('does not treat inherited Object properties as valid fields', () => {
+        // AGREEMENT_FIELDS.includes() is an array membership test, so prototype
+        // keys are not reachable — pinned so a future rewrite to an object
+        // lookup cannot reintroduce the hole.
+        expect(() => parseAgreementFields('constructor')).toThrow(InvalidPayloadError);
+        expect(() => parseAgreementFields('__proto__')).toThrow(InvalidPayloadError);
+        expect(() => parseAgreementFields('toString')).toThrow(InvalidPayloadError);
+    });
+
+    it('accepts every field it advertises as valid', () => {
+        expect(parseAgreementFields(AGREEMENT_FIELDS.join(','))).toEqual([...AGREEMENT_FIELDS]);
+    });
+});
+
+describe('projectFields', () => {
+    it('returns the row itself when there is no selection', () => {
+        const row = agreementRow(1);
+        // Same reference, not just a deep-equal copy: the no-selection path is
+        // the backward-compatible one and should not rebuild the object.
+        expect(projectFields(row, undefined)).toBe(row);
+    });
+
+    it('returns only the selected fields', () => {
+        const row = agreementRow(1, { data: { price: 10 } });
+        expect(projectFields(row, ['data', 'agreementStatus']))
+            .toEqual({ data: { price: 10 }, agreementStatus: 'DRAFT' });
+    });
+
+    it('keeps a selected field whose value is null', () => {
+        // `state` is null until an agreement is first triggered. Dropping it
+        // would make "never triggered" indistinguishable from "not selected".
+        const row = agreementRow(1, { state: null });
+        expect(projectFields(row, ['state'])).toEqual({ state: null });
+        expect(Object.prototype.hasOwnProperty.call(projectFields(row, ['state']), 'state')).toBe(true);
+    });
+
+    it('omits a selected key the row does not carry at all', () => {
+        expect(projectFields({ id: 1 } as any, ['id', 'metadata'])).toEqual({ id: 1 });
+    });
+
+    it('does not mutate the row it projects', () => {
+        const row = agreementRow(1);
+        const before = JSON.stringify(row);
+        projectFields(row, ['data']);
+        expect(JSON.stringify(row)).toBe(before);
+    });
+
+    it('returns an empty object for an empty selection array', () => {
+        // Only reachable by calling projectFields directly — parseAgreementFields
+        // never yields [] — but pinned so the contract is explicit.
+        expect(projectFields(agreementRow(1), [])).toEqual({});
+    });
+
+    it('cuts the serialized payload down for a history-heavy agreement', () => {
+        // The motivating case from #248: a triggerAgreement-shaped caller reads
+        // data/state/template and should not pay for history or attachments.
+        const row = agreementRow(1, {
+            historyEntries: Array.from({ length: 200 }, (_, i) => ({ seq: i, data: 'x'.repeat(200) })),
+            attachments: [{ base64: 'y'.repeat(5000), mimeType: 'application/pdf' }],
+        });
+        const full = JSON.stringify(row).length;
+        const projected = JSON.stringify(projectFields(row, ['data', 'state', 'template'])).length;
+        expect(projected).toBeLessThan(full * 0.1);
     });
 });

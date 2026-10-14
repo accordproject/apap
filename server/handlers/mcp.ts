@@ -28,6 +28,9 @@ import {
     getAgreementById,
     convertAgreement,
     triggerAgreement as triggerAgreementService,
+    parseAgreementFields,
+    projectFields,
+    AGREEMENT_FIELDS,
 } from '../services/agreementService';
 import { InvalidPayloadError } from '../services/errors';
 import type { Database } from '../db/client';
@@ -174,14 +177,20 @@ export function serviceErrorToResourceError(error: ServiceError): ProtocolError 
 
 /**
  * @param uri The MCP resource URI being resolved.
- * @param variables Object containing the agreementId extracted from the resource template variables.
+ * @param variables The `agreementId` from the resource template, plus an optional
+ * `fields` selection (#248) when the URI carried one.
  * @return A MCP resource payload containing the requested agreement as JSON content.
- * @details Resolves a single agreement by calling the local REST API and converts
- * the REST response into the `contents` structure expected by the MCP SDK.
+ * @details Resolves a single agreement through `agreementService` and converts the
+ * row into the `contents` structure expected by the MCP SDK, narrowed to the
+ * selected fields when a selection was supplied.
  */
-async function getAgreement(db: Database, uri: string, variables: { agreementId: string }) {
-    const { agreementId } = variables;
-    console.log({ type: 'fetching_agreement', agreementId });
+async function getAgreement(
+    db: Database,
+    uri: string,
+    variables: { agreementId: string; fields?: string | string[] },
+) {
+    const { agreementId, fields } = variables;
+    console.log({ type: 'fetching_agreement', agreementId, ...(fields !== undefined && { fields }) });
     const url = new URL(uri);
     // Same strict-numeric guard as the REST /agreements/:id route from #208.
     const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
@@ -189,13 +198,18 @@ async function getAgreement(db: Database, uri: string, variables: { agreementId:
         throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
     }
     try {
+        // Parsed inside the try so an unknown field name surfaces through the
+        // same serviceErrorToResourceError path as a missing agreement, giving
+        // the client an INVALID_PARAMS ProtocolError whose `data` lists every
+        // valid field rather than an unmapped throw.
+        const selection = parseAgreementFields(fields);
         const agreement = await getAgreementById(db, id);
         console.log({ type: 'fetched_agreement_success', agreementId });
         return {
             contents: [{
                 uri: url.toString(),
                 mimeType: "application/json",
-                text: JSON.stringify(agreement),
+                text: JSON.stringify(projectFields(agreement, selection)),
                 ...CACHE_HINTS.agreementItem,
             }]
         };
@@ -368,6 +382,45 @@ export const getServer = (db: Database) => {
             getAgreements(db, uri, pageOpts(variables)),
     );
 
+    // Field-selected variant of the single-agreement read (#248):
+    // `apap://agreements/5?fields=data,state`. Registered as its own template
+    // beside the bare one below rather than by widening it, mirroring how #217
+    // added `apap://agreements{?limit,offset}` beside `apap://agreements`.
+    //
+    // REGISTRATION ORDER IS LOAD-BEARING: this must stay ABOVE the bare
+    // `apap://agreements/{agreementId}` template. The two are NOT disjoint. The
+    // SDK dispatcher iterates registered templates in registration order and
+    // takes the first `UriTemplate.match`, and the bare template's
+    // `{agreementId}` expansion also matches a single-valued query string:
+    //
+    //   apap://agreements/5                -> bare only
+    //   apap://agreements/5?fields=data    -> BOTH (bare captures id "5?fields=data")
+    //   apap://agreements/5?fields=a,b     -> this one only (',' is RFC 6570's
+    //                                         list separator, so the bare
+    //                                         expansion rejects it)
+    //
+    // Registered after the bare template, a one-field selection would therefore
+    // be swallowed as a literal id and 404 while a two-field selection worked —
+    // which is exactly what the tests caught. Ordering this first makes the bare
+    // template the fallback it should be: it still wins `apap://agreements/5`,
+    // because this template requires `fields` present and non-empty.
+    //
+    // A trailing empty `apap://agreements/5?fields=` matches neither, so it
+    // falls through to the bare template as the literal id "5?fields=" and the
+    // strict-numeric guard in getAgreement turns it into a not-found — the same
+    // out-of-band-URI behaviour #217 documented for `?limit=&offset=`. All of
+    // the above is pinned in mcp.test.ts so an SDK change to UriTemplate
+    // surfaces as a test failure rather than a silent dispatch change.
+    server.registerResource(
+        'agreement-fields',
+        new ResourceTemplate('apap://agreements/{agreementId}{?fields}', { list: undefined }),
+        { title: 'Agreement (field-selected)', mimeType: 'application/json' },
+        async (uri: URL, variables: Record<string, string | string[]>) => {
+            const agreementId = String(variables.agreementId);
+            return await getAgreement(db, uri.toString(), { agreementId, fields: variables.fields });
+        }
+    );
+
     // register resource template for agreements
     server.registerResource(
         "agreement",
@@ -538,8 +591,21 @@ Refer to the agreement's template model to determine which fields are required o
     server.registerTool(
         'getAgreement',
         {
-            description: 'Retrieve an agreement by ID',
-            inputSchema: { agreementId: z.string() } as any,
+            description:
+                'Retrieve an agreement by ID. Pass `fields` to receive only the fields you need — ' +
+                `one of ${AGREEMENT_FIELDS.join(', ')}, as a comma-separated string or an array. ` +
+                'Omit it for the whole agreement. Selecting just the fields you will read keeps ' +
+                'large agreements (long histories, attachments) from consuming the context window.',
+            inputSchema: {
+                agreementId: z.string(),
+                // string | string[] so a model may answer with either shape;
+                // parseAgreementFields normalizes both. Described in-schema
+                // because the description is what the calling model reads.
+                fields: z
+                    .union([z.string(), z.array(z.string())])
+                    .optional()
+                    .describe('Fields to return, e.g. "data,state" or ["data","state"].'),
+            } as any,
             annotations: {
                 readOnlyHint: true,
                 destructiveHint: false,
@@ -547,15 +613,19 @@ Refer to the agreement's template model to determine which fields are required o
                 openWorldHint: false,
             },
         },
-        async ({ agreementId }: { agreementId: string }): Promise<CallToolResult> => {
+        async ({ agreementId, fields }: { agreementId: string; fields?: string | string[] }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
             if (!Number.isFinite(id)) {
                 return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
             }
             try {
+                // Inside the try so an unknown field name comes back as the
+                // standard `{ isError: true }` tool result carrying the valid
+                // field list, not an exception out of the tool handler.
+                const selection = parseAgreementFields(fields);
                 const agreement = await getAgreementById(db, id);
                 return {
-                    content: [{ type: "text", text: JSON.stringify(agreement) }]
+                    content: [{ type: "text", text: JSON.stringify(projectFields(agreement, selection)) }]
                 };
             } catch (err) {
                 if (err instanceof ServiceError) {

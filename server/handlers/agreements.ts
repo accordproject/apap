@@ -16,6 +16,8 @@ import {
     assertAgreementRecordMutable,
     convertAgreement,
     listAgreementsPaged,
+    parseAgreementFields,
+    projectFields,
     triggerAgreement,
     templateUriFromReference,
 } from '../services/agreementService';
@@ -95,6 +97,12 @@ const crudRouter = buildCrudRouter({
     validateBody: { schema: AgreementInsertSchema as any, custom: (body) => concertoValidation('Agreement', body) },
     guardUpdate: (existing, body) => assertAgreementRecordMutable(existing, body),
     listService: (db, opts) => listAgreementsPaged(db, opts),
+    // `?fields=data,state` on GET /agreements/:id (#248). Parsing and
+    // projection both live in agreementService so this route, the getAgreement
+    // MCP tool and the apap://agreements/{id} resource share one definition of
+    // what a selection means. Omitting the parameter returns the full row, so
+    // existing clients are unaffected.
+    projectResponse: (item, req) => projectFields(item, parseAgreementFields(req.query.fields)),
 });
 
 /**

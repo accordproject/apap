@@ -245,6 +245,24 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
      * the DB select + count. Keeps REST and MCP on one code path for reads.
      */
     listService?: ListService<any>;
+    /**
+     * Optional response projection for GET /:id, applied as the last step
+     * before the row is serialized. Receives the row and the request so the
+     * resource can read its own query parameters — Agreement uses it for the
+     * `?fields=` selection from #248.
+     *
+     * Deliberately narrower than `transformResponse`, which also fires on
+     * POST and PUT: a field selection is a property of a *read*, and letting
+     * `?fields=` silently truncate the echo of a row a client just wrote
+     * would be a surprising wire change on routes the issue never scoped.
+     *
+     * Opt-in per resource, like `guardUpdate` / `guardDelete` / `listService`,
+     * so `crud.ts` stays resource-agnostic and templates / shared models keep
+     * their current responses byte-for-byte. Throwing a `ServiceError` here
+     * (e.g. for an unknown field name) reaches `globalErrorHandler` through
+     * `asyncHandler` and renders with the error's own status and JSON body.
+     */
+    projectResponse?: (item: any, req: Request) => any;
 }
 
 function getSingleQueryParam(value: unknown): string | undefined {
@@ -348,6 +366,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
     guardUpdate,
     guardDelete,
     listService,
+    projectResponse,
 }: CrudRouterOptions<T>): Router {
     const router = Router();
 
@@ -574,7 +593,9 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     result[0] = transformResponse(result[0]);
                 }
 
-                res.json(result[0]);
+                // Projection runs last so a selection narrows exactly what the
+                // client receives, including any field `transformResponse` added.
+                res.json(projectResponse ? projectResponse(result[0], req) : result[0]);
         }));
 
     // PUT update item
