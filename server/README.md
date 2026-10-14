@@ -585,6 +585,54 @@ Response:
 }
 ```
 
+### Selecting fields
+
+`GET /agreements/:id` accepts a `fields` parameter that narrows the response to
+the fields you name. An agreement carries its full history, signatures and
+attachments, so a caller that only reads the deal terms and runtime state —
+`triggerAgreement`, for instance — can avoid paying for the rest. This matters
+most for LLM and agent clients, where the whole record would otherwise consume
+the context window.
+
+```bash
+curl --request GET \
+  --url 'http://localhost:9000/agreements/1?fields=data,state,template'
+```
+
+Response: only the requested fields.
+
+```json
+{
+	"data": { "$class": "io.clause.latedeliveryandpenalty@0.1.0.TemplateModel" },
+	"state": null,
+	"template": "https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta"
+}
+```
+
+Names may be given as a comma-separated list or as a repeated parameter
+(`?fields=data&fields=state`). Selectable fields are the agreement's own:
+`id`, `uri`, `data`, `template`, `templateHash`, `state`, `agreementStatus`,
+`agreementParties`, `signatures`, `historyEntries`, `attachments`,
+`references`, `metadata`.
+
+Omitting `fields` returns the whole agreement, so existing callers are
+unaffected. Naming a field that does not exist is rejected with a `400` that
+lists the valid ones, rather than silently returning a shorter object:
+
+```json
+{
+	"error": {
+		"code": "INVALID_PAYLOAD",
+		"message": "Unknown field(s) in selection: stat",
+		"details": { "unknownFields": ["stat"], "validFields": ["id", "uri", "data", "..."] }
+	}
+}
+```
+
+The same selection is available over MCP, through the optional `fields`
+argument on the `getAgreement` tool and the
+`apap://agreements/{id}?fields=data,state` resource URI.
+
 ## Getting Resources
 
 Getting templates using query parameters:

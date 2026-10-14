@@ -1,4 +1,4 @@
-import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
+import { eq, asc, SQL, SQLWrapper, count, getTableColumns } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
 import type { Database } from '../db/client';
 import {
@@ -26,6 +26,110 @@ import { concertoValidation } from '../handlers/concertovalidation';
 // utility directory is a follow-up refactor.
 
 type AgreementRow = typeof Agreement.$inferSelect;
+
+// -- Field selection (#248) --
+
+/**
+ * Every field a caller may name in a `fields` selection, read off the Drizzle
+ * table rather than written out by hand.
+ *
+ * `db/schema.ts` is generated from `model/protocol.cto` (`npm run drizzle-gen`,
+ * header: GENERATED CODE, DO NOT MODIFY), so a hardcoded list here would drift
+ * silently the first time the protocol gains or loses a field: a brand-new
+ * column would be rejected as unknown even though it exists on the row, and a
+ * removed one would still be advertised as valid. Deriving the allow-list from
+ * the table keeps it correct by construction, with no second place to update.
+ */
+export const AGREEMENT_FIELDS: readonly string[] = Object.freeze(
+    Object.keys(getTableColumns(Agreement)),
+);
+
+/**
+ * Parses a `fields` selection into a validated list of agreement field names.
+ *
+ * Accepts the three shapes the transports actually produce: a comma-separated
+ * string (`?fields=data,state`), an array (Express yields one for a repeated
+ * `?fields=data&fields=state`, and the MCP tool schema accepts `string[]`
+ * directly), or an array of comma-separated strings. Values are trimmed and
+ * de-duplicated, preserving first-seen order.
+ *
+ * Returns `undefined` when no selection was supplied — including for a present
+ * but empty `?fields=`, which is what a client sends when it builds its query
+ * string from an unset variable. Callers read `undefined` as "return the whole
+ * row", and that is what keeps #248 backward compatible: every existing caller
+ * omits the parameter and sees a byte-identical response.
+ *
+ * Unknown names are rejected rather than skipped. Silently dropping a typo
+ * (`?fields=data,stat`) returns a payload missing `state` with nothing to say
+ * why, which is a worse failure for the LLM/agent callers this feature exists
+ * for than a 400 whose `details.validFields` names every field they could have
+ * asked for.
+ *
+ * @param raw The unparsed `fields` value from a query string or tool argument.
+ * @return The selected field names, or `undefined` for "no selection".
+ * @throws InvalidPayloadError When the selection names a field that does not exist.
+ */
+export function parseAgreementFields(raw: unknown): string[] | undefined {
+    if (raw === undefined || raw === null) return undefined;
+
+    const requested = (Array.isArray(raw) ? raw : [raw])
+        .filter((value): value is string => typeof value === 'string')
+        .flatMap((value) => value.split(','))
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
+
+    if (requested.length === 0) return undefined;
+
+    const unknownFields = requested.filter((field) => !AGREEMENT_FIELDS.includes(field));
+    if (unknownFields.length > 0) {
+        throw new InvalidPayloadError(
+            `Unknown field(s) in selection: ${unknownFields.join(', ')}`,
+            { unknownFields, validFields: AGREEMENT_FIELDS },
+        );
+    }
+
+    return [...new Set(requested)];
+}
+
+/**
+ * Narrows a row to a selection of its fields.
+ *
+ * The single projection point #248 asks for: the REST `GET /agreements/:id`
+ * route, the `getAgreement` MCP tool and the `apap://agreements/{id}` MCP
+ * resource all funnel through here, so a selection cannot come to mean three
+ * different things on three surfaces.
+ *
+ * Intentionally generic over the row type and free of any agreement-specific
+ * knowledge — `parseAgreementFields` owns validation, this owns the narrowing.
+ * That split is what lets a future `?fields=` on templates reuse the projection
+ * without inheriting the Agreement allow-list.
+ *
+ * A `fields` of `undefined` returns the row itself, by reference and untouched,
+ * which is the backward-compatible path for callers that select nothing.
+ *
+ * @param row The full row to narrow.
+ * @param fields The validated selection, or `undefined` to return `row` as-is.
+ * @return The row, or an object carrying only the selected fields.
+ */
+export function projectFields<T extends object>(
+    row: T,
+    fields: readonly string[] | undefined,
+): T | Partial<T> {
+    if (fields === undefined) return row;
+
+    const projected: Partial<T> = {};
+    for (const field of fields) {
+        // Own-key check, not a truthiness test: a selected column that is
+        // present and null (`state` on an agreement never triggered) must stay
+        // in the response as null. Only a key genuinely absent from the row is
+        // omitted, rather than being emitted as an `undefined` that JSON.stringify
+        // would silently drop anyway.
+        if (Object.prototype.hasOwnProperty.call(row, field)) {
+            projected[field as keyof T] = row[field as keyof T];
+        }
+    }
+    return projected;
+}
 
 // Once signing has finished (COMPLETED) or the agreement has been
 // superseded (SUPERSEDED), the agreement's record is frozen: deal terms

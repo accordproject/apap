@@ -15,6 +15,13 @@ import { AgreementNotFoundError } from '../services/errors';
 jest.mock('../services/agreementService', () => ({
     convertAgreement: jest.fn(),
     triggerAgreement: jest.fn(),
+    // GET /:id runs the #248 field projection on every read. This file covers
+    // the Link header, not selections, so these stand in as a no-op "no
+    // selection supplied" pair rather than pulling the real service (and the
+    // template engine behind it) into this suite. Selection behaviour itself is
+    // covered in agreements.fields.test.ts.
+    parseAgreementFields: jest.fn(() => undefined),
+    projectFields: jest.fn((row: unknown) => row),
 }));
 jest.mock('../services/lcpService', () => ({
     getAgreementTerms: jest.fn(),
