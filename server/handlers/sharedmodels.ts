@@ -4,7 +4,8 @@ import { buildCrudRouter } from './crud';
 import { concertoValidation } from './concertovalidation';
 import { ModelManager } from '@accordproject/concerto-core';
 import { FileDownloader } from '@accordproject/concerto-util';
-import { HttpModelRetriever, assertAllowedUrl } from './retrievers/HttpModelRetriever';
+import { HttpModelRetriever } from './retrievers/HttpModelRetriever';
+import { assertAllowedUrl } from './retrievers/allowlist';
 
 const router = express.Router();
 
@@ -16,20 +17,19 @@ class SecureFileLoader {
     }
 
     accepts(url: string): boolean {
-        return url.startsWith('http://') || url.startsWith('https://');
+        return url.startsWith('https://');
     }
+
+    clear(): void {}
 
     async load(url: string, options: any): Promise<any> {
         try {
-            assertAllowedUrl(url);
-        } catch (e) {
-            throw new Error(`SSRF Prevention: Transitive import domain or URL not allowed: ${url}`);
+            const retriever = new HttpModelRetriever();
+            const ctoText = await retriever.fetchModel(url);
+            return this.modelManager.addCTOModel(ctoText, url, true);
+        } catch (e: any) {
+            throw new Error(`SSRF Prevention: Transitive import domain or URL not allowed: ${url}. Details: ${e.message}`);
         }
-        
-        const retriever = new HttpModelRetriever();
-        const ctoText = await retriever.fetchModel(url);
-        
-        return this.modelManager.addCTOModel(ctoText, url, true);
     }
 }
 
@@ -55,21 +55,23 @@ router.post('/', async (req, res, next) => {
             const ctoText = await retriever.fetchModel(uri);
 
             const modelManager = new ModelManager({ addMetamodel: true });
-            const modelFile = modelManager.addCTOModel(ctoText, 'external.cto', true);
+            modelManager.addCTOModel(ctoText, 'external.cto', true);
 
-            const fileDownloader = new FileDownloader(new SecureFileLoader(modelManager) as any, getExternalImports);
+            const fileDownloader = new FileDownloader(new SecureFileLoader(modelManager), getExternalImports);
             await modelManager.updateExternalModels({}, fileDownloader);
 
-            const namespace = modelFile.getNamespace() || 'external';
+            const namespaces = modelManager.getNamespaces();
+            const ctoFiles = namespaces
+                .map((ns: string) => modelManager.getModelFile(ns))
+                .filter((mf: any) => mf && !mf.isSystemModelFile())
+                .map((mf: any) => ({
+                    filename: mf.getName ? mf.getName() : `${mf.getNamespace()}.cto`,
+                    contents: mf.getDefinitions()
+                }));
 
             req.body.model = {
                 $class: 'org.accordproject.protocol@1.0.0.CtoModel',
-                ctoFiles: [
-                    {
-                        filename: `${namespace}.cto`,
-                        contents: ctoText
-                    }
-                ]
+                ctoFiles: ctoFiles
             };
         } catch (error: any) {
             console.error(`[SharedModels Post Error]:`, error);

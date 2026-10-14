@@ -1,43 +1,7 @@
 import { IModelRetriever } from './IModelRetriever';
+import { assertAllowedUrl } from './allowlist';
 
 export const MAX_FILE_SIZE = 1024 * 1024;
-
-export function assertAllowedUrl(uri: string): { host: string; pathname: string; search: string } {
-    if (!uri.startsWith('https://')) {
-        throw new Error(`Invalid URI scheme. Only https is allowed.`);
-    }
-
-    let safeUrl: URL;
-    try {
-        safeUrl = new URL(uri);
-    } catch (e) {
-        throw new Error(`Malformed URL provided.`);
-    }
-
-    if (safeUrl.username || safeUrl.password) {
-        throw new Error(`SSRF Prevention: User credentials in URL are not allowed.`);
-    }
-
-    if (safeUrl.port !== '' && safeUrl.port !== '443') {
-        throw new Error(`SSRF Prevention: Custom ports are not allowed.`);
-    }
-
-    const host = safeUrl.hostname;
-
-    if (
-        host !== 'models.accordproject.org' &&
-        host !== 'templates.accordproject.org' &&
-        host !== 'raw.githubusercontent.com'
-    ) {
-        throw new Error(`SSRF Prevention: Domain not in allowlist.`);
-    }
-
-    if (host === 'raw.githubusercontent.com' && !safeUrl.pathname.startsWith('/accordproject/')) {
-        throw new Error(`SSRF Prevention: Only official accordproject GitHub repositories are allowed.`);
-    }
-
-    return { host: safeUrl.host, pathname: safeUrl.pathname, search: safeUrl.search };
-}
 
 export class HttpModelRetriever implements IModelRetriever {
     public getURISchemes(): string[] {
@@ -49,7 +13,7 @@ export class HttpModelRetriever implements IModelRetriever {
         const finalUrl = `https://${host}${pathname}${search}`;
 
         const headers: Record<string, string> = {};
-        if (process.env.EXTERNAL_TEMPLATE_TOKEN) {
+        if (host === 'raw.githubusercontent.com' && process.env.EXTERNAL_TEMPLATE_TOKEN) {
             headers['Authorization'] = `Bearer ${process.env.EXTERNAL_TEMPLATE_TOKEN}`;
         }
 
@@ -57,6 +21,7 @@ export class HttpModelRetriever implements IModelRetriever {
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
         try {
+            // codeql[js/request-forgery] False Positive: Hostname is strictly validated against an allowlist in assertAllowedUrl
             const response = await fetch(finalUrl, {
                 headers,
                 signal: controller.signal,
@@ -72,11 +37,28 @@ export class HttpModelRetriever implements IModelRetriever {
                 throw new Error('Model file exceeds the 1MB size limit.');
             }
 
-            const text = await response.text();
-            
-            if (Buffer.byteLength(text, 'utf8') > MAX_FILE_SIZE) {
-                throw new Error('Model file exceeds the 1MB size limit after download.');
+            if (!response.body) {
+                throw new Error('Response body is empty.');
             }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let text = '';
+            let byteCount = 0;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                if (value) {
+                    byteCount += value.length;
+                    if (byteCount > MAX_FILE_SIZE) {
+                        await reader.cancel();
+                        throw new Error('Model file exceeds the 1MB size limit during download.');
+                    }
+                    text += decoder.decode(value, { stream: true });
+                }
+            }
+            text += decoder.decode();
 
             return text;
         } catch (error: any) {
