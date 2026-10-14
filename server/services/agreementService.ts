@@ -5,6 +5,7 @@ import {
     AgreementNotFoundError,
     AgreementConversionError,
     AgreementRecordImmutableError,
+    AgreementNotDeletableError,
     AgreementStatusTransitionError,
     AgreementTriggerError,
     InvalidPayloadError,
@@ -139,6 +140,22 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
         !deepEqual(existing.data, updates.data)
     ) {
         throw new AgreementRecordImmutableError(existing.id, status, 'data');
+    }
+}
+
+/**
+ * Guard for the generic CRUD DELETE route (see `crud.ts`'s `guardDelete` hook).
+ *
+ * - Once COMPLETED or SUPERSEDED, an agreement cannot be deleted. It is a
+ *   frozen legal record and must be retained.
+ */
+export function assertAgreementRecordDeletable(existing: AgreementRow): void {
+    const status = existing.agreementStatus;
+    if (FULLY_FROZEN_STATUSES.has(status)) {
+        throw new AgreementNotDeletableError(existing.id, status);
+    }
+    if (Array.isArray(existing.signatures) && existing.signatures.length > 0) {
+        throw new AgreementNotDeletableError(existing.id, status, 'signatures');
     }
 }
 
