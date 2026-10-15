@@ -30,7 +30,11 @@ import mcpRouter, {
     PROTOCOL_CTO,
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
+    agreementToConcerto,
+    templateToConcerto,
+    toJsonScalar,
 } from './mcp';
+import { ModelManager, Factory, Serializer } from '@accordproject/concerto-core';
 import { ProtocolError, ProtocolErrorCode, InMemoryTransport } from '@modelcontextprotocol/server';
 import {
     AgreementConversionError,
@@ -271,6 +275,11 @@ describe('Concerto typed-context (instructions + schema resource)', () => {
             expect(SERVER_INSTRUCTIONS).toMatch(/Concerto/);
             expect(SERVER_INSTRUCTIONS).toMatch(/apap:\/\/schema\/protocol\.cto/);
             expect(SERVER_INSTRUCTIONS).toMatch(/\$class/);
+        });
+
+        it('documents the outer Agreement wire format on collection resources', () => {
+            expect(SERVER_INSTRUCTIONS).toContain('Agreement collection resources');
+            expect(SERVER_INSTRUCTIONS).toContain('outer Agreement model');
         });
     });
 
@@ -674,7 +683,7 @@ describe('MCP Handler', () => {
                 expect(parsed.uri).toBe('test://agreement/2');
                 expect(parsed.template).toBe('test://template/1');
                 expect(parsed.agreementStatus).toBe('active');
-                expect(parsed.data.foo).toBe('bar');
+                expect(JSON.parse(parsed.data).foo).toBe('bar');
                 expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
                 expect(parsed.$identifier).toBe('test://agreement/2');
             });
@@ -747,6 +756,197 @@ describe('MCP Handler', () => {
                     expect((result as { _meta?: { hasMore?: boolean } })._meta?.hasMore).toBe(false);
                 });
             });
+        });
+    });
+});
+
+// =====================================================================
+// Concerto model serialization and validation round-trips (#258)
+// =====================================================================
+describe('Concerto MCP resource serialization (#258)', () => {
+    let concertoSerializer: Serializer;
+
+    beforeAll(async () => {
+        const mm = new ModelManager({ addMetamodel: true });
+        mm.addCTOModel(PROTOCOL_CTO, 'protocol.cto', true);
+        await mm.updateExternalModels();
+        const factory = new Factory(mm);
+        concertoSerializer = new Serializer(factory, mm);
+    });
+
+    const validAgreementRow: Record<string, any> = {
+        id: 42,
+        uri: 'test://agreement/42',
+        template: 'resource:org.accordproject.protocol@1.0.0.Template#test://template/10',
+        templateHash: 'abcdef0123456789',
+        agreementStatus: 'DRAFT',
+        data: { price: 100, currency: 'USD' },
+        state: { currentStep: 'drafting' },
+        signatures: null,
+        attachments: null,
+    };
+
+    const validTemplateRow: Record<string, any> = {
+        id: 10,
+        uri: 'test://template/10',
+        hash: 'fedcba9876543210',
+        author: 'Test Author',
+        version: '1.0.0',
+        license: 'Apache-2.0',
+        metadata: {
+            $class: 'org.accordproject.protocol@1.0.0.TemplateMetadata',
+            runtime: 'node',
+            template: 'test',
+            cicero: '0.22.0',
+        },
+        templateModel: {
+            $class: 'org.accordproject.protocol@1.0.0.TemplateModel',
+            typeName: 'org.accordproject.test.TestModel',
+        },
+        text: {
+            $class: 'org.accordproject.protocol@1.0.0.Text',
+            templateText: 'Contract text',
+        },
+        logo: null,
+        sampleRequest: { sample: 'value' },
+    };
+
+    it('toJsonScalar preserves JSON strings and stringifies objects without double-encoding', () => {
+        const rawJson = '{"key":"val"}';
+        expect(toJsonScalar(rawJson)).toBe(rawJson);
+        expect(toJsonScalar({ key: 'val' })).toBe(rawJson);
+        expect(toJsonScalar(null)).toBe('{}');
+    });
+
+    it('agreementToConcerto projects valid Concerto Agreement, omitting DB fields and nulls', () => {
+        const payload = agreementToConcerto(validAgreementRow as any);
+        expect(payload.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
+        expect(payload.$identifier).toBe('test://agreement/42');
+        expect(payload.id).toBeUndefined();
+        expect(payload.templateHash).toBeUndefined();
+        expect('signatures' in payload).toBe(false);
+        expect(typeof payload.data).toBe('string');
+        expect(typeof payload.state).toBe('string');
+
+        // Validates and round-trips cleanly through Concerto Serializer
+        const instance = concertoSerializer.fromJSON(payload, {
+            acceptResourcesForRelationships: false,
+            validate: true,
+        });
+        expect(concertoSerializer.toJSON(instance)).toBeDefined();
+
+        // Leaky raw DB row with id/templateHash fails Concerto validation
+        expect(() =>
+            concertoSerializer.fromJSON(
+                { ...payload, id: 42, templateHash: 'hash' },
+                { acceptResourcesForRelationships: false, validate: true }
+            )
+        ).toThrow(/Unexpected properties for type/);
+
+        // Unstringified object data fails Concerto validation
+        expect(() =>
+            concertoSerializer.fromJSON(
+                { ...payload, data: { price: 100 } },
+                { acceptResourcesForRelationships: false, validate: true }
+            )
+        ).toThrow(/Expected value at path `\$\.data` to be of type `String`/);
+    });
+
+    it('templateToConcerto projects valid Concerto Template, omitting DB fields and nulls', () => {
+        const payload = templateToConcerto(validTemplateRow as any);
+        expect(payload.$class).toBe('org.accordproject.protocol@1.0.0.Template');
+        expect(payload.$identifier).toBe(validTemplateRow.uri);
+        expect(payload.id).toBeUndefined();
+        expect(payload.hash).toBeUndefined();
+        expect('logo' in payload).toBe(false);
+        expect(typeof payload.sampleRequest).toBe('string');
+
+        // Validates and round-trips cleanly through Concerto Serializer
+        const instance = concertoSerializer.fromJSON(payload, {
+            acceptResourcesForRelationships: false,
+            validate: true,
+        });
+        expect(concertoSerializer.toJSON(instance)).toBeDefined();
+
+        // Leaky raw DB row with id/hash fails Concerto validation
+        expect(() =>
+            concertoSerializer.fromJSON(
+                { ...payload, id: 10, hash: 'hash' },
+                { acceptResourcesForRelationships: false, validate: true }
+            )
+        ).toThrow(/Unexpected properties for type/);
+    });
+
+    describe('endpoint serialization and resource URI verification', () => {
+        let client: Client;
+        let mockDb: any;
+
+        beforeEach(async () => {
+            mockDb = createMockDb();
+            const transports = InMemoryTransport.createLinkedPair();
+            const server = getServer(createLegacyPolicyContext(mockDb));
+            await server.connect(transports[1]);
+            client = new Client({ name: 'test-client', version: '1.0.0' }, { capabilities: {} });
+            await client.connect(transports[0]);
+        });
+
+        afterEach(async () => {
+            if (client) {
+                await client.close();
+            }
+        });
+
+        it('apap://agreements/:id resource emits Concerto-valid Agreement preserving MCP resource URI', async () => {
+            mockDb._setReturn([validAgreementRow]);
+            const result = await client.readResource({ uri: 'apap://agreements/42' });
+
+            expect(result.contents[0].uri).toBe('apap://agreements/42');
+            const parsed = JSON.parse((result.contents[0] as any).text);
+            expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
+            expect(parsed.$identifier).toBe('test://agreement/42');
+            expect(parsed.id).toBeUndefined();
+
+            const instance = concertoSerializer.fromJSON(parsed, {
+                acceptResourcesForRelationships: false,
+                validate: true,
+            });
+            expect(instance).toBeDefined();
+        });
+
+        it('apap://agreements paged resource emits outer Concerto-valid Agreement objects', async () => {
+            mockDb._setReturn([validAgreementRow]);
+            const result = await client.readResource({ uri: 'apap://agreements?limit=10&offset=0' });
+
+            expect(result.contents[0].uri).toBe('apap://agreements/42');
+            const parsed = JSON.parse((result.contents[0] as any).text);
+            expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
+            expect(parsed.uri).toBe('test://agreement/42');
+            expect(parsed.template).toBe(validAgreementRow.template);
+            expect(typeof parsed.data).toBe('string');
+
+            const instance = concertoSerializer.fromJSON(parsed, {
+                acceptResourcesForRelationships: false,
+                validate: true,
+            });
+            expect(instance).toBeDefined();
+        });
+
+        it('apap://templates/:id resource emits Concerto-valid Template preserving MCP resource URI', async () => {
+            mockDb._setReturn([validTemplateRow]);
+            const result = await client.readResource({ uri: 'apap://templates/10' });
+
+            expect(result.contents[0].uri).toBe('apap://templates/10');
+            const parsed = JSON.parse((result.contents[0] as any).text);
+            expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Template');
+            expect(parsed.$identifier).toBe(validTemplateRow.uri);
+            expect(parsed.id).toBeUndefined();
+            expect(parsed.hash).toBeUndefined();
+
+            const instance = concertoSerializer.fromJSON(parsed, {
+                acceptResourcesForRelationships: false,
+                validate: true,
+            });
+            expect(instance).toBeDefined();
         });
     });
 });
