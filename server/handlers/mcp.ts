@@ -376,7 +376,7 @@ async function getAgreements(db: Database, uri: URL, opts: { limit?: number; off
         // inside the `text` property as JSON, which is where MCP clients read it from.
         contents: agreements.map((a) => ({
             mimeType: "application/json",
-            text: JSON.stringify(agreementToConcerto(a), null, 2),
+            text: JSON.stringify(agreementToConcerto(a)),
             uri: `apap://agreements/${a.id}`,
             ...CACHE_HINTS.agreementList,
         })),
