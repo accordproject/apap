@@ -1,4 +1,4 @@
-import { eq, or, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
+import { eq, or, asc, SQL, SQLWrapper, count, inArray } from 'drizzle-orm';
 import AdmZip from 'adm-zip';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import { Agreement, Template } from '../db/schema';
@@ -266,17 +266,16 @@ export function assertTemplateContentImmutable(existing: TemplateRow, updates: R
  * the agreement resolves by `template` (uri) directly:
  *
  *   Agreement.templateHash = Template.hash   (only when Template.hash is set)
- *   OR Agreement.template = Template.uri
- *
- * Known gap, not closed here: POST /agreements strips a `resource:` prefix
- * from the submitted template URI before *fetching*, but stores the
- * caller's raw, unstripped string in `Agreement.template`. A template
- * referenced that way won't uri-match here even though it's the same
- * template logically — a pre-existing inconsistency in the URI handling,
- * not introduced by this guard.
+ *   OR Agreement.template = Template.uri, bare or as the
+ *      `resource:...Template#<uri>` relationship (plain or percent-encoded)
  */
 export async function assertTemplateNotInUse(existing: TemplateRow, db: Database): Promise<void> {
-    const uriCondition = eq(Agreement.template, existing.uri);
+    const relationship = 'resource:org.accordproject.protocol@1.0.0.Template#';
+    const uriCondition = inArray(Agreement.template, [
+        existing.uri,
+        `${relationship}${existing.uri}`,
+        `${relationship}${encodeURIComponent(existing.uri)}`,
+    ]);
     const whereClause = existing.hash
         ? or(uriCondition, eq(Agreement.templateHash, existing.hash))
         : uriCondition;

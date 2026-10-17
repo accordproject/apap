@@ -483,6 +483,22 @@ describe('templateService', () => {
             await expect(assertTemplateNotInUse(rowWithHash, db)).rejects.toThrow(TemplateInUseError);
         });
 
+        it('matches agreements that reference the template as a resource: relationship', async () => {
+            const { PgDialect } = require('drizzle-orm/pg-core');
+            const dialect = new PgDialect();
+            db._setReturn([]);
+
+            await assertTemplateNotInUse(row, db);
+
+            const compiled = dialect.sqlToQuery(db.where.mock.calls[0][0]);
+            expect(compiled.sql).toContain('"template" in ($1, $2, $3)');
+            expect(compiled.params).toEqual([
+                row.uri,
+                `resource:org.accordproject.protocol@1.0.0.Template#${row.uri}`,
+                `resource:org.accordproject.protocol@1.0.0.Template#${encodeURIComponent(row.uri)}`,
+            ]);
+        });
+
         it('resolves for a hash-less template with no referencing agreement', async () => {
             db._setReturn([]);
             await expect(assertTemplateNotInUse(row, db)).resolves.toBeUndefined();
