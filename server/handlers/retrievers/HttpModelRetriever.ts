@@ -21,8 +21,11 @@ export class HttpModelRetriever implements IModelRetriever {
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
         try {
-            // codeql[js/request-forgery] False Positive: Hostname is strictly validated against an allowlist in assertAllowedUrl
-            const response = await fetch(finalUrl, {
+            // SSRF guard: assertAllowedUrl validates scheme (https-only), port (443-only),
+            // host (explicit allowlist), and userinfo (rejected) before this fetch.
+            // CodeQL alert dismissed as false positive — do not remove assertAllowedUrl,
+            // add redirect following, or expand the allowlist without re-reviewing the security posture.
+            const response = await fetch(`https://${host}${pathname}${search}`, {
                 headers,
                 signal: controller.signal,
                 redirect: 'error'
