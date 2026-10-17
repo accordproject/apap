@@ -4,6 +4,7 @@ import type { Database } from '../db/client';
 import { Agreement } from '../db/schema';
 import { AgreementNotFoundError } from './errors';
 import { convertAgreement } from './agreementService';
+import { createPublicPolicyContext } from './policy';
 
 // Statuses under which `Agreement.data` — what /agreements/:id/terms
 // renders from — is guaranteed not to change, per
@@ -148,7 +149,7 @@ export async function getAgreementTerms(
     agreementId: number,
     format: string = DEFAULT_TERMS_FORMAT,
 ): Promise<AgreementTerms> {
-    const body = await convertAgreement(db, agreementId, format);
+    const body = await convertAgreement(createPublicPolicyContext(db), agreementId, format);
     return {
         body,
         atrHash: sha256AtrHash(body),

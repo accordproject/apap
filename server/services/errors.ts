@@ -259,3 +259,18 @@ export class AgreementTriggerError extends ServiceError {
         this.upstreamMessage = upstreamMessage;
     }
 }
+
+/**
+ * Marks a `ServiceError` whose `message` and `details` are authored for API
+ * clients and carry no upstream, template-runtime, or database text. Only
+ * these cross the A2A boundary verbatim; everything else is reduced to a
+ * stable code by the executor's allowlisted serializer. Opting in is a
+ * deliberate per-error-type decision, never the default.
+ */
+export interface ClientSafeError {
+    readonly clientSafe: true;
+}
+
+export function isClientSafeError(error: unknown): error is ServiceError & ClientSafeError {
+    return error instanceof ServiceError && (error as Partial<ClientSafeError>).clientSafe === true;
+}

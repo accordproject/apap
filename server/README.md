@@ -80,6 +80,8 @@ will NOT auto-migrate. Pick one path:
 
 # Running Locally without Docker
 
+Node.js 22.12 or newer is required.
+
 The RI uses a Postgres database for persistence. Set the POSTGRES_URL environment variable to a Postgres connection string. If you are running
 a developer server you can create a file called `.env` in the root of the server directory to store this value.
 
@@ -97,6 +99,38 @@ npm start
 ```
 
 > Note: `npm run dev` will start a dev server that will hot-reload code changes.
+
+## Testing
+
+Run tests through the package script:
+
+```bash
+npm test
+```
+
+On Node.js 22, invoking `npx jest` directly omits the
+`--experimental-vm-modules` runtime flag required by the template-engine
+trigger tests. The package script supplies it and is the supported test entry
+point.
+
+## Agent-to-Agent (A2A)
+
+The server exposes an authenticated A2A Protocol v1.0 JSON-RPC endpoint at
+`POST /a2a` and a public discovery card at
+`GET /.well-known/agent-card.json`. See [docs/a2a.md](docs/a2a.md) for request
+examples, supported skills, and configuration, and [docs/auth.md](docs/auth.md)
+for the reference JWT adapter's security posture. Existing deployments should
+also read the [A2A release notes](docs/a2a-release-notes.md) before upgrading.
+
+To start PostgreSQL, initialize and build the server, run A2A smoke tests, and
+keep the development server running:
+
+```bash
+npm run a2a:dev
+```
+
+The script uses only the local Compose database and preserves an existing
+`.env`. Run `npm run a2a:dev -- --help` for its optional flags.
 
 # Creating Database Schema
 
