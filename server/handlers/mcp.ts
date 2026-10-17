@@ -1,19 +1,19 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import {
     McpServer,
     ResourceTemplate,
-    isInitializeRequest,
     ProtocolError,
     INTERNAL_ERROR,
     INVALID_PARAMS,
+    InMemoryServerEventBus,
+    createMcpHandler,
     type CallToolResult,
     type ReadResourceResult,
 } from '@modelcontextprotocol/server';
-import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
+import { toNodeHandler } from '@modelcontextprotocol/node';
 import { z } from 'zod';
-import * as crypto from "crypto";
-import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, MODEL, Template } from '../db/schema';
+import { setNotifier } from '../services/notify';
 import {
     ServiceError,
     TemplateNotFoundError,
@@ -295,8 +295,30 @@ export const getServer = (db: Database) => {
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
-    }, { capabilities: { logging: {} }, instructions: SERVER_INSTRUCTIONS });
+    }, {
+        capabilities: {
+            logging: {},
+            // SEP-2575 subscriptions/listen is routed natively by createMcpHandler
+            // against the shared bus. `listChanged` is intentionally omitted:
+            // services fire `resourceUpdated(uri)` on single-row writes but no
+            // caller currently emits `resourcesChanged()` list-level fan-out,
+            // and advertising a capability the handler never serves is the same
+            // kind of wire-shape dishonesty that killed #224. Add `listChanged`
+            // back the day a service wires `getNotifier().resourcesChanged()`.
+            resources: { subscribe: true },
+        },
+        instructions: SERVER_INSTRUCTIONS,
+    });
 
+    // CONTRIBUTOR NOTE: resources registered below are subscribable
+    // (`capabilities.resources.subscribe: true`). If a resource is mutable,
+    // the owning service MUST call `getNotifier().resourceUpdated(uri)` on
+    // every successful write so open `subscriptions/listen` clients are
+    // notified. See `services/templateService.ts` and
+    // `services/agreementService.ts` for the pattern and the SECURITY
+    // contract. The protocol-schema resource below is immutable per deploy
+    // and therefore does not emit updates.
+    //
     // register the Concerto protocol model as a readable resource so a
     // client (or any LLM behind it) can resolve `$class` discriminators to
     // type definitions without external lookup.
@@ -570,157 +592,62 @@ Refer to the agreement's template model to determine which fields are required o
 };
 
 
-// Exported for testing purposes.
-// SDK 2.0 dropped `SSEServerTransport`; the map now only holds Streamable HTTP
-// transports (single-type record, no union).
-export const transports: Record<string, NodeStreamableHTTPServerTransport> = {};
-
-export const sessionLastActivity: Record<string, number> = {};
-
-const parseEnvMs = (val: string | undefined, defaultValue: number): number => {
-    if (val === undefined || val === '') return defaultValue;
-    const parsed = parseInt(val, 10);
-    return isNaN(parsed) ? defaultValue : parsed;
-};
-
-const SESSION_TIMEOUT_MS = parseEnvMs(process.env.SESSION_TIMEOUT_MS, 30 * 60 * 1000); // 30 minutes
-const CLEANUP_INTERVAL_MS = parseEnvMs(process.env.CLEANUP_INTERVAL_MS, 5 * 60 * 1000); // 5 minutes
-
-export let sessionCleanupInterval: NodeJS.Timeout | undefined;
-
-/**
- * Starts the periodic cleanup of idle sessions.
- * Prevents unbounded memory growth when clients
- * disconnect uncleanly without triggering onclose.
- */
-export function startSessionCleanup(): void {
-    if (sessionCleanupInterval) {
-        clearInterval(sessionCleanupInterval);
-    }
-    sessionCleanupInterval = setInterval(() => {
-        const now = Date.now();
-        for (const sessionId of Object.keys(transports)) {
-            const lastActivity = sessionLastActivity[sessionId];
-            if (lastActivity &&
-                now - lastActivity > SESSION_TIMEOUT_MS) {
-                console.log({
-                    type: 'session_cleanup',
-                    sessionId,
-                    idleMs: now - lastActivity,
-                    reason: 'idle_timeout'
-                });
-                const transport = transports[sessionId];
-                if (transport) {
-                    try {
-                        transport.close?.();
-                    } catch (err) {
-                        console.error({ type: 'transport_close_error', sessionId, error: err instanceof Error ? err.message : String(err) });
-                    }
-                }
-                delete transports[sessionId];
-                delete sessionLastActivity[sessionId];
-            }
-        }
-    }, CLEANUP_INTERVAL_MS);
-
-    // Prevent interval from blocking process exit
-    sessionCleanupInterval.unref();
-}
-
 //=============================================================================
-// STREAMABLE HTTP TRANSPORT (PROTOCOL VERSION 2025-03-26)
+// SEP-2575 subscriptions/listen wiring (closes #232)
 //
-// SSE transport (`GET /sse` + `POST /messages`) was removed alongside the
-// SDK 1.x -> 2.x migration: `@modelcontextprotocol/server@2.0.0` no longer
-// exports `SSEServerTransport`. Only Streamable HTTP remains.
+// `createMcpHandler` owns the modern (2026-07-28) MCP HTTP surface:
+// JSON-RPC dispatch, per-session lifecycle, and native `subscriptions/listen`
+// routing against the shared `InMemoryServerEventBus`. Services call
+// `getNotifier()` to publish `notifications/resources/updated` events; the
+// handler fans them out to each open subscription that opted in.
+//
+// Per-session subscription cap of 100 (`maxSubscriptions`) returns the SDK's
+// `-32603 Subscription limit reached` error in-band before the ack.
+// Pre-initialize `subscriptions/listen` is rejected by the SDK with
+// `INVALID_REQUEST`, not indexed under literal `"undefined"`.
+//
+// `legacy: 'stateless'` keeps 2025-era clients working: each legacy request is
+// answered by a fresh factory instance over a streamable HTTP transport with
+// `sessionIdGenerator: undefined`. GET and DELETE legacy session ops answer
+// `405 Method not allowed`. The per-session transport dict + custom
+// `InMemoryEventStore` the pre-#232 branch carried are retired in this change.
 //=============================================================================
 
-const router = express.Router();
+const SUBSCRIPTION_CAP_PER_SESSION = 100;
 
 /**
- * @param req The incoming Express request for the Streamable HTTP MCP endpoint.
- * @param res The Express response used to return JSON-RPC output.
- * @return Resolves after the request has been processed or an error response has been written.
- * @details Handles all `/mcp` traffic for the Streamable HTTP transport. The handler
- * reuses an existing session transport when a valid `mcp-session-id` is supplied, creates
- * a new transport during MCP initialization requests, and rejects invalid session usage.
+ * Build the Express router that owns `/mcp`. Called once at startup from
+ * `index.ts` with the shared `Database` instance; the handler constructs a
+ * fresh `McpServer` per request via the factory, so `getServer(db)` runs on
+ * each inbound call rather than at module load.
+ *
+ * Side effect: installs the handler's publish-side notifier on the services
+ * module so write paths can emit `notifications/resources/updated` on the
+ * shared bus without importing from `handlers/`. See `services/notify.ts`.
  */
-router.all('/mcp', async (req: Request, res: Response) => {
-    // Structured log without PII
-    console.log({ type: 'mcp_request', method: req.method, path: '/mcp' });
+export function createMcpRouter(db: Database): express.Router {
+    const bus = new InMemoryServerEventBus((err: Error) => {
+        console.error({ type: 'mcp_event_bus_listener_error', error: err.message });
+    });
 
-    try {
-        // Check for existing session ID
-        const sessionId = req.headers['mcp-session-id'] as string | undefined;
-        let transport: NodeStreamableHTTPServerTransport;
+    // `legacy` defaults to `'stateless'`; omitting it keeps 2025-era clients
+    // served by a fresh factory per request without re-stating the SDK default.
+    const handler = createMcpHandler(
+        () => getServer(db),
+        {
+            bus,
+            maxSubscriptions: SUBSCRIPTION_CAP_PER_SESSION,
+        },
+    );
 
-        if (sessionId && transports[sessionId]) {
-            // Reuse existing transport (map is now single-type: only Streamable HTTP).
-            transport = transports[sessionId];
-            // Update last activity on every request
-            sessionLastActivity[sessionId] = Date.now();
-        } else if (!sessionId && req.method === 'POST' && isInitializeRequest(req.body)) {
-            const eventStore = new InMemoryEventStore();
-            transport = new NodeStreamableHTTPServerTransport({
-                sessionIdGenerator: () => (crypto as any).randomUUID(),
-                eventStore, // Enable resumability
-                onsessioninitialized: (sessionId) => {
-                    // Store the transport by session ID when session is initialized
-                    console.log({ type: 'streamable_http_session_initialized', sessionId });
-                    transports[sessionId] = transport;
-                    sessionLastActivity[sessionId] = Date.now();
-                    res.setHeader('mcp-session-id', sessionId);
-                }
-            });
+    setNotifier(handler.notify);
 
-            // Set up onclose handler to clean up transport when closed
-            transport.onclose = () => {
-                const sid = transport.sessionId;
-                if (sid) {
-                    delete transports[sid];
-                    delete sessionLastActivity[sid];
-                    console.log({
-                        type: 'session_closed',
-                        sessionId: sid,
-                        reason: 'transport_onclose'
-                    });
-                }
-            };
-
-            // Connect the transport to the MCP server
-            const server = getServer(res.locals.db);
-            await server.connect(transport);
-            console.log({ type: 'connected_server_to_transport' });
-        } else {
-            console.log({ type: 'invalid_mcp_request' });
-            // Invalid request - no session ID or not initialization request
-            res.status(400).json({
-                jsonrpc: '2.0',
-                error: {
-                    code: -32000,
-                    message: 'Bad Request: No valid session ID provided',
-                },
-                id: null,
-            });
-            return;
-        }
-
-        // Handle the request with the transport
-        await transport.handleRequest(req, res, req.body);
-        console.log({ type: 'transport_handled_request' });
-    } catch (error) {
-        console.error({ type: 'mcp_request_failed', error: error instanceof Error ? error.message : String(error) });
-        if (!res.headersSent) {
-            res.status(500).json({
-                jsonrpc: '2.0',
-                error: {
-                    code: -32603,
-                    message: 'Internal server error',
-                },
-                id: null,
-            });
-        }
-    }
-});
-
-export default router;
+    const router = express.Router();
+    // `toNodeHandler` adapts the SDK's Fetch-shaped `McpHttpHandler` to
+    // Express `(req, res)`. The third argument forwards the already-parsed
+    // body: `index.ts` mounts `express.json()` ahead of this router, so the
+    // Node stream is drained by the time we reach here. Omitting
+    // `req.body` hangs the request because the SDK re-reads a consumed stream.
+    router.all('/mcp', (req, res) => toNodeHandler(handler)(req, res, req.body));
+    return router;
+}
