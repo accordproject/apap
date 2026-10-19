@@ -77,6 +77,9 @@ export const SERVER_INSTRUCTIONS = [
     'discriminator (e.g. `org.accordproject.protocol@1.0.0.Template`) identifying',
     'its type and inheritance. The canonical Concerto model is available at',
     '`apap://schema/protocol.cto` and can be read for type definitions.',
+    'Note: Agreement collection resources (including paged `apap://agreements`) emit',
+    'outer Agreement model representations whose agreement fields conform to the',
+    'Concerto format, instead of exposing only the flattened inner agreement data.',
 ].join(' ');
 
 // The Concerto model is embedded in db/schema.ts as a base64 constant at
@@ -84,6 +87,101 @@ export const SERVER_INSTRUCTIONS = [
 // filesystem access is needed at runtime and no build-time file copy is
 // required to serve the `apap://schema/protocol.cto` resource.
 export const PROTOCOL_CTO = Buffer.from(MODEL, 'base64').toString('utf-8');
+
+type AgreementRow = typeof Agreement.$inferSelect;
+type TemplateRow = typeof Template.$inferSelect;
+
+/**
+ * Converts a JSON value into a Concerto JSON scalar (which extends String).
+ * If the value is already a string, it is returned directly to avoid double-encoding.
+ * Otherwise, it is stringified with JSON.stringify.
+ */
+export function toJsonScalar(value: unknown): string {
+    if (typeof value === 'string') {
+        return value;
+    }
+    return JSON.stringify(value ?? {});
+}
+
+/**
+ * Converts an Agreement database row into a model-valid Concerto Agreement representation.
+ * Omits database-only fields (`id`, `templateHash`) and omits null/undefined optional fields.
+ * Encodes `data` (and optional `state`) as Concerto JSON scalars (String).
+ */
+export function agreementToConcerto(row: AgreementRow): Record<string, unknown> {
+    const payload: Record<string, unknown> = {
+        $class: 'org.accordproject.protocol@1.0.0.Agreement',
+        $identifier: row.uri,
+        uri: row.uri,
+        data: toJsonScalar(row.data),
+        template: row.template,
+        agreementStatus: row.agreementStatus,
+    };
+
+    if (row.state !== null && row.state !== undefined) {
+        payload.state = toJsonScalar(row.state);
+    }
+    if (row.agreementParties !== null && row.agreementParties !== undefined) {
+        payload.agreementParties = row.agreementParties;
+    }
+    if (row.signatures !== null && row.signatures !== undefined) {
+        payload.signatures = row.signatures;
+    }
+    if (row.historyEntries !== null && row.historyEntries !== undefined) {
+        payload.historyEntries = row.historyEntries;
+    }
+    if (row.attachments !== null && row.attachments !== undefined) {
+        payload.attachments = row.attachments;
+    }
+    if (row.references !== null && row.references !== undefined) {
+        payload.references = row.references;
+    }
+    if (row.metadata !== null && row.metadata !== undefined) {
+        payload.metadata = row.metadata;
+    }
+
+    return payload;
+}
+
+/**
+ * Converts a Template database row into a model-valid Concerto Template representation.
+ * Omits database-only fields (`id`, `hash`) and omits null/undefined optional fields.
+ * Encodes optional `sampleRequest` as a Concerto JSON scalar (String).
+ */
+export function templateToConcerto(row: TemplateRow): Record<string, unknown> {
+    const payload: Record<string, unknown> = {
+        $class: 'org.accordproject.protocol@1.0.0.Template',
+        $identifier: row.uri,
+        uri: row.uri,
+        author: row.author,
+        version: row.version,
+        license: row.license,
+        metadata: row.metadata,
+        templateModel: row.templateModel,
+        text: row.text,
+    };
+
+    if (row.displayName !== null && row.displayName !== undefined) {
+        payload.displayName = row.displayName;
+    }
+    if (row.description !== null && row.description !== undefined) {
+        payload.description = row.description;
+    }
+    if (row.keywords !== null && row.keywords !== undefined) {
+        payload.keywords = row.keywords;
+    }
+    if (row.logo !== null && row.logo !== undefined) {
+        payload.logo = row.logo;
+    }
+    if (row.logic !== null && row.logic !== undefined) {
+        payload.logic = row.logic;
+    }
+    if (row.sampleRequest !== null && row.sampleRequest !== undefined) {
+        payload.sampleRequest = toJsonScalar(row.sampleRequest);
+    }
+
+    return payload;
+}
 
 /**
  * @param url The APAP REST endpoint to call.
@@ -196,7 +294,7 @@ async function getAgreement(context: PolicyContext, uri: string, variables: { ag
             contents: [{
                 uri: url.toString(),
                 mimeType: "application/json",
-                text: JSON.stringify(agreement),
+                text: JSON.stringify(agreementToConcerto(agreement)),
                 ...CACHE_HINTS.agreementItem,
             }]
         };
@@ -244,7 +342,7 @@ async function getTemplates(context: PolicyContext, uri: URL, opts: { limit?: nu
         contents: templates.map((t) => ({
             uri: `apap://templates/${t.id}`,
             mimeType: "application/json",
-            text: JSON.stringify(t),
+            text: JSON.stringify(templateToConcerto(t)),
             ...CACHE_HINTS.templateList,
         })),
     };
@@ -279,7 +377,7 @@ async function getAgreements(context: PolicyContext, uri: URL, opts: { limit?: n
         // inside the `text` property as JSON, which is where MCP clients read it from.
         contents: agreements.map((a) => ({
             mimeType: "application/json",
-            text: JSON.stringify({ ...(a.data as Record<string, unknown> ?? {}), $identifier: a.id }, null, 2),
+            text: JSON.stringify(agreementToConcerto(a)),
             uri: `apap://agreements/${a.id}`,
             ...CACHE_HINTS.agreementList,
         })),
@@ -422,7 +520,7 @@ export const getServer = (context: PolicyContext) => {
                     contents: [{
                         uri: uri.toString(),
                         mimeType: "application/json",
-                        text: JSON.stringify(template),
+                        text: JSON.stringify(templateToConcerto(template)),
                         ...CACHE_HINTS.templateItem,
                     }]
                 };
@@ -525,7 +623,10 @@ Refer to the agreement's template model to determine which fields are required o
             try {
                 const template = await getTemplateById(context, id);
                 return {
-                    content: [{ type: "text", text: JSON.stringify(template) }]
+                    content: [{
+                        type: "text",
+                        text: JSON.stringify(templateToConcerto(template))
+                    }]
                 };
             } catch (err) {
                 if (err instanceof ServiceError) {
@@ -557,7 +658,10 @@ Refer to the agreement's template model to determine which fields are required o
             try {
                 const agreement = await getAgreementById(context, id);
                 return {
-                    content: [{ type: "text", text: JSON.stringify(agreement) }]
+                    content: [{
+                        type: "text",
+                        text: JSON.stringify(agreementToConcerto(agreement))
+                    }]
                 };
             } catch (err) {
                 if (err instanceof ServiceError) {
