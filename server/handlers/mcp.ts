@@ -30,7 +30,8 @@ import {
     triggerAgreement as triggerAgreementService,
 } from '../services/agreementService';
 import { InvalidPayloadError } from '../services/errors';
-import type { Database } from '../db/client';
+import type { PolicyContext } from '../services/policy';
+import { createLegacyPolicyContext } from '../services/policy';
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
@@ -179,7 +180,7 @@ export function serviceErrorToResourceError(error: ServiceError): ProtocolError 
  * @details Resolves a single agreement by calling the local REST API and converts
  * the REST response into the `contents` structure expected by the MCP SDK.
  */
-async function getAgreement(db: Database, uri: string, variables: { agreementId: string }) {
+async function getAgreement(context: PolicyContext, uri: string, variables: { agreementId: string }) {
     const { agreementId } = variables;
     console.log({ type: 'fetching_agreement', agreementId });
     const url = new URL(uri);
@@ -189,7 +190,7 @@ async function getAgreement(db: Database, uri: string, variables: { agreementId:
         throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
     }
     try {
-        const agreement = await getAgreementById(db, id);
+        const agreement = await getAgreementById(context, id);
         console.log({ type: 'fetched_agreement_success', agreementId });
         return {
             contents: [{
@@ -232,9 +233,9 @@ async function getAgreement(db: Database, uri: string, variables: { agreementId:
 // fetch `limit + 1` inside the service and drop the peek, at the cost of one
 // extra row's bytes per read. Deferred here to match Satvik's "no extra query"
 // scoping in #244; upgrade if the boundary case surfaces in real traffic.
-async function getTemplates(db: Database, uri: URL, opts: { limit?: number; offset?: number } = {}) {
+async function getTemplates(context: PolicyContext, uri: URL, opts: { limit?: number; offset?: number } = {}) {
     console.log({ type: 'get_templates_requested', uri: uri.toString(), ...opts });
-    const templates = await listTemplates(db, opts);
+    const templates = await listTemplates(context, opts);
     const effectiveLimit = Math.min(100, Math.max(1, opts.limit ?? 100));
     const hasMore = templates.length === effectiveLimit;
     console.log({ type: 'fetched_templates_success', count: templates.length, hasMore });
@@ -255,9 +256,9 @@ async function getTemplates(db: Database, uri: URL, opts: { limit?: number; offs
  * @details Loads the agreement collection from the local REST API and serializes
  * each item into the MCP resource format expected by agreement resources.
  */
-async function getAgreements(db: Database, uri: URL, opts: { limit?: number; offset?: number } = {}) {
+async function getAgreements(context: PolicyContext, uri: URL, opts: { limit?: number; offset?: number } = {}) {
     console.log({ type: 'get_agreements_requested', uri: uri.toString(), ...opts });
-    const agreements = await listAgreements(db, opts);
+    const agreements = await listAgreements(context, opts);
     // `_meta.hasMore` closes #244; see getTemplates above for the heuristic
     // and its upgrade path.
     const effectiveLimit = Math.min(100, Math.max(1, opts.limit ?? 100));
@@ -291,7 +292,8 @@ async function getAgreements(db: Database, uri: URL, opts: { limit?: number; off
  * @details Creates a new MCP server and registers the template and agreement
  * resources, resource templates, and tool handlers currently exposed by APAP.
  */
-export const getServer = (db: Database) => {
+export const getServer = (context: PolicyContext) => {
+    const { db } = context;
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
@@ -328,7 +330,7 @@ export const getServer = (db: Database) => {
         'templates',
         "apap://templates",
         { mimeType: "application/json" },
-        (uri: URL) => getTemplates(db, uri),
+        (uri: URL) => getTemplates(context, uri),
     );
 
     // register the agreements (see #217 dispatch-order note on templates above).
@@ -336,7 +338,7 @@ export const getServer = (db: Database) => {
         'agreements',
         "apap://agreements",
         { mimeType: "application/json" },
-        (uri: URL) => getAgreements(db, uri),
+        (uri: URL) => getAgreements(context, uri),
     );
 
     // Paged variants for #217: RFC 6570 form-style query expansion
@@ -357,7 +359,7 @@ export const getServer = (db: Database) => {
         new ResourceTemplate('apap://templates{?limit,offset}', { list: undefined }),
         { title: 'Templates (paged)', mimeType: 'application/json' },
         (uri: URL, variables: Record<string, string | string[]>) =>
-            getTemplates(db, uri, pageOpts(variables)),
+            getTemplates(context, uri, pageOpts(variables)),
     );
 
     server.registerResource(
@@ -365,7 +367,7 @@ export const getServer = (db: Database) => {
         new ResourceTemplate('apap://agreements{?limit,offset}', { list: undefined }),
         { title: 'Agreements (paged)', mimeType: 'application/json' },
         (uri: URL, variables: Record<string, string | string[]>) =>
-            getAgreements(db, uri, pageOpts(variables)),
+            getAgreements(context, uri, pageOpts(variables)),
     );
 
     // register resource template for agreements
@@ -373,7 +375,7 @@ export const getServer = (db: Database) => {
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
             list: async () => {
-                const agreements = await listAgreements(db);
+                const agreements = await listAgreements(context);
                 return {
                     resources: agreements.map((a) => ({
                         name: `agreement-${a.id}`,
@@ -386,7 +388,7 @@ export const getServer = (db: Database) => {
         { mimeType: "application/json" },
         async (uri: URL, variables: Record<string, string | string[]>) => {
             const agreementId = String(variables.agreementId);
-            return await getAgreement(db, uri.toString(), { agreementId });
+            return await getAgreement(context, uri.toString(), { agreementId });
         }
     );
 
@@ -395,7 +397,7 @@ export const getServer = (db: Database) => {
         "template",
         new ResourceTemplate("apap://templates/{templateId}", {
             list: async () => {
-                const templates = await listTemplates(db);
+                const templates = await listTemplates(context);
                 return {
                     resources: templates.map((t) => ({
                         name: `template-${t.id}`,
@@ -415,7 +417,7 @@ export const getServer = (db: Database) => {
                 throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
             }
             try {
-                const template = await getTemplateById(db, id);
+                const template = await getTemplateById(context, id);
                 return {
                     contents: [{
                         uri: uri.toString(),
@@ -453,7 +455,7 @@ export const getServer = (db: Database) => {
                 return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
             }
             try {
-                const text = await convertAgreement(db, id, format);
+                const text = await convertAgreement(context, id, format);
                 return {
                     content: [{ type: "text", text }]
                 };
@@ -489,7 +491,7 @@ Refer to the agreement's template model to determine which fields are required o
                 );
             }
             try {
-                const result = await triggerAgreementService(db, id, parsedPayload);
+                const result = await triggerAgreementService(context, id, parsedPayload);
                 return {
                     content: [{ type: "text", text: JSON.stringify(result) }]
                 };
@@ -521,7 +523,7 @@ Refer to the agreement's template model to determine which fields are required o
                 return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
             }
             try {
-                const template = await getTemplateById(db, id);
+                const template = await getTemplateById(context, id);
                 return {
                     content: [{ type: "text", text: JSON.stringify(template) }]
                 };
@@ -553,7 +555,7 @@ Refer to the agreement's template model to determine which fields are required o
                 return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
             }
             try {
-                const agreement = await getAgreementById(db, id);
+                const agreement = await getAgreementById(context, id);
                 return {
                     content: [{ type: "text", text: JSON.stringify(agreement) }]
                 };
@@ -688,7 +690,8 @@ router.all('/mcp', async (req: Request, res: Response) => {
             };
 
             // Connect the transport to the MCP server
-            const server = getServer(res.locals.db);
+            const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
+            const server = getServer(context);
             await server.connect(transport);
             console.log({ type: 'connected_server_to_transport' });
         } else {

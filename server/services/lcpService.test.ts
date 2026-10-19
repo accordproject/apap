@@ -10,6 +10,7 @@ import {
     buildServerLegalContext,
 } from './lcpService';
 import { AgreementNotFoundError } from './errors';
+import { DevelopmentPrincipal } from '../auth/types';
 
 jest.mock('./agreementService', () => ({
     ...(jest.requireActual('./agreementService') as object),
@@ -137,14 +138,22 @@ describe('lcpService', () => {
             expect(result.body).toBe('# Terms\n\nSome text.');
             expect(result.atrHash).toBe(sha256AtrHash('# Terms\n\nSome text.'));
             expect(result.contentType).toBe('text/markdown; charset=utf-8');
-            expect(mockedConvertAgreement).toHaveBeenCalledWith(db, 1, 'markdown');
+            expect(mockedConvertAgreement).toHaveBeenCalledWith(
+                { db, principal: expect.any(DevelopmentPrincipal) },
+                1,
+                'markdown',
+            );
         });
 
         it('defaults the format to markdown', async () => {
             mockedConvertAgreement.mockResolvedValue('body');
             const db = createMockDb();
             await getAgreementTerms(db, 5);
-            expect(mockedConvertAgreement).toHaveBeenCalledWith(db, 5, 'markdown');
+            expect(mockedConvertAgreement).toHaveBeenCalledWith(
+                { db, principal: expect.any(DevelopmentPrincipal) },
+                5,
+                'markdown',
+            );
         });
 
         it('propagates errors from convertAgreement (e.g. AgreementNotFoundError)', async () => {
