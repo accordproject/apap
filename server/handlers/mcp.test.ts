@@ -30,6 +30,7 @@ import mcpRouter, {
     PROTOCOL_CTO,
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
+    transports,
 } from './mcp';
 import { ProtocolError, ProtocolErrorCode, InMemoryTransport } from '@modelcontextprotocol/server';
 import {
@@ -442,6 +443,66 @@ describe('MCP Handler', () => {
             });
         expect(res.status).toBe(200);
         expect(res.headers['mcp-session-id']).toBe('test-session-123');
+    });
+
+    it('reads a template resource using the session created during initialization', async () => {
+        const template = { id: 1, uri: 'test://template/1', displayName: 'Test template' };
+        mockDb._setReturn([template]);
+
+        const initializeResponse = await request(app)
+            .post('/mcp')
+            .set('Accept', 'application/json, text/event-stream')
+            .send({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'initialize',
+                params: {
+                    protocolVersion: '2025-03-26',
+                    capabilities: {},
+                    clientInfo: { name: 'test', version: '1.0' }
+                }
+            })
+            .expect(200);
+
+        const sessionId = initializeResponse.headers['mcp-session-id'];
+        expect(sessionId).toBe('test-session-123');
+
+        try {
+            await request(app)
+                .post('/mcp')
+                .set('mcp-session-id', sessionId)
+                .set('Accept', 'application/json, text/event-stream')
+                .send({ jsonrpc: '2.0', method: 'notifications/initialized' })
+                .expect(202);
+
+            const readResponse = await request(app)
+                .post('/mcp')
+                .set('mcp-session-id', sessionId)
+                .set('Accept', 'application/json, text/event-stream')
+                .send({
+                    jsonrpc: '2.0',
+                    id: 2,
+                    method: 'resources/read',
+                    params: { uri: 'apap://templates/1' }
+                })
+                .expect(200);
+
+            const responseDataLine = readResponse.text.split(/\r?\n/).find((line) => line.startsWith('data: '));
+            expect(responseDataLine).toBeDefined();
+            const responseMessage = JSON.parse(responseDataLine!.slice('data: '.length));
+
+            expect(responseMessage.result.contents).toEqual([
+                expect.objectContaining({
+                    uri: 'apap://templates/1',
+                    mimeType: 'application/json',
+                    text: JSON.stringify(template)
+                })
+            ]);
+        } finally {
+            if (sessionId) {
+                await transports[sessionId]?.close();
+            }
+        }
     });
 
     // =========================================================================
