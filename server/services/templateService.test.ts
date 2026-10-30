@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 import AdmZip from 'adm-zip';
+import { DrizzleQueryError } from 'drizzle-orm';
 import {
     listTemplates,
     listTemplatesPaged,
@@ -21,6 +22,7 @@ import {
     TemplateInUseError,
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
+    ServiceError,
 } from './errors';
 import { DevelopmentPrincipal } from '../auth/types';
 import { createPolicyContext } from './policy';
@@ -253,12 +255,34 @@ describe('templateService', () => {
             expect(db.insert).toHaveBeenCalled();
         });
 
-        it('throws TemplateDuplicateError on unique constraint violation', async () => {
-            db.returning.mockRejectedValue({ code: '23505' });
+        it.each([
+            ['bare PostgreSQL error', { code: '23505' }],
+            ['Drizzle-wrapped PostgreSQL error', new DrizzleQueryError('private SQL', ['private parameter'], Object.assign(new Error('duplicate'), { code: '23505' }))],
+        ] as const)('throws TemplateDuplicateError on unique constraint violation: %s', async (_label, failure) => {
+            db.returning.mockRejectedValue(failure);
 
-            await expect(
-                createTemplate(context(db), lateDeliveryTemplate),
-            ).rejects.toThrow(TemplateDuplicateError);
+            const duplicate = await createTemplate(context(db), lateDeliveryTemplate).catch((error: unknown) => error);
+            expect(duplicate).toBeInstanceOf(TemplateDuplicateError);
+            expect((duplicate as { cause: unknown }).cause).toBe(failure);
+            expect((duplicate as TemplateDuplicateError).toJSON()).toEqual({
+                error: {
+                    code: 'TEMPLATE_DUPLICATE',
+                    message: `Template with URI already exists: ${lateDeliveryTemplate.uri}`,
+                    details: { uri: lateDeliveryTemplate.uri },
+                },
+            });
+        });
+
+        it.each([
+            ['bare foreign-key violation', Object.assign(new Error('foreign key'), { code: '23503' })],
+            ['wrapped foreign-key violation', new DrizzleQueryError('query', [], Object.assign(new Error('foreign key'), { code: '23503' }))],
+            ['arbitrary nested unique code', Object.assign(new Error('unrelated'), { cause: { code: '23505' } })],
+            ['ServiceError with a nested unique code', Object.assign(new ServiceError('DOMAIN_ERROR', 422, 'domain rejection'), { cause: { code: '23505' } })],
+            ['ServiceError whose own code is 23505', new ServiceError('23505', 418, 'typed code')],
+            ['existing TemplateDuplicateError', new TemplateDuplicateError('urn:existing')],
+        ] as const)('re-throws unrelated and typed failures by identity: %s', async (_label, failure) => {
+            db.returning.mockRejectedValue(failure);
+            await expect(createTemplate(context(db), lateDeliveryTemplate)).rejects.toBe(failure);
         });
 
         it('re-throws non-unique-violation errors as-is', async () => {
@@ -335,7 +359,10 @@ describe('templateService', () => {
             expect(db.select).not.toHaveBeenCalled();
         });
 
-        it('falls back to the existing row when a concurrent upload wins the insert race', async () => {
+        it.each([
+            ['bare PostgreSQL error', { code: '23505' }],
+            ['Drizzle-wrapped PostgreSQL error', new DrizzleQueryError('query', [], Object.assign(new Error('duplicate'), { code: '23505' }))],
+        ] as const)('falls back to the existing row when a concurrent upload wins the insert race: %s', async (_label, failure) => {
             const archive = buildArchive();
             const existingRow = toTemplateRow(lateDeliveryTemplate, 7);
 
@@ -349,12 +376,30 @@ describe('templateService', () => {
                 const value = selectCalls === 1 ? [] : [existingRow];
                 return Promise.resolve(value).then(onFulfilled, onRejected);
             };
-            db.returning = jest.fn(() => Promise.reject({ code: '23505' }));
+            db.returning = jest.fn(() => Promise.reject(failure));
 
             const result = await createTemplateFromArchive(context(db), archive);
 
             expect(result).toEqual(existingRow);
             expect(selectCalls).toBe(2);
+        });
+
+        it('propagates the typed duplicate if archive recovery finds no matching hash', async () => {
+            const failure = new DrizzleQueryError('query', [], Object.assign(new Error('duplicate'), { code: '23505' }));
+            db._setReturn([]);
+            db.returning.mockRejectedValue(failure);
+            await expect(createTemplateFromArchive(context(db), buildArchive())).rejects.toMatchObject({
+                code: 'TEMPLATE_DUPLICATE', statusCode: 409, cause: failure,
+            });
+            expect(db.select).toHaveBeenCalledTimes(2);
+        });
+
+        it('does not retry unrelated archive insert failures', async () => {
+            const failure = new DrizzleQueryError('query', [], Object.assign(new Error('foreign key'), { code: '23503' }));
+            db._setReturn([]);
+            db.returning.mockRejectedValue(failure);
+            await expect(createTemplateFromArchive(context(db), buildArchive())).rejects.toBe(failure);
+            expect(db.select).toHaveBeenCalledTimes(1);
         });
     });
 

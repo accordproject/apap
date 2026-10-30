@@ -11,6 +11,8 @@ import { count } from 'drizzle-orm';
 // identifiers. Column-name safety is enforced by SAFE_IDENTIFIER_RX below.
 // import { getUserRoles } from '../auth0/client';
 import { asyncHandler } from '../middleware/errorHandler';
+import { isUniqueViolation } from '../db/errors';
+import { ServiceError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
 import { createLegacyPolicyContext } from '../services/policy';
 
@@ -538,10 +540,11 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         .values(req.body)
                         .returning();
                 } catch (error: any) {
-                    if (error?.code === '23505') {
+                    if (!(error instanceof ServiceError) && isUniqueViolation(error)) {
                         const pgError = new Error('Unique constraint violation') as any;
                         pgError.code = '23505';
                         pgError.typeName = typeName;
+                        pgError.cause = error;
                         throw pgError;
                     }
                     throw error;
@@ -690,10 +693,11 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                             .returning();
                     }
                 } catch (error: any) {
-                    if (error?.code === '23505') {
+                    if (!(error instanceof ServiceError) && isUniqueViolation(error)) {
                         const pgError = new Error('Unique constraint violation') as any;
                         pgError.code = '23505';
                         pgError.typeName = typeName;
+                        pgError.cause = error;
                         throw pgError;
                     }
                     throw error;
