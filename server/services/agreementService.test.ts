@@ -237,7 +237,7 @@ describe('agreementService', () => {
             const agreementData = { bar: 1 };
             const agreement = agreementRow(1, {
                 data: agreementData,
-                template: 'resource:org.accordproject.protocol.Template#https://templates.accordproject.org/foo@0.1.0.cta',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#https://templates.accordproject.org/foo@0.1.0.cta',
                 templateHash: null,
             });
             const template = { uri: 'https://templates.accordproject.org/foo@0.1.0.cta' };
