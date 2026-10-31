@@ -83,11 +83,13 @@ describe('Agreements Router - POST /:id/trigger', () => {
             from: jest.fn().mockReturnThis(),
             set: jest.fn().mockReturnThis(),
             where: jest.fn().mockReturnThis(),
+            for: jest.fn().mockReturnThis(),
             limit: jest.fn().mockReturnThis(),
             insert: jest.fn().mockReturnThis(),
             values: jest.fn().mockReturnThis(),
             onConflictDoNothing: jest.fn().mockReturnThis(),
             returning: jest.fn().mockReturnThis(),
+            transaction: jest.fn().mockImplementation(async (callback: any) => callback(mockDb)),
         };
 
         // Add database to locals middleware
@@ -172,9 +174,12 @@ describe('Agreements Router - POST /:id/trigger', () => {
 
             // Mock agreement query result
             mockDb.limit.mockImplementationOnce(() => Promise.resolve([{ ...mockAgreementData }]));
-            
+
             // Mock template query result
             mockDb.limit.mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
+
+            // Mock locked agreement re-read inside SELECT FOR UPDATE transaction
+            mockDb.limit.mockImplementationOnce(() => Promise.resolve([{ ...mockAgreementData }]));
 
             // Mock templateFromDatabase to return our real template
             mockedTemplateBuilder.templateFromDatabase.mockResolvedValue(realApTemplate);
@@ -284,11 +289,16 @@ describe('Agreements Router - POST /:id/trigger', () => {
             mockDb.where.mockReturnValue(mockDb);
             mockDb.limit.mockReturnValue(mockDb);
             
-            // Mock the state response with the state from the first request 
+            // Mock the state response with the state from the first request
             mockDb.limit.mockImplementationOnce(() => Promise.resolve([{
                 ...mockAgreementData, state: response1.body.state
             }]));
             mockDb.limit.mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
+
+            // Mock locked agreement re-read inside SELECT FOR UPDATE transaction
+            mockDb.limit.mockImplementationOnce(() => Promise.resolve([{
+                ...mockAgreementData, state: response1.body.state
+            }]));
 
             const response2 = await request(app)
                 .post('/agreements/1/trigger')
@@ -435,11 +445,13 @@ describe('Agreements Router - POST /:id/trigger', () => {
 
         beforeEach(async () => {
             realApTemplate = await createLateDeliveryTemplate();
-            
+
             // Setup successful agreement and template resolution
             mockDb.limit
                 .mockResolvedValueOnce([mockAgreementData])
-                .mockResolvedValueOnce([mockTemplateData]);
+                .mockResolvedValueOnce([mockTemplateData])
+                // Locked agreement re-read inside SELECT FOR UPDATE transaction
+                .mockResolvedValueOnce([mockAgreementData]);
 
             mockedTemplateBuilder.templateFromDatabase.mockResolvedValue(realApTemplate);
         });
@@ -508,7 +520,9 @@ describe('Agreements Router - POST /:id/trigger', () => {
 
             mockDb.limit
                 .mockResolvedValueOnce([mockAgreementData])
-                .mockResolvedValueOnce([mockTemplateData]);
+                .mockResolvedValueOnce([mockTemplateData])
+                // Locked agreement re-read inside SELECT FOR UPDATE transaction
+                .mockResolvedValueOnce([mockAgreementData]);
 
             const realApTemplate = await createLateDeliveryTemplate();
             mockedTemplateBuilder.templateFromDatabase.mockResolvedValue(realApTemplate);
@@ -526,8 +540,8 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 .send(triggerRequest)
                 .expect(200);
 
-            // Verify database calls
-            expect(mockDb.select).toHaveBeenCalledTimes(2);
+            // Verify database calls (agreement + template in resolveAgreementRuntime, then locked re-read in transaction)
+            expect(mockDb.select).toHaveBeenCalledTimes(3);
             expect(mockDb.from).toHaveBeenCalledWith(Agreement);
             expect(mockDb.from).toHaveBeenCalledWith(Template);
             expect(mockDb.limit).toHaveBeenCalledWith(1);
