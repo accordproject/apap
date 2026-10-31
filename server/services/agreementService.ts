@@ -317,47 +317,47 @@ export async function triggerAgreement(
         });
     }
 
-    // Initialize state if the agreement has never been triggered, then run the
-    // trigger. Both operations are wrapped in the same catch so any runtime
-    // failure surfaces as AgreementTriggerError, which the REST handler maps
-    // back to the legacy `{ isError: true }` shape for backward compatibility.
+    // Wrap init + trigger + state-write in a transaction with a row-level lock.
+    // SELECT FOR UPDATE blocks a concurrent trigger from reading the agreement's
+    // state until this transaction commits, so two racing first-triggers can no
+    // longer both see state == null and both call processor.init().
     //
-    // Concurrency note: two triggers arriving on the same never-initialised
-    // agreement both see `agreement.state == null`, so both will run
-    // `processor.init` and then their own `processor.trigger`, and the
-    // targeted `.set({ state })` at the bottom of this function is last-
-    // write-wins. Inherited from the inline REST behaviour pre-slice-2c and
-    // not made worse here; the correct fix is a row-level lock or optimistic
-    // update at the DB layer and belongs in a separate follow-up. Rare in
-    // practice because a single client rarely fires concurrent triggers on
-    // the same agreement.
+    // Template resolution stays outside the transaction because templates are
+    // immutable once created — no row-level serialisation needed there.
     //
     // TODO (existing, not slice 2b): allow state to be passed in as a parameter.
-    let triggerResult;
-    try {
-        let currentState = agreement.state;
-        if (currentState == null) {
-            const initResult = await processor.init(agreement.data);
-            currentState = initResult.state;
+    return db.transaction(async (tx: any) => {
+        const lockedRows = await tx
+            .select()
+            .from(Agreement)
+            .where(eq(Agreement.id, agreementId))
+            .for('update')
+            .limit(1);
+        if (lockedRows.length === 0) {
+            throw new AgreementNotFoundError(String(agreementId));
         }
-        triggerResult = await processor.trigger(agreement.data, requestBody, currentState);
-    } catch (err) {
-        const reason = err instanceof Error ? err.message : String(err);
-        throw new AgreementTriggerError(String(agreementId), reason);
-    }
+        const lockedAgreement = lockedRows[0];
 
-    // Targeted single-column write: only `state` changes on a trigger. Writing
-    // the whole spread `{ ...agreement, state: triggerResult.state }` back was
-    // (a) unnecessary write surface for every other column and (b) a
-    // concurrent-clobber risk — any column that changed between the read and
-    // this write would get overwritten with the stale in-memory value. Per
-    // @niallroche's review on #216.
-    await db
-        .update(Agreement)
-        .set({ state: triggerResult.state })
-        .where(eq(Agreement.id, agreementId));
+        let triggerResult;
+        try {
+            let currentState = lockedAgreement.state;
+            if (currentState == null) {
+                const initResult = await processor.init(lockedAgreement.data);
+                currentState = initResult.state;
+            }
+            triggerResult = await processor.trigger(lockedAgreement.data, requestBody, currentState);
+        } catch (err) {
+            const reason = err instanceof Error ? err.message : String(err);
+            throw new AgreementTriggerError(String(agreementId), reason);
+        }
 
-    return triggerResult;
+        await tx
+            .update(Agreement)
+            .set({ state: triggerResult.state })
+            .where(eq(Agreement.id, agreementId));
+
+        return triggerResult;
+    });
 }
 
 /**
