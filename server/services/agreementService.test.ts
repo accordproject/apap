@@ -7,6 +7,7 @@ import {
     convertAgreement,
     assertAgreementRecordMutable,
     templateUriFromReference,
+    normalizeAgreementTemplateReference,
 } from './agreementService';
 import {
     AgreementNotFoundError,
@@ -68,6 +69,36 @@ function agreementRow(id: number, overrides: Record<string, unknown> = {}): any 
         ...overrides,
     };
 }
+
+describe('normalizeAgreementTemplateReference', () => {
+    const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+
+    it('percent-encodes a bare ap:// URI, including its fragment, and unwraps back to it', () => {
+        const bare = 'ap://latedeliveryandpenalty@1.0.0#abc123';
+        const stored = normalizeAgreementTemplateReference(bare);
+        expect(stored).toBe(prefix + encodeURIComponent(bare));
+        expect(templateUriFromReference(stored)).toBe(bare);
+    });
+
+    it('percent-encodes a bare https URL and unwraps back to it', () => {
+        const bare = 'https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta';
+        const stored = normalizeAgreementTemplateReference(bare);
+        expect(stored).toBe(prefix + encodeURIComponent(bare));
+        expect(templateUriFromReference(stored)).toBe(bare);
+    });
+
+    it('leaves a resource relationship unchanged, encoded or not', () => {
+        const unencoded = prefix + 'ap://latedeliveryandpenalty@1.0.0#abc123';
+        const encoded = prefix + encodeURIComponent('https://example.com/a.cta');
+        expect(normalizeAgreementTemplateReference(unencoded)).toBe(unencoded);
+        expect(normalizeAgreementTemplateReference(encoded)).toBe(encoded);
+    });
+
+    it('does not wrap an unrelated scheme', () => {
+        const ftp = 'ftp://example.com/archive.cta';
+        expect(normalizeAgreementTemplateReference(ftp)).toBe(ftp);
+    });
+});
 
 describe('templateUriFromReference', () => {
     it('passes a plain template URI through unchanged', () => {

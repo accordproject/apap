@@ -208,6 +208,42 @@ export function templateUriFromReference<T extends string | null | undefined>(re
     }
 }
 
+// Agreement.template is a Concerto relationship, so the value that is stored
+// has to be `resource:{type}#{identifier}`. Callers also send the bare
+// identifiers this server documents and emits: an `http(s)://…cta` URL
+// (POST /agreements fetches it) and the `ap://name@version#hash` URI
+// POST /templates/archive assigns. Those are rewritten to the relationship
+// before validation and before the row is written. `templateUriFromReference`
+// turns that stored value back into the bare identifier for lookup and for
+// HttpTemplateRetriever. An identifier that is already a `resource:` URI is
+// returned unchanged — re-encoding it would split callers that stored an
+// unencoded fragment from the bytes they sent.
+const TEMPLATE_RELATIONSHIP_PREFIX = 'resource:org.accordproject.protocol@1.0.0.Template#';
+const BARE_TEMPLATE_URI = /^(?:https?|ap):\/\//;
+
+export function normalizeAgreementTemplateReference(reference: string): string {
+    if (reference.startsWith('resource:')) return reference;
+    if (!BARE_TEMPLATE_URI.test(reference)) return reference;
+    return `${TEMPLATE_RELATIONSHIP_PREFIX}${encodeURIComponent(reference)}`;
+}
+
+/**
+ * Validates an Agreement create/update body and normalizes `template` on it.
+ *
+ * The returned `data` is that same object, with `template` already in the
+ * relationship form, so POST (which inserts `req.body`) and PUT (which
+ * persists `result.data`) write one Concerto-valid value. Other schemes are
+ * left for Concerto to reject.
+ */
+export async function validateAgreementBody(body: any) {
+    if (body && typeof body === 'object' && !Array.isArray(body) && typeof body.template === 'string') {
+        body.template = normalizeAgreementTemplateReference(body.template);
+    }
+    const result = await concertoValidation('Agreement', body);
+    if (!result.success) return result;
+    return { success: true, data: body };
+}
+
 // Private helper. Both convertAgreement and triggerAgreement need the same
 // (agreement, template, apTemplate) triple. Mirrors the resolveAgreement
 // helper that used to live in handlers/agreements.ts.

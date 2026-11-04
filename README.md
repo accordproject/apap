@@ -102,7 +102,9 @@ curl http://localhost:9000/agreements/1/convert/html
 
 `template` and `data` go together — `data` has to validate against the model in
 the archive `template` points at — so the snippet above is a skeleton, not a
-runnable command. See
+runnable command. A bare `http(s)` URL in `template` is stored as the Concerto
+relationship `resource:org.accordproject.protocol@1.0.0.Template#` plus the
+percent-encoded URL. See
 [Using a Template from templates.accordproject.org](./server/README.md#using-a-template-from-templatesaccordprojectorg)
 for a complete worked request, the Cicero version compatibility check, and
 `POST /templates/archive` — the explicit upload path for custom archives or
