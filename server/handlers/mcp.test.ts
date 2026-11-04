@@ -863,7 +863,7 @@ describe('Concerto MCP resource serialization (#258)', () => {
         });
         expect(validated.success).toBe(true);
         expect(validated.data.template).toBe(
-            'resource:org.accordproject.protocol@1.0.0.Template#' + encodeURIComponent(bare),
+            'resource:org.accordproject.protocol@1.0.0.Template#' + bare,
         );
 
         // Drizzle parses the json column back to an object on read. The MCP

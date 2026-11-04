@@ -2,7 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
 import agreementsRouter from './agreements';
-import { validateAgreementBody } from '../services/agreementService';
+import { templateUriFromReference, validateAgreementBody } from '../services/agreementService';
 import { Agreement, Template, AgreementInsertSchema } from '../db/schema';
 import * as templateBuilder from './templatebuilder';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
@@ -729,7 +729,9 @@ describe('POST / - Agreement Creation with External Template', () => {
             });
 
             expect(result.success).toBe(true);
-            expect(result.data.template).toBe(relationshipPrefix + encodeURIComponent(template));
+            // Concerto decodes the identifier when it serializes the relationship.
+            expect(result.data.template).toBe(relationshipPrefix + template);
+            expect(result.data.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
         });
 
         it('leaves a resource relationship unchanged', async () => {
@@ -934,24 +936,25 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(putDb.update).not.toHaveBeenCalled();
         });
 
-        it('normalizes an ap:// template URI to a resource relationship on PUT', async () => {
+        function useRealConcertoValidation() {
             const actual = jest.requireActual('./concertovalidation') as any;
             const valModule = require('./concertovalidation');
             valModule.concertoValidation.mockReset();
             valModule.concertoValidation.mockImplementation(actual.concertoValidation);
+        }
 
-            const data = { $class: 'org.example.TemplateModel', price: 10 };
+        it('persists Concerto\'s serialized body for an ap:// template on PUT', async () => {
+            useRealConcertoValidation();
             const template = 'ap://latedeliveryandpenalty@1.0.0#abc123';
-            const stored = 'resource:org.accordproject.protocol@1.0.0.Template#' + encodeURIComponent(template);
-            const existing = {
+            const canonicalTemplate = 'resource:org.accordproject.protocol@1.0.0.Template#' + template;
+            putDb.limit.mockResolvedValueOnce([{
                 id: 3,
                 uri: 'apap://agreement-1',
                 agreementStatus: 'DRAFT',
                 template: 'resource:org.accordproject.protocol@1.0.0.Template#dan2',
                 data: { price: 1 },
-            };
-            putDb.limit.mockResolvedValueOnce([existing]);
-            putDb.returning.mockResolvedValueOnce([{ ...existing, template: stored, data }]);
+            }]);
+            putDb.returning.mockResolvedValueOnce([{ id: 3 }]);
 
             const res = await request(putApp)
                 .put('/agreements/3')
@@ -959,12 +962,66 @@ describe('POST / - Agreement Creation with External Template', () => {
                     uri: 'apap://agreement-1',
                     template,
                     agreementStatus: 'DRAFT',
-                    data,
+                    data: { price: 10 },
                 });
 
             expect(res.status).toBe(200);
             const written = putDb.set.mock.calls[0][0];
-            expect(written.template).toBe(stored);
+            expect(written.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
+            expect(written.template).toBe(canonicalTemplate);
+            expect(typeof written.data).toBe('string');
+            expect(templateUriFromReference(written.template)).toBe(template);
+        });
+
+        it('persists Concerto\'s decoded https relationship on PUT', async () => {
+            useRealConcertoValidation();
+            const template = 'https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta';
+            putDb.limit.mockResolvedValueOnce([{
+                id: 4,
+                uri: 'apap://agreement-ldp',
+                agreementStatus: 'DRAFT',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#dan2',
+                data: { price: 1 },
+            }]);
+            putDb.returning.mockResolvedValueOnce([{ id: 4 }]);
+
+            const res = await request(putApp)
+                .put('/agreements/4')
+                .send({
+                    uri: 'apap://agreement-ldp',
+                    template,
+                    agreementStatus: 'DRAFT',
+                    data: { price: 10 },
+                });
+
+            expect(res.status).toBe(200);
+            const written = putDb.set.mock.calls[0][0];
+            expect(written.template).toBe(
+                'resource:org.accordproject.protocol@1.0.0.Template#' + template,
+            );
+            expect(templateUriFromReference(written.template)).toBe(template);
+        });
+
+        it('accepts a no-op resend of the canonical body once the agreement is COMPLETED', async () => {
+            useRealConcertoValidation();
+            const sent = {
+                uri: 'apap://agreement-1',
+                template: 'ap://latedeliveryandpenalty@1.0.0#abc123',
+                agreementStatus: 'COMPLETED',
+                data: { price: 10 },
+            };
+            const canonical = await validateAgreementBody({ ...sent, data: { price: 10 } });
+            expect(canonical.success).toBe(true);
+            putDb.limit.mockResolvedValueOnce([{ id: 5, ...canonical.data }]);
+            putDb.returning.mockResolvedValueOnce([{ id: 5, ...canonical.data }]);
+
+            const res = await request(putApp)
+                .put('/agreements/5')
+                .send(sent);
+
+            expect(res.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
+            expect(putDb.set.mock.calls[0][0].template).toBe(canonical.data.template);
         });
 
         it('still allows a signature to be added while SIGNING (only data is frozen)', async () => {

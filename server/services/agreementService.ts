@@ -12,6 +12,7 @@ import {
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
 import { templateFromDatabase } from '../handlers/templatebuilder';
 import { concertoValidation } from '../handlers/concertovalidation';
+import type { ValidationResult } from '../handlers/crud';
 import { authorize, type PolicyContext } from './policy';
 
 // Slice 2 ported the CRUD lookup half. Slice 2b + 2c add the runtime half —
@@ -228,20 +229,21 @@ export function normalizeAgreementTemplateReference(reference: string): string {
 }
 
 /**
- * Validates an Agreement create/update body and normalizes `template` on it.
+ * Validates an Agreement create/update body.
  *
- * The returned `data` is that same object, with `template` already in the
- * relationship form, so POST (which inserts `req.body`) and PUT (which
- * persists `result.data`) write one Concerto-valid value. Other schemes are
- * left for Concerto to reject.
+ * A bare `http(s)` or `ap://` template is rewritten to a `resource:` relationship
+ * on `body` first, so Concerto accepts it. The returned `data` is
+ * `serializer.toJSON` — the same object PUT persists via `req.body = customResult.data`.
+ * Returning the raw body instead drops `$class` / `$identifier`, date normalization,
+ * and Concerto's decoded relationship spelling, and makes a no-op resend of a
+ * frozen agreement look like a change. POST still inserts `req.body` (template
+ * already normalized; `data` / `state` stringified in place by concertoValidation).
  */
-export async function validateAgreementBody(body: any) {
+export async function validateAgreementBody(body: any): Promise<ValidationResult> {
     if (body && typeof body === 'object' && !Array.isArray(body) && typeof body.template === 'string') {
         body.template = normalizeAgreementTemplateReference(body.template);
     }
-    const result = await concertoValidation('Agreement', body);
-    if (!result.success) return result;
-    return { success: true, data: body };
+    return concertoValidation('Agreement', body);
 }
 
 // Private helper. Both convertAgreement and triggerAgreement need the same
