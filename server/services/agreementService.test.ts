@@ -433,6 +433,34 @@ describe('agreementService', () => {
             ).not.toThrow();
         });
 
+        it('allows serializer metadata and equivalent template encodings on a frozen row', () => {
+            const uri = 'https://example.org/a%2Fb.cta';
+            const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+            const existing = agreementRow(1, {
+                agreementStatus: 'COMPLETED',
+                template: prefix + encodeURIComponent(uri),
+            });
+            expect(() => assertAgreementRecordMutable(existing, {
+                $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                $identifier: existing.uri,
+                template: prefix + encodeURI(uri),
+            })).not.toThrow();
+        });
+
+        it.each(['https://example.org/a/b.cta', 'https://example.org/other.cta'])(
+            'still rejects a different template URI on a frozen row: %s',
+            (uri) => {
+                const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+                const existing = agreementRow(1, {
+                    agreementStatus: 'COMPLETED',
+                    template: prefix + encodeURIComponent('https://example.org/a%2Fb.cta'),
+                });
+                expect(() => assertAgreementRecordMutable(existing, {
+                    template: prefix + encodeURI(uri),
+                })).toThrow(AgreementRecordImmutableError);
+            },
+        );
+
         it('still allows agreementStatus to transition once COMPLETED (e.g. -> SUPERSEDED)', () => {
             const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });
 

@@ -78,6 +78,9 @@ router.post('/', asyncHandler(async (req, res) => {
             }
         }
 
+        // req.body.template keeps validateAgreementBody's encodeURIComponent spelling
+        // for bare URIs; PUT uses result.data's Concerto encodeURI spelling instead.
+        // Keep both forms covered by assertTemplateNotInUse and the frozen-record guard.
         const insertData = {
             ...req.body,
             templateHash: currentHash,

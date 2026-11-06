@@ -1002,27 +1002,55 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(templateUriFromReference(written.template)).toBe(template);
         });
 
-        it('accepts a no-op resend of the canonical body once the agreement is COMPLETED', async () => {
+        it('preserves a template URI\'s own percent escapes through POST and PUT validation', async () => {
             useRealConcertoValidation();
-            const sent = {
-                uri: 'apap://agreement-1',
-                template: 'ap://latedeliveryandpenalty@1.0.0#abc123',
-                agreementStatus: 'COMPLETED',
+            const template = 'https://example.org/a%20b.cta?x=a%2Fb';
+            const body = {
+                uri: 'apap://agreement-escaped',
+                template,
+                agreementStatus: 'DRAFT',
                 data: { price: 10 },
             };
-            const canonical = await validateAgreementBody({ ...sent, data: { price: 10 } });
-            expect(canonical.success).toBe(true);
-            putDb.limit.mockResolvedValueOnce([{ id: 5, ...canonical.data }]);
-            putDb.returning.mockResolvedValueOnce([{ id: 5, ...canonical.data }]);
-
-            const res = await request(putApp)
-                .put('/agreements/5')
-                .send(sent);
-
-            expect(res.status).toBe(200);
-            expect(putDb.update).toHaveBeenCalled();
-            expect(putDb.set.mock.calls[0][0].template).toBe(canonical.data.template);
+            const result = await validateAgreementBody(body);
+            expect(result.success).toBe(true);
+            expect(templateUriFromReference(body.template)).toBe(template);
+            expect(templateUriFromReference(result.data.template)).toBe(template);
+            expect(result.data.template).toBe(
+                'resource:org.accordproject.protocol@1.0.0.Template#' + encodeURI(template),
+            );
         });
+
+        it.each(['COMPLETED', 'SUPERSEDED'])(
+            'accepts a no-op resend of a POST-created agreement once %s',
+            async (agreementStatus) => {
+                useRealConcertoValidation();
+                const sent = {
+                    uri: 'apap://agreement-1',
+                    template: 'ap://latedeliveryandpenalty@1.0.0#abc123',
+                    agreementStatus,
+                    data: { price: 10 },
+                };
+                // Capture what POST actually inserts, without serializer-only $class.
+                mockDb.returning.mockResolvedValueOnce([{ id: 5 }]);
+                const created = await request(app).post('/agreements/').send(sent);
+                expect(created.status).toBe(200);
+                const inserted = mockDb.values.mock.calls[0][0];
+                expect(inserted.template).toBe(
+                    'resource:org.accordproject.protocol@1.0.0.Template#' + encodeURIComponent(sent.template),
+                );
+                expect(inserted).not.toHaveProperty('$class');
+                putDb.limit.mockResolvedValueOnce([{ id: 5, ...inserted }]);
+                putDb.returning.mockResolvedValueOnce([{ id: 5, ...inserted }]);
+
+                const res = await request(putApp)
+                    .put('/agreements/5')
+                    .send(sent);
+
+                expect(res.status).toBe(200);
+                expect(putDb.update).toHaveBeenCalled();
+                expect(templateUriFromReference(putDb.set.mock.calls[0][0].template)).toBe(sent.template);
+            },
+        );
 
         it('still allows a signature to be added while SIGNING (only data is frozen)', async () => {
             const existing = { id: 7, agreementStatus: 'SIGNING', data: { price: 10 }, signatures: [] as any[] };

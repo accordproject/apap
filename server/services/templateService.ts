@@ -289,6 +289,8 @@ export async function assertTemplateNotInUse(existing: TemplateRow, db: Database
         existing.uri,
         `${relationship}${existing.uri}`,
         `${relationship}${encodeURIComponent(existing.uri)}`,
+        // Concerto's PUT serialization preserves URI delimiters but escapes '%'.
+        `${relationship}${encodeURI(existing.uri)}`,
     ]);
     const whereClause = existing.hash
         ? or(uriCondition, eq(Agreement.templateHash, existing.hash))

@@ -489,19 +489,21 @@ describe('templateService', () => {
             await expect(assertTemplateNotInUse(rowWithHash, db)).rejects.toThrow(TemplateInUseError);
         });
 
-        it('matches agreements that reference the template as a resource: relationship', async () => {
+        it('matches POST and PUT relationships, including a URI\'s own percent escapes', async () => {
             const { PgDialect } = require('drizzle-orm/pg-core');
             const dialect = new PgDialect();
+            const escapedRow = { ...row, uri: 'https://example.org/a%20b.cta?x=a%2Fb', hash: null };
             db._setReturn([]);
 
-            await assertTemplateNotInUse(row, db);
+            await assertTemplateNotInUse(escapedRow, db);
 
             const compiled = dialect.sqlToQuery(db.where.mock.calls[0][0]);
-            expect(compiled.sql).toContain('"template" in ($1, $2, $3)');
+            expect(compiled.sql).toContain('"template" in ($1, $2, $3, $4)');
             expect(compiled.params).toEqual([
-                row.uri,
-                `resource:org.accordproject.protocol@1.0.0.Template#${row.uri}`,
-                `resource:org.accordproject.protocol@1.0.0.Template#${encodeURIComponent(row.uri)}`,
+                escapedRow.uri,
+                `resource:org.accordproject.protocol@1.0.0.Template#${escapedRow.uri}`,
+                `resource:org.accordproject.protocol@1.0.0.Template#${encodeURIComponent(escapedRow.uri)}`,
+                `resource:org.accordproject.protocol@1.0.0.Template#${encodeURI(escapedRow.uri)}`,
             ]);
         });
 

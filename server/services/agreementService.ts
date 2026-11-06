@@ -127,7 +127,14 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
     if (FULLY_FROZEN_STATUSES.has(status)) {
         for (const key of Object.keys(updates)) {
             if (MUTABLE_FIELDS_ONCE_FULLY_FROZEN.has(key)) continue;
+            // Concerto adds these virtual properties; neither is an Agreement column.
+            if (key === '$class' || key === '$identifier') continue;
             if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
+            // POST stores encodeURIComponent identifiers; PUT serializes them with
+            // Concerto's encodeURI spelling. Compare the referenced URI, not its wrapper.
+            if (key === 'template' && typeof existing.template === 'string' &&
+                typeof updates.template === 'string' &&
+                templateUriFromReference(existing.template) === templateUriFromReference(updates.template)) continue;
 
             throw new AgreementRecordImmutableError(existing.id, status, key);
         }
@@ -220,11 +227,11 @@ export function templateUriFromReference<T extends string | null | undefined>(re
 // returned unchanged — re-encoding it would split callers that stored an
 // unencoded fragment from the bytes they sent.
 const TEMPLATE_RELATIONSHIP_PREFIX = 'resource:org.accordproject.protocol@1.0.0.Template#';
-const BARE_TEMPLATE_URI = /^(?:https?|ap):\/\//;
+const BARE_TEMPLATE_SCHEME = /^(?:https?|ap):\/\//;
 
 export function normalizeAgreementTemplateReference(reference: string): string {
     if (reference.startsWith('resource:')) return reference;
-    if (!BARE_TEMPLATE_URI.test(reference)) return reference;
+    if (!BARE_TEMPLATE_SCHEME.test(reference)) return reference;
     return `${TEMPLATE_RELATIONSHIP_PREFIX}${encodeURIComponent(reference)}`;
 }
 
