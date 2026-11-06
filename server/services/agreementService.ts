@@ -127,7 +127,9 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
     if (FULLY_FROZEN_STATUSES.has(status)) {
         for (const key of Object.keys(updates)) {
             if (MUTABLE_FIELDS_ONCE_FULLY_FROZEN.has(key)) continue;
-            // Concerto adds these virtual properties; neither is an Agreement column.
+            // With the current Agreement concept and default Concerto serialization,
+            // these are virtual properties, not columns. Revisit this explicit list
+            // if the model or serializer options change; do not skip arbitrary '$' keys.
             if (key === '$class' || key === '$identifier') continue;
             if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
             // POST stores encodeURIComponent identifiers; PUT serializes them with
@@ -204,6 +206,10 @@ export async function getAgreementByUri(context: PolicyContext, uri: string): Pr
  * `resource:{ns}.Template#{identifier}`, whose identifier may be
  * percent-encoded: Concerto accepts both `#demo://x` and `#demo%3A%2F%2Fx`.
  * Looking up the encoded form verbatim finds no template.
+ * POST stores normalized identifiers with encodeURIComponent; PUT stores Concerto's
+ * encodeURI spelling. For these writer forms, decoding the relationship layer once
+ * preserves the URI's own percent escapes. The frozen-record and template-use guards
+ * must cover both forms, including existing rows if a future writer chooses a single spelling.
  */
 export function templateUriFromReference<T extends string | null | undefined>(reference: T): T | string {
     if (!reference || !reference.startsWith('resource:')) return reference;
@@ -237,13 +243,15 @@ export function normalizeAgreementTemplateReference(reference: string): string {
 
 /**
  * Validates an Agreement create/update body.
+ * Intentionally mutates the caller's body: POST inserts that object and relies on
+ * both template normalization and concertoValidation's data/state stringification.
+ * Cloning here requires changing POST to persist the returned data as well.
  *
  * A bare `http(s)` or `ap://` template is rewritten to a `resource:` relationship
  * on `body` first, so Concerto accepts it. The returned `data` is
  * `serializer.toJSON` — the same object PUT persists via `req.body = customResult.data`.
  * Returning the raw body instead drops `$class` / `$identifier`, date normalization,
- * and Concerto's decoded relationship spelling, and makes a no-op resend of a
- * frozen agreement look like a change. POST still inserts `req.body` (template
+ * and Concerto's relationship spelling. POST still inserts `req.body` (template
  * already normalized; `data` / `state` stringified in place by concertoValidation).
  */
 export async function validateAgreementBody(body: any): Promise<ValidationResult> {

@@ -711,12 +711,15 @@ describe('POST / - Agreement Creation with External Template', () => {
                     template: apUri,
                     agreementStatus: 'DRAFT',
                     data,
+                    state: { step: 1 },
                 });
 
             expect(response.status).toBe(200);
             expect(mockDb.insert).toHaveBeenCalledWith(Agreement);
             const inserted = mockDb.values.mock.calls[0][0];
             expect(inserted.template).toBe(relationshipPrefix + encodeURIComponent(apUri));
+            expect(inserted.data).toBe(JSON.stringify(data));
+            expect(inserted.state).toBe(JSON.stringify({ step: 1 }));
         });
 
         it('stores an https template URL as a resource relationship', async () => {
