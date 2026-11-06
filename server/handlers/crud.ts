@@ -544,6 +544,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         const pgError = new Error('Unique constraint violation') as any;
                         pgError.code = '23505';
                         pgError.typeName = typeName;
+                        // Preserve the original DB error for debugging; the cause may contain
+                        // SQL and bound parameters, so monitoring integrations must not serialize it.
                         pgError.cause = error;
                         throw pgError;
                     }
@@ -697,6 +699,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         const pgError = new Error('Unique constraint violation') as any;
                         pgError.code = '23505';
                         pgError.typeName = typeName;
+                        // Preserve the original DB error for debugging; the cause may contain
+                        // SQL and bound parameters, so monitoring integrations must not serialize it.
                         pgError.cause = error;
                         throw pgError;
                     }
