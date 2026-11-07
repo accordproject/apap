@@ -385,6 +385,7 @@ describe('templateService', () => {
         });
 
         it('propagates the typed duplicate if archive recovery finds no matching hash', async () => {
+            // The conflicting row may be deleted between the failed insert and the recovery lookup.
             const failure = new DrizzleQueryError('query', [], Object.assign(new Error('duplicate'), { code: '23505' }));
             db._setReturn([]);
             db.returning.mockRejectedValue(failure);
