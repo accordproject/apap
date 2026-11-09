@@ -7,5 +7,6 @@ module.exports = {
     // the pinned jose@5 CJS build; pretest separately loads the real SDK path.
     moduleNameMapper: {
       '^jose$': '<rootDir>/node_modules/jose/dist/node/cjs/index.js'
-    }
-  };
+    },
+    setupFiles: ['<rootDir>/jest.setup.js']
+};
