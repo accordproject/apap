@@ -2,6 +2,7 @@ import type { Request } from 'express';
 import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
+import { PgDialect } from 'drizzle-orm/pg-core';
 import templatesRouter from './templates';
 import * as db from './templatebuilder';
 import * as validationModule from './concertovalidation';
@@ -652,6 +653,31 @@ describe('SQL injection prevention in defaultWhereClause', () => {
         const compiled = dialect.sqlToQuery(capturedWhereClauses[0]);
         expect(compiled.sql).toContain('ILIKE');
         expect(compiled.sql).toContain("ESCAPE '\\'");
+        expect(compiled.params).toContain('Rob');
+    });
+
+    it('~ prefix on non-text columns (such as integer id) is safely skipped without emitting ILIKE or throwing 500', async () => {
+        const dialect = new PgDialect();
+
+        // 1. Numeric operand on non-text column is skipped (no where clause generated, returns 200)
+        const resNumeric = await request(app).get('/templates?id=~5');
+        expect(resNumeric.status).toBe(200);
+        expect(capturedWhereClauses[0]).toBeUndefined();
+
+        // 2. Non-numeric operand on non-text column is safely skipped without type error (returns 200)
+        capturedWhereClauses = [];
+        const resNonNumeric = await request(app).get('/templates?id=~abc');
+        expect(resNonNumeric.status).toBe(200);
+        expect(capturedWhereClauses[0]).toBeUndefined();
+
+        // 3. Valid text filter alongside non-text filter: non-text is skipped, text ILIKE is preserved
+        capturedWhereClauses = [];
+        const resMixed = await request(app).get('/templates?id=~abc&author=~Rob');
+        expect(resMixed.status).toBe(200);
+        expect(capturedWhereClauses.length).toBeGreaterThan(0);
+        const compiled = dialect.sqlToQuery(capturedWhereClauses[0]);
+        expect(compiled.sql).toContain('"author" ILIKE');
+        expect(compiled.sql).not.toContain('"id"');
         expect(compiled.params).toContain('Rob');
     });
 });

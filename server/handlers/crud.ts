@@ -102,11 +102,25 @@ function defaultWhereClause<T extends PgTable<any>>(
 			// SQL injection is not a concern (identifier safety on the column
 			// is already enforced by SAFE_IDENTIFIER_RX above). Closes #125.
 			//
-			// TODO: `~` on a non-text column (e.g. `?id=~5`) still surfaces
-			// as a Postgres type error. Add a column-type check when a shared
-			// column-metadata accessor exists on the router. Tracked in the
-			// #228 follow-up scope.
+			// Column-type guard (#228 follow-up): `~` (ILIKE) is strictly valid
+			// for character-based columns (PgText, PgVarchar, PgChar). On non-text
+			// columns (e.g. integer `id`, timestamps, PgEnumColumn, JSON), ILIKE
+			// throws a Postgres type error (`operator does not exist`).
+			// Check columnType directly; non-text columns silently skip the `~`
+			// condition, consistent with how invalid operators are skipped below.
+			//
+			// Note: Custom text-like columns (e.g. citext) are not in this list
+			// and will fail-safe by skipping the ~ filter rather than crashing under ILIKE.
 			if (trimmed.startsWith('~')) {
+				const col = table ? (table as Record<string, any>)[key] : undefined;
+				const isTextColumn = col?.columnType === 'PgText' ||
+					col?.columnType === 'PgVarchar' ||
+					col?.columnType === 'PgChar';
+
+				if (!isTextColumn) {
+					continue;
+				}
+
 				const operand = trimmed.slice(1).trim();
 				const escaped = operand.replace(/[\\%_]/g, '\\$&');
 				conditions.push(sql`${column} ILIKE ${escaped} ESCAPE '\\'`);
