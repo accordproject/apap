@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ServiceError } from '../services/errors';
+import { isUniqueViolation } from '../db/errors';
 
 /**
  * Normalizes an unknown caught value into a safe, 
@@ -32,15 +33,17 @@ export function globalErrorHandler(
     res: Response,
     next: NextFunction
 ): void {
+    // Domain errors keep their own status/body, even when they carry a DB cause.
+    const uniqueViolation = !(err instanceof ServiceError) && isUniqueViolation(err);
     // Log structured error internally — never expose 
     // stack traces to client
     console.error({
         type: 'unhandled_error',
         method: req.method,
         path: req.path,
-        message: toSafeMessage(err),
+        message: uniqueViolation ? 'Unique constraint violation' : toSafeMessage(err),
         // Only log stack in development
-        ...(process.env.NODE_ENV === 'development' && {
+        ...(process.env.NODE_ENV === 'development' && !uniqueViolation && {
             stack: err instanceof Error ? err.stack : undefined
         })
     });
@@ -50,7 +53,7 @@ export function globalErrorHandler(
     }
 
     // Handle Postgres unique constraint violation
-    if (typeof err === 'object' && err !== null && 'code' in err && (err as any).code === '23505') {
+    if (uniqueViolation) {
         res.status(409).json({
             error: 'Conflict',
             details: `A resource with this unique identifier already exists${(err as any).typeName ? ` for ${(err as any).typeName}` : ''}.`

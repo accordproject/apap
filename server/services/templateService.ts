@@ -3,6 +3,7 @@ import AdmZip from 'adm-zip';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import { Agreement, Template } from '../db/schema';
 import type { Database } from '../db/client';
+import { isUniqueViolation } from '../db/errors';
 import { extractTemplateForDatabase } from '../handlers/templatebuilder';
 import {
     TemplateNotFoundError,
@@ -11,6 +12,7 @@ import {
     TemplateInUseError,
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
+    ServiceError,
 } from './errors';
 import { authorize, type PolicyContext } from './policy';
 
@@ -102,7 +104,9 @@ export async function createTemplate(
         const rows = await db.insert(Template).values(data).returning();
         return rows[0];
     } catch (err: unknown) {
-        if (isUniqueViolation(err)) throw new TemplateDuplicateError(data.uri);
+        if (!(err instanceof ServiceError) && isUniqueViolation(err)) {
+            throw Object.assign(new TemplateDuplicateError(data.uri), { cause: err });
+        }
         throw err;
     }
 }
@@ -217,11 +221,6 @@ export async function deleteTemplate(context: PolicyContext, uri: string): Promi
 
     const rows = await db.delete(Template).where(eq(Template.uri, uri)).returning();
     if (rows.length === 0) throw new TemplateNotFoundError(uri);
-}
-
-function isUniqueViolation(err: unknown): boolean {
-    return typeof err === 'object' && err !== null && 'code' in err
-        && (err as { code: string }).code === '23505';
 }
 
 /**
