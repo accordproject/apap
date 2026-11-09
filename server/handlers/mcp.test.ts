@@ -475,6 +475,55 @@ describe('MCP Handler', () => {
             });
         });
 
+        it('completes initialize handshake and allows resource read with valid mcp-session-id', async () => {
+            const initRes = await request(app)
+                .post('/mcp')
+                .set('Accept', 'application/json, text/event-stream')
+                .send({
+                    jsonrpc: '2.0',
+                    id: 1,
+                    method: 'initialize',
+                    params: {
+                        protocolVersion: '2025-03-26',
+                        capabilities: {},
+                        clientInfo: { name: 'test-client', version: '1.0' }
+                    }
+                })
+                .expect(200);
+
+            const sessionId = initRes.headers['mcp-session-id'];
+            expect(sessionId).toBeDefined();
+
+            await request(app)
+                .post('/mcp')
+                .set('mcp-session-id', sessionId)
+                .set('Accept', 'application/json, text/event-stream')
+                .send({
+                    jsonrpc: '2.0',
+                    method: 'notifications/initialized'
+                })
+                .expect(202);
+
+            const readRes = await request(app)
+                .post('/mcp')
+                .set('mcp-session-id', sessionId)
+                .set('Accept', 'application/json, text/event-stream')
+                .send({
+                    jsonrpc: '2.0',
+                    id: 2,
+                    method: 'resources/read',
+                    params: {
+                        uri: 'apap://schema/protocol.cto'
+                    }
+                })
+                .expect(200);
+
+            // Streamable HTTP transport returns SSE or JSON text
+            const responseText = readRes.text;
+            expect(responseText).toContain('apap://schema/protocol.cto');
+            expect(responseText).toContain('text/x-concerto');
+        });
+
         // SSE transport dropped in SDK 2.0. `GET /sse` and `POST /messages`
         // routes no longer exist; former SSE tests removed as part of #221.
     });
