@@ -222,6 +222,21 @@
         "description": "Retrieve the supported features of the server.",
         "tags": ["capabilities"]
       }
+    },
+    "/agreements/{uri}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of agreement fields to return. Omit for the full agreement.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   }
 }

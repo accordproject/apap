@@ -5965,6 +5965,17 @@
         "description": "Gets the details of a single instance of a `agreement`.",
         "tags": [
           "agreements"
+        ],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of agreement fields to return. Omit for the full agreement.",
+            "schema": {
+              "type": "string"
+            }
+          }
         ]
       },
       "put": {
