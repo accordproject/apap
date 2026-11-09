@@ -36,6 +36,7 @@ import mcpRouter, {
 } from './mcp';
 import { ModelManager, Factory, Serializer } from '@accordproject/concerto-core';
 import { ProtocolError, ProtocolErrorCode, InMemoryTransport } from '@modelcontextprotocol/server';
+import { validateAgreementBody } from '../services/agreementService';
 import {
     AgreementConversionError,
     AgreementNotFoundError,
@@ -850,6 +851,43 @@ describe('Concerto MCP resource serialization (#258)', () => {
                 { acceptResourcesForRelationships: false, validate: true }
             )
         ).toThrow(/Expected value at path `\$\.data` to be of type `String`/);
+    });
+
+    it('stores a bare ap:// template as a relationship that agreementToConcerto can validate', async () => {
+        const bare = 'ap://latedeliveryandpenalty@1.0.0#abc123';
+        const validated = await validateAgreementBody({
+            uri: 'apap://agreement-1',
+            template: bare,
+            agreementStatus: 'DRAFT',
+            data: { price: 10 },
+        });
+        expect(validated.success).toBe(true);
+        expect(validated.data.template).toBe(
+            'resource:org.accordproject.protocol@1.0.0.Template#' + bare,
+        );
+
+        // Drizzle parses the json column back to an object on read. The MCP
+        // projection has to validate against that shape, with the normalized template.
+        const payload = agreementToConcerto({
+            id: 1,
+            uri: 'apap://agreement-1',
+            data: { price: 10 },
+            template: validated.data.template,
+            templateHash: null,
+            state: null,
+            agreementStatus: 'DRAFT',
+            agreementParties: null,
+            signatures: null,
+            historyEntries: null,
+            attachments: null,
+            references: null,
+            metadata: null,
+        } as any);
+        const instance = concertoSerializer.fromJSON(payload, {
+            acceptResourcesForRelationships: false,
+            validate: true,
+        });
+        expect(instance).toBeDefined();
     });
 
     it('templateToConcerto projects valid Concerto Template, omitting DB fields and nulls', () => {

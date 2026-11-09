@@ -7,6 +7,7 @@ import {
     convertAgreement,
     assertAgreementRecordMutable,
     templateUriFromReference,
+    normalizeAgreementTemplateReference,
 } from './agreementService';
 import {
     AgreementNotFoundError,
@@ -68,6 +69,36 @@ function agreementRow(id: number, overrides: Record<string, unknown> = {}): any 
         ...overrides,
     };
 }
+
+describe('normalizeAgreementTemplateReference', () => {
+    const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+
+    it('percent-encodes a bare ap:// URI, including its fragment, and unwraps back to it', () => {
+        const bare = 'ap://latedeliveryandpenalty@1.0.0#abc123';
+        const stored = normalizeAgreementTemplateReference(bare);
+        expect(stored).toBe(prefix + encodeURIComponent(bare));
+        expect(templateUriFromReference(stored)).toBe(bare);
+    });
+
+    it('percent-encodes a bare https URL and unwraps back to it', () => {
+        const bare = 'https://templates.accordproject.org/archives/latedeliveryandpenalty@1.0.0.cta';
+        const stored = normalizeAgreementTemplateReference(bare);
+        expect(stored).toBe(prefix + encodeURIComponent(bare));
+        expect(templateUriFromReference(stored)).toBe(bare);
+    });
+
+    it('leaves a resource relationship unchanged, encoded or not', () => {
+        const unencoded = prefix + 'ap://latedeliveryandpenalty@1.0.0#abc123';
+        const encoded = prefix + encodeURIComponent('https://example.com/a.cta');
+        expect(normalizeAgreementTemplateReference(unencoded)).toBe(unencoded);
+        expect(normalizeAgreementTemplateReference(encoded)).toBe(encoded);
+    });
+
+    it('does not wrap an unrelated scheme', () => {
+        const ftp = 'ftp://example.com/archive.cta';
+        expect(normalizeAgreementTemplateReference(ftp)).toBe(ftp);
+    });
+});
 
 describe('templateUriFromReference', () => {
     it('passes a plain template URI through unchanged', () => {
@@ -401,6 +432,34 @@ describe('agreementService', () => {
                 assertAgreementRecordMutable(existing, { data: { currency: 'USD', price: 10 } }),
             ).not.toThrow();
         });
+
+        it('allows serializer metadata and equivalent template encodings on a frozen row', () => {
+            const uri = 'https://example.org/a%2Fb.cta';
+            const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+            const existing = agreementRow(1, {
+                agreementStatus: 'COMPLETED',
+                template: prefix + encodeURIComponent(uri),
+            });
+            expect(() => assertAgreementRecordMutable(existing, {
+                $class: 'org.accordproject.protocol@1.0.0.Agreement',
+                $identifier: existing.uri,
+                template: prefix + encodeURI(uri),
+            })).not.toThrow();
+        });
+
+        it.each(['https://example.org/a/b.cta', 'https://example.org/other.cta'])(
+            'still rejects a different template URI on a frozen row: %s',
+            (uri) => {
+                const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+                const existing = agreementRow(1, {
+                    agreementStatus: 'COMPLETED',
+                    template: prefix + encodeURIComponent('https://example.org/a%2Fb.cta'),
+                });
+                expect(() => assertAgreementRecordMutable(existing, {
+                    template: prefix + encodeURI(uri),
+                })).toThrow(AgreementRecordImmutableError);
+            },
+        );
 
         it('still allows agreementStatus to transition once COMPLETED (e.g. -> SUPERSEDED)', () => {
             const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: { price: 10 } });

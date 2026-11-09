@@ -198,7 +198,13 @@ its URL throughout.
 
 `POST /agreements` accepts an `http(s)` URL as its `template` and resolves it on
 the way through (see `handlers/retrievers/HttpTemplateRetriever.ts`), so a
-single request gets you a usable agreement — no `/templates` call at all:
+single request gets you a usable agreement — no `/templates` call at all.
+
+A bare `http(s)://` or `ap://` value is normalized to the Concerto relationship
+`resource:org.accordproject.protocol@1.0.0.Template#` plus the percent-encoded
+identifier before it is validated and saved. Sending that relationship yourself
+is stored unchanged. Lookup and the HTTP retriever unwrap it back to the
+original URL or `ap://` URI.
 
 ```bash
 curl --request POST \
@@ -358,7 +364,10 @@ publishes. Name and version come from the archive's own `package.json`, and the
 fragment is its content hash, so the URI identifies those exact bytes.
 
 An agreement then references that URI as its `template`, in place of the URL
-used in the quick start — everything else about the agreement is unchanged:
+used in the quick start — everything else about the agreement is unchanged.
+The `ap://` value below is accepted as written and stored as the
+`resource:org.accordproject.protocol@1.0.0.Template#` relationship (the `#hash`
+is percent-encoded so it stays part of the identifier):
 
 ```json
 {

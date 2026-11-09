@@ -1,7 +1,6 @@
 import express from 'express';
 import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
 import { buildCrudRouter } from './crud';
-import { concertoValidation } from './concertovalidation';
 import { extractTemplateForDatabase } from './templatebuilder';
 import { eq } from 'drizzle-orm';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
@@ -18,6 +17,7 @@ import {
     listAgreementsPaged,
     triggerAgreement,
     templateUriFromReference,
+    validateAgreementBody,
 } from '../services/agreementService';
 import { buildAgreementLegalContext, getAgreementTerms, resolvePublicBaseUrl } from '../services/lcpService';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -43,7 +43,7 @@ router.post('/', asyncHandler(async (req, res) => {
             return res.status(400).json({ error: 'Schema validation failed', details: zodValidation.error.issues });
         }
 
-        const { success, error } = await concertoValidation('Agreement', req.body);
+        const { success, error } = await validateAgreementBody(req.body);
         if (!success) {
             return res.status(400).json({ error: 'Invalid request body', details: error.errors });
         }
@@ -78,6 +78,9 @@ router.post('/', asyncHandler(async (req, res) => {
             }
         }
 
+        // req.body.template keeps validateAgreementBody's encodeURIComponent spelling
+        // for bare URIs; PUT uses result.data's Concerto encodeURI spelling instead.
+        // Keep both forms covered by assertTemplateNotInUse and the frozen-record guard.
         const insertData = {
             ...req.body,
             templateHash: currentHash,
@@ -93,7 +96,7 @@ const crudRouter = buildCrudRouter({
     typeName: 'Agreement',
     // ponytail: cast schema to any due to zod v3 -> v4 upgrade depth-instantiation
     // issue with drizzle-zod. Runtime unaffected.
-    validateBody: { schema: AgreementInsertSchema as any, custom: (body) => concertoValidation('Agreement', body) },
+    validateBody: { schema: AgreementInsertSchema as any, custom: (body) => validateAgreementBody(body) },
     guardUpdate: (existing, body) => assertAgreementRecordMutable(existing, body),
     listService: (context, opts) => listAgreementsPaged(context, opts),
 });
