@@ -29,6 +29,7 @@ import mcpRouter, {
     buildApiErrorMessage,
     pageOpts,
     getRequestId,
+    parseEnvMs,
     PROTOCOL_CTO,
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
@@ -693,6 +694,32 @@ describe('MCP resource discovery pagination', () => {
         } finally {
             restore();
         }
+    });
+});
+
+describe('parseEnvMs timeout validation', () => {
+    it("throws for '0'", () => {
+        expect(() => parseEnvMs('0', 1000)).toThrow();
+    });
+
+    it("throws for '-5'", () => {
+        expect(() => parseEnvMs('-5', 1000)).toThrow();
+    });
+
+    it("throws for '5abc'", () => {
+        expect(() => parseEnvMs('5abc', 1000)).toThrow();
+    });
+
+    it("throws for '2147483648' (above Node.js max timer value)", () => {
+        expect(() => parseEnvMs('2147483648', 1000)).toThrow();
+    });
+
+    it("returns the default value for whitespace-only input '   '", () => {
+        expect(parseEnvMs('   ', 1000)).toBe(1000);
+    });
+
+    it("returns 5000 for '5000'", () => {
+        expect(parseEnvMs('5000', 1000)).toBe(5000);
     });
 });
 
