@@ -49,11 +49,11 @@ export class HttpTemplateRetriever implements ITemplateRetriever {
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         try {
-            // codeql[js/request-forgery] URL destination is strictly validated against an origin prefix allowlist
             // SSRF guard: assertAllowedUrl validates scheme (https-only), port (443-only),
             // host (explicit allowlist), and userinfo (rejected) before this fetch.
-            // CodeQL alert dismissed as false positive — do not remove assertAllowedUrl,
-            // add redirect following, or expand the allowlist without re-reviewing the security posture.
+            // Do not remove assertAllowedUrl, add redirect following, or expand the
+            // allowlist without re-reviewing the security posture.
+            // codeql[js/request-forgery]
             const response = await fetch(finalUrl, {
                 headers,
                 signal: controller.signal,
