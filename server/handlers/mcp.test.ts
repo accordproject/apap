@@ -730,10 +730,6 @@ describe('MCP Handler', () => {
                     arguments: { agreementId: '1', payload: validPayload }
                 });
 
-                if (result.isError) {
-                    console.log('SEQUENTIAL_ERROR_DEBUG:', JSON.stringify(result));
-                }
-
                 expect(result.isError).toBeFalsy();
                 const content = result.content as any[];
                 expect(content[0].type).toBe('text');
