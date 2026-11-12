@@ -27,6 +27,7 @@ import mcpRouter, {
     serviceErrorToResourceError,
     buildApiErrorMessage,
     pageOpts,
+    getRequestId,
     PROTOCOL_CTO,
     SERVER_INSTRUCTIONS,
     CACHE_HINTS,
@@ -409,6 +410,65 @@ describe('pageOpts parser for paged resource URIs', () => {
     });
 });
 
+describe('getRequestId (JSON-RPC 2.0 id extractor)', () => {
+    it('correctly maps the standard test matrix', () => {
+        const matrix: Array<[unknown, string | number | null]> = [
+            [undefined, null],
+            [null, null],
+            ['string body', null],
+            [[1, 2], null],
+            [{}, null],
+            [{ id: 0 }, 0],
+            [{ id: 'a' }, 'a'],
+            [{ id: null }, null],
+            [{ id: {} }, null],
+            [{ id: true }, null],
+            [{ id: NaN }, null],
+        ];
+
+        for (const [input, expected] of matrix) {
+            expect(getRequestId(input)).toBe(expected);
+        }
+    });
+
+    it('extracts positive numeric request IDs', () => {
+        expect(getRequestId({ id: 1 })).toBe(1);
+        expect(getRequestId({ id: 42 })).toBe(42);
+    });
+
+    it('preserves numeric ID 0 without treating it as falsy', () => {
+        expect(getRequestId({ id: 0 })).toBe(0);
+    });
+
+    it('extracts string request IDs', () => {
+        expect(getRequestId({ id: 'req-abc-123' })).toBe('req-abc-123');
+        expect(getRequestId({ id: '' })).toBe('');
+    });
+
+    it('returns null when id is explicitly null', () => {
+        expect(getRequestId({ id: null })).toBeNull();
+    });
+
+    it('returns null when id is missing or undefined (notification)', () => {
+        expect(getRequestId({})).toBeNull();
+        expect(getRequestId({ id: undefined })).toBeNull();
+    });
+
+    it('returns null when id has an invalid JSON-RPC type (boolean, object, array)', () => {
+        expect(getRequestId({ id: true })).toBeNull();
+        expect(getRequestId({ id: false })).toBeNull();
+        expect(getRequestId({ id: {} })).toBeNull();
+        expect(getRequestId({ id: [1, 2] })).toBeNull();
+    });
+
+    it('returns null when body is not an object or is empty', () => {
+        expect(getRequestId(null)).toBeNull();
+        expect(getRequestId(undefined)).toBeNull();
+        expect(getRequestId('invalid string body')).toBeNull();
+        expect(getRequestId(12345)).toBeNull();
+    });
+});
+
 describe('MCP Handler', () => {
     let app: express.Application;
     let mockDb: ReturnType<typeof createMockDb>;
@@ -458,7 +518,24 @@ describe('MCP Handler', () => {
     // =========================================================================
     describe('HTTP Transport Boundaries', () => {
 
-        it('POST /mcp returns 400 when no session ID and not an initialize request', async () => {
+        it('POST /mcp returns 404 when session ID is unknown or expired and preserves request id', async () => {
+            const response = await request(app)
+                .post('/mcp')
+                .set('mcp-session-id', 'unknown-session-999')
+                .send({ jsonrpc: '2.0', method: 'tools/list', id: 42 })
+                .expect(404);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Session not found or expired',
+                },
+                id: 42,
+            });
+        });
+
+        it('POST /mcp returns 400 when no session ID and preserves numeric ID', async () => {
             const response = await request(app)
                 .post('/mcp')
                 .send({ jsonrpc: '2.0', method: 'tools/list', id: 1 })
@@ -468,7 +545,145 @@ describe('MCP Handler', () => {
                 jsonrpc: '2.0',
                 error: {
                     code: -32000,
-                    message: 'Bad Request: No valid session ID provided',
+                    message: 'Bad Request: No valid session ID provided and not an initialize request',
+                },
+                id: 1,
+            });
+        });
+
+        it('POST /mcp preserves string ID on 400 Bad Request', async () => {
+            const response = await request(app)
+                .post('/mcp')
+                .send({ jsonrpc: '2.0', method: 'tools/list', id: 'client-req-99' })
+                .expect(400);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Bad Request: No valid session ID provided and not an initialize request',
+                },
+                id: 'client-req-99',
+            });
+        });
+
+        it('POST /mcp preserves numeric ID 0 on 400 Bad Request', async () => {
+            const response = await request(app)
+                .post('/mcp')
+                .send({ jsonrpc: '2.0', method: 'tools/list', id: 0 })
+                .expect(400);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Bad Request: No valid session ID provided and not an initialize request',
+                },
+                id: 0,
+            });
+        });
+
+        it('POST /mcp returns id: null when notification has no id on 400 Bad Request', async () => {
+            const response = await request(app)
+                .post('/mcp')
+                .send({ jsonrpc: '2.0', method: 'notifications/test' })
+                .expect(400);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Bad Request: No valid session ID provided and not an initialize request',
+                },
+                id: null,
+            });
+        });
+
+        it('POST /mcp returns id: null when request body is not an object on 400 Bad Request', async () => {
+            const response = await request(app)
+                .post('/mcp')
+                .send('not-a-json-object')
+                .set('Content-Type', 'text/plain')
+                .expect(400);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Bad Request: No valid session ID provided and not an initialize request',
+                },
+                id: null,
+            });
+        });
+
+        it('POST /mcp preserves request id on 500 internal server error', async () => {
+            const errApp = express();
+            errApp.use(express.json());
+            errApp.use((req, res, next) => {
+                Object.defineProperty(res.locals, 'policyContext', {
+                    get() {
+                        throw new Error('Simulated internal handler exception');
+                    }
+                });
+                next();
+            });
+            errApp.use('/', mcpRouter);
+
+            const response = await request(errApp)
+                .post('/mcp')
+                .send({
+                    jsonrpc: '2.0',
+                    id: 'crash-req-42',
+                    method: 'initialize',
+                    params: {
+                        protocolVersion: '2025-03-26',
+                        capabilities: {},
+                        clientInfo: { name: 'test', version: '1.0' }
+                    }
+                })
+                .expect(500);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32603,
+                    message: 'Internal server error',
+                },
+                id: 'crash-req-42',
+            });
+        });
+
+        it('POST /mcp returns id: null on 500 when request body has no id', async () => {
+            const errApp = express();
+            errApp.use(express.json());
+            errApp.use((req, res, next) => {
+                Object.defineProperty(res.locals, 'policyContext', {
+                    get() {
+                        throw new Error('Simulated internal handler exception');
+                    }
+                });
+                next();
+            });
+            errApp.use('/', mcpRouter);
+
+            const response = await request(errApp)
+                .post('/mcp')
+                .send({
+                    jsonrpc: '2.0',
+                    method: 'initialize',
+                    params: {
+                        protocolVersion: '2025-03-26',
+                        capabilities: {},
+                        clientInfo: { name: 'test', version: '1.0' }
+                    }
+                })
+                .expect(500);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32603,
+                    message: 'Internal server error',
                 },
                 id: null,
             });

@@ -741,6 +741,20 @@ export function startSessionCleanup(): void {
 // exports `SSEServerTransport`. Only Streamable HTTP remains.
 //=============================================================================
 
+/**
+ * Extracts a valid JSON-RPC 2.0 request identifier from an incoming request body.
+ * According to JSON-RPC 2.0 (Section 5), an identifier MUST be a String,
+ * Number, or NULL. If the id is not present or cannot be determined (e.g. missing,
+ * non-object body, or invalid type), null is returned.
+ */
+export const getRequestId = (body: unknown): string | number | null => {
+    const id = (body as { id?: unknown } | null | undefined)?.id;
+    if (typeof id === 'string' || (typeof id === 'number' && !Number.isNaN(id))) {
+        return id;
+    }
+    return null;
+};
+
 const router = express.Router();
 
 /**
@@ -760,11 +774,25 @@ router.all('/mcp', async (req: Request, res: Response) => {
         const sessionId = req.headers['mcp-session-id'] as string | undefined;
         let transport: NodeStreamableHTTPServerTransport;
 
-        if (sessionId && transports[sessionId]) {
-            // Reuse existing transport (map is now single-type: only Streamable HTTP).
-            transport = transports[sessionId];
-            // Update last activity on every request
-            sessionLastActivity[sessionId] = Date.now();
+        if (sessionId) {
+            if (transports[sessionId]) {
+                // Reuse existing transport (map is now single-type: only Streamable HTTP).
+                transport = transports[sessionId];
+                // Update last activity on every request
+                sessionLastActivity[sessionId] = Date.now();
+            } else {
+                console.log({ type: 'unknown_mcp_session', sessionId });
+                // Session expired or unknown - Streamable HTTP spec requires 404 Not Found so client re-initializes
+                res.status(404).json({
+                    jsonrpc: '2.0',
+                    error: {
+                        code: -32000,
+                        message: 'Session not found or expired',
+                    },
+                    id: getRequestId(req.body),
+                });
+                return;
+            }
         } else if (!sessionId && req.method === 'POST' && isInitializeRequest(req.body)) {
             const eventStore = new InMemoryEventStore();
             transport = new NodeStreamableHTTPServerTransport({
@@ -800,14 +828,14 @@ router.all('/mcp', async (req: Request, res: Response) => {
             console.log({ type: 'connected_server_to_transport' });
         } else {
             console.log({ type: 'invalid_mcp_request' });
-            // Invalid request - no session ID or not initialization request
+            // Missing session ID and not an initialize request
             res.status(400).json({
                 jsonrpc: '2.0',
                 error: {
                     code: -32000,
-                    message: 'Bad Request: No valid session ID provided',
+                    message: 'Bad Request: No valid session ID provided and not an initialize request',
                 },
-                id: null,
+                id: getRequestId(req.body),
             });
             return;
         }
@@ -824,7 +852,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
                     code: -32603,
                     message: 'Internal server error',
                 },
-                id: null,
+                id: getRequestId(req.body),
             });
         }
     }
