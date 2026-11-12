@@ -4,6 +4,7 @@ import {
     AgreementNotFoundError,
     AgreementConversionError,
     AgreementRecordImmutableError,
+    AgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
     AgreementTriggerError,
     InvalidPayloadError,
@@ -149,6 +150,15 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
         !deepEqual(existing.data, updates.data)
     ) {
         throw new AgreementRecordImmutableError(existing.id, status, 'data');
+    }
+
+    // Runtime resolves cached agreements by hash. PUT cannot rebind that hash.
+    if (
+        existing.templateHash != null &&
+        updates.template !== undefined &&
+        templateUriFromReference(existing.template) !== templateUriFromReference(updates.template as string | null)
+    ) {
+        throw new AgreementTemplateBindingImmutableError(existing.id);
     }
 }
 

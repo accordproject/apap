@@ -12,6 +12,7 @@ import {
 import {
     AgreementNotFoundError,
     AgreementRecordImmutableError,
+    AgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
 } from './errors';
 import { DevelopmentPrincipal } from '../auth/types';
@@ -332,6 +333,31 @@ describe('agreementService', () => {
     });
 
     describe('assertAgreementRecordMutable', () => {
+        const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+        const template = `${prefix}test://templates/a`;
+        const templateHash = 'a'.repeat(64);
+
+        it.each(['DRAFT', 'SIGNING'] as const)('rejects changing a cached template in %s', (agreementStatus) => {
+            const existing = agreementRow(1, { agreementStatus, template, templateHash });
+            expect(() => assertAgreementRecordMutable(existing, { template: `${prefix}test://templates/b` }))
+                .toThrow(AgreementTemplateBindingImmutableError);
+        });
+
+        it.each([
+            { template },
+            { template: `${prefix}${encodeURIComponent('test://templates/a')}` },
+            { data: { price: 20 } },
+        ])('allows a cached agreement update with %j', (updates) => {
+            const existing = agreementRow(1, { agreementStatus: 'DRAFT', template, templateHash });
+            expect(() => assertAgreementRecordMutable(existing, updates)).not.toThrow();
+        });
+
+        it('allows a draft without a cached hash to change its template', () => {
+            const existing = agreementRow(1, { agreementStatus: 'DRAFT', template, templateHash: null });
+            expect(() => assertAgreementRecordMutable(existing, { template: `${prefix}test://templates/b` }))
+                .not.toThrow();
+        });
+
         it('allows changing data and signatures while status is DRAFT', () => {
             const existing = agreementRow(1, { agreementStatus: 'DRAFT', data: { price: 10 }, signatures: [] });
 

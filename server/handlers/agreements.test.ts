@@ -780,7 +780,7 @@ describe('POST / - Agreement Creation with External Template', () => {
         });
     });
 
-    describe('PUT /:id - agreement record immutability once COMPLETED/SUPERSEDED', () => {
+    describe('PUT /:id - agreement record and template immutability', () => {
         let putApp: express.Application;
         let putDb: any;
 
@@ -817,6 +817,25 @@ describe('POST / - Agreement Creation with External Template', () => {
             valModule.concertoValidation.mockImplementation((_type: any, body: any) =>
                 Promise.resolve({ success: true, data: body }),
             );
+        });
+
+        it('returns a typed conflict before writing a changed cached template reference', async () => {
+            const prefix = 'resource:org.accordproject.protocol@1.0.0.Template#';
+            putDb.limit.mockResolvedValueOnce([{
+                id: 1,
+                agreementStatus: 'DRAFT',
+                template: `${prefix}test://templates/a`,
+                templateHash: 'a'.repeat(64),
+            }]);
+
+            const res = await request(putApp).put('/agreements/1').send({ template: `${prefix}test://templates/b` });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error).toMatchObject({
+                code: 'AGREEMENT_TEMPLATE_BINDING_IMMUTABLE',
+                details: { agreementId: 1, field: 'template' },
+            });
+            expect(putDb.update).not.toHaveBeenCalled();
         });
 
         it('rejects a data change once the agreement is COMPLETED', async () => {
