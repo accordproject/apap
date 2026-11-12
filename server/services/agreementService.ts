@@ -105,6 +105,9 @@ function deepEqual(a: unknown, b: unknown): boolean {
  * - While SIGNING, rejects a request that would change `data` alone; every
  *   other field (signatures arriving, parties, etc.) stays mutable, since
  *   that's the whole point of the SIGNING status.
+ * - An agreement with a cached template (`templateHash` set) cannot change its
+ *   decoded template identifier through PUT in any lifecycle status, including
+ *   DRAFT.
  *
  * A field is only rejected if the request would actually change its value;
  * resending the current value (e.g. the same `data` with different key
