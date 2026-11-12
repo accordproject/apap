@@ -535,6 +535,38 @@ describe('MCP Handler', () => {
             });
         });
 
+        it('DELETE /mcp returns 404 when session ID is unknown or expired', async () => {
+            const response = await request(app)
+                .delete('/mcp')
+                .set('mcp-session-id', 'unknown-session-delete')
+                .expect(404);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Session not found or expired',
+                },
+                id: null,
+            });
+        });
+
+        it('GET /mcp returns 404 when session ID is unknown or expired', async () => {
+            const response = await request(app)
+                .get('/mcp')
+                .set('mcp-session-id', 'unknown-session-get')
+                .expect(404);
+
+            expect(response.body).toEqual({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32000,
+                    message: 'Session not found or expired',
+                },
+                id: null,
+            });
+        });
+
         it('POST /mcp returns 400 when no session ID and preserves numeric ID', async () => {
             const response = await request(app)
                 .post('/mcp')
