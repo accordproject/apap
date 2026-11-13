@@ -4,6 +4,7 @@ import {
     AgreementNotFoundError,
     AgreementConversionError,
     AgreementRecordImmutableError,
+    AgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
     AgreementTriggerError,
     InvalidPayloadError,
@@ -104,6 +105,9 @@ function deepEqual(a: unknown, b: unknown): boolean {
  * - While SIGNING, rejects a request that would change `data` alone; every
  *   other field (signatures arriving, parties, etc.) stays mutable, since
  *   that's the whole point of the SIGNING status.
+ * - An agreement with a cached template (`templateHash` set) cannot change its
+ *   decoded template identifier through PUT in any lifecycle status, including
+ *   DRAFT.
  *
  * A field is only rejected if the request would actually change its value;
  * resending the current value (e.g. the same `data` with different key
@@ -149,6 +153,15 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
         !deepEqual(existing.data, updates.data)
     ) {
         throw new AgreementRecordImmutableError(existing.id, status, 'data');
+    }
+
+    // Runtime resolves cached agreements by hash. PUT cannot rebind that hash.
+    if (
+        existing.templateHash != null &&
+        updates.template !== undefined &&
+        templateUriFromReference(existing.template) !== templateUriFromReference(updates.template as string | null)
+    ) {
+        throw new AgreementTemplateBindingImmutableError(existing.id);
     }
 }
 

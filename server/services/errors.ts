@@ -182,6 +182,18 @@ export class AgreementStatusTransitionError extends ServiceError {
     }
 }
 
+export class AgreementTemplateBindingImmutableError extends ServiceError {
+    constructor(agreementId: number) {
+        super(
+            'AGREEMENT_TEMPLATE_BINDING_IMMUTABLE',
+            409,
+            `Agreement ${agreementId} cannot change its template while it is bound to a cached archive`,
+            { agreementId, field: 'template' },
+        );
+        this.name = 'AgreementTemplateBindingImmutableError';
+    }
+}
+
 export class AgreementConversionError extends ServiceError {
     constructor(agreementId: string | number, format: string, reason?: string) {
         super(
