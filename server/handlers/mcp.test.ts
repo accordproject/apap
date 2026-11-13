@@ -217,17 +217,14 @@ describe('mcp typed error helpers', () => {
             expect(parsed.error.details.identifier).toBe('999');
         });
 
-        it('carries AGREEMENT_CONVERSION_FAILED details through to the wire payload', () => {
+        it('sanitizes AGREEMENT_CONVERSION_FAILED details on the wire', () => {
             const err = new AgreementConversionError('7', 'pdf', 'no renderer for pdf');
             const result = serviceErrorToCallToolResult(err);
 
             const parsed = JSON.parse((result.content as any[])[0].text);
             expect(parsed.error.code).toBe('AGREEMENT_CONVERSION_FAILED');
-            expect(parsed.error.details).toEqual({
-                agreementId: '7',
-                format: 'pdf',
-                reason: 'no renderer for pdf',
-            });
+            expect(parsed.error.message).toBe('An internal error occurred');
+            expect(JSON.stringify(parsed)).not.toContain('no renderer for pdf');
         });
     });
 
@@ -252,21 +249,22 @@ describe('mcp typed error helpers', () => {
             expect(wrapped).toBeInstanceOf(ProtocolError);
             expect(wrapped.code).toBe(ProtocolErrorCode.InternalError);
             // McpError prepends "MCP error <code>:" to the constructor message; check substring.
-            expect(wrapped.message).toContain('kaboom');
+            expect(wrapped.message).toContain('An internal error occurred');
+            expect(wrapped.message).not.toContain('kaboom');
 
             const data = wrapped.data as { error: { code: string; details?: unknown } };
             expect(data.error.code).toBe('CUSTOM');
-            expect(data.error.details).toEqual({ reason: 'overflow' });
+            expect(data.error.details).toBeUndefined();
         });
 
-        it('round-trips arbitrary ServiceError subclasses into the McpError data payload', () => {
+        it('sanitizes unreviewed ServiceError subclasses in the MCP payload', () => {
             const err = new ServiceError('CUSTOM', 418, 'I am a teapot', { teapot: true });
             const wrapped = serviceErrorToResourceError(err);
 
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
             expect(data.error.code).toBe('CUSTOM');
-            expect(data.error.message).toBe('I am a teapot');
-            expect(data.error.details).toEqual({ teapot: true });
+            expect(data.error.message).toBe('An internal error occurred');
+            expect(data.error.details).toBeUndefined();
         });
     });
 });

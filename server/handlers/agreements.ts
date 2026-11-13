@@ -167,8 +167,7 @@ crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
                 operation: 'triggerAgreement',
                 agreementId: req.params.id,
             });
-            const upstream = (err as any).upstreamMessage ?? err.message;
-            res.json({ isError: true, errorMessage: upstream, errorDetails: upstream });
+            res.json({ isError: true, errorMessage: 'Agreement execution failed', errorDetails: 'Agreement execution failed' });
             return;
         }
         throw err;

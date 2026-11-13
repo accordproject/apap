@@ -305,7 +305,7 @@ describe('unique-violation compatibility', () => {
         }
     });
 
-    it.each(['post', 'put'] as const)('%s forwards unrelated failures and typed errors unchanged', async (method) => {
+    it.each(['post', 'put'] as const)('%s forwards failures internally but sanitizes client responses', async (method) => {
         for (const failure of [
             new DrizzleQueryError('query', [], Object.assign(new Error('foreign key'), { code: '23503' })),
             Object.assign(new Error('unrelated'), { cause: { code: '23505' } }),
@@ -316,7 +316,10 @@ describe('unique-violation compatibility', () => {
             const response = await request(app)[method](method === 'post' ? '/test' : '/test/1').send({ uri: 'urn:test' });
             expect(forwarded).toHaveBeenCalledWith(failure);
             expect(response.status).toBe(failure instanceof ServiceError ? failure.statusCode : 500);
-            expect(response.body).toEqual(failure instanceof ServiceError ? failure.toJSON() : { error: failure.message });
+            expect(response.body).toEqual(failure instanceof ServiceError
+                ? { error: { code: failure.code, message: 'An internal error occurred' } }
+                : { error: 'An internal error occurred' });
+            expect(JSON.stringify(response.body)).not.toContain(failure.message);
         }
     });
 });

@@ -16,6 +16,7 @@ import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, MODEL, Template } from '../db/schema';
 import {
     ServiceError,
+    publicServiceError,
     TemplateNotFoundError,
     AgreementNotFoundError,
     AgreementConversionError,
@@ -249,7 +250,7 @@ export function serviceErrorToCallToolResult(error: ServiceError): CallToolResul
         content: [
             {
                 type: 'text',
-                text: JSON.stringify(error.toJSON()),
+                text: JSON.stringify(publicServiceError(error)),
             },
         ],
     };
@@ -268,7 +269,24 @@ export function serviceErrorToCallToolResult(error: ServiceError): CallToolResul
  */
 export function serviceErrorToResourceError(error: ServiceError): ProtocolError {
     const code = error.statusCode === 404 ? INVALID_PARAMS : INTERNAL_ERROR;
-    return new ProtocolError(code, error.message, error.toJSON());
+    const payload = publicServiceError(error);
+    return new ProtocolError(code, payload.error.message, payload);
+}
+
+
+function internalToolError(): CallToolResult {
+    console.error({ type: 'mcp_operation_failed' });
+    return { isError: true, content: [{ type: 'text', text: 'An internal error occurred' }] };
+}
+
+function resourceError(error: unknown): ProtocolError {
+    if (error instanceof ServiceError) return serviceErrorToResourceError(error);
+    console.error({ type: 'mcp_operation_failed' });
+    return new ProtocolError(INTERNAL_ERROR, 'An internal error occurred');
+}
+
+async function safeResource<T>(operation: () => Promise<T>): Promise<T> {
+    try { return await operation(); } catch (error) { throw resourceError(error); }
 }
 
 /**
@@ -299,10 +317,7 @@ async function getAgreement(context: PolicyContext, uri: string, variables: { ag
             }]
         };
     } catch (err) {
-        if (err instanceof ServiceError) {
-            throw serviceErrorToResourceError(err);
-        }
-        throw err;
+        throw resourceError(err);
     }
 }
 
@@ -428,7 +443,7 @@ export const getServer = (context: PolicyContext) => {
         'templates',
         "apap://templates",
         { mimeType: "application/json" },
-        (uri: URL) => getTemplates(context, uri),
+        (uri: URL) => safeResource(() => getTemplates(context, uri)),
     );
 
     // register the agreements (see #217 dispatch-order note on templates above).
@@ -436,7 +451,7 @@ export const getServer = (context: PolicyContext) => {
         'agreements',
         "apap://agreements",
         { mimeType: "application/json" },
-        (uri: URL) => getAgreements(context, uri),
+        (uri: URL) => safeResource(() => getAgreements(context, uri)),
     );
 
     // Paged variants for #217: RFC 6570 form-style query expansion
@@ -457,7 +472,7 @@ export const getServer = (context: PolicyContext) => {
         new ResourceTemplate('apap://templates{?limit,offset}', { list: undefined }),
         { title: 'Templates (paged)', mimeType: 'application/json' },
         (uri: URL, variables: Record<string, string | string[]>) =>
-            getTemplates(context, uri, pageOpts(variables)),
+            safeResource(() => getTemplates(context, uri, pageOpts(variables))),
     );
 
     server.registerResource(
@@ -465,14 +480,14 @@ export const getServer = (context: PolicyContext) => {
         new ResourceTemplate('apap://agreements{?limit,offset}', { list: undefined }),
         { title: 'Agreements (paged)', mimeType: 'application/json' },
         (uri: URL, variables: Record<string, string | string[]>) =>
-            getAgreements(context, uri, pageOpts(variables)),
+            safeResource(() => getAgreements(context, uri, pageOpts(variables))),
     );
 
     // register resource template for agreements
     server.registerResource(
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
-            list: async () => {
+            list: async () => safeResource(async () => {
                 const agreements = await listAgreements(context);
                 return {
                     resources: agreements.map((a) => ({
@@ -481,7 +496,7 @@ export const getServer = (context: PolicyContext) => {
                         uri: `apap://agreements/${a.id}`,
                     })),
                 };
-            }
+            })
         }),
         { mimeType: "application/json" },
         async (uri: URL, variables: Record<string, string | string[]>) => {
@@ -494,7 +509,7 @@ export const getServer = (context: PolicyContext) => {
     server.registerResource(
         "template",
         new ResourceTemplate("apap://templates/{templateId}", {
-            list: async () => {
+            list: async () => safeResource(async () => {
                 const templates = await listTemplates(context);
                 return {
                     resources: templates.map((t) => ({
@@ -503,7 +518,7 @@ export const getServer = (context: PolicyContext) => {
                         uri: `apap://templates/${t.id}`,
                     })),
                 };
-            }
+            })
         }),
         { mimeType: "application/json" },
         async (uri: URL, variables: Record<string, string | string[]>) => {
@@ -525,10 +540,7 @@ export const getServer = (context: PolicyContext) => {
                     }]
                 };
             } catch (err) {
-                if (err instanceof ServiceError) {
-                    throw serviceErrorToResourceError(err);
-                }
-                throw err;
+                throw resourceError(err);
             }
         }
     );
@@ -561,7 +573,7 @@ export const getServer = (context: PolicyContext) => {
                 if (error instanceof ServiceError) {
                     return serviceErrorToCallToolResult(error);
                 }
-                throw error;
+                return internalToolError();
             }
         }
     );
@@ -597,7 +609,7 @@ Refer to the agreement's template model to determine which fields are required o
                 if (error instanceof ServiceError) {
                     return serviceErrorToCallToolResult(error);
                 }
-                throw error;
+                return internalToolError();
             }
         }
     );
@@ -632,7 +644,7 @@ Refer to the agreement's template model to determine which fields are required o
                 if (err instanceof ServiceError) {
                     return serviceErrorToCallToolResult(err);
                 }
-                throw err;
+                return internalToolError();
             }
         }
     );
@@ -667,7 +679,7 @@ Refer to the agreement's template model to determine which fields are required o
                 if (err instanceof ServiceError) {
                     return serviceErrorToCallToolResult(err);
                 }
-                throw err;
+                return internalToolError();
             }
         }
     );
@@ -844,7 +856,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
         await transport.handleRequest(req, res, req.body);
         console.log({ type: 'transport_handled_request' });
     } catch (error) {
-        console.error({ type: 'mcp_request_failed', error: error instanceof Error ? error.message : String(error) });
+        console.error({ type: 'mcp_request_failed' });
         if (!res.headersSent) {
             res.status(500).json({
                 jsonrpc: '2.0',

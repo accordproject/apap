@@ -286,3 +286,22 @@ export interface ClientSafeError {
 export function isClientSafeError(error: unknown): error is ServiceError & ClientSafeError {
     return error instanceof ServiceError && (error as Partial<ClientSafeError>).clientSafe === true;
 }
+
+/** Client-facing error payload. Unknown and server-side errors never expose their cause. */
+export function publicServiceError(error: ServiceError): { error: { code: string; message: string; details?: Record<string, unknown> } } {
+    const safeCodes = new Set([
+        'TEMPLATE_NOT_FOUND', 'AGREEMENT_NOT_FOUND', 'TEMPLATE_DUPLICATE',
+        'TEMPLATE_IMMUTABLE', 'TEMPLATE_IN_USE', 'AGREEMENT_RECORD_IMMUTABLE',
+        'AGREEMENT_STATUS_TRANSITION_INVALID', 'AGREEMENT_TEMPLATE_BINDING_IMMUTABLE',
+        'INVALID_PAYLOAD', 'VALIDATION_ERROR', 'INSUFFICIENT_SCOPE',
+        'TEMPLATE_CICERO_VERSION_MISMATCH',
+    ]);
+    if (error.statusCode < 500 && (safeCodes.has(error.code) || isClientSafeError(error))) {
+        // Validation details may contain arbitrary parser/driver exception text.
+        if (error.code === 'INVALID_PAYLOAD' || error.code === 'VALIDATION_ERROR' || error.code === 'TEMPLATE_CICERO_VERSION_MISMATCH') {
+            return { error: { code: error.code, message: error.message } };
+        }
+        return error.toJSON();
+    }
+    return { error: { code: error.code, message: 'An internal error occurred' } };
+}

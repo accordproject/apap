@@ -1,18 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ServiceError } from '../services/errors';
+import { ServiceError, publicServiceError } from '../services/errors';
 import { isUniqueViolation } from '../db/errors';
-
-/**
- * Normalizes an unknown caught value into a safe, 
- * non-leaking error message string.
- * Never exposes raw stack traces or internal paths 
- * to the client.
- */
-function toSafeMessage(err: unknown): string {
-    if (err instanceof Error) return err.message;
-    if (typeof err === 'string') return err;
-    return 'An unexpected error occurred';
-}
 
 /**
  * Global Express error handling middleware.
@@ -41,11 +29,7 @@ export function globalErrorHandler(
         type: 'unhandled_error',
         method: req.method,
         path: req.path,
-        message: uniqueViolation ? 'Unique constraint violation' : toSafeMessage(err),
-        // Only log stack in development
-        ...(process.env.NODE_ENV === 'development' && !uniqueViolation && {
-            stack: err instanceof Error ? err.stack : undefined
-        })
+        message: uniqueViolation ? 'Unique constraint violation' : (err instanceof ServiceError ? err.code : 'Unexpected error'),
     });
 
     if (res.headersSent) {
@@ -62,17 +46,18 @@ export function globalErrorHandler(
     }
 
     if (err instanceof ServiceError) {
-        res.status(err.statusCode).json(err.toJSON());
+        res.status(err.statusCode).json(publicServiceError(err));
         return;
     }
 
     // Handle Express middleware errors (like malformed JSON)
-    const statusCode = (typeof err === 'object' && err !== null && 'status' in err && typeof (err as any).status === 'number') 
+    const statusCode = (typeof err === 'object' && err !== null && 'status' in err && Number.isInteger((err as any).status) && (err as any).status >= 400 && (err as any).status <= 599)
         ? (err as any).status 
         : 500;
 
     res.status(statusCode).json({
-        error: toSafeMessage(err)
+        error: statusCode === 400 && (err as any)?.type === 'entity.parse.failed'
+            ? 'Malformed JSON' : 'An internal error occurred'
     });
 }
 

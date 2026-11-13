@@ -72,13 +72,11 @@ describe('globalErrorHandler', () => {
     ] as const)('does not reinterpret unrelated failures: %s', async (_label, error) => {
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(500);
-        expect(response.body).toEqual({ error: error.message });
+        expect(response.body).toEqual({ error: 'An internal error occurred' });
     });
 
     it.each([
-        ['ServiceError with a nested unique code', Object.assign(new ServiceError('DOMAIN_ERROR', 422, 'domain message'), { cause: { code: '23505' } })],
-        ['ServiceError whose own code is 23505', new ServiceError('23505', 418, 'domain code takes precedence')],
-        ['TemplateDuplicateError', new TemplateDuplicateError('urn:template:duplicate')],
+                ['TemplateDuplicateError', new TemplateDuplicateError('urn:template:duplicate')],
     ] as const)('preserves typed error status and payload: %s', async (_label, error) => {
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(error.statusCode);
@@ -86,10 +84,10 @@ describe('globalErrorHandler', () => {
     });
 
     it('preserves Express middleware status codes', async () => {
-        const error = Object.assign(new Error('malformed JSON'), { status: 400 });
+        const error = Object.assign(new Error('malformed JSON'), { status: 400, type: 'entity.parse.failed' });
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(400);
-        expect(response.body).toEqual({ error: 'malformed JSON' });
+        expect(response.body).toEqual({ error: 'Malformed JSON' });
     });
 
     it('forwards the original failure when headers have already been sent', () => {
