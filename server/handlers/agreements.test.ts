@@ -321,8 +321,8 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(response.body).toEqual({
                 error: {
                     code: 'AGREEMENT_NOT_FOUND',
-                    message: 'Agreement not found: 999',
-                    details: { identifier: '999' },
+                    // Identifier text is no longer reflected into public errors.
+                    message: 'Agreement not found',
                 },
             });
         });

@@ -80,7 +80,16 @@ describe('globalErrorHandler', () => {
     ] as const)('preserves typed error status and payload: %s', async (_label, error) => {
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(error.statusCode);
-        expect(response.body).toEqual(error.toJSON());
+        expect(response.body).toEqual({ error: { code: 'TEMPLATE_DUPLICATE', message: 'Template already exists' } });
+    });
+
+    it.each([
+        ['nested unique violation', Object.assign(new ServiceError('DOMAIN_ERROR', 422, 'domain rejection'), { cause: { code: '23505' } }), 422],
+        ['own unique code', new ServiceError('23505', 418, 'typed code'), 418],
+    ])('keeps ServiceError classification with %s', async (_label, error, status) => {
+        const response = await request(appFor(error)).get('/');
+        expect(response.status).toBe(status);
+        expect(response.body).toEqual({ error: { code: 'INTERNAL_ERROR', message: 'An internal error occurred' } });
     });
 
     it('preserves Express middleware status codes', async () => {

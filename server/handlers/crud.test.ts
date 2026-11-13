@@ -317,7 +317,7 @@ describe('unique-violation compatibility', () => {
             expect(forwarded).toHaveBeenCalledWith(failure);
             expect(response.status).toBe(failure instanceof ServiceError ? failure.statusCode : 500);
             expect(response.body).toEqual(failure instanceof ServiceError
-                ? { error: { code: failure.code, message: 'An internal error occurred' } }
+                ? { error: { code: 'INTERNAL_ERROR', message: 'An internal error occurred' } }
                 : { error: 'An internal error occurred' });
             expect(JSON.stringify(response.body)).not.toContain(failure.message);
         }
@@ -380,7 +380,7 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
         const res = await request(app).put('/test/1').send({ name: 'new' });
 
         expect(res.status).toBe(409);
-        expect(res.body.error.code).toBe('TEST_GUARD_REJECTED');
+        expect(res.body.error).toEqual({ code: 'INTERNAL_ERROR', message: 'An internal error occurred' });
         expect(guardUpdate).toHaveBeenCalledWith(existing, expect.objectContaining({ name: 'new' }));
     });
 
@@ -414,7 +414,7 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
         const res = await request(app).delete('/test/1');
 
         expect(res.status).toBe(409);
-        expect(res.body.error.code).toBe('TEST_GUARD_REJECTED');
+        expect(res.body.error).toEqual({ code: 'INTERNAL_ERROR', message: 'An internal error occurred' });
         expect(guardDelete).toHaveBeenCalledWith(existing, db);
     });
 

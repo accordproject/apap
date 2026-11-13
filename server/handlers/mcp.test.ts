@@ -204,8 +204,8 @@ describe('mcp typed error helpers', () => {
 
             const parsed = JSON.parse(block.text);
             expect(parsed.error.code).toBe('TEMPLATE_NOT_FOUND');
-            expect(parsed.error.message).toContain('tmpl-42');
-            expect(parsed.error.details).toEqual({ identifier: 'tmpl-42' });
+            expect(parsed.error.message).toBe('Template not found');
+            expect(parsed.error.details).toBeUndefined();
         });
 
         it('preserves the AGREEMENT_NOT_FOUND code and identifier', () => {
@@ -214,7 +214,8 @@ describe('mcp typed error helpers', () => {
 
             const parsed = JSON.parse((result.content as any[])[0].text);
             expect(parsed.error.code).toBe('AGREEMENT_NOT_FOUND');
-            expect(parsed.error.details.identifier).toBe('999');
+            expect(parsed.error.message).toBe('Agreement not found');
+            expect(parsed.error.details).toBeUndefined();
         });
 
         it('sanitizes AGREEMENT_CONVERSION_FAILED details on the wire', () => {
@@ -235,11 +236,11 @@ describe('mcp typed error helpers', () => {
 
             expect(wrapped).toBeInstanceOf(ProtocolError);
             expect(wrapped.code).toBe(ProtocolErrorCode.InvalidParams);
-            expect(wrapped.message).toContain('tmpl-1');
+            expect(wrapped.message).toBe('Template not found');
 
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
             expect(data.error.code).toBe('TEMPLATE_NOT_FOUND');
-            expect(data.error.message).toContain('tmpl-1');
+            expect(data.error.message).toBe('Template not found');
         });
 
         it('uses InternalError code for non-404 ServiceErrors', () => {
@@ -253,7 +254,7 @@ describe('mcp typed error helpers', () => {
             expect(wrapped.message).not.toContain('kaboom');
 
             const data = wrapped.data as { error: { code: string; details?: unknown } };
-            expect(data.error.code).toBe('CUSTOM');
+            expect(data.error.code).toBe('INTERNAL_ERROR');
             expect(data.error.details).toBeUndefined();
         });
 
@@ -262,7 +263,7 @@ describe('mcp typed error helpers', () => {
             const wrapped = serviceErrorToResourceError(err);
 
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
-            expect(data.error.code).toBe('CUSTOM');
+            expect(data.error.code).toBe('INTERNAL_ERROR');
             expect(data.error.message).toBe('An internal error occurred');
             expect(data.error.details).toBeUndefined();
         });

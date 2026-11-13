@@ -287,26 +287,36 @@ export function isClientSafeError(error: unknown): error is ServiceError & Clien
     return error instanceof ServiceError && (error as Partial<ClientSafeError>).clientSafe === true;
 }
 
-/** Client-facing error payload. Unknown and server-side errors never expose their cause. */
+/** Public messages are fixed: error codes, messages and details may contain untrusted data. */
+const PUBLIC_ERROR_MESSAGES: Record<string, string> = {
+    TEMPLATE_NOT_FOUND: 'Template not found',
+    AGREEMENT_NOT_FOUND: 'Agreement not found',
+    TEMPLATE_DUPLICATE: 'Template already exists',
+    TEMPLATE_IMMUTABLE: 'Template is immutable',
+    TEMPLATE_IN_USE: 'Template is in use',
+    AGREEMENT_RECORD_IMMUTABLE: 'Agreement record is immutable',
+    AGREEMENT_STATUS_TRANSITION_INVALID: 'Invalid agreement status transition',
+    AGREEMENT_TEMPLATE_BINDING_IMMUTABLE: 'Agreement template binding is immutable',
+    INVALID_PAYLOAD: 'Invalid request payload',
+    VALIDATION_ERROR: 'Validation failed',
+    INSUFFICIENT_SCOPE: 'Insufficient scope',
+    TEMPLATE_CICERO_VERSION_MISMATCH: 'Template Cicero version is not supported',
+};
+
+/** Serialize only fixed public content and narrowly validated structural details. */
 export function publicServiceError(error: ServiceError): { error: { code: string; message: string; details?: Record<string, unknown> } } {
-    const safeCodes = new Set([
-        'TEMPLATE_NOT_FOUND', 'AGREEMENT_NOT_FOUND', 'TEMPLATE_DUPLICATE',
-        'TEMPLATE_IMMUTABLE', 'TEMPLATE_IN_USE', 'AGREEMENT_RECORD_IMMUTABLE',
-        'AGREEMENT_STATUS_TRANSITION_INVALID', 'AGREEMENT_TEMPLATE_BINDING_IMMUTABLE',
-        'INVALID_PAYLOAD', 'VALIDATION_ERROR', 'INSUFFICIENT_SCOPE',
-        'TEMPLATE_CICERO_VERSION_MISMATCH',
-    ]);
-    if (error.statusCode < 500 && (safeCodes.has(error.code) || isClientSafeError(error))) {
-        // Preserve a small set of structural facts, never arbitrary parser or driver text.
-        if (error.code === 'INVALID_PAYLOAD' || error.code === 'VALIDATION_ERROR' || error.code === 'TEMPLATE_CICERO_VERSION_MISMATCH') {
-            const details: Record<string, unknown> = {};
-            const agreementId = error.details?.agreementId;
-            if (typeof agreementId === 'number' && Number.isSafeInteger(agreementId) && agreementId > 0) {
-                details.agreementId = agreementId;
-            }
-            return { error: { code: error.code, message: error.message, ...(Object.keys(details).length ? { details } : {}) } };
+    if (error.statusCode < 500 && Object.prototype.hasOwnProperty.call(PUBLIC_ERROR_MESSAGES, error.code)) {
+        const details: Record<string, unknown> = {};
+        if (error.code === 'AGREEMENT_TEMPLATE_BINDING_IMMUTABLE') details.field = 'template';
+        const agreementId = error.details?.agreementId;
+        if (typeof agreementId === 'number' && Number.isSafeInteger(agreementId) && agreementId > 0) {
+            details.agreementId = agreementId;
         }
-        return error.toJSON();
+        return { error: { code: error.code, message: PUBLIC_ERROR_MESSAGES[error.code], ...(Object.keys(details).length ? { details } : {}) } };
     }
-    return { error: { code: error.code, message: 'An internal error occurred' } };
+    const code = error instanceof AgreementConversionError ? 'AGREEMENT_CONVERSION_FAILED'
+        : error instanceof AgreementTriggerError ? 'AGREEMENT_TRIGGER_FAILED'
+        : error instanceof UpstreamApiError ? 'UPSTREAM_API_ERROR'
+        : 'INTERNAL_ERROR';
+    return { error: { code, message: 'An internal error occurred' } };
 }
