@@ -1,6 +1,7 @@
 import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
+import { PgDialect } from 'drizzle-orm/pg-core';
 
 // Mock crypto.randomUUID
 jest.mock('crypto', () => {
@@ -34,7 +35,10 @@ import mcpRouter, {
     agreementToConcerto,
     templateToConcerto,
     toJsonScalar,
+    transports,
+    sessionLastActivity,
 } from './mcp';
+import { Agreement, Template } from '../db/schema';
 import { ModelManager, Factory, Serializer } from '@accordproject/concerto-core';
 import { ProtocolError, ProtocolErrorCode, InMemoryTransport } from '@modelcontextprotocol/server';
 import { validateAgreementBody } from '../services/agreementService';
@@ -44,8 +48,10 @@ import {
     ServiceError,
     TemplateNotFoundError,
 } from '../services/errors';
-import { Client } from '@modelcontextprotocol/client';
-import { createLegacyPolicyContext } from '../services/policy';
+import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
+import type { Server } from 'http';
+import type { AddressInfo } from 'net';
+import { createLegacyPolicyContext, registerAuthorizationPolicy } from '../services/policy';
 
 function createMockDb() {
     const mock: any = {
@@ -70,6 +76,48 @@ function createMockDb() {
     };
     mock._setReturn = (val: any[]) => { mock._returnValue = val; };
     return mock;
+}
+
+function createDiscoveryDb(agreementCount: number, templateCount: number) {
+    const agreements = Array.from({ length: agreementCount }, (_, index) => ({
+        id: index + 1,
+        uri: `urn:agreement:${index + 1}`,
+        data: { value: index + 1 },
+        agreementStatus: 'DRAFT',
+    }));
+    const templates = Array.from({ length: templateCount }, (_, index) => ({
+        id: index + 1,
+        uri: `urn:template:${index + 1}`,
+        description: 'A template description',
+    }));
+    const queries = jest.fn((table: unknown, limit: number) => ({ table, limit }));
+    const dialect = new PgDialect();
+    const db = {
+        select: () => ({
+            from(table: typeof Agreement | typeof Template) {
+                const rows = table === Agreement ? agreements : templates;
+                let filtered: Array<(typeof rows)[number]> = rows;
+                return {
+                    where(predicate: Parameters<PgDialect['sqlToQuery']>[0] | undefined) {
+                        if (predicate) {
+                            const { sql, params } = dialect.sqlToQuery(predicate);
+                            const id = Number(params[0]);
+                            if (sql.endsWith('> $1')) filtered = rows.filter(row => row.id > id);
+                            else if (sql.endsWith('= $1')) filtered = rows.filter(row => row.id === id);
+                            else throw new Error(`Unexpected discovery test predicate: ${sql}`);
+                        }
+                        return this;
+                    },
+                    orderBy() { return this; },
+                    limit(limit: number) {
+                        queries(table, limit);
+                        return Promise.resolve(filtered.slice(0, limit));
+                    },
+                };
+            },
+        }),
+    };
+    return { db, queries, agreements, templates };
 }
 
 // Helper to create a mock failed Response. Only the fields buildApiErrorMessage
@@ -470,6 +518,160 @@ describe('getRequestId (JSON-RPC 2.0 id extractor)', () => {
     });
 });
 
+describe('MCP resource discovery pagination', () => {
+    const staticResources = [
+        { name: 'protocol-schema', uri: 'apap://schema/protocol.cto', mimeType: 'text/x-concerto' },
+        { name: 'templates', uri: 'apap://templates', mimeType: 'application/json' },
+        { name: 'agreements', uri: 'apap://agreements', mimeType: 'application/json' },
+    ];
+    let fixture: ReturnType<typeof createDiscoveryDb>;
+    let client: Client;
+    let transport: StreamableHTTPClientTransport;
+    let listener: Server;
+
+    async function connect(agreements: number, templates: number) {
+        fixture = createDiscoveryDb(agreements, templates);
+        const app = express();
+        app.use(express.json());
+        app.use((_req, res, next) => {
+            res.locals.db = fixture.db;
+            next();
+        });
+        app.use(mcpRouter);
+        await new Promise<void>((resolve, reject) => {
+            listener = app.listen(0, '127.0.0.1', resolve);
+            listener.once('error', reject);
+        });
+        const { port } = listener.address() as AddressInfo;
+        transport = new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${port}/mcp`));
+        client = new Client({ name: 'discovery-test', version: '1.0.0' }, { versionNegotiation: { mode: 'legacy' } });
+        await client.connect(transport);
+    }
+
+    afterEach(async () => {
+        try {
+            if (transport?.sessionId) await transport.terminateSession();
+        } finally {
+            await client?.close();
+            if (listener) await new Promise<void>(resolve => listener.close(() => resolve()));
+        }
+    });
+
+    it.each([
+        [0, 0, [0]],
+        [1, 1, [2]],
+        [100, 0, [100]],
+        [101, 0, [100, 1]],
+        [0, 100, [100]],
+        [0, 101, [100, 1]],
+        [100, 1, [101]],
+        [100, 100, [200]],
+        [101, 100, [200, 1]],
+        [100, 101, [200, 1]],
+        [101, 101, [200, 2]],
+        [101, 201, [200, 101, 1]],
+        [40, 60, [100]],
+        [60, 60, [120]],
+    ])('discovers %i agreements and %i templates across pages', async (agreementCount, templateCount, pageSizes) => {
+        await connect(agreementCount, templateCount);
+        const expectedAgreements = fixture.agreements.map(row => ({
+            name: `agreement-${row.id}`, uri: `apap://agreements/${row.id}`, mimeType: 'application/json',
+        }));
+        const expectedTemplates = fixture.templates.map(row => ({
+            name: `template-${row.id}`, uri: `apap://templates/${row.id}`, mimeType: 'application/json',
+            description: row.description,
+        }));
+        let cursor: string | undefined;
+        const expectedWalk: typeof staticResources = [];
+        for (const [index, size] of pageSizes.entries()) {
+            const page = await client.request({ method: 'resources/list', params: { cursor } });
+            const start = index * 100;
+            const expectedPage = [
+                ...(index === 0 ? staticResources : []),
+                ...expectedAgreements.slice(start, start + 100),
+                ...expectedTemplates.slice(start, start + 100),
+            ];
+            expect(page.resources).toHaveLength(size + (index === 0 ? staticResources.length : 0));
+            expect(page.resources).toEqual(expectedPage);
+            expectedWalk.push(...expectedPage);
+            if (index < pageSizes.length - 1) {
+                expect(page.nextCursor).toEqual(expect.any(String));
+                expect(page.nextCursor).not.toBe(cursor);
+            } else {
+                expect(page.nextCursor).toBeUndefined();
+            }
+            cursor = page.nextCursor;
+        }
+        expect(expectedWalk).toHaveLength(staticResources.length + agreementCount + templateCount);
+        expect((await client.listResources()).resources).toEqual(expectedWalk);
+        expect(fixture.queries.mock.calls.every(([, limit]) => limit >= 1 && limit <= 101)).toBe(true);
+    });
+
+    it.each(['', 'bogus', 'v2:1:-', 'v1:1', 'v1:01:-', 'v1:-:-',
+        'v1:-:2147483648', 'v1:1:-\n'])('rejects invalid cursor %j', async (cursor) => {
+        await connect(1, 1);
+        await expect(client.listResources({ cursor })).rejects.toMatchObject({ code: ProtocolErrorCode.InvalidParams });
+        expect(fixture.queries).not.toHaveBeenCalled();
+    });
+
+    // SDK 2.0.0 rejects these values before dispatching to APAP's handler.
+    it.each([42, null, {}])('uses the SDK error for a non-string cursor %j', async (cursor) => {
+        await connect(1, 1);
+        await expect(client.request({
+            method: 'resources/list',
+            params: { cursor: cursor as unknown as string },
+        })).rejects.toMatchObject({ code: ProtocolErrorCode.InternalError });
+        expect(fixture.queries).not.toHaveBeenCalled();
+    });
+
+    it('reads resources beyond the first page and preserves resource templates', async () => {
+        await connect(101, 101);
+        const { resourceTemplates } = await client.listResourceTemplates();
+        expect(resourceTemplates.map(template => template.uriTemplate)).toEqual([
+            'apap://templates{?limit,offset}', 'apap://agreements{?limit,offset}',
+            'apap://agreements/{agreementId}', 'apap://templates/{templateId}',
+        ]);
+        const uri = 'apap://agreements/101';
+        const result = await client.readResource({ uri });
+        expect(result.contents[0]).toMatchObject({ uri, mimeType: 'application/json' });
+    });
+
+    it('continues by ID when the cursor row is deleted and a later row is inserted', async () => {
+        await connect(101, 0);
+        const first = await client.request({ method: 'resources/list' });
+        expect(first.nextCursor).toEqual(expect.any(String));
+        fixture.agreements.splice(99, 1);
+        fixture.agreements.push({ id: 102, uri: 'urn:agreement:102', data: { value: 102 }, agreementStatus: 'DRAFT' });
+        const second = await client.listResources({ cursor: first.nextCursor });
+        expect(second.resources.map(resource => resource.uri)).toEqual(['apap://agreements/101', 'apap://agreements/102']);
+        expect(second.nextCursor).toBeUndefined();
+    });
+
+    it('checks both list permissions even when a cursor skips one collection', async () => {
+        await connect(101, 201);
+        const first = await client.request({ method: 'resources/list' });
+        const deny = (actionToDeny: string) => registerAuthorizationPolicy({
+            authorize(_context, action) {
+                if (action === actionToDeny) throw new ProtocolError(ProtocolErrorCode.InvalidParams, 'List denied');
+            },
+        });
+        let restore = deny('templates:list');
+        try {
+            await expect(client.listResources({ cursor: first.nextCursor })).rejects.toThrow('List denied');
+        } finally {
+            restore();
+        }
+        const second = await client.listResources({ cursor: first.nextCursor });
+        expect(second.nextCursor).toEqual(expect.any(String));
+        restore = deny('agreements:list');
+        try {
+            await expect(client.listResources({ cursor: second.nextCursor })).rejects.toThrow('List denied');
+        } finally {
+            restore();
+        }
+    });
+});
+
 describe('MCP Handler', () => {
     let app: express.Application;
     let mockDb: ReturnType<typeof createMockDb>;
@@ -518,6 +720,45 @@ describe('MCP Handler', () => {
     // HTTP Boundaries — /mcp POST & GET
     // =========================================================================
     describe('HTTP Transport Boundaries', () => {
+
+        it('follows a discovery cursor over an initialized HTTP session and closes the session', async () => {
+            const fixture = createDiscoveryDb(101, 0);
+            const discoveryApp = express();
+            discoveryApp.use(express.json());
+            discoveryApp.use((_req, res, next) => {
+                res.locals.db = fixture.db;
+                next();
+            });
+            discoveryApp.use(mcpRouter);
+            const accept = 'application/json, text/event-stream';
+            const init = await request(discoveryApp).post('/mcp').set('Accept', accept).send({
+                jsonrpc: '2.0', id: 1, method: 'initialize',
+                params: { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'test', version: '1' } },
+            }).expect(200);
+            const sessionId = init.headers['mcp-session-id'];
+            expect(sessionId).toBeDefined();
+            const post = (body: object) => request(discoveryApp).post('/mcp')
+                .set('Accept', accept).set('mcp-session-id', sessionId).send({ jsonrpc: '2.0', ...body });
+            async function list(id: number, cursor?: string) {
+                const response = await post({ id, method: 'resources/list', params: { cursor } }).expect(200);
+                const data = response.text.split(/\r?\n/).find(line => line.startsWith('data:'));
+                return (data ? JSON.parse(data.slice(5)) : response.body).result;
+            }
+            try {
+                await post({ method: 'notifications/initialized' }).expect(202);
+                const first = await list(2);
+                expect(first.resources).toHaveLength(103);
+                expect(first.nextCursor).toEqual(expect.any(String));
+                const second = await list(3, first.nextCursor);
+                expect(second.resources.map((resource: { uri: string }) => resource.uri)).toEqual(['apap://agreements/101']);
+                expect(second.nextCursor).toBeUndefined();
+                await request(discoveryApp).delete('/mcp').set('mcp-session-id', sessionId).expect(200);
+                expect(transports[sessionId]).toBeUndefined();
+                expect(sessionLastActivity[sessionId]).toBeUndefined();
+            } finally {
+                await transports[sessionId]?.close();
+            }
+        });
 
         it('POST /mcp returns 404 when session ID is unknown or expired and preserves request id', async () => {
             const response = await request(app)
