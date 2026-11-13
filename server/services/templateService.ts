@@ -1,4 +1,4 @@
-import { eq, or, asc, SQL, SQLWrapper, count, inArray } from 'drizzle-orm';
+import { eq, or, asc, gt, SQL, SQLWrapper, count, inArray } from 'drizzle-orm';
 import AdmZip from 'adm-zip';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import { Agreement, Template } from '../db/schema';
@@ -70,6 +70,19 @@ export async function listTemplates(
     // asc(Template.id) default #225 landed for `listTemplatesPaged` so REST
     // and MCP page over the same stable order.
     return db.select().from(Template).orderBy(asc(Template.id)).limit(limit).offset(offset);
+}
+
+/** Lists rows for resource discovery, with room for one lookahead row. */
+export async function listTemplatesForDiscovery(
+    context: PolicyContext,
+    limit: number,
+    afterId: number | undefined,
+): Promise<TemplateRow[]> {
+    await authorize(context, 'templates:list', { type: 'template-collection' });
+    return context.db.select().from(Template)
+        .where(afterId === undefined ? undefined : gt(Template.id, afterId))
+        .orderBy(asc(Template.id))
+        .limit(Math.min(101, limit));
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/templates/${id}`) */

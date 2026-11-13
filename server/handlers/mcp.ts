@@ -7,6 +7,7 @@ import {
     INTERNAL_ERROR,
     INVALID_PARAMS,
     type CallToolResult,
+    type Resource,
     type ReadResourceResult,
 } from '@modelcontextprotocol/server';
 import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
@@ -22,16 +23,17 @@ import {
     AgreementTriggerError,
     UpstreamApiError,
 } from '../services/errors';
-import { listTemplates, getTemplateById } from '../services/templateService';
+import { listTemplates, listTemplatesForDiscovery, getTemplateById } from '../services/templateService';
 import {
     listAgreements,
+    listAgreementsForDiscovery,
     getAgreementById,
     convertAgreement,
     triggerAgreement as triggerAgreementService,
 } from '../services/agreementService';
 import { InvalidPayloadError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
-import { createLegacyPolicyContext } from '../services/policy';
+import { authorize, createLegacyPolicyContext } from '../services/policy';
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = parseInt(process.env.PORT || '9000', 10);
@@ -384,6 +386,82 @@ async function getAgreements(context: PolicyContext, uri: URL, opts: { limit?: n
     };
 }
 
+const DISCOVERY_METADATA = { mimeType: 'application/json' };
+const SCHEMA_RESOURCE = { name: 'protocol-schema', uri: 'apap://schema/protocol.cto', mimeType: 'text/x-concerto' };
+const TEMPLATES_RESOURCE = { name: 'templates', uri: 'apap://templates', ...DISCOVERY_METADATA };
+const AGREEMENTS_RESOURCE = { name: 'agreements', uri: 'apap://agreements', ...DISCOVERY_METADATA };
+const DISCOVERY_PAGE_SIZE = 100;
+
+// Each position is the last returned ID, or null for an exhausted collection.
+function parseDiscoveryCursor(cursor: string | undefined) {
+    if (cursor === undefined) return { agreementId: undefined, templateId: undefined };
+    const match = /^v1:(-|-?\d{1,10}):(-|-?\d{1,10})$/.exec(cursor);
+    const invalid = () => new ProtocolError(INVALID_PARAMS, 'Invalid resources/list cursor');
+    if (!match || match[0] !== cursor) throw invalid();
+    const parsePosition = (value: string) => {
+        if (value === '-') return null;
+        const id = Number(value);
+        if (id < -2147483648 || id > 2147483647 || String(id) !== value) throw invalid();
+        return id;
+    };
+    const agreementId = parsePosition(match[1]);
+    const templateId = parsePosition(match[2]);
+    if (agreementId === null && templateId === null) throw invalid();
+    return { agreementId, templateId };
+}
+
+async function listResourcesForDiscovery(context: PolicyContext, cursor: string | undefined) {
+    const { agreementId, templateId } = parseDiscoveryCursor(cursor);
+    const resources: Resource[] = cursor === undefined
+        ? [SCHEMA_RESOURCE, TEMPLATES_RESOURCE, AGREEMENTS_RESOURCE]
+        : [];
+
+    // Preserve both collection authorization checks on every request, even
+    // when the cursor lets us skip querying an exhausted collection.
+    let nextAgreementId: number | undefined;
+    if (agreementId === null) {
+        await authorize(context, 'agreements:list', { type: 'agreement-collection' });
+    } else {
+        const agreements = await listAgreementsForDiscovery(context, DISCOVERY_PAGE_SIZE + 1, agreementId);
+        for (const agreement of agreements.slice(0, DISCOVERY_PAGE_SIZE)) {
+            resources.push({
+                ...DISCOVERY_METADATA,
+                name: `agreement-${agreement.id}`,
+                ...agreement,
+                uri: `apap://agreements/${agreement.id}`,
+            });
+        }
+        if (agreements.length > DISCOVERY_PAGE_SIZE) {
+            nextAgreementId = agreements[DISCOVERY_PAGE_SIZE - 1].id;
+        }
+    }
+
+    // Keyset pagination reads live data. Deleting earlier rows cannot shift
+    // later rows. A fresh walk picks up inserts behind a cursor or in an
+    // exhausted collection.
+    let nextTemplateId: number | undefined;
+    if (templateId === null) {
+        await authorize(context, 'templates:list', { type: 'template-collection' });
+    } else {
+        const templates = await listTemplatesForDiscovery(context, DISCOVERY_PAGE_SIZE + 1, templateId);
+        for (const template of templates.slice(0, DISCOVERY_PAGE_SIZE)) {
+            resources.push({
+                ...DISCOVERY_METADATA,
+                name: `template-${template.id}`,
+                ...template,
+                uri: `apap://templates/${template.id}`,
+            });
+        }
+        if (templates.length > DISCOVERY_PAGE_SIZE) {
+            nextTemplateId = templates[DISCOVERY_PAGE_SIZE - 1].id;
+        }
+    }
+    if (nextAgreementId !== undefined || nextTemplateId !== undefined) {
+        return { resources, nextCursor: `v1:${nextAgreementId ?? '-'}:${nextTemplateId ?? '-'}` };
+    }
+    return { resources };
+}
+
 /**
  * @return A fully configured MCP server instance with the current resources,
  * tools, and transport-facing capabilities registered.
@@ -391,7 +469,6 @@ async function getAgreements(context: PolicyContext, uri: URL, opts: { limit?: n
  * resources, resource templates, and tool handlers currently exposed by APAP.
  */
 export const getServer = (context: PolicyContext) => {
-    const { db } = context;
     const server = new McpServer({
         name: 'apap-mcp-server',
         version: '1.0.0',
@@ -404,9 +481,9 @@ export const getServer = (context: PolicyContext) => {
     // `.registerTool()` and requires a `config` object between the URI and
     // the callback (title/description/mimeType/etc.).
     server.registerResource(
-        'protocol-schema',
-        "apap://schema/protocol.cto",
-        { mimeType: "text/x-concerto" },
+        SCHEMA_RESOURCE.name,
+        SCHEMA_RESOURCE.uri,
+        { mimeType: SCHEMA_RESOURCE.mimeType },
         async (uri: URL): Promise<ReadResourceResult> => ({
             contents: [{
                 uri: uri.toString(),
@@ -425,17 +502,17 @@ export const getServer = (context: PolicyContext) => {
     // ResourceNotFoundError, breaking backwards-compat for clients that page
     // via the default full-page URI.
     server.registerResource(
-        'templates',
-        "apap://templates",
-        { mimeType: "application/json" },
+        TEMPLATES_RESOURCE.name,
+        TEMPLATES_RESOURCE.uri,
+        { mimeType: TEMPLATES_RESOURCE.mimeType },
         (uri: URL) => getTemplates(context, uri),
     );
 
     // register the agreements (see #217 dispatch-order note on templates above).
     server.registerResource(
-        'agreements',
-        "apap://agreements",
-        { mimeType: "application/json" },
+        AGREEMENTS_RESOURCE.name,
+        AGREEMENTS_RESOURCE.uri,
+        { mimeType: AGREEMENTS_RESOURCE.mimeType },
         (uri: URL) => getAgreements(context, uri),
     );
 
@@ -471,19 +548,8 @@ export const getServer = (context: PolicyContext) => {
     // register resource template for agreements
     server.registerResource(
         "agreement",
-        new ResourceTemplate("apap://agreements/{agreementId}", {
-            list: async () => {
-                const agreements = await listAgreements(context);
-                return {
-                    resources: agreements.map((a) => ({
-                        name: `agreement-${a.id}`,
-                        ...a,
-                        uri: `apap://agreements/${a.id}`,
-                    })),
-                };
-            }
-        }),
-        { mimeType: "application/json" },
+        new ResourceTemplate("apap://agreements/{agreementId}", { list: undefined }),
+        DISCOVERY_METADATA,
         async (uri: URL, variables: Record<string, string | string[]>) => {
             const agreementId = String(variables.agreementId);
             return await getAgreement(context, uri.toString(), { agreementId });
@@ -493,19 +559,8 @@ export const getServer = (context: PolicyContext) => {
     // register resource template for templates
     server.registerResource(
         "template",
-        new ResourceTemplate("apap://templates/{templateId}", {
-            list: async () => {
-                const templates = await listTemplates(context);
-                return {
-                    resources: templates.map((t) => ({
-                        name: `template-${t.id}`,
-                        ...t,
-                        uri: `apap://templates/${t.id}`,
-                    })),
-                };
-            }
-        }),
-        { mimeType: "application/json" },
+        new ResourceTemplate("apap://templates/{templateId}", { list: undefined }),
+        DISCOVERY_METADATA,
         async (uri: URL, variables: Record<string, string | string[]>) => {
             const templateId = String(variables.templateId);
             // Same strict-numeric guard as the REST /templates/:id route from #208.
@@ -670,6 +725,12 @@ Refer to the agreement's template model to determine which fields are required o
                 throw err;
             }
         }
+    );
+
+    // The SDK's default discovery handler has no cursor support. Replace just
+    // that method after resource registration installs the default handlers.
+    server.server.setRequestHandler('resources/list', ({ params }) =>
+        listResourcesForDiscovery(context, params?.cursor),
     );
 
     return server;
