@@ -681,6 +681,168 @@ describe('POST / - Agreement Creation with External Template', () => {
                 'resource:org.accordproject.protocol@1.0.0.Template#' + encodeURIComponent(template),
             );
         });
+
+        it('should reuse existing template record when template URI already exists in database with a different hash', async () => {
+            (AgreementInsertSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true });
+
+            // Configure database mock: existing template row with same URI but different hash
+            const existingTemplateRow = {
+                id: 10,
+                uri: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                hash: 'existing-different-hash-123'
+            };
+
+            mockDb.insert = jest.fn().mockReturnThis();
+            mockDb.values = jest.fn().mockReturnThis();
+            mockDb.returning = jest.fn<any>().mockResolvedValue([{ id: 2, status: 'DRAFT' }]);
+
+            mockDb.select.mockReturnValue(mockDb);
+            mockDb.from.mockReturnValue(mockDb);
+            mockDb.where.mockReturnValue(mockDb);
+            mockDb.limit.mockResolvedValueOnce([existingTemplateRow]);
+
+            const valModule = require('./concertovalidation');
+            if (valModule.concertoValidation && valModule.concertoValidation.mockResolvedValueOnce) {
+                valModule.concertoValidation.mockResolvedValueOnce({ success: true, error: null });
+            }
+
+            const creationRequest = {
+                template: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                data: {
+                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                    clauseId: 'latedelivery-1',
+                    forceMajeure: false,
+                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
+                    penaltyPercentage: 7.0,
+                    capPercentage: 2.0,
+                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                    fractionalPart: 'days'
+                }
+            };
+
+            const response = await request(app)
+                .post('/agreements/')
+                .send(creationRequest);
+
+            expect(response.status).toBe(200);
+
+            // Should NOT attempt duplicate insertion into Template table
+            expect(mockDb.insert).not.toHaveBeenCalledWith(Template);
+
+            // Agreement MUST be inserted with the existing template record's hash
+            expect(mockDb.insert).toHaveBeenCalledWith(Agreement);
+            const agreementInsertPayload = mockDb.values.mock.calls[0][0];
+            expect(agreementInsertPayload.templateHash).toBe('existing-different-hash-123');
+        });
+
+        it('should handle concurrent insert unique constraint race (23505) and resolve to persisted template hash', async () => {
+            (AgreementInsertSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true });
+
+            // 1. Initial select finds no template
+            // 2. Select in catch block finds the template inserted concurrently
+            mockDb.select.mockReturnValue(mockDb);
+            mockDb.from.mockReturnValue(mockDb);
+            mockDb.where.mockReturnValue(mockDb);
+            mockDb.limit
+                .mockResolvedValueOnce([])
+                .mockResolvedValueOnce([{ id: 15, hash: 'concurrent-hash-456' }]);
+
+            // Template insert throws 23505 unique constraint violation
+            const pgUniqueError: any = new Error('duplicate key value violates unique constraint "Template_uri_unique"');
+            pgUniqueError.code = '23505';
+
+            mockDb.insert = jest.fn((table: any) => {
+                if (table === Template) {
+                    return {
+                        values: jest.fn().mockReturnValue({
+                            onConflictDoNothing: (jest.fn() as any).mockRejectedValue(pgUniqueError)
+                        })
+                    };
+                }
+                return mockDb;
+            });
+
+            mockDb.values = jest.fn().mockReturnThis();
+            mockDb.returning = jest.fn<any>().mockResolvedValue([{ id: 3, status: 'DRAFT' }]);
+
+            const valModule = require('./concertovalidation');
+            if (valModule.concertoValidation && valModule.concertoValidation.mockResolvedValueOnce) {
+                valModule.concertoValidation.mockResolvedValueOnce({ success: true, error: null });
+            }
+
+            const creationRequest = {
+                template: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                data: {
+                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                    clauseId: 'latedelivery-1',
+                    forceMajeure: false,
+                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
+                    penaltyPercentage: 7.0,
+                    capPercentage: 2.0,
+                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                    fractionalPart: 'days'
+                }
+            };
+
+            const response = await request(app)
+                .post('/agreements/')
+                .send(creationRequest);
+
+            expect(response.status).toBe(200);
+
+            // Agreement MUST be inserted with the concurrently inserted row's hash
+            expect(mockDb.insert).toHaveBeenCalledWith(Agreement);
+            const agreementInsertPayload = mockDb.values.mock.calls[0][0];
+            expect(agreementInsertPayload.templateHash).toBe('concurrent-hash-456');
+        });
+
+        it('should rethrow non-unique database errors during template insertion', async () => {
+            (AgreementInsertSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true });
+
+            mockDb.select.mockReturnValue(mockDb);
+            mockDb.from.mockReturnValue(mockDb);
+            mockDb.where.mockReturnValue(mockDb);
+            mockDb.limit.mockResolvedValueOnce([]);
+
+            const dbConnError: any = new Error('Database connection failed');
+            dbConnError.code = 'ECONNREFUSED';
+
+            mockDb.insert = jest.fn((table: any) => {
+                if (table === Template) {
+                    return {
+                        values: jest.fn().mockReturnValue({
+                            onConflictDoNothing: (jest.fn() as any).mockRejectedValue(dbConnError)
+                        })
+                    };
+                }
+                return mockDb;
+            });
+
+            const valModule = require('./concertovalidation');
+            if (valModule.concertoValidation && valModule.concertoValidation.mockResolvedValueOnce) {
+                valModule.concertoValidation.mockResolvedValueOnce({ success: true, error: null });
+            }
+
+            const creationRequest = {
+                template: 'https://templates.accordproject.org/latedeliveryandpenalty@0.1.0.cta',
+                data: {
+                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                    clauseId: 'latedelivery-1',
+                    forceMajeure: false,
+                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
+                    penaltyPercentage: 7.0,
+                    capPercentage: 2.0,
+                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                    fractionalPart: 'days'
+                }
+            };
+
+            const response = await request(app)
+                .post('/agreements/')
+                .send(creationRequest);
+
+            expect(response.status).toBe(500);
+        });
     });
 
     describe('POST / - bare template URIs are stored as Concerto relationships', () => {
