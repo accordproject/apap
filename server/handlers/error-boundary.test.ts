@@ -3,7 +3,7 @@ import request from 'supertest';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
-import { AgreementConversionError, InvalidPayloadError, ServiceError } from '../services/errors';
+import { AgreementConversionError, InvalidPayloadError, ServiceError, ValidationError } from '../services/errors';
 import { createLegacyPolicyContext, createPolicyContext } from '../services/policy';
 import { AuthenticatedPrincipal } from '../auth/types';
 import { globalErrorHandler } from '../middleware/errorHandler';
@@ -14,6 +14,7 @@ const marker = 'sensitive_test_marker';
 const failures = [
     new DrizzleQueryError(`SELECT ${marker}`, [marker], new Error(marker)),
     new Error(marker),
+    Object.assign(new Error(marker), { code: 'XX000' }),
     Object.assign(new Error(marker), { cause: new Error(marker) }),
     new AgreementConversionError(1, 'html', marker),
     new Error(),
@@ -67,6 +68,33 @@ describe('internal error boundaries', () => {
         const res = await request(app).get('/');
         expect(res.status).toBe(400);
         expect(res.body.error).toEqual({ code: 'INVALID_PAYLOAD', message: 'Invalid request' });
+        expect(JSON.stringify(res.body)).not.toContain(marker);
+    });
+
+    it('preserves safe validation context while removing unsafe details', async () => {
+        const app = express();
+        app.get('/input', (_req, _res, next) => next(new InvalidPayloadError('Invalid request', { agreementId: 1, reason: marker })));
+        app.get('/validation', (_req, _res, next) => next(new ValidationError('Validation failed', {
+            agreementId: 1, errors: [{ message: 'Expected value at path `$.amount` to be of type `String`' }, { message: marker }],
+        })));
+        app.use(globalErrorHandler);
+        const input = await request(app).get('/input');
+        expect(input.status).toBe(400);
+        expect(input.body.error.details).toEqual({ agreementId: 1 });
+        const validation = await request(app).get('/validation');
+        expect(validation.status).toBe(422);
+        expect(validation.body.error.details).toEqual({ agreementId: 1 });
+        expect(JSON.stringify([input.body, validation.body])).not.toContain(marker);
+    });
+
+    it('does not trust an internal-looking diagnostic in typed validation details', async () => {
+        const app = express();
+        app.get('/', (_req, _res, next) => next(new ValidationError('Validation failed', {
+            errors: [{ message: `Expected value at path \`$.${marker}\` to be of type \`String\`` }],
+        })));
+        app.use(globalErrorHandler);
+        const res = await request(app).get('/');
+        expect(res.status).toBe(422);
         expect(JSON.stringify(res.body)).not.toContain(marker);
     });
 

@@ -74,10 +74,10 @@ router.post('/', async (req, res, next) => {
                 ctoFiles: ctoFiles
             };
         } catch (error: any) {
-            console.error(`[SharedModels Post Error]:`, error);
+            console.error({ type: 'shared_model_load_failed' });
             return res.status(400).json({
                 error: 'Failed to fetch or parse external model safely.',
-                details: error.message
+                details: 'External model could not be retrieved or parsed.'
             });
         }
     }

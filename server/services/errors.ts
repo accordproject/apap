@@ -297,9 +297,14 @@ export function publicServiceError(error: ServiceError): { error: { code: string
         'TEMPLATE_CICERO_VERSION_MISMATCH',
     ]);
     if (error.statusCode < 500 && (safeCodes.has(error.code) || isClientSafeError(error))) {
-        // Validation details may contain arbitrary parser/driver exception text.
+        // Preserve a small set of structural facts, never arbitrary parser or driver text.
         if (error.code === 'INVALID_PAYLOAD' || error.code === 'VALIDATION_ERROR' || error.code === 'TEMPLATE_CICERO_VERSION_MISMATCH') {
-            return { error: { code: error.code, message: error.message } };
+            const details: Record<string, unknown> = {};
+            const agreementId = error.details?.agreementId;
+            if (typeof agreementId === 'number' && Number.isSafeInteger(agreementId) && agreementId > 0) {
+                details.agreementId = agreementId;
+            }
+            return { error: { code: error.code, message: error.message, ...(Object.keys(details).length ? { details } : {}) } };
         }
         return error.toJSON();
     }

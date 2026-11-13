@@ -106,7 +106,24 @@ describe('templateValidation', () => {
     expect(res.status).toBe(200);
   });
 
-  it('returns templateFromDatabase error when validation passes but DB fails', async () => {
+  it('does not expose or log unexpected template builder failures', async () => {
+    const sentinel = 'internal-template-path-token-sentinel';
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const errorLog = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true, data: validTemplateBody });
+      (validationModule.concertoValidation as any).mockResolvedValueOnce({ success: true, data: validTemplateBody });
+      jest.spyOn(db, 'templateFromDatabase').mockRejectedValueOnce(new Error(sentinel));
+      const res = await request(app).post('/templates').send(validTemplateBody);
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Invalid request body');
+      expect(JSON.stringify(res.body)).not.toContain(sentinel);
+      expect(JSON.stringify(log.mock.calls)).not.toContain(sentinel);
+      expect(JSON.stringify(errorLog.mock.calls)).not.toContain(sentinel);
+    } finally { log.mockRestore(); errorLog.mockRestore(); }
+  });
+
+  it('returns a safe error when template construction fails', async () => {
     // Zod schema passes
     (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true, data: validTemplateBody });
     // Concerto validation passes
@@ -119,13 +136,13 @@ describe('templateValidation', () => {
       .post('/templates')
       .send(validTemplateBody);
     
-    // templateValidation's catch block returns { success: false, error: { errors: [{ message: 'DB error' }] } }
+    // Unexpected construction errors do not cross the validation boundary.
     // The CRUD handler sees success:false and returns 400 with details containing the error
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
     expect(res.body.details).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ message: 'DB error' })
+        expect.objectContaining({ message: 'Template validation failed' })
       ])
     );
   });
