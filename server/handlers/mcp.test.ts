@@ -34,6 +34,7 @@ import mcpRouter, {
     agreementToConcerto,
     templateToConcerto,
     toJsonScalar,
+    transports,
 } from './mcp';
 import { ModelManager, Factory, Serializer } from '@accordproject/concerto-core';
 import { ProtocolError, ProtocolErrorCode, InMemoryTransport } from '@modelcontextprotocol/server';
@@ -722,7 +723,32 @@ describe('MCP Handler', () => {
             });
         });
 
-        it('completes initialize handshake and allows resource read with valid mcp-session-id', async () => {
+        it('completes initialize handshake and reads schema and template resources with valid mcp-session-id', async () => {
+            const template: Record<string, any> = {
+                id: 10,
+                uri: 'test://template/10',
+                author: 'Test Author',
+                version: '1.0.0',
+                license: 'Apache-2.0',
+                metadata: {
+                    $class: 'org.accordproject.protocol@1.0.0.TemplateMetadata',
+                    runtime: 'node',
+                    template: 'test',
+                    cicero: '0.22.0',
+                },
+                templateModel: {
+                    $class: 'org.accordproject.protocol@1.0.0.TemplateModel',
+                    typeName: 'org.accordproject.test.TestModel',
+                },
+                text: {
+                    $class: 'org.accordproject.protocol@1.0.0.Text',
+                    templateText: 'Contract text',
+                },
+                logo: null,
+                sampleRequest: { sample: 'value' },
+            };
+            mockDb._setReturn([template]);
+
             const initRes = await request(app)
                 .post('/mcp')
                 .set('Accept', 'application/json, text/event-stream')
@@ -741,34 +767,72 @@ describe('MCP Handler', () => {
             const sessionId = initRes.headers['mcp-session-id'];
             expect(sessionId).toBeDefined();
 
-            await request(app)
-                .post('/mcp')
-                .set('mcp-session-id', sessionId)
-                .set('Accept', 'application/json, text/event-stream')
-                .send({
-                    jsonrpc: '2.0',
-                    method: 'notifications/initialized'
-                })
-                .expect(202);
+            try {
+                await request(app)
+                    .post('/mcp')
+                    .set('mcp-session-id', sessionId)
+                    .set('Accept', 'application/json, text/event-stream')
+                    .send({
+                        jsonrpc: '2.0',
+                        method: 'notifications/initialized'
+                    })
+                    .expect(202);
 
-            const readRes = await request(app)
-                .post('/mcp')
-                .set('mcp-session-id', sessionId)
-                .set('Accept', 'application/json, text/event-stream')
-                .send({
-                    jsonrpc: '2.0',
-                    id: 2,
-                    method: 'resources/read',
-                    params: {
-                        uri: 'apap://schema/protocol.cto'
-                    }
-                })
-                .expect(200);
+                const schemaRes = await request(app)
+                    .post('/mcp')
+                    .set('mcp-session-id', sessionId)
+                    .set('Accept', 'application/json, text/event-stream')
+                    .send({
+                        jsonrpc: '2.0',
+                        id: 2,
+                        method: 'resources/read',
+                        params: {
+                            uri: 'apap://schema/protocol.cto'
+                        }
+                    })
+                    .expect(200);
 
-            // Streamable HTTP transport returns SSE or JSON text
-            const responseText = readRes.text;
-            expect(responseText).toContain('apap://schema/protocol.cto');
-            expect(responseText).toContain('text/x-concerto');
+                // Streamable HTTP transport returns SSE or JSON text.
+                const schemaDataLine = schemaRes.text.split(/\r?\n/).find((line) => line.startsWith('data: '));
+                expect(schemaDataLine).toBeDefined();
+                const schemaMessage = JSON.parse(schemaDataLine!.slice('data: '.length));
+                expect(schemaMessage.result.contents[0]).toEqual(expect.objectContaining({
+                    uri: 'apap://schema/protocol.cto',
+                    mimeType: 'text/x-concerto',
+                }));
+
+                const templateRes = await request(app)
+                    .post('/mcp')
+                    .set('mcp-session-id', sessionId)
+                    .set('Accept', 'application/json, text/event-stream')
+                    .send({
+                        jsonrpc: '2.0',
+                        id: 3,
+                        method: 'resources/read',
+                        params: { uri: 'apap://templates/10' }
+                    })
+                    .expect(200);
+
+                const templateDataLine = templateRes.text.split(/\r?\n/).find((line) => line.startsWith('data: '));
+                expect(templateDataLine).toBeDefined();
+                const templateMessage = JSON.parse(templateDataLine!.slice('data: '.length));
+                const contents = templateMessage.result.contents[0];
+                expect(contents).toEqual(expect.objectContaining({
+                    uri: 'apap://templates/10',
+                    mimeType: 'application/json',
+                }));
+
+                const payload = JSON.parse(contents.text);
+                expect(payload.$class).toBe('org.accordproject.protocol@1.0.0.Template');
+                expect(payload.$identifier).toBe(template.uri);
+                expect(payload.uri).toBe(template.uri);
+                expect(payload.id).toBeUndefined();
+                expect(contents.text).toBe(JSON.stringify(templateToConcerto(template as any)));
+            } finally {
+                if (sessionId) {
+                    await transports[sessionId]?.close();
+                }
+            }
         });
 
         // SSE transport dropped in SDK 2.0. `GET /sse` and `POST /messages`
