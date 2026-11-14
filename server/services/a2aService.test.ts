@@ -85,4 +85,24 @@ describe('ApapA2AService', () => {
             request,
         );
     });
+    describe.each([
+        ['get-agreement', 'apap:agreements:read', 'getAgreementById'],
+        ['trigger-agreement', 'apap:trigger:invoke', 'triggerAgreement'],
+    ])('%s identifier validation', (skillId, scope, operationName) => {
+        test.each([true, false, [1], [2], [], null, {}, '', ' ', 'abc', 0, -1, 1.5, '9007199254740993'])('rejects %p before the operation', async (id) => {
+            const operation = jest.fn().mockResolvedValue({});
+            const service = new ApapA2AService({ [operationName]: operation } as any);
+            await expect(service.execute(context([scope]), { skillId, input: { id, ...(skillId === 'trigger-agreement' ? { request: {} } : {}) } }))
+                .rejects.toMatchObject({ code: 'INVALID_PAYLOAD' });
+            expect(operation).not.toHaveBeenCalled();
+        });
+        test.each([[1, 1], ['1', 1], ['1.0', 1], ['1e2', 100], [2147483647, 2147483647], ['2147483647', 2147483647], [2147483648, 2147483648], ['9007199254740991', 9007199254740991]])('accepts %p as %p', async (id, expected) => {
+            const operation = jest.fn().mockResolvedValue({});
+            const service = new ApapA2AService({ [operationName]: operation } as any);
+            await service.execute(context([scope]), { skillId, input: { id, ...(skillId === 'trigger-agreement' ? { request: {} } : {}) } });
+            expect(operation).toHaveBeenCalledTimes(1);
+            expect(operation.mock.calls[0][1]).toBe(expected);
+        });
+    });
+
 });

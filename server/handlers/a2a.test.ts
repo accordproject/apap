@@ -132,6 +132,26 @@ describe('A2A Express integration', () => {
         expect(response.body.result.task.artifacts[0].parts[0].data).toEqual([{ id: 1 }]);
     });
 
+    test.each([
+        ['get-agreement', 'apap:agreements:read', 'getAgreementById'],
+        ['trigger-agreement', 'apap:trigger:invoke', 'triggerAgreement'],
+    ])('rejects coerced %s identifiers over HTTP before execution', async (skillId, scope, operationName) => {
+        const operation = jest.fn().mockResolvedValue({ ok: true });
+        const app = buildApp(new JwtAdapter(jwt), new ApapA2AService({ [operationName]: operation } as any));
+        const token = await bearer('agent-1', undefined, scope);
+        for (const [index, id] of [true, [1], [2]].entries()) {
+            const body = { ...sendMessage, id: `invalid-${index}`, params: { message: {
+                messageId: `invalid-${skillId}-${index}`, role: 'ROLE_USER',
+                parts: [{ data: { skillId, input: { id, ...(skillId === 'trigger-agreement' ? { request: {} } : {}) } }, mediaType: 'application/json' }],
+            } } };
+            const response = await request(app).post('/a2a').set('Authorization', token).set('A2A-Version', '1.0').send(body);
+            expect(response.status).toBe(200);
+            expect(response.body.result.task.status.state).toBe('TASK_STATE_REJECTED');
+            expect(response.body.result.task.status.message.parts[0].data.error.code).toBe('INVALID_PAYLOAD');
+        }
+        expect(operation).not.toHaveBeenCalled();
+    });
+
     test('rejects a skill when the principal lacks its exact scope', async () => {
         const response = await request(buildApp(new JwtAdapter(jwt), new ApapA2AService()))
             .post('/a2a')
