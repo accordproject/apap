@@ -1,6 +1,7 @@
 import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
+import { DrizzleQueryError } from 'drizzle-orm';
 import agreementsRouter from './agreements';
 import { templateUriFromReference, validateAgreementBody } from '../services/agreementService';
 import { Agreement, Template, AgreementInsertSchema } from '../db/schema';
@@ -735,7 +736,12 @@ describe('POST / - Agreement Creation with External Template', () => {
             expect(agreementInsertPayload.templateHash).toBe('existing-different-hash-123');
         });
 
-        it('should handle concurrent insert unique constraint race (23505) and resolve to persisted template hash', async () => {
+        const pgUnique = Object.assign(new Error('duplicate key value violates unique constraint "Template_uri_unique"'), { code: '23505' });
+
+        it.each([
+            ['bare PostgreSQL error', pgUnique],
+            ['Drizzle-wrapped PostgreSQL error', new DrizzleQueryError('sql', [], pgUnique)],
+        ] as const)('should handle concurrent insert unique constraint race (23505) and resolve to persisted template hash: %s', async (_label, failure) => {
             (AgreementInsertSchema.safeParse as any) = jest.fn().mockReturnValue({ success: true });
 
             // 1. Initial select finds no template
@@ -747,15 +753,11 @@ describe('POST / - Agreement Creation with External Template', () => {
                 .mockResolvedValueOnce([])
                 .mockResolvedValueOnce([{ id: 15, hash: 'concurrent-hash-456' }]);
 
-            // Template insert throws 23505 unique constraint violation
-            const pgUniqueError: any = new Error('duplicate key value violates unique constraint "Template_uri_unique"');
-            pgUniqueError.code = '23505';
-
             mockDb.insert = jest.fn((table: any) => {
                 if (table === Template) {
                     return {
                         values: jest.fn().mockReturnValue({
-                            onConflictDoNothing: (jest.fn() as any).mockRejectedValue(pgUniqueError)
+                            onConflictDoNothing: (jest.fn() as any).mockRejectedValue(failure)
                         })
                     };
                 }

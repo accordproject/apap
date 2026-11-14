@@ -3,6 +3,7 @@ import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/
 import { buildCrudRouter } from './crud';
 import { extractTemplateForDatabase } from './templatebuilder';
 import { eq, or } from 'drizzle-orm';
+import { isUniqueViolation } from '../db/errors';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import {
@@ -80,8 +81,8 @@ router.post('/', asyncHandler(async (req, res) => {
                             .values(newDbTemplateRow)
                             .onConflictDoNothing({ target: DbTemplate.hash });
                     } catch (err: unknown) {
-                        // Handle Postgres unique constraint violation (code 23505) during concurrent insert races
-                        if (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === '23505') {
+                        // Handle Postgres unique constraint violation (code 23505) directly or wrapped in DrizzleQueryError
+                        if (isUniqueViolation(err)) {
                             const conflictRows = await db
                                 .select()
                                 .from(DbTemplate)
