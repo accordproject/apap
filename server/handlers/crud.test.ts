@@ -301,7 +301,8 @@ describe('unique-violation compatibility', () => {
             expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists.' });
             expect(forwarded.mock.calls[0][0]).toMatchObject({ code: '23505', typeName: 'TestResource' });
             expect((forwarded.mock.calls[0][0] as { cause: unknown }).cause).toBe(failure);
-            expect(JSON.stringify({ response: response.body, logs: log.mock.calls })).not.toContain('private');
+            expect(JSON.stringify(response.body)).not.toContain('private');
+            expect(log).toHaveBeenCalledWith(expect.objectContaining({ error: forwarded.mock.calls[0][0] }));
         }
     });
 

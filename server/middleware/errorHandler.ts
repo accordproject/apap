@@ -30,6 +30,7 @@ export function globalErrorHandler(
         method: req.method,
         path: req.path,
         message: uniqueViolation ? 'Unique constraint violation' : (err instanceof ServiceError ? publicServiceError(err).error.code : 'Unexpected error'),
+        error: err,
     });
 
     if (res.headersSent) {

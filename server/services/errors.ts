@@ -259,7 +259,7 @@ export class AgreementTriggerError extends ServiceError {
     public readonly agreementId: string;
     public readonly upstreamMessage: string;
 
-    constructor(agreementId: string, upstreamMessage: string) {
+    constructor(agreementId: string, upstreamMessage: string, cause?: unknown) {
         super(
             'AGREEMENT_TRIGGER_FAILED',
             502,
@@ -269,6 +269,7 @@ export class AgreementTriggerError extends ServiceError {
         this.name = 'AgreementTriggerError';
         this.agreementId = agreementId;
         this.upstreamMessage = upstreamMessage;
+        if (cause !== undefined) (this as Error & { cause?: unknown }).cause = cause;
     }
 }
 
@@ -285,6 +286,69 @@ export interface ClientSafeError {
 
 export function isClientSafeError(error: unknown): error is ServiceError & ClientSafeError {
     return error instanceof ServiceError && (error as Partial<ClientSafeError>).clientSafe === true;
+}
+
+/** A scope denial constructed by the server's authorization policy. */
+export const REQUIRED_SCOPE = {
+    'templates:list': 'apap:templates:read',
+    'templates:read': 'apap:templates:read',
+    'templates:create': 'apap:templates:write',
+    'templates:update': 'apap:templates:write',
+    'templates:delete': 'apap:templates:write',
+    'agreements:list': 'apap:agreements:read',
+    'agreements:read': 'apap:agreements:read',
+    'agreements:convert': 'apap:agreements:read',
+    'agreements:trigger': 'apap:trigger:invoke',
+} as const;
+
+export class InsufficientScopeError extends ServiceError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(action: keyof typeof REQUIRED_SCOPE) {
+        const valid = Object.prototype.hasOwnProperty.call(REQUIRED_SCOPE, action);
+        super('INSUFFICIENT_SCOPE', 403, 'The authenticated principal is not authorized for this operation.', valid ? { action, requiredScope: REQUIRED_SCOPE[action] } : undefined);
+    }
+}
+
+/** Not-found errors for validated database identifiers, not arbitrary URI strings. */
+export class NumericAgreementNotFoundError extends AgreementNotFoundError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(id: number) { super(typeof id === 'number' && Number.isSafeInteger(id) && id >= 0 && id <= 2147483647 ? String(id) : ''); }
+}
+
+export class NumericTemplateNotFoundError extends TemplateNotFoundError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(id: number) { super(typeof id === 'number' && Number.isSafeInteger(id) && id >= 0 && id <= 2147483647 ? String(id) : ''); }
+}
+
+/** Server-authored diagnostic for a tool payload that failed JSON parsing. */
+export class MalformedToolPayloadError extends InvalidPayloadError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor() { super('Payload must be valid JSON'); }
+}
+
+/** Server-authored diagnostic for an absent archive upload. */
+export class MissingArchiveBodyError extends InvalidPayloadError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor() { super('Missing .cta archive body'); }
+}
+
+function isDatabaseId(id: unknown): id is number {
+    return typeof id === 'number' && Number.isInteger(id) && id >= 0 && id <= 2147483647;
+}
+
+export class NumericTemplateImmutableError extends TemplateImmutableError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(id: number) { super(isDatabaseId(id) ? id : ''); }
+}
+
+export class NumericTemplateInUseError extends TemplateInUseError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(id: number) { super(isDatabaseId(id) ? id : ''); }
+}
+
+export class NumericAgreementTemplateBindingImmutableError extends AgreementTemplateBindingImmutableError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(id: number) { super(isDatabaseId(id) ? id : NaN); }
 }
 
 /** Public messages are fixed: error codes, messages and details may contain untrusted data. */
@@ -305,6 +369,38 @@ const PUBLIC_ERROR_MESSAGES: Record<string, string> = {
 
 /** Serialize only fixed public content and narrowly validated structural details. */
 export function publicServiceError(error: ServiceError): { error: { code: string; message: string; details?: Record<string, unknown> } } {
+    if (isClientSafeError(error) && (error instanceof NumericTemplateImmutableError || error instanceof NumericTemplateInUseError)) {
+        const id = error.details?.identifier;
+        if (isDatabaseId(id)) {
+            if (error instanceof NumericTemplateImmutableError) {
+                return { error: { code: 'TEMPLATE_IMMUTABLE', message: `Template ${id} is immutable: content cannot be changed after creation. Create a new template for a new version.`, details: { identifier: id } } };
+            }
+            return { error: { code: 'TEMPLATE_IN_USE', message: `Template ${id} cannot be deleted: still referenced by at least one agreement`, details: { identifier: id } } };
+        }
+    }
+    if (isClientSafeError(error) && error instanceof NumericAgreementTemplateBindingImmutableError) {
+        const id = error.details?.agreementId;
+        if (isDatabaseId(id)) return { error: { code: 'AGREEMENT_TEMPLATE_BINDING_IMMUTABLE', message: `Agreement ${id} cannot change its template while it is bound to a cached archive`, details: { agreementId: id, field: 'template' } } };
+    }
+    if (error instanceof InsufficientScopeError && isClientSafeError(error)) {
+        const action = error.details?.action;
+        const details = typeof action === 'string' && Object.prototype.hasOwnProperty.call(REQUIRED_SCOPE, action)
+            ? { action, requiredScope: REQUIRED_SCOPE[action as keyof typeof REQUIRED_SCOPE] } : undefined;
+        return { error: { code: 'INSUFFICIENT_SCOPE', message: 'The authenticated principal is not authorized for this operation.', ...(details && { details }) } };
+    }
+    if (error instanceof MalformedToolPayloadError && isClientSafeError(error)) {
+        return { error: { code: 'INVALID_PAYLOAD', message: 'Payload must be valid JSON' } };
+    }
+    if (error instanceof MissingArchiveBodyError && isClientSafeError(error)) {
+        return { error: { code: 'INVALID_PAYLOAD', message: 'Missing .cta archive body' } };
+    }
+    if ((error instanceof NumericAgreementNotFoundError || error instanceof NumericTemplateNotFoundError) && isClientSafeError(error)) {
+        const id = error.details?.identifier;
+        if (typeof id === 'string' && /^(0|[1-9]\d*)$/.test(id) && Number(id) <= 2147483647) {
+            const resource = error instanceof NumericAgreementNotFoundError ? 'Agreement' : 'Template';
+            return { error: { code: resource === 'Agreement' ? 'AGREEMENT_NOT_FOUND' : 'TEMPLATE_NOT_FOUND', message: `${resource} not found: ${id}`, details: { identifier: id } } };
+        }
+    }
     if (error.statusCode < 500 && Object.prototype.hasOwnProperty.call(PUBLIC_ERROR_MESSAGES, error.code)) {
         const details: Record<string, unknown> = {};
         if (error.code === 'AGREEMENT_TEMPLATE_BINDING_IMMUTABLE') details.field = 'template';

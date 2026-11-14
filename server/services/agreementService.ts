@@ -2,9 +2,10 @@ import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
 import {
     AgreementNotFoundError,
+    NumericAgreementNotFoundError,
     AgreementConversionError,
     AgreementRecordImmutableError,
-    AgreementTemplateBindingImmutableError,
+    NumericAgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
     AgreementTriggerError,
     InvalidPayloadError,
@@ -161,7 +162,7 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
         updates.template !== undefined &&
         templateUriFromReference(existing.template) !== templateUriFromReference(updates.template as string | null)
     ) {
-        throw new AgreementTemplateBindingImmutableError(existing.id);
+        throw new NumericAgreementTemplateBindingImmutableError(existing.id);
     }
 }
 
@@ -196,7 +197,7 @@ export async function getAgreementById(context: PolicyContext, id: number): Prom
     await authorize(context, 'agreements:read', { type: 'agreement', id });
     const { db } = context;
     const rows = await db.select().from(Agreement).where(eq(Agreement.id, id)).limit(1);
-    if (rows.length === 0) throw new AgreementNotFoundError(String(id));
+    if (rows.length === 0) throw new NumericAgreementNotFoundError(id);
     return rows[0];
 }
 
@@ -409,7 +410,7 @@ export async function triggerAgreement(
         triggerResult = await processor.trigger(agreement.data, requestBody, currentState);
     } catch (err) {
         const reason = err instanceof Error ? err.message : String(err);
-        throw new AgreementTriggerError(String(agreementId), reason);
+        throw new AgreementTriggerError(String(agreementId), reason, err);
     }
 
     // Targeted single-column write: only `state` changes on a trigger. Writing

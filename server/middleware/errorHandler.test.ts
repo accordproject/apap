@@ -49,7 +49,8 @@ describe('globalErrorHandler', () => {
         const response = await request(appFor(failure)).get('/');
         expect(response.status).toBe(409);
         expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists.' });
-        const output = JSON.stringify({ body: response.body, logs: log.mock.calls });
+        const output = JSON.stringify(response.body);
+        expect(log).toHaveBeenCalledWith(expect.objectContaining({ error: failure }));
         for (const secret of ['private_table', parameter, 'private_constraint']) {
             expect(output).not.toContain(secret);
         }
@@ -60,7 +61,7 @@ describe('globalErrorHandler', () => {
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(409);
         expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists for Template.' });
-        expect(JSON.stringify(log.mock.calls)).not.toContain('private_constraint');
+        expect(log).toHaveBeenCalledWith(expect.objectContaining({ error }));
     });
 
     it('does not expose an untrusted typeName in a unique violation', async () => {
@@ -69,7 +70,7 @@ describe('globalErrorHandler', () => {
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(409);
         expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists.' });
-        expect(JSON.stringify([response.body, log.mock.calls])).not.toContain(marker);
+        expect(JSON.stringify(response.body)).not.toContain(marker);
     });
 
     it.each(['Agreement', 'Template', 'SharedModel'])('preserves the known %s resource name', async (typeName) => {
@@ -129,6 +130,6 @@ describe('globalErrorHandler', () => {
         const next = jest.fn();
         globalErrorHandler(error, { method: 'GET', path: '/' } as any, { headersSent: true } as any, next);
         expect(next).toHaveBeenCalledWith(error);
-        expect(JSON.stringify(log.mock.calls)).not.toContain(parameter);
+        expect(log).toHaveBeenCalledWith(expect.objectContaining({ error }));
     });
 });

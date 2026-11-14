@@ -7,9 +7,10 @@ import { isUniqueViolation } from '../db/errors';
 import { extractTemplateForDatabase } from '../handlers/templatebuilder';
 import {
     TemplateNotFoundError,
+    NumericTemplateNotFoundError,
     TemplateDuplicateError,
-    TemplateImmutableError,
-    TemplateInUseError,
+    NumericTemplateImmutableError,
+    NumericTemplateInUseError,
     TemplateCiceroVersionMismatchError,
     InvalidPayloadError,
     ServiceError,
@@ -77,7 +78,7 @@ export async function getTemplateById(context: PolicyContext, id: number): Promi
     await authorize(context, 'templates:read', { type: 'template', id });
     const { db } = context;
     const rows = await db.select().from(Template).where(eq(Template.id, id)).limit(1);
-    if (rows.length === 0) throw new TemplateNotFoundError(String(id));
+    if (rows.length === 0) throw new NumericTemplateNotFoundError(id);
     return rows[0];
 }
 
@@ -264,7 +265,7 @@ function deepEqual(a: unknown, b: unknown): boolean {
 export function assertTemplateContentImmutable(existing: TemplateRow, updates: Record<string, unknown>): void {
     for (const key of Object.keys(updates)) {
         if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
-        throw new TemplateImmutableError(existing.id);
+        throw new NumericTemplateImmutableError(existing.id);
     }
 }
 
@@ -302,7 +303,7 @@ export async function assertTemplateNotInUse(existing: TemplateRow, db: Database
         .limit(1);
 
     if (referencing.length > 0) {
-        throw new TemplateInUseError(existing.id);
+        throw new NumericTemplateInUseError(existing.id);
     }
 }
 
