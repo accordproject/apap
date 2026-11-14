@@ -2,7 +2,8 @@ import express from 'express';
 import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
 import { buildCrudRouter } from './crud';
 import { extractTemplateForDatabase } from './templatebuilder';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
+import { isUniqueViolation } from '../db/errors';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import {
@@ -67,13 +68,35 @@ router.post('/', asyncHandler(async (req, res) => {
                 const apTemplate = await CiceroTemplate.fromArchive(buffer);
                 currentHash = apTemplate.getHash();
 
-                const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
+                const existing = await db
+                    .select()
+                    .from(DbTemplate)
+                    .where(or(eq(DbTemplate.hash, currentHash), eq(DbTemplate.uri, templateUri)))
+                    .limit(1);
                 
                 if (existing.length === 0) {
                     const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                    await db.insert(DbTemplate)
-                        .values(newDbTemplateRow)
-                        .onConflictDoNothing({ target: DbTemplate.hash });
+                    try {
+                        await db.insert(DbTemplate)
+                            .values(newDbTemplateRow)
+                            .onConflictDoNothing({ target: DbTemplate.hash });
+                    } catch (err: unknown) {
+                        // Handle Postgres unique constraint violation (code 23505) directly or wrapped in DrizzleQueryError
+                        if (isUniqueViolation(err)) {
+                            const conflictRows = await db
+                                .select()
+                                .from(DbTemplate)
+                                .where(or(eq(DbTemplate.hash, currentHash), eq(DbTemplate.uri, templateUri)))
+                                .limit(1);
+                            if (conflictRows.length > 0 && conflictRows[0].hash) {
+                                currentHash = conflictRows[0].hash;
+                            }
+                        } else {
+                            throw err;
+                        }
+                    }
+                } else if (existing[0].hash) {
+                    currentHash = existing[0].hash;
                 }
             }
         }
