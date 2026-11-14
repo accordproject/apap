@@ -38,9 +38,14 @@ export function globalErrorHandler(
 
     // Handle Postgres unique constraint violation
     if (uniqueViolation) {
+        // CRUD attaches one of these fixed resource names; driver properties are untrusted.
+        const resourceNames: Record<string, string> = { Agreement: 'Agreement', Template: 'Template', SharedModel: 'SharedModel' };
+        const typeName = (err as any).typeName;
+        const resourceName = typeof typeName === 'string' && Object.prototype.hasOwnProperty.call(resourceNames, typeName)
+            ? resourceNames[typeName] : undefined;
         res.status(409).json({
             error: 'Conflict',
-            details: `A resource with this unique identifier already exists${(err as any).typeName ? ` for ${(err as any).typeName}` : ''}.`
+            details: `A resource with this unique identifier already exists${resourceName ? ` for ${resourceName}` : ''}.`
         });
         return;
     }

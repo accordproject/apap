@@ -63,6 +63,22 @@ describe('globalErrorHandler', () => {
         expect(JSON.stringify(log.mock.calls)).not.toContain('private_constraint');
     });
 
+    it('does not expose an untrusted typeName in a unique violation', async () => {
+        const marker = 'SYNTHETIC_PRIVATE_TYPENAME_MARKER';
+        const error = Object.assign(new Error('duplicate'), { code: '23505', typeName: marker });
+        const response = await request(appFor(error)).get('/');
+        expect(response.status).toBe(409);
+        expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists.' });
+        expect(JSON.stringify([response.body, log.mock.calls])).not.toContain(marker);
+    });
+
+    it.each(['Agreement', 'Template', 'SharedModel'])('preserves the known %s resource name', async (typeName) => {
+        const error = Object.assign(new Error('duplicate'), { code: '23505', typeName });
+        const response = await request(appFor(error)).get('/');
+        expect(response.status).toBe(409);
+        expect(response.body.details).toBe(`A resource with this unique identifier already exists for ${typeName}.`);
+    });
+
     it.each([
         ['wrapped foreign-key violation', new DrizzleQueryError(query, [parameter], Object.assign(new Error('foreign key'), { code: '23503' }))],
         ['arbitrary nested unique code', Object.assign(new Error('unrelated'), { cause: { code: '23505' } })],
