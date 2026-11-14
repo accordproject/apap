@@ -8,6 +8,26 @@ function buildApp() {
     return app;
 }
 
+/**
+ * Valid FeatureType enum values defined in model/protocol.cto
+ */
+const VALID_FEATURE_TYPES = new Set([
+    'TEMPLATE_MANAGE',
+    'TEMPLATE_VERIFY_SIGNATURES',
+    'TEMPLATE_LOGIC',
+    'TEMPLATE_STATEFUL',
+    'LOGIC_WASM',
+    'LOGIC_ES2015',
+    'LOGIC_TYPESCRIPT',
+    'AGREEMENT_MANAGE',
+    'AGREEMENT_TRIGGER',
+    'AGREEMENT_STATE',
+    'AGREEMENT_CONVERT_HTML',
+    'AGREEMENT_LEGAL_CONTEXT',
+    'AGREEMENT_SIGNING',
+    'SHARED_MODEL_MANAGE',
+]);
+
 describe('GET /capabilities', () => {
     it('returns HTTP 200 with application/json', async () => {
         const app = buildApp();
@@ -36,7 +56,7 @@ describe('GET /capabilities', () => {
         );
     });
 
-    it('contains valid known features and no duplicate entries', async () => {
+    it('contains valid known features defined in protocol.cto FeatureType enum and no duplicates', async () => {
         const app = buildApp();
         const res = await request(app).get('/capabilities');
 
@@ -45,8 +65,7 @@ describe('GET /capabilities', () => {
         expect(uniqueFeatures.size).toBe(features.length);
         expect(features.length).toBeGreaterThan(0);
         features.forEach((feature: string) => {
-            expect(typeof feature).toBe('string');
-            expect(feature.length).toBeGreaterThan(0);
+            expect(VALID_FEATURE_TYPES.has(feature)).toBe(true);
         });
     });
 });
