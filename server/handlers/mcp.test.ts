@@ -204,8 +204,8 @@ describe('mcp typed error helpers', () => {
 
             const parsed = JSON.parse(block.text);
             expect(parsed.error.code).toBe('TEMPLATE_NOT_FOUND');
-            expect(parsed.error.message).toContain('tmpl-42');
-            expect(parsed.error.details).toEqual({ identifier: 'tmpl-42' });
+            expect(parsed.error.message).toBe('Template not found');
+            expect(parsed.error.details).toBeUndefined();
         });
 
         it('preserves the AGREEMENT_NOT_FOUND code and identifier', () => {
@@ -214,20 +214,18 @@ describe('mcp typed error helpers', () => {
 
             const parsed = JSON.parse((result.content as any[])[0].text);
             expect(parsed.error.code).toBe('AGREEMENT_NOT_FOUND');
-            expect(parsed.error.details.identifier).toBe('999');
+            expect(parsed.error.message).toBe('Agreement not found');
+            expect(parsed.error.details).toBeUndefined();
         });
 
-        it('carries AGREEMENT_CONVERSION_FAILED details through to the wire payload', () => {
+        it('sanitizes AGREEMENT_CONVERSION_FAILED details on the wire', () => {
             const err = new AgreementConversionError('7', 'pdf', 'no renderer for pdf');
             const result = serviceErrorToCallToolResult(err);
 
             const parsed = JSON.parse((result.content as any[])[0].text);
             expect(parsed.error.code).toBe('AGREEMENT_CONVERSION_FAILED');
-            expect(parsed.error.details).toEqual({
-                agreementId: '7',
-                format: 'pdf',
-                reason: 'no renderer for pdf',
-            });
+            expect(parsed.error.message).toBe('An internal error occurred');
+            expect(JSON.stringify(parsed)).not.toContain('no renderer for pdf');
         });
     });
 
@@ -238,11 +236,11 @@ describe('mcp typed error helpers', () => {
 
             expect(wrapped).toBeInstanceOf(ProtocolError);
             expect(wrapped.code).toBe(ProtocolErrorCode.InvalidParams);
-            expect(wrapped.message).toContain('tmpl-1');
+            expect(wrapped.message).toBe('Template not found');
 
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
             expect(data.error.code).toBe('TEMPLATE_NOT_FOUND');
-            expect(data.error.message).toContain('tmpl-1');
+            expect(data.error.message).toBe('Template not found');
         });
 
         it('uses InternalError code for non-404 ServiceErrors', () => {
@@ -252,21 +250,22 @@ describe('mcp typed error helpers', () => {
             expect(wrapped).toBeInstanceOf(ProtocolError);
             expect(wrapped.code).toBe(ProtocolErrorCode.InternalError);
             // McpError prepends "MCP error <code>:" to the constructor message; check substring.
-            expect(wrapped.message).toContain('kaboom');
+            expect(wrapped.message).toContain('An internal error occurred');
+            expect(wrapped.message).not.toContain('kaboom');
 
             const data = wrapped.data as { error: { code: string; details?: unknown } };
-            expect(data.error.code).toBe('CUSTOM');
-            expect(data.error.details).toEqual({ reason: 'overflow' });
+            expect(data.error.code).toBe('INTERNAL_ERROR');
+            expect(data.error.details).toBeUndefined();
         });
 
-        it('round-trips arbitrary ServiceError subclasses into the McpError data payload', () => {
+        it('sanitizes unreviewed ServiceError subclasses in the MCP payload', () => {
             const err = new ServiceError('CUSTOM', 418, 'I am a teapot', { teapot: true });
             const wrapped = serviceErrorToResourceError(err);
 
             const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
-            expect(data.error.code).toBe('CUSTOM');
-            expect(data.error.message).toBe('I am a teapot');
-            expect(data.error.details).toEqual({ teapot: true });
+            expect(data.error.code).toBe('INTERNAL_ERROR');
+            expect(data.error.message).toBe('An internal error occurred');
+            expect(data.error.details).toBeUndefined();
         });
     });
 });

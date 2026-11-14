@@ -1,18 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ServiceError } from '../services/errors';
+import { ServiceError, publicServiceError } from '../services/errors';
 import { isUniqueViolation } from '../db/errors';
-
-/**
- * Normalizes an unknown caught value into a safe, 
- * non-leaking error message string.
- * Never exposes raw stack traces or internal paths 
- * to the client.
- */
-function toSafeMessage(err: unknown): string {
-    if (err instanceof Error) return err.message;
-    if (typeof err === 'string') return err;
-    return 'An unexpected error occurred';
-}
 
 /**
  * Global Express error handling middleware.
@@ -41,11 +29,7 @@ export function globalErrorHandler(
         type: 'unhandled_error',
         method: req.method,
         path: req.path,
-        message: uniqueViolation ? 'Unique constraint violation' : toSafeMessage(err),
-        // Only log stack in development
-        ...(process.env.NODE_ENV === 'development' && !uniqueViolation && {
-            stack: err instanceof Error ? err.stack : undefined
-        })
+        message: uniqueViolation ? 'Unique constraint violation' : (err instanceof ServiceError ? publicServiceError(err).error.code : 'Unexpected error'),
     });
 
     if (res.headersSent) {
@@ -54,25 +38,31 @@ export function globalErrorHandler(
 
     // Handle Postgres unique constraint violation
     if (uniqueViolation) {
+        // CRUD attaches one of these fixed resource names; driver properties are untrusted.
+        const resourceNames: Record<string, string> = { Agreement: 'Agreement', Template: 'Template', SharedModel: 'SharedModel' };
+        const typeName = (err as any).typeName;
+        const resourceName = typeof typeName === 'string' && Object.prototype.hasOwnProperty.call(resourceNames, typeName)
+            ? resourceNames[typeName] : undefined;
         res.status(409).json({
             error: 'Conflict',
-            details: `A resource with this unique identifier already exists${(err as any).typeName ? ` for ${(err as any).typeName}` : ''}.`
+            details: `A resource with this unique identifier already exists${resourceName ? ` for ${resourceName}` : ''}.`
         });
         return;
     }
 
     if (err instanceof ServiceError) {
-        res.status(err.statusCode).json(err.toJSON());
+        res.status(err.statusCode).json(publicServiceError(err));
         return;
     }
 
     // Handle Express middleware errors (like malformed JSON)
-    const statusCode = (typeof err === 'object' && err !== null && 'status' in err && typeof (err as any).status === 'number') 
+    const statusCode = (typeof err === 'object' && err !== null && 'status' in err && Number.isInteger((err as any).status) && (err as any).status >= 400 && (err as any).status <= 599)
         ? (err as any).status 
         : 500;
 
     res.status(statusCode).json({
-        error: toSafeMessage(err)
+        error: statusCode === 400 && (err as any)?.type === 'entity.parse.failed'
+            ? 'Malformed JSON' : 'An internal error occurred'
     });
 }
 
@@ -95,6 +85,10 @@ export function asyncHandler(
         => Promise<unknown>
 ) {
     return (req: Request, res: Response, next: NextFunction) => {
-        Promise.resolve(fn(req, res, next)).catch(next);
+        Promise.resolve().then(() => fn(req, res, next)).catch((error) => {
+            // Express treats falsy values and special strings as routing control flow.
+            // Preserve other values, including database errors represented as objects.
+            next(!error || error === 'route' || error === 'router' ? new Error('Unexpected error') : error);
+        });
     };
 }

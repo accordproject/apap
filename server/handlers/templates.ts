@@ -43,13 +43,13 @@ async function templateValidation(body:any) : Promise<ValidationResult> {
         }
     }
     catch (err) {
-        console.log(err);
+        console.error({ type: 'template_validation_failed' });
         return {
             success: false,
             error: {
                 errors: [
                     {
-                        message: err.message
+                        message: 'Template validation failed'
                     }
                 ]
             }

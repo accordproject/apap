@@ -298,14 +298,14 @@ describe('unique-violation compatibility', () => {
             const { app, forwarded } = failingApp(failure);
             const response = await request(app)[method](method === 'post' ? '/test' : '/test/1').send({ uri: 'urn:test' });
             expect(response.status).toBe(409);
-            expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists for TestResource.' });
+            expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists.' });
             expect(forwarded.mock.calls[0][0]).toMatchObject({ code: '23505', typeName: 'TestResource' });
             expect((forwarded.mock.calls[0][0] as { cause: unknown }).cause).toBe(failure);
             expect(JSON.stringify({ response: response.body, logs: log.mock.calls })).not.toContain('private');
         }
     });
 
-    it.each(['post', 'put'] as const)('%s forwards unrelated failures and typed errors unchanged', async (method) => {
+    it.each(['post', 'put'] as const)('%s forwards failures internally but sanitizes client responses', async (method) => {
         for (const failure of [
             new DrizzleQueryError('query', [], Object.assign(new Error('foreign key'), { code: '23503' })),
             Object.assign(new Error('unrelated'), { cause: { code: '23505' } }),
@@ -316,7 +316,10 @@ describe('unique-violation compatibility', () => {
             const response = await request(app)[method](method === 'post' ? '/test' : '/test/1').send({ uri: 'urn:test' });
             expect(forwarded).toHaveBeenCalledWith(failure);
             expect(response.status).toBe(failure instanceof ServiceError ? failure.statusCode : 500);
-            expect(response.body).toEqual(failure instanceof ServiceError ? failure.toJSON() : { error: failure.message });
+            expect(response.body).toEqual(failure instanceof ServiceError
+                ? { error: { code: 'INTERNAL_ERROR', message: 'An internal error occurred' } }
+                : { error: 'An internal error occurred' });
+            expect(JSON.stringify(response.body)).not.toContain(failure.message);
         }
     });
 });
@@ -377,7 +380,7 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
         const res = await request(app).put('/test/1').send({ name: 'new' });
 
         expect(res.status).toBe(409);
-        expect(res.body.error.code).toBe('TEST_GUARD_REJECTED');
+        expect(res.body.error).toEqual({ code: 'INTERNAL_ERROR', message: 'An internal error occurred' });
         expect(guardUpdate).toHaveBeenCalledWith(existing, expect.objectContaining({ name: 'new' }));
     });
 
@@ -411,7 +414,7 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
         const res = await request(app).delete('/test/1');
 
         expect(res.status).toBe(409);
-        expect(res.body.error.code).toBe('TEST_GUARD_REJECTED');
+        expect(res.body.error).toEqual({ code: 'INTERNAL_ERROR', message: 'An internal error occurred' });
         expect(guardDelete).toHaveBeenCalledWith(existing, db);
     });
 

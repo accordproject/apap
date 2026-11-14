@@ -3,6 +3,7 @@ import request from 'supertest';
 import express from 'express';
 import sharedModelsRouter from './sharedmodels';
 import { concertoValidation } from './concertovalidation';
+import { HttpModelRetriever } from './retrievers/HttpModelRetriever';
 
 jest.mock('./crud', () => ({
     buildCrudRouter: jest.fn(() => {
@@ -50,6 +51,19 @@ describe('SharedModels SSRF Prevention and Retrieval', () => {
         jest.restoreAllMocks();
     });
 
+    it('does not expose or log unexpected retriever failures', async () => {
+        const sentinel = 'internal-fetch-path-token-sentinel';
+        const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const spy = jest.spyOn(HttpModelRetriever.prototype, 'fetchModel').mockRejectedValueOnce(new Error(sentinel));
+        try {
+            const response = await request(app).post('/sharedmodels').send({ uri: 'https://models.accordproject.org/safe.cto' });
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Failed to fetch or parse external model safely.');
+            expect(JSON.stringify(response.body)).not.toContain(sentinel);
+            expect(JSON.stringify(log.mock.calls)).not.toContain(sentinel);
+        } finally { spy.mockRestore(); log.mockRestore(); }
+    });
+
     it('should reject a transitive import from a non-allowlisted domain', async () => {
         (global as any).fetch = jest.fn().mockImplementation(async (url: any, options: any): Promise<any> => {
             if (url === 'https://models.accordproject.org/safe.cto') {
@@ -67,7 +81,7 @@ describe('SharedModels SSRF Prevention and Retrieval', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.error).toBe('Failed to fetch or parse external model safely.');
-        expect(response.body.details).toContain('SSRF Prevention: Transitive import domain or URL not allowed: https://evil-attacker.com/malicious.cto');
+        expect(response.body.details).toBe('External model could not be retrieved or parsed.');
     });
 
     it('should fetch and insert a valid external model successfully', async () => {

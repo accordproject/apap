@@ -9,6 +9,7 @@ import {
     AgreementNotFoundError,
     AgreementTriggerError,
     InvalidPayloadError,
+    publicServiceError,
     ValidationError,
 } from '../services/errors';
 import {
@@ -145,11 +146,12 @@ crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
         // The specific `errorMessage`/`errorDetails` shape here matches what
         // the inline REST handler produced pre-slice-2c so existing clients
         // do not observe a wire change:
-        // - InvalidPayloadError -> full message on both fields (was raw Error.message)
+        // - InvalidPayloadError -> fixed public message on both fields
         // - ValidationError -> hardcoded top-line + first concerto error detail
         // - AgreementTriggerError -> upstream reason (unwrap the typed prefix)
         if (err instanceof InvalidPayloadError) {
-            res.json({ isError: true, errorMessage: err.message, errorDetails: err.message });
+            const message = publicServiceError(err).error.message;
+            res.json({ isError: true, errorMessage: message, errorDetails: message });
             return;
         }
         if (err instanceof ValidationError) {
@@ -167,8 +169,7 @@ crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
                 operation: 'triggerAgreement',
                 agreementId: req.params.id,
             });
-            const upstream = (err as any).upstreamMessage ?? err.message;
-            res.json({ isError: true, errorMessage: upstream, errorDetails: upstream });
+            res.json({ isError: true, errorMessage: 'Agreement execution failed', errorDetails: 'Agreement execution failed' });
             return;
         }
         throw err;

@@ -229,7 +229,7 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(response.body).toHaveProperty('isError', true);
             expect(response.body).toHaveProperty('errorMessage');
             expect(response.body).toHaveProperty('errorDetails');
-            expect(response.body.errorMessage).toBe('Cannot exercise late delivery before delivery date')
+            expect(response.body.errorMessage).toBe('Agreement execution failed')
         });
 
         it('should handle trigger with goods not yet delivered', async () => {
@@ -321,8 +321,8 @@ describe('Agreements Router - POST /:id/trigger', () => {
             expect(response.body).toEqual({
                 error: {
                     code: 'AGREEMENT_NOT_FOUND',
-                    message: 'Agreement not found: 999',
-                    details: { identifier: '999' },
+                    // Identifier text is no longer reflected into public errors.
+                    message: 'Agreement not found',
                 },
             });
         });
@@ -344,7 +344,7 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 .expect(500);
 
             expect(response.body).toEqual({
-                error: 'Template with uri test://template/nonexistent referenced by agreement 1 does not exist'
+                error: 'An internal error occurred'
             });
         });
 
@@ -358,7 +358,7 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 .expect(500);
 
             expect(response.body).toEqual({
-                error: 'Database connection failed'
+                error: 'An internal error occurred'
             });
         });
 
@@ -380,7 +380,7 @@ describe('Agreements Router - POST /:id/trigger', () => {
                 .expect(500);
 
             expect(response.body).toEqual({
-                error: 'Failed to build template from database'
+                error: 'An internal error occurred'
             });
         });
     });
