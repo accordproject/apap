@@ -83,12 +83,19 @@ function createDiscoveryDb(agreementCount: number, templateCount: number) {
         id: index + 1,
         uri: `urn:agreement:${index + 1}`,
         data: { value: index + 1 },
+        state: { revision: index + 1 },
         agreementStatus: 'DRAFT',
+        templateHash: 'fixture-template-hash',
+        signatures: [{ signer: 'fixture-signer' }],
+        agreementParties: [{ name: 'Fixture Party' }],
     }));
     const templates = Array.from({ length: templateCount }, (_, index) => ({
         id: index + 1,
         uri: `urn:template:${index + 1}`,
-        description: 'A template description',
+        description: index % 2 === 0 ? 'A template description' : null,
+        hash: 'fixture-template-hash',
+        text: { templateText: 'Fixture template text' },
+        metadata: { version: '1.0.0' },
     }));
     const queries = jest.fn((table: unknown, limit: number) => ({ table, limit }));
     const dialect = new PgDialect();
@@ -579,7 +586,7 @@ describe('MCP resource discovery pagination', () => {
         }));
         const expectedTemplates = fixture.templates.map(row => ({
             name: `template-${row.id}`, uri: `apap://templates/${row.id}`, mimeType: 'application/json',
-            description: row.description,
+            ...(row.description === null ? {} : { description: row.description }),
         }));
         let cursor: string | undefined;
         const expectedWalk: typeof staticResources = [];
@@ -641,7 +648,9 @@ describe('MCP resource discovery pagination', () => {
         const first = await client.request({ method: 'resources/list' });
         expect(first.nextCursor).toEqual(expect.any(String));
         fixture.agreements.splice(99, 1);
-        fixture.agreements.push({ id: 102, uri: 'urn:agreement:102', data: { value: 102 }, agreementStatus: 'DRAFT' });
+        fixture.agreements.push({
+            ...fixture.agreements[0], id: 102, uri: 'urn:agreement:102', data: { value: 102 },
+        });
         const second = await client.listResources({ cursor: first.nextCursor });
         expect(second.resources.map(resource => resource.uri)).toEqual(['apap://agreements/101', 'apap://agreements/102']);
         expect(second.nextCursor).toBeUndefined();
@@ -722,7 +731,7 @@ describe('MCP Handler', () => {
     describe('HTTP Transport Boundaries', () => {
 
         it('follows a discovery cursor over an initialized HTTP session and closes the session', async () => {
-            const fixture = createDiscoveryDb(101, 0);
+            const fixture = createDiscoveryDb(101, 101);
             const discoveryApp = express();
             discoveryApp.use(express.json());
             discoveryApp.use((_req, res, next) => {
@@ -747,10 +756,27 @@ describe('MCP Handler', () => {
             try {
                 await post({ method: 'notifications/initialized' }).expect(202);
                 const first = await list(2);
-                expect(first.resources).toHaveLength(103);
+                // Inspect the wire response because SDK decoding can discard extra fields.
+                expect(first.resources).toHaveLength(203);
+                expect(first.resources[3]).toStrictEqual({
+                    name: 'agreement-1', uri: 'apap://agreements/1', mimeType: 'application/json',
+                });
+                expect(first.resources[103]).toStrictEqual({
+                    name: 'template-1', uri: 'apap://templates/1', mimeType: 'application/json',
+                    description: 'A template description',
+                });
+                expect(first.resources[104]).toStrictEqual({
+                    name: 'template-2', uri: 'apap://templates/2', mimeType: 'application/json',
+                });
                 expect(first.nextCursor).toEqual(expect.any(String));
                 const second = await list(3, first.nextCursor);
-                expect(second.resources.map((resource: { uri: string }) => resource.uri)).toEqual(['apap://agreements/101']);
+                expect(second.resources).toStrictEqual([
+                    { name: 'agreement-101', uri: 'apap://agreements/101', mimeType: 'application/json' },
+                    {
+                        name: 'template-101', uri: 'apap://templates/101', mimeType: 'application/json',
+                        description: 'A template description',
+                    },
+                ]);
                 expect(second.nextCursor).toBeUndefined();
                 await request(discoveryApp).delete('/mcp').set('mcp-session-id', sessionId).expect(200);
                 expect(transports[sessionId]).toBeUndefined();

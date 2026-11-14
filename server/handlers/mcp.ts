@@ -425,10 +425,9 @@ async function listResourcesForDiscovery(context: PolicyContext, cursor: string 
         const agreements = await listAgreementsForDiscovery(context, DISCOVERY_PAGE_SIZE + 1, agreementId);
         for (const agreement of agreements.slice(0, DISCOVERY_PAGE_SIZE)) {
             resources.push({
-                ...DISCOVERY_METADATA,
                 name: `agreement-${agreement.id}`,
-                ...agreement,
                 uri: `apap://agreements/${agreement.id}`,
+                mimeType: DISCOVERY_METADATA.mimeType,
             });
         }
         if (agreements.length > DISCOVERY_PAGE_SIZE) {
@@ -446,10 +445,10 @@ async function listResourcesForDiscovery(context: PolicyContext, cursor: string 
         const templates = await listTemplatesForDiscovery(context, DISCOVERY_PAGE_SIZE + 1, templateId);
         for (const template of templates.slice(0, DISCOVERY_PAGE_SIZE)) {
             resources.push({
-                ...DISCOVERY_METADATA,
                 name: `template-${template.id}`,
-                ...template,
                 uri: `apap://templates/${template.id}`,
+                mimeType: DISCOVERY_METADATA.mimeType,
+                ...(template.description == null ? {} : { description: template.description }),
             });
         }
         if (templates.length > DISCOVERY_PAGE_SIZE) {
