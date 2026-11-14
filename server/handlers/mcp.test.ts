@@ -21,6 +21,20 @@ jest.mock('./inmemoryeventstore', () => {
     };
 });
 
+jest.mock('./templatebuilder', () => {
+    const actual = jest.requireActual('./templatebuilder') as any;
+    return {
+        ...actual,
+        templateFromDatabase: jest.fn(),
+    };
+});
+
+import fs from 'fs';
+import path from 'path';
+import AdmZip from 'adm-zip';
+import { Template as ApTemplate } from '@accordproject/cicero-core';
+import * as templateBuilder from './templatebuilder';
+
 import mcpRouter, {
     getServer,
     serviceErrorToCallToolResult,
@@ -47,6 +61,32 @@ import {
 } from '../services/errors';
 import { Client } from '@modelcontextprotocol/client';
 import { createLegacyPolicyContext } from '../services/policy';
+
+const mockedTemplateBuilder = templateBuilder as jest.Mocked<typeof templateBuilder>;
+
+async function createLateDeliveryTemplate(): Promise<ApTemplate> {
+    const templatePath = path.join(__dirname, '../test/archives/latedeliveryandpenalty-typescript');
+    const zip = new AdmZip();
+    const packageJson = JSON.parse(fs.readFileSync(path.join(templatePath, 'package.json'), 'utf8'));
+    zip.addFile('package.json', Buffer.from(JSON.stringify(packageJson), 'utf8'));
+    const grammarText = fs.readFileSync(path.join(templatePath, 'text/grammar.tem.md'), 'utf8');
+    zip.addFile('text/grammar.tem.md', Buffer.from(grammarText, 'utf8'));
+    const modelFiles = fs.readdirSync(path.join(templatePath, 'model'));
+    modelFiles.forEach(file => {
+        const modelContent = fs.readFileSync(path.join(templatePath, 'model', file), 'utf8');
+        zip.addFile(`model/${file}`, Buffer.from(modelContent, 'utf8'));
+    });
+    const logicPath = path.join(templatePath, 'logic');
+    if (fs.existsSync(logicPath)) {
+        const logicFiles = fs.readdirSync(logicPath).filter(f => f.endsWith('.ts') || f.endsWith('.js'));
+        logicFiles.forEach(file => {
+            const logicContent = fs.readFileSync(path.join(logicPath, file), 'utf8');
+            zip.addFile(`logic/${file}`, Buffer.from(logicContent, 'utf8'));
+        });
+    }
+    const buffer = zip.toBuffer();
+    return await ApTemplate.fromArchive(buffer);
+}
 
 function createMockDb() {
     const mock: any = {
@@ -918,16 +958,65 @@ describe('MCP Handler', () => {
             expect(parsed.$identifier).toBe('test://agreement/2');
         });
 
-        it('executes trigger-agreement tool correctly', async () => {
-            const mockTemplate = { id: 1, uri: 'test://template/1', author: 'Test Author' };
-            mockDb._setReturn([mockTemplate]);
+        describe('trigger-agreement tool execution', () => {
+            const mockAgreementData = {
+                id: 1,
+                uri: 'test://agreement/1',
+                data: {
+                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                    clauseId: 'latedelivery-1',
+                    forceMajeure: false,
+                    penaltyDuration: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 9, unit: 'days' },
+                    penaltyPercentage: 7.0,
+                    capPercentage: 2.0,
+                    termination: { $class: 'org.accordproject.time@0.3.0.Duration', amount: 2, unit: 'weeks' },
+                    fractionalPart: 'days',
+                    $identifier: 'c88e5ed7-c3e0-4249-a99c-ce9278684ac8'
+                },
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#test%3A%2F%2Ftemplate%2Flatedelivery',
+                templateHash: null as string | null,
+                state: null as any,
+                agreementStatus: 'active' as const,
+                agreementParties: [] as any[],
+                signatures: [] as any[],
+                historyEntries: [] as any[],
+                attachments: [] as any[],
+                references: [] as string[],
+                metadata: {} as any
+            };
 
-            (global as any).fetch = jest.fn<any>().mockResolvedValue({
-                ok: true,
-                json: async () => ({ result: { penalty: 20, buyerMayTerminate: false }, state: { count: 1 } }),
-            });
+            const mockTemplateData = {
+                id: 1,
+                uri: 'test://template/latedelivery',
+                author: 'Accord Project',
+                displayName: 'Late Delivery Template',
+                version: '1.0.0',
+                description: 'A template for late delivery penalties',
+                license: 'Apache-2.0',
+                keywords: ['penalty', 'delivery'],
+                metadata: {
+                    runtime: 'typescript',
+                    template: 'clause',
+                    cicero: '^2.0.0'
+                },
+                logo: null as any,
+                templateModel: {
+                    typeName: 'io.clause.latedeliveryandpenalty@0.1.0.TemplateModel',
+                    model: {
+                        $class: 'org.accordproject.protocol@1.0.0.CtoModel',
+                        ctoFiles: [] as any[]
+                    }
+                },
+                text: {
+                    templateText: 'Late Delivery and Penalty template text'
+                },
+                logic: {
+                    codes: [] as any[]
+                },
+                sampleRequest: null as any
+            };
 
-            const payload = JSON.stringify({
+            const validPayload = JSON.stringify({
                 $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyRequest',
                 forceMajeure: false,
                 agreedDelivery: '2024-01-01T00:00:00Z',
@@ -935,13 +1024,139 @@ describe('MCP Handler', () => {
                 goodsValue: 1000
             });
 
-            const result = await client.callTool({
-                name: 'trigger-agreement',
-                arguments: { agreementId: '1', payload }
+            let realApTemplate: ApTemplate;
+
+            beforeAll(async () => {
+                realApTemplate = await createLateDeliveryTemplate();
             });
 
-            const content = result.content as any[];
-            expect(content[0].type).toBe('text');
+            it('executes trigger-agreement with real template-engine and persists state', async () => {
+                mockDb.limit
+                    .mockImplementationOnce(() => Promise.resolve([{ ...mockAgreementData }]))
+                    .mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
+                mockedTemplateBuilder.templateFromDatabase.mockResolvedValueOnce(realApTemplate);
+
+                const result = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId: '1', payload: validPayload }
+                });
+
+                expect(result.isError).toBeFalsy();
+                const content = result.content as any[];
+                expect(content[0].type).toBe('text');
+
+                const parsed = JSON.parse(content[0].text as string);
+                expect(parsed.result).toBeDefined();
+                expect(parsed.result.$class).toBe(
+                    'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyResponse'
+                );
+                expect(parsed.result.penalty).toBe(20);
+                expect(parsed.result.buyerMayTerminate).toBe(false);
+                expect(parsed.state).toBeDefined();
+                expect(parsed.state.count).toBe(1);
+
+                // Verify state persistence was dispatched to DB
+                expect(mockDb.update).toHaveBeenCalled();
+                expect(mockDb.set).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        state: expect.objectContaining({ count: 1 })
+                    })
+                );
+            });
+
+            it('preserves existing agreement state on sequential triggers', async () => {
+                // First trigger initializes state (count = 1)
+                mockDb.limit
+                    .mockImplementationOnce(() => Promise.resolve([{ ...mockAgreementData }]))
+                    .mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
+                mockedTemplateBuilder.templateFromDatabase.mockResolvedValueOnce(realApTemplate);
+
+                const firstResult = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId: '1', payload: validPayload }
+                });
+                expect(firstResult.isError).toBeFalsy();
+                const firstContent = firstResult.content as any[];
+                const firstParsed = JSON.parse(firstContent[0].text as string);
+                expect(firstParsed.state.count).toBe(1);
+
+                // Second trigger with state persisted from the first trigger (count = 2)
+                mockDb.limit
+                    .mockImplementationOnce(() => Promise.resolve([{ ...mockAgreementData, state: firstParsed.state }]))
+                    .mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
+                mockedTemplateBuilder.templateFromDatabase.mockResolvedValueOnce(realApTemplate);
+
+                const secondResult = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId: '1', payload: validPayload }
+                });
+
+                expect(secondResult.isError).toBeFalsy();
+                const secondContent = secondResult.content as any[];
+                const secondParsed = JSON.parse(secondContent[0].text as string);
+                expect(secondParsed.state.count).toBe(2);
+                expect(secondParsed.result.penalty).toBe(20);
+                expect(mockDb.set).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        state: expect.objectContaining({ count: 2 })
+                    })
+                );
+            });
+
+            it('returns isError when payload is not valid JSON', async () => {
+                const result = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId: '1', payload: 'invalid-json' }
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                expect(content[0].type).toBe('text');
+                expect(content[0].text).toContain('Payload must be valid JSON');
+            });
+
+            it('returns isError when request payload is missing $class discriminator', async () => {
+                mockDb.limit
+                    .mockImplementationOnce(() => Promise.resolve([{ ...mockAgreementData }]))
+                    .mockImplementationOnce(() => Promise.resolve([mockTemplateData]));
+                mockedTemplateBuilder.templateFromDatabase.mockResolvedValueOnce(realApTemplate);
+
+                const result = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId: '1', payload: JSON.stringify({ goodsValue: 1000 }) }
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                expect(content[0].type).toBe('text');
+                expect(content[0].text).toContain('Request payload must include a $class discriminator');
+            });
+
+            it('returns isError when agreementId does not exist', async () => {
+                mockDb.limit.mockImplementationOnce(() => Promise.resolve([]));
+
+                const result = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId: '999', payload: validPayload }
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                expect(content[0].type).toBe('text');
+                expect(content[0].text).toContain('Agreement not found: 999');
+            });
+
+            it('returns isError when agreementId is non-numeric', async () => {
+                const result = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId: 'not-a-number', payload: validPayload }
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                expect(content[0].type).toBe('text');
+                expect(content[0].text).toContain('Agreement not found: not-a-number');
+            });
         });
 
         // =====================================================================
