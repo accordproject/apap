@@ -109,6 +109,7 @@ function createDiscoveryDb(agreementCount: number, templateCount: number) {
                         if (predicate) {
                             const { sql, params } = dialect.sqlToQuery(predicate);
                             const id = Number(params[0]);
+                            // These suffixes depend on Drizzle's compiled SQL format. Recheck them when upgrading Drizzle.
                             if (sql.endsWith('> $1')) filtered = rows.filter(row => row.id > id);
                             else if (sql.endsWith('= $1')) filtered = rows.filter(row => row.id === id);
                             else throw new Error(`Unexpected discovery test predicate: ${sql}`);
@@ -615,7 +616,7 @@ describe('MCP resource discovery pagination', () => {
     });
 
     it.each(['', 'bogus', 'v2:1:-', 'v1:1', 'v1:01:-', 'v1:-:-',
-        'v1:-:2147483648', 'v1:1:-\n'])('rejects invalid cursor %j', async (cursor) => {
+        'v1:-100:-', 'v1:-:0', 'v1:-:2147483648', 'v1:1:-\n'])('rejects invalid cursor %j', async (cursor) => {
         await connect(1, 1);
         await expect(client.listResources({ cursor })).rejects.toMatchObject({ code: ProtocolErrorCode.InvalidParams });
         expect(fixture.queries).not.toHaveBeenCalled();

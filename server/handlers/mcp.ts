@@ -395,13 +395,13 @@ const DISCOVERY_PAGE_SIZE = 100;
 // Each position is the last returned ID, or null for an exhausted collection.
 function parseDiscoveryCursor(cursor: string | undefined) {
     if (cursor === undefined) return { agreementId: undefined, templateId: undefined };
-    const match = /^v1:(-|-?\d{1,10}):(-|-?\d{1,10})$/.exec(cursor);
+    const match = /^v1:(-|\d{1,10}):(-|\d{1,10})$/.exec(cursor);
     const invalid = () => new ProtocolError(INVALID_PARAMS, 'Invalid resources/list cursor');
     if (!match || match[0] !== cursor) throw invalid();
     const parsePosition = (value: string) => {
         if (value === '-') return null;
         const id = Number(value);
-        if (id < -2147483648 || id > 2147483647 || String(id) !== value) throw invalid();
+        if (id <= 0 || id > 2147483647 || String(id) !== value) throw invalid();
         return id;
     };
     const agreementId = parsePosition(match[1]);
