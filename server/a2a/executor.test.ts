@@ -2,7 +2,7 @@ import { Role, TaskState, type Message } from '@a2a-js/sdk';
 import { RequestContext, ServerCallContext } from '@a2a-js/sdk/server';
 import { AuthenticatedPrincipal } from '../auth/types';
 import type { Database } from '../db/client';
-import { AgreementTriggerError, ValidationError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, InsufficientScopeError } from '../services/errors';
+import { AgreementTriggerError, ValidationError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, InsufficientScopeError, MissingTriggerClassError } from '../services/errors';
 import { ApapA2AService } from '../services/a2aService';
 import { ApapAgentExecutor, parseSkillInvocation } from './executor';
 
@@ -43,6 +43,16 @@ const lastEvent = (publish: jest.Mock) => publish.mock.calls[publish.mock.calls.
 const errorOf = (event: any) => event.data.status.message.parts[0].content.value.error;
 
 describe('ApapAgentExecutor', () => {
+    test('reconstructs the missing discriminator error without forged fields', async () => {
+        const marker = 'SYNTHETIC_INTERNAL_A2A';
+        const error = new MissingTriggerClassError(1);
+        Object.assign(error, { message: marker, stack: marker, cause: new Error(marker), details: { agreementId: 1, nested: { marker } } });
+        const publish = jest.fn();
+        await executorWith({ triggerAgreement: jest.fn().mockRejectedValue(error) }).execute(context(userMessage({ skillId: 'trigger-agreement', input: { id: 1, request: {} } }), ['apap:trigger:invoke']), { publish } as any);
+        expect(lastEvent(publish).data.status.state).toBe(TaskState.TASK_STATE_REJECTED);
+        expect(errorOf(lastEvent(publish))).toEqual({ code: 'INVALID_PAYLOAD', message: 'Request payload must include a $class discriminator' });
+        expect(JSON.stringify(lastEvent(publish))).not.toContain(marker);
+    });
     test.each([
         ['get-agreement', 'getAgreementById', 'apap:agreements:read', new NumericAgreementNotFoundError(1), 'AGREEMENT_NOT_FOUND', 'Agreement not found: 1'],
         ['get-template', 'getTemplateById', 'apap:templates:read', new NumericTemplateNotFoundError(1), 'TEMPLATE_NOT_FOUND', 'Template not found: 1'],

@@ -3,7 +3,8 @@ import { Agreement, Template } from '../db/schema';
 import {
     AgreementNotFoundError,
     NumericAgreementNotFoundError,
-    AgreementConversionError,
+    MissingTriggerClassError,
+    SafeAgreementConversionError,
     AgreementRecordImmutableError,
     NumericAgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
@@ -292,7 +293,7 @@ async function resolveAgreementRuntime(context: PolicyContext, agreementId: numb
         .where(eq(Agreement.id, agreementId))
         .limit(1);
     if (agreementRows.length === 0) {
-        throw new AgreementNotFoundError(String(agreementId));
+        throw new NumericAgreementNotFoundError(agreementId);
     }
     const agreement = agreementRows[0];
 
@@ -342,7 +343,7 @@ export async function convertAgreement(
         return await processor.draft(agreement.data, format, {});
     } catch (err) {
         const reason = err instanceof Error ? err.message : String(err);
-        throw new AgreementConversionError(agreementId, format, reason);
+        throw new SafeAgreementConversionError(agreementId, format, reason, err);
     }
 }
 
@@ -358,9 +359,7 @@ export async function triggerAgreement(
     const processor = new TemplateArchiveProcessor(apTemplate);
 
     if (!requestBody || typeof requestBody !== 'object' || !requestBody.$class) {
-        throw new InvalidPayloadError('Request payload must include a $class discriminator', {
-            agreementId,
-        });
+        throw new MissingTriggerClassError(agreementId);
     }
 
     const requestTypes = apTemplate.getRequestTypes();

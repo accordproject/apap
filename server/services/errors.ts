@@ -332,6 +332,23 @@ export class MissingArchiveBodyError extends InvalidPayloadError implements Clie
     constructor() { super('Missing .cta archive body'); }
 }
 
+/** The trigger request has no Concerto discriminator. */
+export class MissingTriggerClassError extends InvalidPayloadError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(agreementId: number) {
+        super('Request payload must include a $class discriminator', isDatabaseId(agreementId) ? { agreementId } : undefined);
+    }
+}
+
+/** Conversion failure with only the supported request format exposed. */
+export class SafeAgreementConversionError extends AgreementConversionError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(agreementId: number, format: string, reason?: string, cause?: unknown) {
+        super(agreementId, format, reason);
+        if (cause !== undefined) (this as Error & { cause?: unknown }).cause = cause;
+    }
+}
+
 function isDatabaseId(id: unknown): id is number {
     return typeof id === 'number' && Number.isInteger(id) && id >= 0 && id <= 2147483647;
 }
@@ -393,6 +410,17 @@ export function publicServiceError(error: ServiceError): { error: { code: string
     }
     if (error instanceof MissingArchiveBodyError && isClientSafeError(error)) {
         return { error: { code: 'INVALID_PAYLOAD', message: 'Missing .cta archive body' } };
+    }
+    if (error instanceof MissingTriggerClassError && isClientSafeError(error)) {
+        const id = error.details?.agreementId;
+        return { error: { code: 'INVALID_PAYLOAD', message: 'Request payload must include a $class discriminator', ...(isDatabaseId(id) ? { details: { agreementId: id } } : {}) } };
+    }
+    if (error instanceof SafeAgreementConversionError && isClientSafeError(error)) {
+        const id = error.details?.agreementId;
+        const format = error.details?.format;
+        if (isDatabaseId(id) && (format === 'html' || format === 'markdown')) {
+            return { error: { code: 'AGREEMENT_CONVERSION_FAILED', message: 'An internal error occurred', details: { agreementId: id, format } } };
+        }
     }
     if ((error instanceof NumericAgreementNotFoundError || error instanceof NumericTemplateNotFoundError) && isClientSafeError(error)) {
         const id = error.details?.identifier;

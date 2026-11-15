@@ -3,7 +3,7 @@ import request from 'supertest';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
-import { AgreementConversionError, AgreementTriggerError, InvalidPayloadError, ServiceError, ValidationError, InsufficientScopeError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, MalformedToolPayloadError, MissingArchiveBodyError, NumericTemplateImmutableError, NumericTemplateInUseError, NumericAgreementTemplateBindingImmutableError } from '../services/errors';
+import { AgreementConversionError, AgreementTriggerError, InvalidPayloadError, ServiceError, ValidationError, InsufficientScopeError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, MalformedToolPayloadError, MissingArchiveBodyError, MissingTriggerClassError, SafeAgreementConversionError, NumericTemplateImmutableError, NumericTemplateInUseError, NumericAgreementTemplateBindingImmutableError } from '../services/errors';
 import { createLegacyPolicyContext, createPolicyContext, ScopeAuthorizationPolicy } from '../services/policy';
 import { AuthenticatedPrincipal } from '../auth/types';
 import { globalErrorHandler } from '../middleware/errorHandler';
@@ -168,6 +168,41 @@ describe('internal error boundaries', () => {
         const response = await request(app).post('/templates/archive');
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: { code: 'INVALID_PAYLOAD', message: 'Missing .cta archive body' } });
+    });
+
+    it('preserves the missing discriminator trigger envelope without trusting error fields', async () => {
+        const error = new MissingTriggerClassError(1);
+        Object.assign(error, { message: marker, cause: new Error(marker), details: { agreementId: 1, nested: marker } });
+        const spy = jest.spyOn(agreementService, 'triggerAgreement').mockRejectedValueOnce(error);
+        try {
+            const app = express(); app.use(express.json()); app.use('/agreements', agreementRouter); app.use(globalErrorHandler);
+            const response = await request(app).post('/agreements/1/trigger').send({});
+            expect(response.status).toBe(200);
+            expect(response.body).toEqual({ isError: true, errorMessage: 'Request payload must include a $class discriminator', errorDetails: 'Request payload must include a $class discriminator' });
+            expect(JSON.stringify([response.body, serviceErrorToCallToolResult(error)])).not.toContain(marker);
+        } finally { spy.mockRestore(); }
+    });
+
+    it.each(['html', 'markdown'])('preserves approved conversion format %s without caught details', async (format) => {
+        const error = new SafeAgreementConversionError(7, format, marker);
+        Object.assign(error, { message: marker, cause: new Error(marker), details: { agreementId: 7, format, reason: marker, nested: { marker } } });
+        const app = express(); app.get('/', (_req, _res, next) => next(error)); app.use(globalErrorHandler);
+        const response = await request(app).get('/');
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({ error: { code: 'AGREEMENT_CONVERSION_FAILED', message: 'An internal error occurred', details: { agreementId: 7, format } } });
+        expect(JSON.parse((serviceErrorToCallToolResult(error).content[0] as { text: string }).text)).toEqual(response.body);
+        expect(JSON.stringify(response.body)).not.toContain(marker);
+        expect(log).toHaveBeenCalledWith(expect.objectContaining({ error }));
+    });
+
+    it('rejects forged conversion formats and identifiers', () => {
+        for (const details of [{ agreementId: 7, format: marker }, { agreementId: marker, format: 'html' }, { agreementId: 2147483648, format: 'html' }]) {
+            const error = new SafeAgreementConversionError(7, 'html', marker);
+            Object.assign(error, { details });
+            const result = serviceErrorToCallToolResult(error);
+            expect(JSON.parse((result.content[0] as { text: string }).text).error).toEqual({ code: 'AGREEMENT_CONVERSION_FAILED', message: 'An internal error occurred' });
+            expect(JSON.stringify(result)).not.toContain(marker);
+        }
     });
 
     it.each([

@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import { eq } from 'drizzle-orm';
 import type { Database } from '../db/client';
 import { Agreement } from '../db/schema';
-import { AgreementNotFoundError } from './errors';
+import { NumericAgreementNotFoundError } from './errors';
 import { convertAgreement } from './agreementService';
 import { createPublicPolicyContext } from './policy';
 
@@ -244,7 +244,7 @@ export async function buildAgreementLegalContext(
 ): Promise<LegalContextDocument> {
     const rows = await db.select().from(Agreement).where(eq(Agreement.id, agreementId)).limit(1);
     if (rows.length === 0) {
-        throw new AgreementNotFoundError(String(agreementId));
+        throw new NumericAgreementNotFoundError(agreementId);
     }
     const agreement = rows[0];
     const advisory = advisoryLegalContextFromMetadata(agreement.metadata);
