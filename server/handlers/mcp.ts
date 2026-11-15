@@ -19,6 +19,8 @@ import {
     publicServiceError,
     TemplateNotFoundError,
     AgreementNotFoundError,
+    RequestAgreementNotFoundError,
+    RequestTemplateNotFoundError,
     AgreementConversionError,
     AgreementTriggerError,
     UpstreamApiError,
@@ -305,7 +307,7 @@ async function getAgreement(context: PolicyContext, uri: string, variables: { ag
     // Same strict-numeric guard as the REST /agreements/:id route from #208.
     const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
     if (!Number.isFinite(id) || id > 2147483647) {
-        throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
+        throw serviceErrorToResourceError(new RequestAgreementNotFoundError(agreementId));
     }
     try {
         const agreement = await getAgreementById(context, id);
@@ -529,7 +531,7 @@ export const getServer = (context: PolicyContext) => {
             // Anything not a decimal integer resolves to a not-found, not a NaN.
             const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
             if (!Number.isFinite(id) || id > 2147483647) {
-                throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
+                throw serviceErrorToResourceError(new RequestTemplateNotFoundError(templateId));
             }
             try {
                 const template = await getTemplateById(context, id);
@@ -564,7 +566,7 @@ export const getServer = (context: PolicyContext) => {
         async ({ agreementId, format }: { agreementId: string; format: 'html' | 'markdown' }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
             if (!Number.isFinite(id) || id > 2147483647) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+                return serviceErrorToCallToolResult(new RequestAgreementNotFoundError(agreementId));
             }
             try {
                 const text = await convertAgreement(context, id, format);
@@ -592,7 +594,7 @@ Refer to the agreement's template model to determine which fields are required o
         async ({ agreementId, payload }: { agreementId: string; payload: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
             if (!Number.isFinite(id) || id > 2147483647) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+                return serviceErrorToCallToolResult(new RequestAgreementNotFoundError(agreementId));
             }
             let parsedPayload: unknown;
             try {
@@ -632,7 +634,7 @@ Refer to the agreement's template model to determine which fields are required o
         async ({ templateId }: { templateId: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
             if (!Number.isFinite(id) || id > 2147483647) {
-                return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
+                return serviceErrorToCallToolResult(new RequestTemplateNotFoundError(templateId));
             }
             try {
                 const template = await getTemplateById(context, id);
@@ -667,7 +669,7 @@ Refer to the agreement's template model to determine which fields are required o
         async ({ agreementId }: { agreementId: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
             if (!Number.isFinite(id) || id > 2147483647) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+                return serviceErrorToCallToolResult(new RequestAgreementNotFoundError(agreementId));
             }
             try {
                 const agreement = await getAgreementById(context, id);

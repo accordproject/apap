@@ -309,15 +309,45 @@ export class InsufficientScopeError extends ServiceError implements ClientSafeEr
     }
 }
 
+/** Store request-derived IDs separately from mutable public error fields. */
+const notFoundIds = new WeakMap<ServiceError, string>();
+
+function safeRequestIdentifier(id: unknown): id is string {
+    return typeof id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(id);
+}
+
+/** Request route identifiers, captured independently of mutable error details. */
+export class RequestAgreementNotFoundError extends AgreementNotFoundError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(id: string) {
+        super(safeRequestIdentifier(id) ? id : '');
+        if (safeRequestIdentifier(id)) notFoundIds.set(this, id);
+    }
+}
+
+export class RequestTemplateNotFoundError extends TemplateNotFoundError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    constructor(id: string) {
+        super(safeRequestIdentifier(id) ? id : '');
+        if (safeRequestIdentifier(id)) notFoundIds.set(this, id);
+    }
+}
+
 /** Not-found errors for validated database identifiers, not arbitrary URI strings. */
 export class NumericAgreementNotFoundError extends AgreementNotFoundError implements ClientSafeError {
     public readonly clientSafe = true as const;
-    constructor(id: number) { super(typeof id === 'number' && Number.isSafeInteger(id) && id >= 0 && id <= 2147483647 ? String(id) : ''); }
+    constructor(id: number) {
+        super(isDatabaseId(id) ? String(id) : '');
+        if (isDatabaseId(id)) notFoundIds.set(this, String(id));
+    }
 }
 
 export class NumericTemplateNotFoundError extends TemplateNotFoundError implements ClientSafeError {
     public readonly clientSafe = true as const;
-    constructor(id: number) { super(typeof id === 'number' && Number.isSafeInteger(id) && id >= 0 && id <= 2147483647 ? String(id) : ''); }
+    constructor(id: number) {
+        super(isDatabaseId(id) ? String(id) : '');
+        if (isDatabaseId(id)) notFoundIds.set(this, String(id));
+    }
 }
 
 /** Server-authored diagnostic for a tool payload that failed JSON parsing. */
@@ -418,14 +448,14 @@ export function publicServiceError(error: ServiceError): { error: { code: string
     if (error instanceof SafeAgreementConversionError && isClientSafeError(error)) {
         const id = error.details?.agreementId;
         const format = error.details?.format;
-        if (isDatabaseId(id) && (format === 'html' || format === 'markdown')) {
+        if (isDatabaseId(id) && (format === 'html' || format === 'markdown' || format === 'pdf')) {
             return { error: { code: 'AGREEMENT_CONVERSION_FAILED', message: 'An internal error occurred', details: { agreementId: id, format } } };
         }
     }
-    if ((error instanceof NumericAgreementNotFoundError || error instanceof NumericTemplateNotFoundError) && isClientSafeError(error)) {
-        const id = error.details?.identifier;
-        if (typeof id === 'string' && /^(0|[1-9]\d*)$/.test(id) && Number(id) <= 2147483647) {
-            const resource = error instanceof NumericAgreementNotFoundError ? 'Agreement' : 'Template';
+    if ((error instanceof NumericAgreementNotFoundError || error instanceof NumericTemplateNotFoundError || error instanceof RequestAgreementNotFoundError || error instanceof RequestTemplateNotFoundError) && isClientSafeError(error)) {
+        const id = notFoundIds.get(error);
+        if (id !== undefined) {
+            const resource = error instanceof NumericAgreementNotFoundError || error instanceof RequestAgreementNotFoundError ? 'Agreement' : 'Template';
             return { error: { code: resource === 'Agreement' ? 'AGREEMENT_NOT_FOUND' : 'TEMPLATE_NOT_FOUND', message: `${resource} not found: ${id}`, details: { identifier: id } } };
         }
     }

@@ -3,7 +3,7 @@ import request from 'supertest';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
-import { AgreementConversionError, AgreementTriggerError, InvalidPayloadError, ServiceError, ValidationError, InsufficientScopeError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, MalformedToolPayloadError, MissingArchiveBodyError, MissingTriggerClassError, SafeAgreementConversionError, NumericTemplateImmutableError, NumericTemplateInUseError, NumericAgreementTemplateBindingImmutableError } from '../services/errors';
+import { AgreementConversionError, AgreementTriggerError, InvalidPayloadError, ServiceError, ValidationError, InsufficientScopeError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, RequestAgreementNotFoundError, RequestTemplateNotFoundError, MalformedToolPayloadError, MissingArchiveBodyError, MissingTriggerClassError, SafeAgreementConversionError, NumericTemplateImmutableError, NumericTemplateInUseError, NumericAgreementTemplateBindingImmutableError } from '../services/errors';
 import { createLegacyPolicyContext, createPolicyContext, ScopeAuthorizationPolicy } from '../services/policy';
 import { AuthenticatedPrincipal } from '../auth/types';
 import { globalErrorHandler } from '../middleware/errorHandler';
@@ -170,6 +170,30 @@ describe('internal error boundaries', () => {
         expect(response.body).toEqual({ error: { code: 'INVALID_PAYLOAD', message: 'Missing .cta archive body' } });
     });
 
+    it.each([NumericAgreementNotFoundError, NumericTemplateNotFoundError])('does not reflect a forged numeric not-found identifier for %s', (ErrorType) => {
+        const error = new ErrorType(1);
+        Object.assign(error, { message: marker, details: { identifier: '999', nested: marker }, cause: new Error(marker) });
+        const result = serviceErrorToCallToolResult(error);
+        const parsed = JSON.parse((result.content[0] as { text: string }).text);
+        expect(parsed.error.details).toEqual({ identifier: '1' });
+        expect(parsed.error.message).toContain('not found: 1');
+        expect(JSON.stringify(result)).not.toContain(marker);
+    });
+
+    it.each([RequestAgreementNotFoundError, RequestTemplateNotFoundError])('reconstructs bounded request identifiers for %s', (ErrorType) => {
+        const error = new ErrorType('not-a-number');
+        Object.assign(error, { message: marker, details: { identifier: 'forged', nested: marker }, cause: new Error(marker) });
+        const result = serviceErrorToCallToolResult(error);
+        const parsed = JSON.parse((result.content[0] as { text: string }).text);
+        expect(parsed.error.details).toEqual({ identifier: 'not-a-number' });
+        expect(parsed.error.message).toContain('not found: not-a-number');
+        expect(JSON.stringify(result)).not.toContain(marker);
+        for (const invalid of ['', 'x'.repeat(65), 'secret/path', marker + '!', null]) {
+            const response = JSON.stringify(serviceErrorToCallToolResult(new ErrorType(invalid as any)));
+            if (invalid) expect(response).not.toContain(invalid);
+        }
+    });
+
     it('preserves the missing discriminator trigger envelope without trusting error fields', async () => {
         const error = new MissingTriggerClassError(1);
         Object.assign(error, { message: marker, cause: new Error(marker), details: { agreementId: 1, nested: marker } });
@@ -183,7 +207,7 @@ describe('internal error boundaries', () => {
         } finally { spy.mockRestore(); }
     });
 
-    it.each(['html', 'markdown'])('preserves approved conversion format %s without caught details', async (format) => {
+    it.each(['html', 'markdown', 'pdf'])('preserves approved conversion format %s without caught details', async (format) => {
         const error = new SafeAgreementConversionError(7, format, marker);
         Object.assign(error, { message: marker, cause: new Error(marker), details: { agreementId: 7, format, reason: marker, nested: { marker } } });
         const app = express(); app.get('/', (_req, _res, next) => next(error)); app.use(globalErrorHandler);
