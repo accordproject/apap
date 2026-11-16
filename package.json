@@ -21,6 +21,7 @@
     "@types/dotenv": "6.1.1",
     "ibm-openapi-validator": "1.37.6",
     "openapi-typescript": "7.10.1",
+    "railway": "3.17.0",
     "reslate": "3.0.0-5",
     "swagger-combine": "1.4.0",
     "widdershins": "4.0.1"
