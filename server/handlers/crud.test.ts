@@ -49,19 +49,10 @@ describe('PUT /:id validation', () => {
                 update: jest.fn().mockReturnThis(),
                 set: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
-                // Templates now wire a `guardUpdate` hook (content is
-                // immutable once created — see templateService.ts), which
-                // PUT /:id runs a select().from().for('update').limit(1)
-                // pre-check, inside db.transaction(cb), before validating the
-                // write. select/from/for/limit resolve to this same mock
-                // object (no `.length`), so `existingRows.length > 0` is
-                // false and the guard is skipped — these tests exercise body
-                // validation, not the immutability guard, which has its own
-                // coverage in templateService.test.ts and templates.test.ts.
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
                 for: jest.fn().mockReturnThis(),
-                limit: jest.fn().mockReturnThis(),
+                limit: jest.fn<any>().mockResolvedValue([{ id: 1, ...validTemplateBody }]),
             };
             db.transaction = jest.fn((cb: any) => cb(db));
             res.locals.db = db;
@@ -213,7 +204,9 @@ describe('DELETE /:id', () => {
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
                 for: jest.fn().mockReturnThis(),
-                limit: jest.fn().mockReturnThis(),
+                limit: jest.fn<any>()
+                    .mockResolvedValueOnce([{ id: 1, uri: validTemplateBody.uri }])
+                    .mockResolvedValueOnce([]),
                 offset: jest.fn().mockReturnThis(),
                 orderBy: jest.fn().mockReturnThis(),
             };
@@ -227,7 +220,7 @@ describe('DELETE /:id', () => {
     });
 
     it('returns 404 when resource does not exist', async () => {
-        // Build app with DB returning empty array for delete
+        // The locking lookup finds no row.
         const notFoundApp = express();
         notFoundApp.use(express.json());
         notFoundApp.use((req, res, next) => {
@@ -242,7 +235,7 @@ describe('DELETE /:id', () => {
                 select: jest.fn().mockReturnThis(),
                 from: jest.fn().mockReturnThis(),
                 for: jest.fn().mockReturnThis(),
-                limit: jest.fn().mockReturnThis(),
+                limit: jest.fn<any>().mockResolvedValue([]),
                 offset: jest.fn().mockReturnThis(),
                 orderBy: jest.fn().mockReturnThis(),
             };
@@ -371,24 +364,27 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
 
     it('guardUpdate is called with the existing row and the request body, and a thrown ServiceError maps to its status', async () => {
         const existing = { id: 1, name: 'old' };
+        const db = mockDbWithRow(existing);
         const guardUpdate = jest.fn(() => { throw new TestGuardError(); });
-        const app = buildTestApp(mockDbWithRow(existing), { guardUpdate });
+        const app = buildTestApp(db, { guardUpdate });
 
         const res = await request(app).put('/test/1').send({ name: 'new' });
 
         expect(res.status).toBe(409);
         expect(res.body.error.code).toBe('TEST_GUARD_REJECTED');
-        expect(guardUpdate).toHaveBeenCalledWith(existing, expect.objectContaining({ name: 'new' }));
+        expect(guardUpdate).toHaveBeenCalledWith(existing, expect.objectContaining({ name: 'new' }), db);
     });
 
-    it('guardUpdate is skipped (and the write proceeds) when no row matches :id', async () => {
+    it('returns 404 without updating when no row was locked', async () => {
+        const db = mockDbWithRow(null);
         const guardUpdate = jest.fn();
-        const app = buildTestApp(mockDbWithRow(null), { guardUpdate });
+        const app = buildTestApp(db, { guardUpdate });
 
         const res = await request(app).put('/test/999').send({ name: 'new' });
 
         expect(guardUpdate).not.toHaveBeenCalled();
-        expect(res.status).not.toBe(409);
+        expect(db.update).not.toHaveBeenCalled();
+        expect(res.status).toBe(404);
     });
 
     it('a guardUpdate that does not throw lets the write proceed normally', async () => {
@@ -415,13 +411,16 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
         expect(guardDelete).toHaveBeenCalledWith(existing, db);
     });
 
-    it('guardDelete is skipped when no row matches :id', async () => {
+    it('returns 404 without deleting when no row was locked', async () => {
+        const db = mockDbWithRow(null);
         const guardDelete = jest.fn();
-        const app = buildTestApp(mockDbWithRow(null), { guardDelete });
+        const app = buildTestApp(db, { guardDelete });
 
         const res = await request(app).delete('/test/999');
 
         expect(guardDelete).not.toHaveBeenCalled();
+        expect(db.delete).not.toHaveBeenCalled();
+        expect(res.status).toBe(404);
     });
 
     it('a guardDelete that does not throw lets the delete proceed normally', async () => {

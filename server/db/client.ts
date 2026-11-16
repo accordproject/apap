@@ -6,3 +6,4 @@ import * as schema from './schema';
 // they stay transport-agnostic — the MCP handler and REST routes can both call
 // the same service function without going through an internal HTTP loop.
 export type Database = PostgresJsDatabase<typeof schema>;
+export type DatabaseTransaction = Parameters<Parameters<Database['transaction']>[0]>[0];

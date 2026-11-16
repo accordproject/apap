@@ -1,8 +1,7 @@
 import express from 'express';
-import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
+import { Agreement, AgreementInsertSchema } from '../db/schema';
 import { buildCrudRouter } from './crud';
 import { extractTemplateForDatabase } from './templatebuilder';
-import { eq } from 'drizzle-orm';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import {
@@ -12,7 +11,8 @@ import {
     ValidationError,
 } from '../services/errors';
 import {
-    assertAgreementRecordMutable,
+    guardAgreementUpdate,
+    insertAgreement,
     convertAgreement,
     listAgreementsPaged,
     triggerAgreement,
@@ -50,45 +50,25 @@ router.post('/', asyncHandler(async (req, res) => {
 
         const templateUri = templateUriFromReference(req.body.template);
 
-        let currentHash = null;
-
-        const availableRetrievers = [
-            new HttpTemplateRetriever()
-        ];
-
+        let cachedTemplate: ReturnType<typeof extractTemplateForDatabase> | undefined;
+        const availableRetrievers = [new HttpTemplateRetriever()];
         if (templateUri) {
-            const matchingRetriever = availableRetrievers.find(r => 
+            const matchingRetriever = availableRetrievers.find(r =>
                 r.getURISchemes().some(scheme => templateUri.startsWith(`${scheme}:`))
             );
-
             if (matchingRetriever) {
                 const buffer = await matchingRetriever.fetch(templateUri);
-                
                 const apTemplate = await CiceroTemplate.fromArchive(buffer);
-                currentHash = apTemplate.getHash();
-
-                const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
-                
-                if (existing.length === 0) {
-                    const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                    await db.insert(DbTemplate)
-                        .values(newDbTemplateRow)
-                        .onConflictDoNothing({ target: DbTemplate.hash });
-                }
+                cachedTemplate = extractTemplateForDatabase(apTemplate, templateUri, apTemplate.getHash());
             }
         }
 
-        // req.body.template keeps validateAgreementBody's encodeURIComponent spelling
-        // for bare URIs; PUT uses result.data's Concerto encodeURI spelling instead.
-        // Keep both forms covered by assertTemplateNotInUse and the frozen-record guard.
-        const insertData = {
+        // Keep POST's validated body and its relationship spelling.
+        const inserted = await insertAgreement(db, {
             ...req.body,
-            templateHash: currentHash,
             organization: res.locals.orgId !== undefined ? res.locals.orgId : req.body.organization
-        };
-
-        const inserted = await db.insert(Agreement).values(insertData).returning();
-        res.json(inserted[0]);
+        }, cachedTemplate);
+        res.json(inserted);
 }));
 
 const crudRouter = buildCrudRouter({
@@ -97,7 +77,7 @@ const crudRouter = buildCrudRouter({
     // ponytail: cast schema to any due to zod v3 -> v4 upgrade depth-instantiation
     // issue with drizzle-zod. Runtime unaffected.
     validateBody: { schema: AgreementInsertSchema as any, custom: (body) => validateAgreementBody(body) },
-    guardUpdate: (existing, body) => assertAgreementRecordMutable(existing, body),
+    guardUpdate: guardAgreementUpdate,
     listService: (context, opts) => listAgreementsPaged(context, opts),
 });
 

@@ -48,8 +48,8 @@ export class ServiceError extends Error {
 // -- Template errors --
 
 export class TemplateNotFoundError extends ServiceError {
-    constructor(identifier: string | number) {
-        super('TEMPLATE_NOT_FOUND', 404, `Template not found: ${identifier}`, {
+    constructor(identifier: string | number, statusCode: 404 | 422 = 404) {
+        super('TEMPLATE_NOT_FOUND', statusCode, `Template not found: ${identifier}`, {
             identifier,
         });
         this.name = 'TemplateNotFoundError';
