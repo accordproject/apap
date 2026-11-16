@@ -11,6 +11,8 @@ export default defineRailway(() => {
     healthcheck: "/health",
     preDeploy: "sh -c 'cd server && npx drizzle-kit push'",
     replicas: { "sfo": 1 },
+    // Carried over from railway.json, which stops applying at cutover.
+    deploy: { restartPolicyType: "ON_FAILURE", restartPolicyMaxRetries: 10 },
     env: {
       A2A_JWT_AUDIENCE: preserve(),
       A2A_JWT_ISSUER: preserve(),
