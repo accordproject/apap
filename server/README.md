@@ -164,13 +164,18 @@ http://localhost:9000/capabilities
 
 Example response:
 
-```
-[
-  	"TEMPLATE_MANAGE",
-	"AGREEMENT_MANAGE",
-	"SHARED_MODEL_MANAGE",
-	"AGREEMENT_CONVERT_HTML"
-]
+```json
+{
+  "$class": "org.accordproject.protocol@1.0.0.Capabilities",
+  "features": [
+    "TEMPLATE_MANAGE",
+    "SHARED_MODEL_MANAGE",
+    "AGREEMENT_MANAGE",
+    "AGREEMENT_CONVERT_HTML",
+    "AGREEMENT_TRIGGER",
+    "AGREEMENT_LEGAL_CONTEXT"
+  ]
+}
 ```
 
 These capabiltities will evolve as the functionality of the RI is extended to new use cases.
