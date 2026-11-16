@@ -131,8 +131,8 @@ unauthenticated requests never enter JSON-RPC dispatch. It also requires
 | `list-templates` | `{ limit?: 1..100, offset?: >=0 }` | `apap:templates:read` |
 | `get-template` | `{ id: positive integer }` | `apap:templates:read` |
 | `list-agreements` | `{ limit?: 1..100, offset?: >=0 }` | `apap:agreements:read` |
-| `get-agreement` | `{ id: positive integer }` | `apap:agreements:read` |
-| `trigger-agreement` | `{ id: positive integer, request: object }` | `apap:trigger:invoke` |
+| `get-agreement` | `{ id: positive integer or numeric string }` | `apap:agreements:read` |
+| `trigger-agreement` | `{ id: positive integer or numeric string, request: object }` | `apap:trigger:invoke` |
 
 `create-agreement` is deliberately not exposed over A2A in this release.
 A shared agreement-creation service is a prerequisite, not an automatic

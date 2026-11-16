@@ -76,8 +76,13 @@ const idSchema = z.object({
     id: z.coerce.number().int().positive(),
 }).strict();
 
+// Preserve numeric strings while excluding booleans, arrays and other coercible values.
+const agreementId = z.union([z.number(), z.string()]).pipe(z.coerce.number<string | number>().int().positive());
+
+const agreementIdSchema = z.object({ id: agreementId }).strict();
+
 const triggerSchema = z.object({
-    id: z.coerce.number().int().positive(),
+    id: agreementId,
     request: z.record(z.string(), z.unknown()),
 }).strict();
 
@@ -145,7 +150,7 @@ function prepareSkill(skill: typeof A2A_SKILLS[number], rawInput: unknown): Prep
             };
         }
         case 'get-agreement': {
-            const input = parseInput(idSchema, rawInput, skill.id);
+            const input = parseInput(agreementIdSchema, rawInput, skill.id);
             return {
                 skillId: skill.id,
                 action: skill.action,
