@@ -86,6 +86,7 @@ describe('ApapA2AService', () => {
         );
     });
     describe.each([
+        ['get-template', 'apap:templates:read', 'getTemplateById'],
         ['get-agreement', 'apap:agreements:read', 'getAgreementById'],
         ['trigger-agreement', 'apap:trigger:invoke', 'triggerAgreement'],
     ])('%s identifier validation', (skillId, scope, operationName) => {
@@ -102,6 +103,35 @@ describe('ApapA2AService', () => {
             await service.execute(context([scope]), { skillId, input: { id, ...(skillId === 'trigger-agreement' ? { request: {} } : {}) } });
             expect(operation).toHaveBeenCalledTimes(1);
             expect(operation.mock.calls[0][1]).toBe(expected);
+        });
+    });
+
+    describe.each([
+        ['list-templates', 'apap:templates:read', 'listTemplates'],
+        ['list-agreements', 'apap:agreements:read', 'listAgreements'],
+    ])('%s paging validation', (skillId, scope, operationName) => {
+        test.each([
+            ['limit', true], ['limit', false], ['limit', [5]], ['limit', []], ['limit', null], ['limit', {}],
+            ['limit', ''], ['limit', 'abc'], ['limit', 0], ['limit', 101], ['limit', 1.5],
+            ['offset', true], ['offset', [5]], ['offset', null], ['offset', {}], ['offset', 'abc'], ['offset', -1], ['offset', 1.5],
+        ])('rejects %s %p before the operation', async (field, value) => {
+            const operation = jest.fn().mockResolvedValue([]);
+            const service = new ApapA2AService({ [operationName]: operation } as any);
+            await expect(service.execute(context([scope]), { skillId, input: { [field]: value } }))
+                .rejects.toMatchObject({ code: 'INVALID_PAYLOAD' });
+            expect(operation).not.toHaveBeenCalled();
+        });
+        test.each([
+            [{}, {}],
+            [{ limit: 1, offset: 0 }, { limit: 1, offset: 0 }],
+            [{ limit: '100', offset: '5' }, { limit: 100, offset: 5 }],
+            [{ limit: '1e1', offset: '2.0' }, { limit: 10, offset: 2 }],
+        ])('accepts %p as %p', async (input, expected) => {
+            const operation = jest.fn().mockResolvedValue([]);
+            const service = new ApapA2AService({ [operationName]: operation } as any);
+            await service.execute(context([scope]), { skillId, input });
+            expect(operation).toHaveBeenCalledTimes(1);
+            expect(operation.mock.calls[0][1]).toEqual(expected);
         });
     });
 

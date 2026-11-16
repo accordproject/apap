@@ -133,6 +133,7 @@ describe('A2A Express integration', () => {
     });
 
     test.each([
+        ['get-template', 'apap:templates:read', 'getTemplateById'],
         ['get-agreement', 'apap:agreements:read', 'getAgreementById'],
         ['trigger-agreement', 'apap:trigger:invoke', 'triggerAgreement'],
     ])('rejects coerced %s identifiers over HTTP before execution', async (skillId, scope, operationName) => {

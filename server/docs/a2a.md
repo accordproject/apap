@@ -128,9 +128,9 @@ unauthenticated requests never enter JSON-RPC dispatch. It also requires
 
 | Skill | Input | Required scope |
 | --- | --- | --- |
-| `list-templates` | `{ limit?: 1..100, offset?: >=0 }` | `apap:templates:read` |
-| `get-template` | `{ id: positive integer }` | `apap:templates:read` |
-| `list-agreements` | `{ limit?: 1..100, offset?: >=0 }` | `apap:agreements:read` |
+| `list-templates` | `{ limit?: 1..100, offset?: >=0 }` (integers or numeric strings) | `apap:templates:read` |
+| `get-template` | `{ id: positive integer or numeric string }` | `apap:templates:read` |
+| `list-agreements` | `{ limit?: 1..100, offset?: >=0 }` (integers or numeric strings) | `apap:agreements:read` |
 | `get-agreement` | `{ id: positive integer or numeric string }` | `apap:agreements:read` |
 | `trigger-agreement` | `{ id: positive integer or numeric string, request: object }` | `apap:trigger:invoke` |
 
