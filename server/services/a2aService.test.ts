@@ -135,4 +135,42 @@ describe('ApapA2AService', () => {
         });
     });
 
+    test('maps convert-agreement skill to the shared convertAgreement service operation', async () => {
+        const convertAgreement = jest.fn().mockResolvedValue('<h1>Draft Agreement</h1>');
+        const service = new ApapA2AService({ convertAgreement } as any);
+
+        await expect(service.execute(
+            context(['apap:agreements:read']),
+            { skillId: 'convert-agreement', input: { id: 5, format: 'html' } },
+        )).resolves.toEqual({
+            skillId: 'convert-agreement',
+            result: { text: '<h1>Draft Agreement</h1>', format: 'html' },
+        });
+        expect(convertAgreement).toHaveBeenCalledWith(
+            expect.objectContaining({ db, principal: expect.objectContaining({ sub: 'agent-1' }) }),
+            5,
+            'html',
+        );
+    });
+
+    test('validates convert-agreement input requires positive integer id and supported format', async () => {
+        const service = new ApapA2AService();
+        await expect(service.execute(
+            context(['apap:agreements:read']),
+            { skillId: 'convert-agreement', input: { id: -1, format: 'html' } },
+        )).rejects.toMatchObject({ code: 'INVALID_PAYLOAD' });
+
+        await expect(service.execute(
+            context(['apap:agreements:read']),
+            { skillId: 'convert-agreement', input: { id: 5, format: 'pdf' } },
+        )).rejects.toMatchObject({ code: 'INVALID_PAYLOAD' });
+    });
+
+    test('rejects convert-agreement when principal lacks apap:agreements:read scope', async () => {
+        const service = new ApapA2AService();
+        await expect(service.execute(
+            context(['apap:templates:read']),
+            { skillId: 'convert-agreement', input: { id: 5, format: 'html' } },
+        )).rejects.toMatchObject({ code: 'INSUFFICIENT_SCOPE', statusCode: 403 });
+    });
 });

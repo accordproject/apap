@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { getTemplateById, listTemplates } from './templateService';
-import { getAgreementById, listAgreements, triggerAgreement } from './agreementService';
+import { convertAgreement, getAgreementById, listAgreements, triggerAgreement } from './agreementService';
 import { InvalidPayloadError } from './errors';
 import { authorize, type PolicyAction, type PolicyContext, type PolicyResource } from './policy';
 
@@ -42,6 +42,15 @@ export const A2A_SKILLS = [
         example: { skillId: 'get-agreement', input: { id: 1 } },
     },
     {
+        id: 'convert-agreement',
+        name: 'Convert agreement',
+        action: 'agreements:convert',
+        description: 'Convert an existing agreement into an output format (html or markdown).',
+        scope: 'apap:agreements:read',
+        tags: ['apap', 'agreements', 'conversion'],
+        example: { skillId: 'convert-agreement', input: { id: 1, format: 'html' } },
+    },
+    {
         id: 'trigger-agreement',
         name: 'Trigger agreement',
         action: 'agreements:trigger',
@@ -80,6 +89,11 @@ const id = integer().pipe(z.number().positive());
 
 const idSchema = z.object({ id }).strict();
 
+const convertSchema = z.object({
+    id,
+    format: z.enum(['html', 'markdown']),
+}).strict();
+
 const triggerSchema = z.object({
     id,
     request: z.record(z.string(), z.unknown()),
@@ -91,6 +105,7 @@ type Operations = {
     listAgreements: typeof listAgreements;
     getAgreementById: typeof getAgreementById;
     triggerAgreement: typeof triggerAgreement;
+    convertAgreement: typeof convertAgreement;
 };
 
 const defaultOperations: Operations = {
@@ -99,6 +114,7 @@ const defaultOperations: Operations = {
     listAgreements,
     getAgreementById,
     triggerAgreement,
+    convertAgreement,
 };
 
 function parseInput<T>(schema: z.ZodType<T>, input: unknown, skillId: string): T {
@@ -155,6 +171,18 @@ function prepareSkill(skill: typeof A2A_SKILLS[number], rawInput: unknown): Prep
                 action: skill.action,
                 resource: { type: 'agreement', id: input.id },
                 invoke: (operations, context) => operations.getAgreementById(context, input.id),
+            };
+        }
+        case 'convert-agreement': {
+            const input = parseInput(convertSchema, rawInput, skill.id);
+            return {
+                skillId: skill.id,
+                action: skill.action,
+                resource: { type: 'agreement', id: input.id },
+                invoke: async (operations, context) => {
+                    const text = await operations.convertAgreement(context, input.id, input.format);
+                    return { text, format: input.format };
+                },
             };
         }
         case 'trigger-agreement': {
