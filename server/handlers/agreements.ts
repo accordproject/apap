@@ -68,6 +68,11 @@ router.post('/', asyncHandler(async (req, res) => {
                 const apTemplate = await CiceroTemplate.fromArchive(buffer);
                 currentHash = apTemplate.getHash();
 
+                // Note on OR-lookup nondeterminism (LOW): If hash H matches row R1 and URI U matches row R2
+                // (both unique constraints match different rows), limit(1) returns one nondeterministically.
+                // This state is undefined and unreachable on normal data (only possible after legacy migrations
+                // that violated uniqueness prior to constraint enforcement). Operators requiring strict integrity
+                // could query limit(2) and assert length === 1.
                 const existing = await db
                     .select()
                     .from(DbTemplate)
@@ -96,6 +101,9 @@ router.post('/', asyncHandler(async (req, res) => {
                         }
                     }
                 } else if (existing[0].hash) {
+                    // First-wins policy (MEDIUM): when a client uploads a .cta archive whose URI already exists
+                    // with a different hash, the agreement binds to the existing row's hash and the newly-fetched
+                    // bytes are discarded to maintain URL-identified archive immutability.
                     currentHash = existing[0].hash;
                 }
             }
