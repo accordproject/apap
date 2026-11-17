@@ -30,6 +30,7 @@ jest.mock('../db/schema', () => ({
 }));
 
 import { getAgreementTerms, buildAgreementLegalContext } from '../services/lcpService';
+import { convertAgreement, triggerAgreement } from '../services/agreementService';
 const mockedGetAgreementTerms = getAgreementTerms as jest.MockedFunction<typeof getAgreementTerms>;
 const mockedBuildAgreementLegalContext = buildAgreementLegalContext as jest.MockedFunction<
     typeof buildAgreementLegalContext
@@ -70,10 +71,11 @@ describe('GET /agreements/:id/terms', () => {
         expect(res.headers['access-control-expose-headers']).toBe('ETag');
     });
 
-    it('404s for a non-numeric id without calling the service', async () => {
+    it('rejects a non-numeric id with 400 INVALID_IDENTIFIER without calling the service', async () => {
         const app = buildApp({});
         const res = await request(app).get('/agreements/not-a-number/terms');
-        expect(res.status).toBe(404);
+        expect(res.status).toBe(400);
+        expect(res.body.error.code).toBe('INVALID_IDENTIFIER');
         expect(mockedGetAgreementTerms).not.toHaveBeenCalled();
     });
 
@@ -83,6 +85,35 @@ describe('GET /agreements/:id/terms', () => {
         const res = await request(app).get('/agreements/999/terms');
         expect(res.status).toBe(404);
         expect(res.body.error.code).toBe('AGREEMENT_NOT_FOUND');
+    });
+});
+
+describe('Agreement routes reject identifiers the RI cannot route by (#309)', () => {
+    const routes: Array<[string, (app: express.Application, id: string) => request.Test]> = [
+        ['GET /:id', (app, id) => request(app).get(`/agreements/${id}`)],
+        ['GET /:id/terms', (app, id) => request(app).get(`/agreements/${id}/terms`)],
+        ['GET /:id/legal-context', (app, id) => request(app).get(`/agreements/${id}/legal-context`)],
+        ['GET /:id/convert/:format', (app, id) => request(app).get(`/agreements/${id}/convert/markdown`)],
+        ['POST /:id/trigger', (app, id) => request(app).post(`/agreements/${id}/trigger`).send({ $class: 'test.Request' })],
+    ];
+    const cases = routes.flatMap(([name, send]) => ['abc', 'true', '1abc', '2147483648'].map((id) => [name, id, send] as const));
+
+    it.each(cases)('%s returns 400 INVALID_IDENTIFIER for %s without calling a service', async (_name, id, send) => {
+        const db = { select: jest.fn() };
+        const res = await send(buildApp(db), id);
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: {
+                code: 'INVALID_IDENTIFIER',
+                message: 'Invalid Agreement identifier: expected an integer from 1 to 2147483647',
+                details: { identifier: id },
+            },
+        });
+        expect(db.select).not.toHaveBeenCalled();
+        expect(mockedGetAgreementTerms).not.toHaveBeenCalled();
+        expect(mockedBuildAgreementLegalContext).not.toHaveBeenCalled();
+        expect(convertAgreement).not.toHaveBeenCalled();
+        expect(triggerAgreement).not.toHaveBeenCalled();
     });
 });
 

@@ -1,13 +1,13 @@
 import express from 'express';
 import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
-import { buildCrudRouter } from './crud';
+import { buildCrudRouter, parseIntegerId } from './crud';
 import { extractTemplateForDatabase } from './templatebuilder';
 import { eq } from 'drizzle-orm';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import {
-    AgreementNotFoundError,
     AgreementTriggerError,
+    InvalidIdentifierError,
     InvalidPayloadError,
     ValidationError,
 } from '../services/errors';
@@ -109,9 +109,9 @@ const crudRouter = buildCrudRouter({
  * and delegates the conversion to the template engine's draft support for the requested format.
  */
 crudRouter.get('/:id/convert/:format', asyncHandler(async function (req, res) {
-    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
-    if (!Number.isFinite(id)) {
-        throw new AgreementNotFoundError(req.params.id);
+    const id = parseIntegerId(req.params.id);
+    if (id === undefined) {
+        throw new InvalidIdentifierError('Agreement', req.params.id);
     }
     const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
     const draftResult = await convertAgreement(context, id, req.params.format);
@@ -128,9 +128,9 @@ crudRouter.get('/:id/convert/:format', asyncHandler(async function (req, res) {
  * template archive processor, and persists the updated agreement state back to the database.
  */
 crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
-    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
-    if (!Number.isFinite(id)) {
-        throw new AgreementNotFoundError(req.params.id);
+    const id = parseIntegerId(req.params.id);
+    if (id === undefined) {
+        throw new InvalidIdentifierError('Agreement', req.params.id);
     }
     try {
         const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
@@ -185,9 +185,9 @@ crudRouter.post('/:id/trigger', asyncHandler(async function (req, res) {
  * returned, so a client can verify what it fetched without re-hashing separately.
  */
 crudRouter.get('/:id/terms', asyncHandler(async function (req, res) {
-    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
-    if (!Number.isFinite(id)) {
-        throw new AgreementNotFoundError(req.params.id);
+    const id = parseIntegerId(req.params.id);
+    if (id === undefined) {
+        throw new InvalidIdentifierError('Agreement', req.params.id);
     }
     const terms = await getAgreementTerms(res.locals.db, id);
     res.setHeader('Content-Type', terms.contentType);
@@ -212,9 +212,9 @@ crudRouter.get('/:id/terms', asyncHandler(async function (req, res) {
  * instead, discoverable via the `Link: rel="legal-context"` header set on `GET /:id`.
  */
 crudRouter.get('/:id/legal-context', asyncHandler(async function (req, res) {
-    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : NaN;
-    if (!Number.isFinite(id)) {
-        throw new AgreementNotFoundError(req.params.id);
+    const id = parseIntegerId(req.params.id);
+    if (id === undefined) {
+        throw new InvalidIdentifierError('Agreement', req.params.id);
     }
     const baseUrl = resolvePublicBaseUrl();
     const legalContext = await buildAgreementLegalContext(res.locals.db, id, baseUrl);
