@@ -683,10 +683,15 @@ export const transports: Record<string, NodeStreamableHTTPServerTransport> = {};
 
 export const sessionLastActivity: Record<string, number> = {};
 
-const parseEnvMs = (val: string | undefined, defaultValue: number): number => {
-    if (val === undefined || val === '') return defaultValue;
-    const parsed = parseInt(val, 10);
-    return isNaN(parsed) ? defaultValue : parsed;
+const MAX_TIMEOUT_MS = 2147483647; // Node.js max 32-bit signed integer for timers
+
+export const parseEnvMs = (val: string | undefined, defaultValue: number): number => {
+    if (val === undefined || val.trim() === '') return defaultValue;
+    const parsed = Number(val);
+    if (!Number.isSafeInteger(parsed) || parsed <= 0 || parsed > MAX_TIMEOUT_MS) {
+        throw new Error(`MCP timeout configuration must be a positive integer no greater than ${MAX_TIMEOUT_MS}.`);
+    }
+    return parsed;
 };
 
 const SESSION_TIMEOUT_MS = parseEnvMs(process.env.SESSION_TIMEOUT_MS, 30 * 60 * 1000); // 30 minutes
