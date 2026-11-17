@@ -2048,7 +2048,10 @@ export interface operations {
     };
     getAgreement: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Comma-separated list of agreement fields to return. Omit for the full agreement. */
+                fields?: string;
+            };
             header?: never;
             path: {
                 /** @description A unique identifier for a `Agreement`. */
