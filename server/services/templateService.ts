@@ -1,4 +1,5 @@
-import { eq, or, asc, SQL, SQLWrapper, count, inArray } from 'drizzle-orm';
+import { encodedTemplateRelationshipPattern, templateReferenceSpellings } from './templateReference';
+import { eq, or, asc, SQL, SQLWrapper, count, inArray, sql } from 'drizzle-orm';
 import AdmZip from 'adm-zip';
 import { Template as ApTemplate } from '@accordproject/cicero-core';
 import { Agreement, Template } from '../db/schema';
@@ -215,12 +216,15 @@ export async function updateTemplate(
 export async function deleteTemplate(context: PolicyContext, uri: string): Promise<void> {
     await authorize(context, 'templates:delete', { type: 'template', id: uri });
     const { db } = context;
-    const existingRows = await db.select().from(Template).where(eq(Template.uri, uri)).limit(1);
-    if (existingRows.length === 0) throw new TemplateNotFoundError(uri);
-    await assertTemplateNotInUse(existingRows[0], db);
+    await db.transaction(async (tx) => {
+        const target = eq(Template.uri, uri);
+        const [existing] = await tx.select().from(Template).where(target).for('update').limit(1);
+        if (!existing) throw new TemplateNotFoundError(uri);
 
-    const rows = await db.delete(Template).where(eq(Template.uri, uri)).returning();
-    if (rows.length === 0) throw new TemplateNotFoundError(uri);
+        await assertTemplateNotInUse(existing, tx);
+        const rows = await tx.delete(Template).where(target).returning();
+        if (rows.length === 0) throw new TemplateNotFoundError(uri);
+    }, { isolationLevel: 'read committed' });
 }
 
 /**
@@ -283,14 +287,12 @@ export function assertTemplateContentImmutable(existing: TemplateRow, updates: R
  *      `resource:...Template#<uri>` relationship (plain or percent-encoded)
  */
 export async function assertTemplateNotInUse(existing: TemplateRow, db: Database): Promise<void> {
-    const relationship = 'resource:org.accordproject.protocol@1.0.0.Template#';
-    const uriCondition = inArray(Agreement.template, [
-        existing.uri,
-        `${relationship}${existing.uri}`,
-        `${relationship}${encodeURIComponent(existing.uri)}`,
-        // Concerto's PUT serialization preserves URI delimiters but escapes '%'.
-        `${relationship}${encodeURI(existing.uri)}`,
-    ]);
+    // The reference column has no index. Keep exact comparisons and the
+    // target-specific legacy match in the same existence query.
+    const uriCondition = or(
+        inArray(Agreement.template, templateReferenceSpellings(existing.uri)),
+        sql`position('%' in ${Agreement.template}) > 0 and ${Agreement.template} collate "C" ~ ${encodedTemplateRelationshipPattern(existing.uri)}`,
+    );
     const whereClause = existing.hash
         ? or(uriCondition, eq(Agreement.templateHash, existing.hash))
         : uriCondition;

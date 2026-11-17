@@ -1,3 +1,4 @@
+import type { DatabaseTransaction } from '../db/client';
 import { Router, Request, Response } from 'express';
 import { SQLWrapper, AnyColumn, desc, asc, eq, and, sql} from 'drizzle-orm';
 import { toSnakeCase } from 'drizzle-orm/casing';
@@ -231,7 +232,7 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     // Agreement uses this to freeze its record (data, signatures, etc.)
     // once signing has completed or been superseded. Skipped when no row
     // matches :id, so 404 handling below is unaffected.
-    guardUpdate?: (existing: any, body: any) => void | Promise<void>;
+    guardUpdate?: (existing: any, body: any, tx: DatabaseTransaction) => void | Promise<void>;
     // Runs on DELETE /:id, after the row is confirmed to exist and before it
     // is removed, with the row's current DB state and the request-scoped db
     // handle (needed for cross-table "is this still referenced elsewhere"
@@ -678,15 +679,14 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                                 .where(and(...whereConditions))
                                 .for('update')
                                 .limit(1);
-                            if (existingRows.length > 0) {
-                                await guardUpdate(existingRows[0], req.body);
-                            }
+                            if (existingRows.length === 0) return [];
+                            await guardUpdate(existingRows[0], req.body, tx);
                             return tx
                                 .update(table)
                                 .set(req.body)
                                 .where(and(...whereConditions))
                                 .returning();
-                        });
+                        }, { isolationLevel: 'read committed' });
                     } else {
                         updated = await res.locals.db
                             .update(table)
@@ -735,7 +735,8 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                 // between this request's check and its write. guardDelete now
                 // receives the transaction handle (`tx`), not the bare db, so any
                 // cross-table check it runs (e.g. Template's "still referenced by
-                // an agreement" lookup) is consistent with the locked row.
+                // an agreement" lookup) sees writes committed while the row lock
+                // was pending under READ COMMITTED.
                 let result;
                 if (guardDelete) {
                     result = await res.locals.db.transaction(async (tx: any) => {
@@ -745,14 +746,13 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                             .where(and(...whereConditions))
                             .for('update')
                             .limit(1);
-                        if (existingRows.length > 0) {
-                            await guardDelete(existingRows[0], tx);
-                        }
+                        if (existingRows.length === 0) return [];
+                        await guardDelete(existingRows[0], tx);
                         return tx
                             .delete(table)
                             .where(and(...whereConditions))
                             .returning();
-                    });
+                    }, { isolationLevel: 'read committed' });
                 } else {
                     result = await res.locals.db
                         .delete(table)

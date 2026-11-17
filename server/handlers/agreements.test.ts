@@ -91,6 +91,9 @@ describe('Agreements Router - POST /:id/trigger', () => {
             returning: jest.fn().mockReturnThis(),
         };
 
+        mockDb.for = jest.fn().mockReturnThis();
+        mockDb.transaction = jest.fn((callback: any) => callback(mockDb));
+
         // Add database to locals middleware
         app.use((req, res, next) => {
             res.locals.db = mockDb;
@@ -582,7 +585,7 @@ describe('POST / - Agreement Creation with External Template', () => {
             mockDb.select.mockReturnValue(mockDb);
             mockDb.from.mockReturnValue(mockDb);
             mockDb.where.mockReturnValue(mockDb);
-            mockDb.limit.mockResolvedValueOnce([]); 
+            mockDb.limit.mockResolvedValueOnce([]).mockResolvedValueOnce([{ id: 1 }]);
 
             // Utilize actual extraction logic to verify data integrity
             const actualTemplateBuilder = jest.requireActual('../handlers/templatebuilder') as any;
@@ -654,7 +657,7 @@ describe('POST / - Agreement Creation with External Template', () => {
             mockDb.select.mockReturnValue(mockDb);
             mockDb.from.mockReturnValue(mockDb);
             mockDb.where.mockReturnValue(mockDb);
-            mockDb.limit.mockResolvedValueOnce([]);
+            mockDb.limit.mockResolvedValueOnce([]).mockResolvedValueOnce([{ id: 1 }]);
 
             const valModule = require('./concertovalidation');
             const actual = jest.requireActual('./concertovalidation') as any;
@@ -704,6 +707,7 @@ describe('POST / - Agreement Creation with External Template', () => {
         });
 
         it('stores an ap:// template URI as a percent-encoded resource relationship', async () => {
+            mockDb.limit.mockResolvedValueOnce([{ id: 1 }]);
             const response = await request(app)
                 .post('/agreements/')
                 .send({
@@ -976,6 +980,7 @@ describe('POST / - Agreement Creation with External Template', () => {
                 template: 'resource:org.accordproject.protocol@1.0.0.Template#dan2',
                 data: { price: 1 },
             }]);
+            putDb.limit.mockResolvedValueOnce([{ id: 1 }]);
             putDb.returning.mockResolvedValueOnce([{ id: 3 }]);
 
             const res = await request(putApp)
@@ -1005,6 +1010,7 @@ describe('POST / - Agreement Creation with External Template', () => {
                 template: 'resource:org.accordproject.protocol@1.0.0.Template#dan2',
                 data: { price: 1 },
             }]);
+            putDb.limit.mockResolvedValueOnce([{ id: 1 }]);
             putDb.returning.mockResolvedValueOnce([{ id: 4 }]);
 
             const res = await request(putApp)
@@ -1054,6 +1060,7 @@ describe('POST / - Agreement Creation with External Template', () => {
                 };
                 // Capture what POST actually inserts, without serializer-only $class.
                 mockDb.returning.mockResolvedValueOnce([{ id: 5 }]);
+                mockDb.limit.mockResolvedValueOnce([{ id: 1 }]);
                 const created = await request(app).post('/agreements/').send(sent);
                 expect(created.status).toBe(200);
                 const inserted = mockDb.values.mock.calls[0][0];

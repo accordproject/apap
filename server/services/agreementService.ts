@@ -1,5 +1,12 @@
 import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
+import type { Database, DatabaseTransaction } from '../db/client';
+import {
+    lockTemplateReference,
+    normalizeAgreementTemplateReference,
+    templateUriFromReference,
+} from './templateReference';
+export { normalizeAgreementTemplateReference, templateUriFromReference } from './templateReference';
 import {
     AgreementNotFoundError,
     AgreementConversionError,
@@ -214,47 +221,6 @@ export async function getAgreementByUri(context: PolicyContext, uri: string): Pr
 }
 
 /**
- * Resolves an agreement's `template` field to the template URI it names. The
- * field is either a plain URI or a Concerto relationship,
- * `resource:{ns}.Template#{identifier}`, whose identifier may be
- * percent-encoded: Concerto accepts both `#demo://x` and `#demo%3A%2F%2Fx`.
- * Looking up the encoded form verbatim finds no template.
- * POST stores normalized identifiers with encodeURIComponent; PUT stores Concerto's
- * encodeURI spelling. For these writer forms, decoding the relationship layer once
- * preserves the URI's own percent escapes. The frozen-record and template-use guards
- * must cover both forms, including existing rows if a future writer chooses a single spelling.
- */
-export function templateUriFromReference<T extends string | null | undefined>(reference: T): T | string {
-    if (!reference || !reference.startsWith('resource:')) return reference;
-    const identifier = reference.split('#').slice(1).join('#');
-    try {
-        return decodeURIComponent(identifier);
-    } catch {
-        // A literal '%' that is not an escape: the identifier was never encoded.
-        return identifier;
-    }
-}
-
-// Agreement.template is a Concerto relationship, so the value that is stored
-// has to be `resource:{type}#{identifier}`. Callers also send the bare
-// identifiers this server documents and emits: an `http(s)://…cta` URL
-// (POST /agreements fetches it) and the `ap://name@version#hash` URI
-// POST /templates/archive assigns. Those are rewritten to the relationship
-// before validation and before the row is written. `templateUriFromReference`
-// turns that stored value back into the bare identifier for lookup and for
-// HttpTemplateRetriever. An identifier that is already a `resource:` URI is
-// returned unchanged — re-encoding it would split callers that stored an
-// unencoded fragment from the bytes they sent.
-const TEMPLATE_RELATIONSHIP_PREFIX = 'resource:org.accordproject.protocol@1.0.0.Template#';
-const BARE_TEMPLATE_SCHEME = /^(?:https?|ap):\/\//;
-
-export function normalizeAgreementTemplateReference(reference: string): string {
-    if (reference.startsWith('resource:')) return reference;
-    if (!BARE_TEMPLATE_SCHEME.test(reference)) return reference;
-    return `${TEMPLATE_RELATIONSHIP_PREFIX}${encodeURIComponent(reference)}`;
-}
-
-/**
  * Validates an Agreement create/update body.
  * Intentionally mutates the caller's body: POST inserts that object and relies on
  * both template normalization and concertoValidation's data/state stringification.
@@ -272,6 +238,41 @@ export async function validateAgreementBody(body: any): Promise<ValidationResult
         body.template = normalizeAgreementTemplateReference(body.template);
     }
     return concertoValidation('Agreement', body);
+}
+
+/** Persists a validated agreement and its optional, already downloaded cache entry. */
+export async function insertAgreement(
+    db: Database,
+    agreement: Omit<typeof Agreement.$inferInsert, 'templateHash'>,
+    cachedTemplate?: typeof Template.$inferInsert & { hash: string },
+): Promise<AgreementRow> {
+    const templateHash = cachedTemplate?.hash ?? null;
+    return db.transaction(async (tx) => {
+        if (cachedTemplate) {
+            const existing = await tx.select({ id: Template.id }).from(Template)
+                .where(eq(Template.hash, cachedTemplate.hash)).limit(1);
+            if (existing.length === 0) {
+                await tx.insert(Template).values(cachedTemplate).onConflictDoNothing({ target: Template.hash });
+            }
+        }
+        await lockTemplateReference(tx, agreement.template, templateHash);
+        const [inserted] = await tx.insert(Agreement).values({ ...agreement, templateHash }).returning();
+        return inserted;
+    }, { isolationLevel: 'read committed' });
+}
+
+export async function guardAgreementUpdate(
+    existing: AgreementRow,
+    updates: Partial<typeof Agreement.$inferInsert>,
+    tx: DatabaseTransaction,
+): Promise<void> {
+    assertAgreementRecordMutable(existing, updates);
+    const template = updates.template === undefined ? existing.template : updates.template;
+    const hash = updates.templateHash === undefined ? existing.templateHash : updates.templateHash;
+    if (hash !== existing.templateHash ||
+        templateUriFromReference(template) !== templateUriFromReference(existing.template)) {
+        await lockTemplateReference(tx, template, hash);
+    }
 }
 
 // Private helper. Both convertAgreement and triggerAgreement need the same

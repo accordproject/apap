@@ -131,6 +131,7 @@ function createMockDb() {
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
+        for: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         offset: jest.fn().mockReturnThis(),
@@ -148,6 +149,7 @@ function createMockDb() {
     mock.then = function (onFulfilled: any, onRejected: any) {
         return Promise.resolve(this._returnValue).then(onFulfilled, onRejected);
     };
+    mock.transaction = jest.fn((callback: any) => callback(mock));
     mock._setReturn = (val: any[]) => { mock._returnValue = val; };
     return mock;
 }
@@ -544,13 +546,13 @@ describe('templateService', () => {
             await assertTemplateNotInUse(escapedRow, db);
 
             const compiled = dialect.sqlToQuery(db.where.mock.calls[0][0]);
-            expect(compiled.sql).toContain('"template" in ($1, $2, $3, $4)');
-            expect(compiled.params).toEqual([
+            expect(compiled.sql).toContain('"template" in ($1, $2, $3)');
+            expect(compiled.params.slice(0, 3)).toEqual([
                 escapedRow.uri,
-                `resource:org.accordproject.protocol@1.0.0.Template#${escapedRow.uri}`,
                 `resource:org.accordproject.protocol@1.0.0.Template#${encodeURIComponent(escapedRow.uri)}`,
                 `resource:org.accordproject.protocol@1.0.0.Template#${encodeURI(escapedRow.uri)}`,
             ]);
+            expect(compiled.sql).toContain('collate "C" ~ $4');
         });
 
         it('resolves for a hash-less template with no referencing agreement', async () => {

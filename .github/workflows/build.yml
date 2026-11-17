@@ -92,6 +92,12 @@ jobs:
           POSTGRES_URL: postgres://postgres:1baddeed@localhost:5432/postgres
         run: npx drizzle-kit push --config drizzle.config.ts
 
+      - name: Verify agreement template reference locking
+        working-directory: server
+        env:
+          APAP_TEST_POSTGRES_URL: postgres://postgres:1baddeed@localhost:5432/postgres
+        run: npm test -- --runInBand handlers/agreementTemplate.postgres.test.ts
+
       # Follow-up to Niall's #231 review: "postgres-18-smoke only applies the
       # schema, not that RLS still isolates rows on 18." APAP itself does not
       # yet enable ROW LEVEL SECURITY on any table (the auth chain in
