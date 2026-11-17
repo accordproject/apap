@@ -5,6 +5,7 @@ import {
     getAgreementById,
     getAgreementByUri,
     convertAgreement,
+    triggerAgreement,
     assertAgreementRecordMutable,
     templateUriFromReference,
     normalizeAgreementTemplateReference,
@@ -14,6 +15,7 @@ import {
     AgreementRecordImmutableError,
     AgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
+    publicServiceError,
 } from './errors';
 import { DevelopmentPrincipal } from '../auth/types';
 import { createPolicyContext } from './policy';
@@ -306,6 +308,19 @@ describe('agreementService', () => {
             await expect(convertAgreement(context(convertDb), 999, 'html')).rejects.toThrow(
                 AgreementNotFoundError,
             );
+            await expect(convertAgreement(context(twoCallDb([], [])), 999, 'html')).rejects.toMatchObject({ message: 'Agreement not found: 999', details: { identifier: '999' } });
+        });
+
+        it('returns the server-authored missing discriminator error from the real trigger service', async () => {
+            const triggerDb = twoCallDb([agreementRow(1)], [{ uri: 'https://templates.accordproject.org/foo@0.1.0.cta' }]);
+            require('../handlers/templatebuilder').templateFromDatabase.mockResolvedValue({} as any);
+            (require('@accordproject/template-engine').TemplateArchiveProcessor as any).mockImplementation(() => ({}));
+            try {
+                await triggerAgreement(context(triggerDb), 1, {});
+                throw new Error('Expected trigger to reject');
+            } catch (error) {
+                expect(publicServiceError(error as any)).toEqual({ error: { code: 'INVALID_PAYLOAD', message: 'Request payload must include a $class discriminator', details: { agreementId: 1 } } });
+            }
         });
 
         it('wraps template-engine draft failures as AgreementConversionError', async () => {
@@ -317,7 +332,8 @@ describe('agreementService', () => {
             templateBuilder.templateFromDatabase.mockResolvedValue({} as any);
 
             const { TemplateArchiveProcessor } = require('@accordproject/template-engine');
-            const draftMock = jest.fn<any>().mockRejectedValue(new Error('render blew up'));
+            const original = new Error('render blew up');
+            const draftMock = jest.fn<any>().mockRejectedValue(original);
             (TemplateArchiveProcessor as any).mockImplementation(() => ({ draft: draftMock }));
 
             const { AgreementConversionError } = require('./errors');
@@ -329,6 +345,8 @@ describe('agreementService', () => {
             }
             expect(caught).toBeInstanceOf(AgreementConversionError);
             expect(caught).toMatchObject({ code: 'AGREEMENT_CONVERSION_FAILED' });
+            expect((caught as Error & { cause?: unknown }).cause).toBe(original);
+            expect(publicServiceError(caught as any)).toEqual({ error: { code: 'AGREEMENT_CONVERSION_FAILED', message: 'An internal error occurred', details: { agreementId: 1, format: 'markdown' } } });
         });
     });
 

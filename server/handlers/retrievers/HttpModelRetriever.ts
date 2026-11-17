@@ -65,7 +65,7 @@ export class HttpModelRetriever implements IModelRetriever {
 
             return text;
         } catch (error: any) {
-            console.error(`[HttpModelRetriever Error]:`, error);
+            console.error({ type: 'external_model_fetch_failed' });
             throw new Error('Failed to securely fetch the external model. Ensure the URL is valid, public, and within allowed limits.');
         } finally {
             clearTimeout(timeoutId);

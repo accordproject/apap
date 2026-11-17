@@ -2,9 +2,11 @@ import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
 import {
     AgreementNotFoundError,
-    AgreementConversionError,
+    NumericAgreementNotFoundError,
+    MissingTriggerClassError,
+    SafeAgreementConversionError,
     AgreementRecordImmutableError,
-    AgreementTemplateBindingImmutableError,
+    NumericAgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
     AgreementTriggerError,
     InvalidPayloadError,
@@ -161,7 +163,7 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
         updates.template !== undefined &&
         templateUriFromReference(existing.template) !== templateUriFromReference(updates.template as string | null)
     ) {
-        throw new AgreementTemplateBindingImmutableError(existing.id);
+        throw new NumericAgreementTemplateBindingImmutableError(existing.id);
     }
 }
 
@@ -196,7 +198,7 @@ export async function getAgreementById(context: PolicyContext, id: number): Prom
     await authorize(context, 'agreements:read', { type: 'agreement', id });
     const { db } = context;
     const rows = await db.select().from(Agreement).where(eq(Agreement.id, id)).limit(1);
-    if (rows.length === 0) throw new AgreementNotFoundError(String(id));
+    if (rows.length === 0) throw new NumericAgreementNotFoundError(id);
     return rows[0];
 }
 
@@ -291,7 +293,7 @@ async function resolveAgreementRuntime(context: PolicyContext, agreementId: numb
         .where(eq(Agreement.id, agreementId))
         .limit(1);
     if (agreementRows.length === 0) {
-        throw new AgreementNotFoundError(String(agreementId));
+        throw new NumericAgreementNotFoundError(agreementId);
     }
     const agreement = agreementRows[0];
 
@@ -341,7 +343,7 @@ export async function convertAgreement(
         return await processor.draft(agreement.data, format, {});
     } catch (err) {
         const reason = err instanceof Error ? err.message : String(err);
-        throw new AgreementConversionError(agreementId, format, reason);
+        throw new SafeAgreementConversionError(agreementId, format, reason, err);
     }
 }
 
@@ -357,9 +359,7 @@ export async function triggerAgreement(
     const processor = new TemplateArchiveProcessor(apTemplate);
 
     if (!requestBody || typeof requestBody !== 'object' || !requestBody.$class) {
-        throw new InvalidPayloadError('Request payload must include a $class discriminator', {
-            agreementId,
-        });
+        throw new MissingTriggerClassError(agreementId);
     }
 
     const requestTypes = apTemplate.getRequestTypes();
@@ -409,7 +409,7 @@ export async function triggerAgreement(
         triggerResult = await processor.trigger(agreement.data, requestBody, currentState);
     } catch (err) {
         const reason = err instanceof Error ? err.message : String(err);
-        throw new AgreementTriggerError(String(agreementId), reason);
+        throw new AgreementTriggerError(String(agreementId), reason, err);
     }
 
     // Targeted single-column write: only `state` changes on a trigger. Writing

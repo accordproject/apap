@@ -9,7 +9,7 @@ import {
     createTemplateFromArchive,
     listTemplatesPaged,
 } from '../services/templateService';
-import { InvalidPayloadError } from '../services/errors';
+import { MissingArchiveBodyError } from '../services/errors';
 import { asyncHandler } from '../middleware/errorHandler';
 import { createLegacyPolicyContext } from '../services/policy';
 
@@ -43,13 +43,13 @@ async function templateValidation(body:any) : Promise<ValidationResult> {
         }
     }
     catch (err) {
-        console.log(err);
+        console.error({ type: 'template_validation_failed' });
         return {
             success: false,
             error: {
                 errors: [
                     {
-                        message: err.message
+                        message: 'Template validation failed'
                     }
                 ]
             }
@@ -85,7 +85,7 @@ crudRouter.post('/archive',
     express.raw({ type: 'application/octet-stream', limit: '10mb' }),
     asyncHandler(async (req, res) => {
         if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
-            throw new InvalidPayloadError('Missing .cta archive body');
+            throw new MissingArchiveBodyError();
         }
         const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
         const template = await createTemplateFromArchive(context, req.body);

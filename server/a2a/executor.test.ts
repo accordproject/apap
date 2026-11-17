@@ -2,7 +2,7 @@ import { Role, TaskState, type Message } from '@a2a-js/sdk';
 import { RequestContext, ServerCallContext } from '@a2a-js/sdk/server';
 import { AuthenticatedPrincipal } from '../auth/types';
 import type { Database } from '../db/client';
-import { AgreementTriggerError, ValidationError } from '../services/errors';
+import { AgreementTriggerError, ValidationError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, InsufficientScopeError, MissingTriggerClassError } from '../services/errors';
 import { ApapA2AService } from '../services/a2aService';
 import { ApapAgentExecutor, parseSkillInvocation } from './executor';
 
@@ -43,6 +43,61 @@ const lastEvent = (publish: jest.Mock) => publish.mock.calls[publish.mock.calls.
 const errorOf = (event: any) => event.data.status.message.parts[0].content.value.error;
 
 describe('ApapAgentExecutor', () => {
+    test('reconstructs the missing discriminator error without forged fields', async () => {
+        const marker = 'SYNTHETIC_INTERNAL_A2A';
+        const error = new MissingTriggerClassError(1);
+        Object.assign(error, { message: marker, stack: marker, cause: new Error(marker), details: { agreementId: 1, nested: { marker } } });
+        const publish = jest.fn();
+        await executorWith({ triggerAgreement: jest.fn().mockRejectedValue(error) }).execute(context(userMessage({ skillId: 'trigger-agreement', input: { id: 1, request: {} } }), ['apap:trigger:invoke']), { publish } as any);
+        expect(lastEvent(publish).data.status.state).toBe(TaskState.TASK_STATE_REJECTED);
+        expect(errorOf(lastEvent(publish))).toEqual({ code: 'INVALID_PAYLOAD', message: 'Request payload must include a $class discriminator' });
+        expect(JSON.stringify(lastEvent(publish))).not.toContain(marker);
+    });
+    test.each([
+        ['get-agreement', 'getAgreementById', 'apap:agreements:read', new NumericAgreementNotFoundError(1), 'AGREEMENT_NOT_FOUND', 'Agreement not found: 1'],
+        ['get-template', 'getTemplateById', 'apap:templates:read', new NumericTemplateNotFoundError(1), 'TEMPLATE_NOT_FOUND', 'Template not found: 1'],
+    ])('reconstructs forged fields from reachable %s failures', async (skillId, operation, scope, error, code, message) => {
+        const marker = 'SYNTHETIC_INTERNAL_A2A';
+        Object.assign(error, { message: marker, stack: marker, cause: new Error(marker), details: { identifier: '1', nested: { marker } } });
+        const publish = jest.fn();
+        await executorWith({ [operation]: jest.fn().mockRejectedValue(error) }).execute(context(userMessage({ skillId, input: { id: 1 } }), [scope]), { publish } as any);
+        expect(lastEvent(publish).data.status.state).toBe(TaskState.TASK_STATE_FAILED);
+        expect(errorOf(lastEvent(publish))).toEqual({ code, message });
+        expect(JSON.stringify(lastEvent(publish))).not.toContain(marker);
+    });
+
+    test('reconstructs forged scope denial fields', async () => {
+        const marker = 'SYNTHETIC_INTERNAL_A2A';
+        const error = new InsufficientScopeError('templates:list');
+        Object.assign(error, { message: marker, stack: marker, cause: new Error(marker), details: { action: 'templates:list', requiredScope: marker, nested: { marker } } });
+        const publish = jest.fn();
+        await executorWith({ listTemplates: jest.fn().mockRejectedValue(error) }).execute(context(userMessage({ skillId: 'list-templates', input: {} })), { publish } as any);
+        expect(lastEvent(publish).data.status.state).toBe(TaskState.TASK_STATE_REJECTED);
+        expect(errorOf(lastEvent(publish))).toEqual({ code: 'INSUFFICIENT_SCOPE', message: 'The authenticated principal is not authorized for this operation.', details: { action: 'templates:list', requiredScope: 'apap:templates:read' } });
+        expect(JSON.stringify(lastEvent(publish))).not.toContain(marker);
+    });
+
+    test.each([
+        ['get-agreement', 'apap:agreements:read', 'AGREEMENT_NOT_FOUND'],
+        ['get-template', 'apap:templates:read', 'TEMPLATE_NOT_FOUND'],
+    ])('uses the real %s service lookup and preserves the response', async (skillId, scope, code) => {
+        const db: any = { select: jest.fn().mockReturnThis(), from: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), limit: jest.fn().mockResolvedValue([]) };
+        const publish = jest.fn();
+        await new ApapAgentExecutor(db, new ApapA2AService()).execute(context(userMessage({ skillId, input: { id: 1 } }), [scope]), { publish } as any);
+        expect(db.select).toHaveBeenCalled();
+        expect(errorOf(lastEvent(publish)).code).toBe(code);
+        expect(lastEvent(publish).data.status.state).toBe(TaskState.TASK_STATE_FAILED);
+    });
+
+    test('does not reflect a forged identifier', async () => {
+        const marker = 'SYNTHETIC_INTERNAL_IDENTIFIER';
+        const error = new NumericAgreementNotFoundError(1);
+        Object.assign(error, { message: marker, details: { identifier: marker, nested: { marker } }, cause: new Error(marker), stack: marker });
+        const publish = jest.fn();
+        await executorWith({ getAgreementById: jest.fn().mockRejectedValue(error) }).execute(context(userMessage({ skillId: 'get-agreement', input: { id: 1 } }), ['apap:agreements:read']), { publish } as any);
+        expect(errorOf(lastEvent(publish)).code).toBe('AGREEMENT_NOT_FOUND');
+        expect(JSON.stringify(lastEvent(publish))).not.toContain(marker);
+    });
     test('accepts only structured data or JSON text invocations', () => {
         expect(parseSkillInvocation(userMessage({ skillId: 'list-templates', input: { limit: 1 } })))
             .toEqual({ skillId: 'list-templates', input: { limit: 1 } });
@@ -174,8 +229,10 @@ describe('ApapAgentExecutor', () => {
 
     test('keeps unexpected failures generic', async () => {
         const internal = 'connect ECONNREFUSED postgres://user:secret@db:5432';
-        const listTemplates = jest.fn().mockRejectedValue(new Error(internal));
+        const failureError = new Error(internal);
+        const listTemplates = jest.fn().mockRejectedValue(failureError);
         const publish = jest.fn();
+        const log = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
         await executorWith({ listTemplates })
             .execute(context(userMessage({ skillId: 'list-templates', input: {} })), { publish } as any);
@@ -187,5 +244,7 @@ describe('ApapAgentExecutor', () => {
             code: 'INTERNAL_ERROR',
             message: 'The A2A operation failed unexpectedly.',
         });
+        expect(log).toHaveBeenCalledWith(expect.objectContaining({ error: failureError }));
+        log.mockRestore();
     });
 });

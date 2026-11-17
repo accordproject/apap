@@ -16,8 +16,11 @@ import { InMemoryEventStore } from './inmemoryeventstore';
 import { Agreement, MODEL, Template } from '../db/schema';
 import {
     ServiceError,
+    publicServiceError,
     TemplateNotFoundError,
     AgreementNotFoundError,
+    RequestAgreementNotFoundError,
+    RequestTemplateNotFoundError,
     AgreementConversionError,
     AgreementTriggerError,
     UpstreamApiError,
@@ -29,7 +32,7 @@ import {
     convertAgreement,
     triggerAgreement as triggerAgreementService,
 } from '../services/agreementService';
-import { InvalidPayloadError } from '../services/errors';
+import { MalformedToolPayloadError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
 import { createLegacyPolicyContext } from '../services/policy';
 
@@ -244,12 +247,13 @@ export async function buildApiErrorMessage(result: globalThis.Response, context:
  * way the REST clients already do.
  */
 export function serviceErrorToCallToolResult(error: ServiceError): CallToolResult {
+    if (error.statusCode >= 500) console.error({ type: 'mcp_operation_failed', error });
     return {
         isError: true,
         content: [
             {
                 type: 'text',
-                text: JSON.stringify(error.toJSON()),
+                text: JSON.stringify(publicServiceError(error)),
             },
         ],
     };
@@ -267,8 +271,26 @@ export function serviceErrorToCallToolResult(error: ServiceError): CallToolResul
  * `InvalidParams` so the client sees an actionable code without us inventing an SDK string.
  */
 export function serviceErrorToResourceError(error: ServiceError): ProtocolError {
+    if (error.statusCode >= 500) console.error({ type: 'mcp_operation_failed', error });
     const code = error.statusCode === 404 ? INVALID_PARAMS : INTERNAL_ERROR;
-    return new ProtocolError(code, error.message, error.toJSON());
+    const payload = publicServiceError(error);
+    return new ProtocolError(code, payload.error.message, payload);
+}
+
+
+function internalToolError(error: unknown): CallToolResult {
+    console.error({ type: 'mcp_operation_failed', error });
+    return { isError: true, content: [{ type: 'text', text: 'An internal error occurred' }] };
+}
+
+function resourceError(error: unknown): ProtocolError {
+    if (error instanceof ServiceError) return serviceErrorToResourceError(error);
+    console.error({ type: 'mcp_operation_failed', error });
+    return new ProtocolError(INTERNAL_ERROR, 'An internal error occurred');
+}
+
+async function safeResource<T>(operation: () => Promise<T>): Promise<T> {
+    try { return await operation(); } catch (error) { throw resourceError(error); }
 }
 
 /**
@@ -284,8 +306,8 @@ async function getAgreement(context: PolicyContext, uri: string, variables: { ag
     const url = new URL(uri);
     // Same strict-numeric guard as the REST /agreements/:id route from #208.
     const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-    if (!Number.isFinite(id)) {
-        throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
+    if (!Number.isFinite(id) || id > 2147483647) {
+        throw serviceErrorToResourceError(new RequestAgreementNotFoundError(agreementId));
     }
     try {
         const agreement = await getAgreementById(context, id);
@@ -299,10 +321,7 @@ async function getAgreement(context: PolicyContext, uri: string, variables: { ag
             }]
         };
     } catch (err) {
-        if (err instanceof ServiceError) {
-            throw serviceErrorToResourceError(err);
-        }
-        throw err;
+        throw resourceError(err);
     }
 }
 
@@ -428,7 +447,7 @@ export const getServer = (context: PolicyContext) => {
         'templates',
         "apap://templates",
         { mimeType: "application/json" },
-        (uri: URL) => getTemplates(context, uri),
+        (uri: URL) => safeResource(() => getTemplates(context, uri)),
     );
 
     // register the agreements (see #217 dispatch-order note on templates above).
@@ -436,7 +455,7 @@ export const getServer = (context: PolicyContext) => {
         'agreements',
         "apap://agreements",
         { mimeType: "application/json" },
-        (uri: URL) => getAgreements(context, uri),
+        (uri: URL) => safeResource(() => getAgreements(context, uri)),
     );
 
     // Paged variants for #217: RFC 6570 form-style query expansion
@@ -457,7 +476,7 @@ export const getServer = (context: PolicyContext) => {
         new ResourceTemplate('apap://templates{?limit,offset}', { list: undefined }),
         { title: 'Templates (paged)', mimeType: 'application/json' },
         (uri: URL, variables: Record<string, string | string[]>) =>
-            getTemplates(context, uri, pageOpts(variables)),
+            safeResource(() => getTemplates(context, uri, pageOpts(variables))),
     );
 
     server.registerResource(
@@ -465,14 +484,14 @@ export const getServer = (context: PolicyContext) => {
         new ResourceTemplate('apap://agreements{?limit,offset}', { list: undefined }),
         { title: 'Agreements (paged)', mimeType: 'application/json' },
         (uri: URL, variables: Record<string, string | string[]>) =>
-            getAgreements(context, uri, pageOpts(variables)),
+            safeResource(() => getAgreements(context, uri, pageOpts(variables))),
     );
 
     // register resource template for agreements
     server.registerResource(
         "agreement",
         new ResourceTemplate("apap://agreements/{agreementId}", {
-            list: async () => {
+            list: async () => safeResource(async () => {
                 const agreements = await listAgreements(context);
                 return {
                     resources: agreements.map((a) => ({
@@ -481,7 +500,7 @@ export const getServer = (context: PolicyContext) => {
                         uri: `apap://agreements/${a.id}`,
                     })),
                 };
-            }
+            })
         }),
         { mimeType: "application/json" },
         async (uri: URL, variables: Record<string, string | string[]>) => {
@@ -494,7 +513,7 @@ export const getServer = (context: PolicyContext) => {
     server.registerResource(
         "template",
         new ResourceTemplate("apap://templates/{templateId}", {
-            list: async () => {
+            list: async () => safeResource(async () => {
                 const templates = await listTemplates(context);
                 return {
                     resources: templates.map((t) => ({
@@ -503,7 +522,7 @@ export const getServer = (context: PolicyContext) => {
                         uri: `apap://templates/${t.id}`,
                     })),
                 };
-            }
+            })
         }),
         { mimeType: "application/json" },
         async (uri: URL, variables: Record<string, string | string[]>) => {
@@ -511,8 +530,8 @@ export const getServer = (context: PolicyContext) => {
             // Same strict-numeric guard as the REST /templates/:id route from #208.
             // Anything not a decimal integer resolves to a not-found, not a NaN.
             const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
-            if (!Number.isFinite(id)) {
-                throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
+            if (!Number.isFinite(id) || id > 2147483647) {
+                throw serviceErrorToResourceError(new RequestTemplateNotFoundError(templateId));
             }
             try {
                 const template = await getTemplateById(context, id);
@@ -525,10 +544,7 @@ export const getServer = (context: PolicyContext) => {
                     }]
                 };
             } catch (err) {
-                if (err instanceof ServiceError) {
-                    throw serviceErrorToResourceError(err);
-                }
-                throw err;
+                throw resourceError(err);
             }
         }
     );
@@ -549,8 +565,8 @@ export const getServer = (context: PolicyContext) => {
         },
         async ({ agreementId, format }: { agreementId: string; format: 'html' | 'markdown' }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            if (!Number.isFinite(id) || id > 2147483647) {
+                return serviceErrorToCallToolResult(new RequestAgreementNotFoundError(agreementId));
             }
             try {
                 const text = await convertAgreement(context, id, format);
@@ -561,7 +577,7 @@ export const getServer = (context: PolicyContext) => {
                 if (error instanceof ServiceError) {
                     return serviceErrorToCallToolResult(error);
                 }
-                throw error;
+                return internalToolError(error);
             }
         }
     );
@@ -577,15 +593,15 @@ Refer to the agreement's template model to determine which fields are required o
         },
         async ({ agreementId, payload }: { agreementId: string; payload: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            if (!Number.isFinite(id) || id > 2147483647) {
+                return serviceErrorToCallToolResult(new RequestAgreementNotFoundError(agreementId));
             }
             let parsedPayload: unknown;
             try {
                 parsedPayload = JSON.parse(payload);
             } catch {
                 return serviceErrorToCallToolResult(
-                    new InvalidPayloadError('Payload must be valid JSON', { agreementId }),
+                    new MalformedToolPayloadError(),
                 );
             }
             try {
@@ -597,7 +613,7 @@ Refer to the agreement's template model to determine which fields are required o
                 if (error instanceof ServiceError) {
                     return serviceErrorToCallToolResult(error);
                 }
-                throw error;
+                return internalToolError(error);
             }
         }
     );
@@ -617,8 +633,8 @@ Refer to the agreement's template model to determine which fields are required o
         },
         async ({ templateId }: { templateId: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
+            if (!Number.isFinite(id) || id > 2147483647) {
+                return serviceErrorToCallToolResult(new RequestTemplateNotFoundError(templateId));
             }
             try {
                 const template = await getTemplateById(context, id);
@@ -632,7 +648,7 @@ Refer to the agreement's template model to determine which fields are required o
                 if (err instanceof ServiceError) {
                     return serviceErrorToCallToolResult(err);
                 }
-                throw err;
+                return internalToolError(err);
             }
         }
     );
@@ -652,8 +668,8 @@ Refer to the agreement's template model to determine which fields are required o
         },
         async ({ agreementId }: { agreementId: string }): Promise<CallToolResult> => {
             const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            if (!Number.isFinite(id) || id > 2147483647) {
+                return serviceErrorToCallToolResult(new RequestAgreementNotFoundError(agreementId));
             }
             try {
                 const agreement = await getAgreementById(context, id);
@@ -667,7 +683,7 @@ Refer to the agreement's template model to determine which fields are required o
                 if (err instanceof ServiceError) {
                     return serviceErrorToCallToolResult(err);
                 }
-                throw err;
+                return internalToolError(err);
             }
         }
     );
@@ -844,7 +860,7 @@ router.all('/mcp', async (req: Request, res: Response) => {
         await transport.handleRequest(req, res, req.body);
         console.log({ type: 'transport_handled_request' });
     } catch (error) {
-        console.error({ type: 'mcp_request_failed', error: error instanceof Error ? error.message : String(error) });
+        console.error({ type: 'mcp_request_failed', error });
         if (!res.headersSent) {
             res.status(500).json({
                 jsonrpc: '2.0',

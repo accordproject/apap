@@ -395,7 +395,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         if (table.id.columnType === 'PgUUID') {
             return next();
         }
-        if (!/^\d+$/.test(rawId)) {
+        if (!/^\d+$/.test(rawId) || Number(rawId) > 2147483647) {
             return res.status(404).json({ error: 'Not found' });
         }
         next();

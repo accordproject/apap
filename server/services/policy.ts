@@ -1,6 +1,6 @@
 import type { Database } from '../db/client';
 import { DevelopmentPrincipal, type Principal } from '../auth/types';
-import { ServiceError } from './errors';
+import { InsufficientScopeError, REQUIRED_SCOPE } from './errors';
 
 export type PolicyAction =
     | 'templates:list'
@@ -28,18 +28,6 @@ export interface AuthorizationPolicy {
     authorize(context: PolicyContext, action: PolicyAction, resource: PolicyResource): void | Promise<void>;
 }
 
-const REQUIRED_SCOPE: Readonly<Record<PolicyAction, string>> = {
-    'templates:list': 'apap:templates:read',
-    'templates:read': 'apap:templates:read',
-    'templates:create': 'apap:templates:write',
-    'templates:update': 'apap:templates:write',
-    'templates:delete': 'apap:templates:write',
-    'agreements:list': 'apap:agreements:read',
-    'agreements:read': 'apap:agreements:read',
-    'agreements:convert': 'apap:agreements:read',
-    'agreements:trigger': 'apap:trigger:invoke',
-};
-
 /**
  * RI policy: development/legacy callers retain today's open behavior, while
  * authenticated callers must receive the exact scope for an operation.
@@ -52,12 +40,7 @@ export class ScopeAuthorizationPolicy implements AuthorizationPolicy {
         const requiredScope = REQUIRED_SCOPE[action];
         if (context.principal.scopes.includes(requiredScope)) return;
 
-        throw new ServiceError(
-            'INSUFFICIENT_SCOPE',
-            403,
-            'The authenticated principal is not authorized for this operation.',
-            { action, resource, requiredScope },
-        );
+        throw new InsufficientScopeError(action);
     }
 }
 

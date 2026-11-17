@@ -16,7 +16,7 @@ import { UnsupportedOperationError } from '@a2a-js/sdk/errors';
 import type { Principal } from '../auth/types';
 import type { Database } from '../db/client';
 import { ApapA2AService, type SkillInvocation } from '../services/a2aService';
-import { InvalidPayloadError, isClientSafeError, ServiceError } from '../services/errors';
+import { InvalidPayloadError, isClientSafeError, ServiceError, InsufficientScopeError, NumericAgreementNotFoundError, NumericTemplateNotFoundError, RequestAgreementNotFoundError, RequestTemplateNotFoundError, MissingTriggerClassError, SafeAgreementConversionError, publicServiceError } from '../services/errors';
 import { createPolicyContext } from '../services/policy';
 
 function id(): string {
@@ -174,6 +174,11 @@ const CODE_ONLY_MESSAGES: Readonly<Record<string, string>> = {
 
 function safeError(error: unknown): PublicError {
     if (error instanceof ServiceError) {
+        if (error instanceof InsufficientScopeError || error instanceof NumericAgreementNotFoundError || error instanceof NumericTemplateNotFoundError || error instanceof RequestAgreementNotFoundError || error instanceof RequestTemplateNotFoundError || error instanceof MissingTriggerClassError || error instanceof SafeAgreementConversionError) {
+            const publicError = publicServiceError(error).error;
+            if (error instanceof InsufficientScopeError) return publicError;
+            return { code: publicError.code, message: publicError.message };
+        }
         const serialize = PUBLIC_ERRORS[error.code];
         if (serialize) return serialize(error);
         // Opt-in seam: an error type that declares its own text client-safe
@@ -293,6 +298,7 @@ export class ApapAgentExecutor implements AgentExecutor {
                 event: state === TaskState.TASK_STATE_REJECTED ? 'a2a_task_rejected' : 'a2a_task_failed',
                 taskId,
                 code: serialized.code,
+                ...(state === TaskState.TASK_STATE_FAILED && { error }),
             });
         }
     }
