@@ -160,6 +160,18 @@ jobs:
           DROP TABLE _rls_smoke;
           SQL
 
+      - name: Verify agreement immutability persistence
+        working-directory: server
+        env:
+          PGPASSWORD: 1baddeed
+          POSTGRES_URL: postgres://postgres:1baddeed@localhost:5432/apap_310_ci
+          APAP_TEST_POSTGRES_URL: postgres://postgres:1baddeed@localhost:5432/apap_310_ci
+          APAP_DISPOSABLE_POSTGRES: '1'
+        run: |
+          createdb -h localhost -U postgres apap_310_ci
+          npx drizzle-kit push --config drizzle.config.ts
+          npm test -- --runInBand handlers/agreementImmutability.postgres.test.ts
+
   publish:
     needs:
       - build

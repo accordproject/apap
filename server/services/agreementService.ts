@@ -92,6 +92,27 @@ function deepEqual(a: unknown, b: unknown): boolean {
     );
 }
 
+// Only structurally compare serialized containers when parsing and re-encoding
+// preserves each input byte-for-byte. This rejects duplicate keys, numeric
+// precision loss, and any spelling the runtime would normalize. Otherwise
+// fall back to exact comparison rather than risk accepting a data change.
+function agreementDataEqual(a: unknown, b: unknown): boolean {
+    if (typeof a === 'string' && typeof b === 'string') {
+        try {
+            const parsedA: unknown = JSON.parse(a);
+            const parsedB: unknown = JSON.parse(b);
+            if (parsedA !== null && parsedB !== null &&
+                typeof parsedA === 'object' && typeof parsedB === 'object' &&
+                JSON.stringify(parsedA) === a && JSON.stringify(parsedB) === b) {
+                return deepEqual(parsedA, parsedB);
+            }
+        } catch {
+            // Existing or incoming data may not be encoded JSON objects.
+        }
+    }
+    return deepEqual(a, b);
+}
+
 /**
  * Guard for the generic CRUD PUT route (see `crud.ts`'s `guardUpdate` hook).
  *
@@ -109,9 +130,9 @@ function deepEqual(a: unknown, b: unknown): boolean {
  *   decoded template identifier through PUT in any lifecycle status, including
  *   DRAFT.
  *
- * A field is only rejected if the request would actually change its value;
- * resending the current value (e.g. the same `data` with different key
- * order) is a no-op, not a violation.
+ * A field is only rejected if the request would actually change its value.
+ * Equivalent protected fields are replaced in `updates` with their stored
+ * representations before the caller writes them, while mutable fields remain.
  */
 export function assertAgreementRecordMutable(existing: AgreementRow, updates: Record<string, unknown>): void {
     const status = existing.agreementStatus;
@@ -135,24 +156,31 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
             // these are virtual properties, not columns. Revisit this explicit list
             // if the model or serializer options change; do not skip arbitrary '$' keys.
             if (key === '$class' || key === '$identifier') continue;
-            if (deepEqual((existing as Record<string, unknown>)[key], updates[key])) continue;
+            if (key === 'data'
+                ? agreementDataEqual(existing.data, updates[key])
+                : deepEqual((existing as Record<string, unknown>)[key], updates[key])) {
+                updates[key] = (existing as Record<string, unknown>)[key];
+                continue;
+            }
             // POST stores encodeURIComponent identifiers; PUT serializes them with
             // Concerto's encodeURI spelling. Compare the referenced URI, not its wrapper.
             if (key === 'template' && typeof existing.template === 'string' &&
                 typeof updates.template === 'string' &&
-                templateUriFromReference(existing.template) === templateUriFromReference(updates.template)) continue;
+                templateUriFromReference(existing.template) === templateUriFromReference(updates.template)) {
+                updates.template = existing.template;
+                continue;
+            }
 
             throw new AgreementRecordImmutableError(existing.id, status, key);
         }
         return;
     }
 
-    if (
-        status === DATA_FROZEN_STATUS &&
-        Object.prototype.hasOwnProperty.call(updates, 'data') &&
-        !deepEqual(existing.data, updates.data)
-    ) {
-        throw new AgreementRecordImmutableError(existing.id, status, 'data');
+    if (status === DATA_FROZEN_STATUS && Object.prototype.hasOwnProperty.call(updates, 'data')) {
+        if (!agreementDataEqual(existing.data, updates.data)) {
+            throw new AgreementRecordImmutableError(existing.id, status, 'data');
+        }
+        updates.data = existing.data;
     }
 
     // Runtime resolves cached agreements by hash. PUT cannot rebind that hash.
