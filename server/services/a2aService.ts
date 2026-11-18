@@ -67,22 +67,21 @@ export interface SkillResult {
     result: unknown;
 }
 
+// Accept JSON numbers and numeric strings only. Narrowing the type before
+// coercion stops `true`, `[1]` and similar values becoming numbers.
+const integer = () => z.union([z.number(), z.string()]).pipe(z.coerce.number<string | number>().int());
+
 const pageSchema = z.object({
-    limit: z.coerce.number().int().min(1).max(100).optional(),
-    offset: z.coerce.number().int().min(0).optional(),
+    limit: integer().pipe(z.number().min(1).max(100)).optional(),
+    offset: integer().pipe(z.number().min(0)).optional(),
 }).strict();
 
-const idSchema = z.object({
-    id: z.coerce.number().int().positive(),
-}).strict();
+const id = integer().pipe(z.number().positive());
 
-// Preserve numeric strings while excluding booleans, arrays and other coercible values.
-const agreementId = z.union([z.number(), z.string()]).pipe(z.coerce.number<string | number>().int().positive());
-
-const agreementIdSchema = z.object({ id: agreementId }).strict();
+const idSchema = z.object({ id }).strict();
 
 const triggerSchema = z.object({
-    id: agreementId,
+    id,
     request: z.record(z.string(), z.unknown()),
 }).strict();
 
@@ -150,7 +149,7 @@ function prepareSkill(skill: typeof A2A_SKILLS[number], rawInput: unknown): Prep
             };
         }
         case 'get-agreement': {
-            const input = parseInput(agreementIdSchema, rawInput, skill.id);
+            const input = parseInput(idSchema, rawInput, skill.id);
             return {
                 skillId: skill.id,
                 action: skill.action,
