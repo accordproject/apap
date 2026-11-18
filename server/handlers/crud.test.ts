@@ -436,12 +436,12 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
     });
 });
 
-describe('Route :id strict-numeric validation (#162)', () => {
-    // parseInt('1abc') returns 1, so before this guard PUT /templates/1abc with a valid body
-    // silently updated row 1, and DELETE /templates/1abc silently deleted row 1. The tests
-    // pin that the guard runs before any DB mutation and returns 404 for anything that is not
-    // a strict decimal integer. Regressions on the accepted numeric path are covered by the
-    // existing `DELETE /:id returns 200 when resource exists` case above.
+describe('Route :id identifier validation (#162, #309)', () => {
+    // parseInt('1abc') returns 1, so before the #162 guard PUT /templates/1abc with a valid body
+    // silently updated row 1, and DELETE /templates/1abc silently deleted row 1. An id above the
+    // Postgres integer range passed that guard and failed in the database. These tests pin that
+    // the guard runs before any DB access and returns a typed 400 for anything that is not a
+    // decimal integer from 1 to 2147483647 (#309).
     let app: express.Application;
     let dbMock: any;
 
@@ -470,15 +470,25 @@ describe('Route :id strict-numeric validation (#162)', () => {
         app.use('/templates', templatesRouter);
     });
 
-    it('GET /:id rejects partial-numeric id 1abc with 404', async () => {
+    function expectInvalidIdentifier(res: request.Response, identifier: string) {
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: {
+                code: 'INVALID_IDENTIFIER',
+                message: 'Invalid Template identifier: expected an integer from 1 to 2147483647',
+                details: { identifier },
+            },
+        });
+    }
+
+    it('GET /:id rejects partial-numeric id 1abc before touching db', async () => {
         const res = await request(app).get('/templates/1abc');
-        expect(res.status).toBe(404);
-        expect(res.body.error).toBe('Not found');
+        expectInvalidIdentifier(res, '1abc');
         expect(dbMock.select).not.toHaveBeenCalled();
     });
 
-    it('PUT /:id rejects partial-numeric id 1abc with 404 before touching db', async () => {
-        // The data-corruption case from the issue: without the guard, a valid body sent to
+    it('PUT /:id rejects partial-numeric id 1abc before touching db', async () => {
+        // The data-corruption case from #162: without the guard, a valid body sent to
         // /templates/1abc silently updates row 1.
         (mockedSchema.safeParse as any) = jest.fn().mockReturnValue({
             success: true,
@@ -487,34 +497,39 @@ describe('Route :id strict-numeric validation (#162)', () => {
         const res = await request(app)
             .put('/templates/1abc')
             .send(validTemplateBody);
-        expect(res.status).toBe(404);
+        expectInvalidIdentifier(res, '1abc');
         expect(dbMock.update).not.toHaveBeenCalled();
     });
 
-    it('DELETE /:id rejects partial-numeric id 1abc with 404 before touching db', async () => {
+    it('DELETE /:id rejects partial-numeric id 1abc before touching db', async () => {
         const res = await request(app).delete('/templates/1abc');
-        expect(res.status).toBe(404);
+        expectInvalidIdentifier(res, '1abc');
         expect(dbMock.delete).not.toHaveBeenCalled();
     });
 
-    it('rejects decimal id 1.5 with 404', async () => {
-        const res = await request(app).get('/templates/1.5');
-        expect(res.status).toBe(404);
+    it.each([
+        ['decimal', '1.5'],
+        ['negative', '-1'],
+        ['hex-form', '0x10'],
+        ['scientific-form', '1e2'],
+        ['word', 'abc'],
+        ['boolean-like', 'true'],
+        ['UUID', '550e8400-e29b-41d4-a716-446655440000'],
+        ['URI', encodeURIComponent('ap://helloworld@1.0.0#abc')],
+        ['zero', '0'],
+        ['just above the Postgres integer range', '2147483648'],
+        ['far above the Postgres integer range', '99999999999'],
+    ])('GET /:id rejects %s id %s before touching db', async (_label, id) => {
+        const res = await request(app).get(`/templates/${id}`);
+        expectInvalidIdentifier(res, decodeURIComponent(id));
+        expect(dbMock.select).not.toHaveBeenCalled();
     });
 
-    it('rejects negative id -1 with 404', async () => {
-        const res = await request(app).get('/templates/-1');
+    it.each([['1'], ['2147483647'], ['007']])('GET /:id passes in-range id %s to the db', async (id) => {
+        dbMock.limit.mockResolvedValueOnce([]);
+        const res = await request(app).get(`/templates/${id}`);
         expect(res.status).toBe(404);
-    });
-
-    it('rejects hex-form id 0x10 with 404', async () => {
-        const res = await request(app).get('/templates/0x10');
-        expect(res.status).toBe(404);
-    });
-
-    it('rejects scientific-form id 1e2 with 404', async () => {
-        const res = await request(app).get('/templates/1e2');
-        expect(res.status).toBe(404);
+        expect(dbMock.select).toHaveBeenCalled();
     });
 });
 

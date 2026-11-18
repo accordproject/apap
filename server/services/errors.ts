@@ -215,6 +215,27 @@ export class InvalidPayloadError extends ServiceError {
     }
 }
 
+/**
+ * Raised when a resource identifier is not one this implementation can
+ * route by. The protocol leaves identifiers as strings; the RI uses Postgres
+ * `serial` IDs, so it accepts decimal integers from 1 to 2147483647 and
+ * rejects anything else with 400 rather than a 404 that implies the
+ * resource might exist under a different lookup (#309).
+ */
+export class InvalidIdentifierError extends ServiceError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+
+    constructor(resourceType: string, identifier: string) {
+        super(
+            'INVALID_IDENTIFIER',
+            400,
+            `Invalid ${resourceType} identifier: expected an integer from 1 to 2147483647`,
+            { identifier },
+        );
+        this.name = 'InvalidIdentifierError';
+    }
+}
+
 export class ValidationError extends ServiceError {
     constructor(message: string, details?: Record<string, unknown>) {
         super('VALIDATION_ERROR', 422, message, details);

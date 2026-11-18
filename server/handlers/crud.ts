@@ -12,7 +12,7 @@ import { count } from 'drizzle-orm';
 // import { getUserRoles } from '../auth0/client';
 import { asyncHandler } from '../middleware/errorHandler';
 import { isUniqueViolation } from '../db/errors';
-import { ServiceError } from '../services/errors';
+import { InvalidIdentifierError, ServiceError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
 import { createLegacyPolicyContext } from '../services/policy';
 
@@ -251,6 +251,22 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     listService?: ListService<any>;
 }
 
+/** Largest value of a Postgres `integer` (`serial`) column. */
+export const MAX_INTEGER_ID = 2147483647;
+
+/**
+ * Parses a path identifier for an integer-keyed table: a decimal integer from 1 to
+ * MAX_INTEGER_ID, or `undefined` for anything else. `parseInt` would read `1abc` as 1,
+ * and a larger value reaches Postgres, which rejects it as out of range.
+ */
+export function parseIntegerId(raw: string): number | undefined {
+    if (!/^\d+$/.test(raw)) {
+        return undefined;
+    }
+    const id = Number(raw);
+    return id >= 1 && id <= MAX_INTEGER_ID ? id : undefined;
+}
+
 function getSingleQueryParam(value: unknown): string | undefined {
     if (Array.isArray(value)) {
         return typeof value[0] === 'string' ? value[0] : undefined;
@@ -387,16 +403,19 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
         next();
     });
 
-    // Reject non-strict-numeric :id early for integer-keyed tables (#162). parseInt('1abc')
-    // returns 1, so without this guard PUT /agreements/1abc with a valid body silently updates
-    // row 1, and DELETE /templates/1abc silently deletes row 1. UUID-keyed tables keep the
-    // existing pass-through; the DB layer surfaces malformed UUIDs.
+    // Reject an :id this table cannot be keyed by before any route runs (#162, #309).
+    // parseInt('1abc') returns 1, so without this guard PUT /agreements/1abc with a valid
+    // body silently updates row 1; an id above the Postgres integer range fails in the
+    // database instead. Covers custom routes such as /agreements/:id/trigger too, since
+    // they are registered on this router. UUID-keyed tables keep the existing
+    // pass-through; the DB layer surfaces malformed UUIDs.
     router.param('id', (req: Request, res: Response, next, rawId: string) => {
         if (table.id.columnType === 'PgUUID') {
             return next();
         }
-        if (!/^\d+$/.test(rawId)) {
-            return res.status(404).json({ error: 'Not found' });
+        if (parseIntegerId(rawId) === undefined) {
+            const error = new InvalidIdentifierError(typeName, rawId);
+            return res.status(error.statusCode).json(error.toJSON());
         }
         next();
     });
