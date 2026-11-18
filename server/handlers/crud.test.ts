@@ -283,7 +283,11 @@ describe('unique-violation compatibility', () => {
         const app = express();
         app.use(express.json());
         app.use((_req, res, next) => { res.locals.db = db; next(); });
-        app.use('/test', buildCrudRouter({ table: require('../db/schema').Template, typeName: 'TestResource' }));
+        app.use('/test', buildCrudRouter({
+            table: require('../db/schema').Template,
+            typeName: 'TestResource',
+            listService: jest.fn<any>().mockResolvedValue({ items: [], total: 0 }),
+        }));
         app.use((err: unknown, _req: express.Request, _res: express.Response, next: express.NextFunction) => {
             forwarded(err);
             next(err);
@@ -357,7 +361,12 @@ describe('guardUpdate / guardDelete hooks (generic mechanism)', () => {
 
     function buildTestApp(db: any, guards: { guardUpdate?: any; guardDelete?: any }) {
         const { Template: DbTemplate } = require('../db/schema');
-        const testRouter = buildCrudRouter({ table: DbTemplate, typeName: 'TestResource', ...guards });
+        const testRouter = buildCrudRouter({
+            table: DbTemplate,
+            typeName: 'TestResource',
+            listService: jest.fn<any>().mockResolvedValue({ items: [], total: 0 }),
+            ...guards,
+        });
         const testApp = express();
         testApp.use(express.json());
         testApp.use((req, res, next) => {

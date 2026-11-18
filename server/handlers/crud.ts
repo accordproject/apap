@@ -241,14 +241,15 @@ interface CrudRouterOptions<T extends PgTable<any> & TableWithId> {
     // unaffected.
     guardDelete?: (existing: any, db: any) => void | Promise<void>;
     /**
-     * Optional service-layer list function. When provided, the GET / handler
-     * delegates DB read + count to it instead of the inline path. Router
-     * still owns query-string parsing (`parseQueryParams`), `whereClause`
-     * construction (`defaultWhereClause` with `SAFE_IDENTIFIER_RX` /
-     * operator whitelist), and `orderClause` construction; the service owns
-     * the DB select + count. Keeps REST and MCP on one code path for reads.
+     * Service-layer list function. The GET / handler delegates DB read + count
+     * to it instead of an inline database query. Router still owns query-string
+     * parsing (`parseQueryParams`), `whereClause` construction (`defaultWhereClause`
+     * with `SAFE_IDENTIFIER_RX` / operator whitelist), and `orderClause`
+     * construction; the service owns the DB select + count. Keeps REST and MCP
+     * on one code path for reads with uniform clamping, default ordering, and
+     * policy enforcement across all resources. Closes #217.
      */
-    listService?: ListService<any>;
+    listService: ListService<any>;
 }
 
 /** Largest value of a Postgres `integer` (`serial`) column. */
@@ -444,51 +445,18 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
 
 
 
-                // Slice-3 unification: delegate the DB read + count to a
-                // service-layer list function when one is registered on the
-                // router. The router still owns query parsing and clause
-                // construction so per-table filter/sort semantics stay
-                // uniform. When no listService is provided, keep the
-                // pre-slice-3 inline path so resources without a service
-                // layer (e.g. sharedmodels) work unchanged.
-                //
-                // TODO(#217): the inline fallback below does NOT get the
-                // clamping / default-order / read-skew safeguards that the
-                // service path enforces. `sharedmodels` is the only current
-                // caller of the fallback; once a `sharedModelService.ts` +
-                // `listSharedModelsPaged` land, delete the fallback branch
-                // and make `listService` required on the CrudRouterOptions
-                // shape. Follow-up tracked in #217.
-                let items: any[];
-                let total: number;
-                if (listService) {
-                    const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
-                    const paged = await listService(context, {
-                        whereClause,
-                        orderClause,
-                        limit,
-                        offset: (page - 1) * limit,
-                    });
-                    items = paged.items;
-                    total = paged.total;
-                } else {
-                    const [{ count: countRow }] = await res.locals.db
-                        .select({ count: count() })
-                        .from(table)
-                        .where(whereClause);
-                    total = countRow;
-
-                    let query = res.locals.db
-                        .select()
-                        .from(table)
-                        .where(whereClause)
-                        .limit(limit)
-                        .offset((page - 1) * limit);
-                    if (orderClause !== null) {
-                        query = query.orderBy(orderClause as SQL<unknown>);
-                    }
-                    items = await query;
-                }
+                // Slice-3 unification: delegate the DB read + count to the
+                // service-layer list function registered on the router. The router
+                // owns query parsing and clause construction so per-table filter/sort
+                // semantics stay uniform; the service owns the DB select + count,
+                // enforcing clamping, deterministic default ordering, and policy context. Closes #217.
+                const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
+                const { items, total } = await listService(context, {
+                    whereClause,
+                    orderClause,
+                    limit,
+                    offset: (page - 1) * limit,
+                });
 
                 const response: PaginatedResponse<any> = {
                     items,
