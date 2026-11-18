@@ -4,6 +4,14 @@
       "types": [ "node", "jest" ],
       "module": "commonjs",
       "moduleResolution": "node",
+      // TypeScript 6.0 deprecates both options this file still uses, and the
+      // suppression is deliberately scoped to this one compiler version bump:
+      //   - moduleResolution "node" (node10) -> "node16" / "nodenext"
+      //   - baseUrl                          -> paths entries with no base dir
+      // Both are reported as TS5107 / TS5101 on TypeScript 6.x and will stop
+      // working in TypeScript 7.0. Remove this flag when those two options are
+      // migrated. It is not a permanent suppression.
+      "ignoreDeprecations": "6.0",
       "esModuleInterop": true,
       "noImplicitAny": true,
       "noUnusedLocals": false,
