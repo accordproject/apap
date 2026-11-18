@@ -1,4 +1,4 @@
-import { eq, asc, SQL, SQLWrapper, count } from 'drizzle-orm';
+import { eq, asc, gt, SQL, SQLWrapper, count } from 'drizzle-orm';
 import { Agreement, Template } from '../db/schema';
 import {
     AgreementNotFoundError,
@@ -189,6 +189,19 @@ export async function listAgreements(
     // asc(Agreement.id) default #225 landed for `listAgreementsPaged` so REST
     // and MCP page over the same stable order.
     return db.select().from(Agreement).orderBy(asc(Agreement.id)).limit(limit).offset(offset);
+}
+
+/** Lists rows for resource discovery, with room for one lookahead row. */
+export async function listAgreementsForDiscovery(
+    context: PolicyContext,
+    limit: number,
+    afterId: number | undefined,
+): Promise<AgreementRow[]> {
+    await authorize(context, 'agreements:list', { type: 'agreement-collection' });
+    return context.db.select().from(Agreement)
+        .where(afterId === undefined ? undefined : gt(Agreement.id, afterId))
+        .orderBy(asc(Agreement.id))
+        .limit(Math.min(101, limit));
 }
 
 /** Replaces: makeApiRequest(`${API_BASE_URL}/agreements/${id}`) */
