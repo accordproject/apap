@@ -12,7 +12,7 @@ import { count } from 'drizzle-orm';
 // import { getUserRoles } from '../auth0/client';
 import { asyncHandler } from '../middleware/errorHandler';
 import { isUniqueViolation } from '../db/errors';
-import { InvalidIdentifierError, ServiceError } from '../services/errors';
+import { InvalidIdentifierError, InvalidQueryParameterError, ServiceError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
 import { createLegacyPolicyContext } from '../services/policy';
 
@@ -80,6 +80,14 @@ function defaultWhereClause<T extends PgTable<any>>(
 		const snakeKey = toSnakeCase(key);
 		if (!SAFE_IDENTIFIER_RX.test(snakeKey)) {
 			continue;
+		}
+
+		// parseQueryParams leaves a filter undefined when the query string gave
+		// no string for it: an object (`?uri[x]=a`) or an array whose first
+		// element is not a string (`?uri[0][x]=a`). Reject it here, where the key
+		// is known to be a column, so unknown keys stay ignored (#300).
+		if (value === undefined) {
+			throw new InvalidQueryParameterError(key);
 		}
 
 		const column = sql.raw(`"${snakeKey}"`);
