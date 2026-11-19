@@ -3,7 +3,7 @@ import express from 'express';
 import { jest } from '@jest/globals';
 import agreementsRouter from './agreements';
 import { globalErrorHandler } from '../middleware/errorHandler';
-import { AgreementNotFoundError } from '../services/errors';
+import { AgreementNotFoundError, AgreementConversionError } from '../services/errors';
 
 // This file covers the LCP-related additions to the agreements router
 // (/:id/terms, /:id/legal-context, and the Link header on GET /:id) at the
@@ -31,6 +31,7 @@ jest.mock('../db/schema', () => ({
 
 import { getAgreementTerms, buildAgreementLegalContext } from '../services/lcpService';
 import { convertAgreement, triggerAgreement } from '../services/agreementService';
+const mockedConvertAgreement = convertAgreement as jest.MockedFunction<typeof convertAgreement>;
 const mockedGetAgreementTerms = getAgreementTerms as jest.MockedFunction<typeof getAgreementTerms>;
 const mockedBuildAgreementLegalContext = buildAgreementLegalContext as jest.MockedFunction<
     typeof buildAgreementLegalContext
@@ -186,5 +187,59 @@ describe('GET /agreements/:id Link headers', () => {
         const res = await request(app).get('/agreements/1/terms');
 
         expect(res.headers['link']).toBeUndefined();
+    });
+});
+
+describe('GET /agreements/:id/convert/:format', () => {
+    it('serves the converted html agreement draft with text/html content-type', async () => {
+        mockedConvertAgreement.mockResolvedValue('<html><body><h1>Agreement</h1></body></html>');
+        const app = buildApp({});
+
+        const res = await request(app).get('/agreements/1/convert/html');
+
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('<html><body><h1>Agreement</h1></body></html>');
+        expect(res.headers['content-type']).toContain('text/html');
+        expect(mockedConvertAgreement).toHaveBeenCalledWith(
+            expect.anything(),
+            1,
+            'html',
+        );
+    });
+
+    it('serves the converted markdown agreement draft with text/markdown content-type', async () => {
+        mockedConvertAgreement.mockResolvedValue('# Agreement Markdown Draft');
+        const app = buildApp({});
+
+        const res = await request(app).get('/agreements/42/convert/markdown');
+
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('# Agreement Markdown Draft');
+        expect(res.headers['content-type']).toContain('text/markdown');
+        expect(mockedConvertAgreement).toHaveBeenCalledWith(
+            expect.anything(),
+            42,
+            'markdown',
+        );
+    });
+
+    it('propagates AgreementNotFoundError as a 404', async () => {
+        mockedConvertAgreement.mockRejectedValue(new AgreementNotFoundError(999));
+        const app = buildApp({});
+
+        const res = await request(app).get('/agreements/999/convert/html');
+
+        expect(res.status).toBe(404);
+        expect(res.body.error.code).toBe('AGREEMENT_NOT_FOUND');
+    });
+
+    it('propagates AgreementConversionError as a 500', async () => {
+        mockedConvertAgreement.mockRejectedValue(new AgreementConversionError(1, 'html', 'Template error'));
+        const app = buildApp({});
+
+        const res = await request(app).get('/agreements/1/convert/html');
+
+        expect(res.status).toBe(500);
+        expect(res.body.error.code).toBe('AGREEMENT_CONVERSION_FAILED');
     });
 });
