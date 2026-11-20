@@ -22,7 +22,10 @@ import {
     AgreementConversionError,
     AgreementTriggerError,
     UpstreamApiError,
+    InvalidIdentifierError,
+    InvalidPayloadError,
 } from '../services/errors';
+import { parseIntegerId } from './crud';
 import { listTemplates, listTemplatesForDiscovery, getTemplateById } from '../services/templateService';
 import {
     listAgreements,
@@ -31,7 +34,6 @@ import {
     convertAgreement,
     triggerAgreement as triggerAgreementService,
 } from '../services/agreementService';
-import { InvalidPayloadError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
 import { authorize, createLegacyPolicyContext } from '../services/policy';
 
@@ -269,7 +271,7 @@ export function serviceErrorToCallToolResult(error: ServiceError): CallToolResul
  * `InvalidParams` so the client sees an actionable code without us inventing an SDK string.
  */
 export function serviceErrorToResourceError(error: ServiceError): ProtocolError {
-    const code = error.statusCode === 404 ? INVALID_PARAMS : INTERNAL_ERROR;
+    const code = error.statusCode === 400 || error.statusCode === 404 ? INVALID_PARAMS : INTERNAL_ERROR;
     return new ProtocolError(code, error.message, error.toJSON());
 }
 
@@ -284,10 +286,9 @@ async function getAgreement(context: PolicyContext, uri: string, variables: { ag
     const { agreementId } = variables;
     console.log({ type: 'fetching_agreement', agreementId });
     const url = new URL(uri);
-    // Same strict-numeric guard as the REST /agreements/:id route from #208.
-    const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-    if (!Number.isFinite(id)) {
-        throw serviceErrorToResourceError(new AgreementNotFoundError(agreementId));
+    const id = parseIntegerId(agreementId);
+    if (id === undefined) {
+        throw serviceErrorToResourceError(new InvalidIdentifierError('Agreement', agreementId));
     }
     try {
         const agreement = await getAgreementById(context, id);
@@ -562,11 +563,9 @@ export const getServer = (context: PolicyContext) => {
         DISCOVERY_METADATA,
         async (uri: URL, variables: Record<string, string | string[]>) => {
             const templateId = String(variables.templateId);
-            // Same strict-numeric guard as the REST /templates/:id route from #208.
-            // Anything not a decimal integer resolves to a not-found, not a NaN.
-            const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
-            if (!Number.isFinite(id)) {
-                throw serviceErrorToResourceError(new TemplateNotFoundError(templateId));
+            const id = parseIntegerId(templateId);
+            if (id === undefined) {
+                throw serviceErrorToResourceError(new InvalidIdentifierError('Template', templateId));
             }
             try {
                 const template = await getTemplateById(context, id);
@@ -602,9 +601,9 @@ export const getServer = (context: PolicyContext) => {
             inputSchema: { agreementId: z.string(), format: z.enum(['html', 'markdown']) } as any,
         },
         async ({ agreementId, format }: { agreementId: string; format: 'html' | 'markdown' }): Promise<CallToolResult> => {
-            const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            const id = parseIntegerId(agreementId);
+            if (id === undefined) {
+                return serviceErrorToCallToolResult(new InvalidIdentifierError('Agreement', agreementId));
             }
             try {
                 const text = await convertAgreement(context, id, format);
@@ -630,9 +629,9 @@ Refer to the agreement's template model to determine which fields are required o
             inputSchema: { agreementId: z.string(), payload: z.string() } as any,
         },
         async ({ agreementId, payload }: { agreementId: string; payload: string }): Promise<CallToolResult> => {
-            const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            const id = parseIntegerId(agreementId);
+            if (id === undefined) {
+                return serviceErrorToCallToolResult(new InvalidIdentifierError('Agreement', agreementId));
             }
             let parsedPayload: unknown;
             try {
@@ -670,9 +669,9 @@ Refer to the agreement's template model to determine which fields are required o
             },
         },
         async ({ templateId }: { templateId: string }): Promise<CallToolResult> => {
-            const id = /^\d+$/.test(templateId) ? Number(templateId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new TemplateNotFoundError(templateId));
+            const id = parseIntegerId(templateId);
+            if (id === undefined) {
+                return serviceErrorToCallToolResult(new InvalidIdentifierError('Template', templateId));
             }
             try {
                 const template = await getTemplateById(context, id);
@@ -705,9 +704,9 @@ Refer to the agreement's template model to determine which fields are required o
             },
         },
         async ({ agreementId }: { agreementId: string }): Promise<CallToolResult> => {
-            const id = /^\d+$/.test(agreementId) ? Number(agreementId) : NaN;
-            if (!Number.isFinite(id)) {
-                return serviceErrorToCallToolResult(new AgreementNotFoundError(agreementId));
+            const id = parseIntegerId(agreementId);
+            if (id === undefined) {
+                return serviceErrorToCallToolResult(new InvalidIdentifierError('Agreement', agreementId));
             }
             try {
                 const agreement = await getAgreementById(context, id);

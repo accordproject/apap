@@ -45,6 +45,7 @@ import { validateAgreementBody } from '../services/agreementService';
 import {
     AgreementConversionError,
     AgreementNotFoundError,
+    InvalidIdentifierError,
     ServiceError,
     TemplateNotFoundError,
 } from '../services/errors';
@@ -301,7 +302,20 @@ describe('mcp typed error helpers', () => {
             expect(data.error.message).toContain('tmpl-1');
         });
 
-        it('uses InternalError code for non-404 ServiceErrors', () => {
+        it('returns an ProtocolError with InvalidParams code for 400-style ServiceErrors', () => {
+            const err = new InvalidIdentifierError('Agreement', 'abc');
+            const wrapped = serviceErrorToResourceError(err);
+
+            expect(wrapped).toBeInstanceOf(ProtocolError);
+            expect(wrapped.code).toBe(ProtocolErrorCode.InvalidParams);
+            expect(wrapped.message).toContain('Invalid Agreement identifier');
+
+            const data = wrapped.data as { error: { code: string; message: string; details?: unknown } };
+            expect(data.error.code).toBe('INVALID_IDENTIFIER');
+            expect(data.error.details).toEqual({ identifier: 'abc' });
+        });
+
+        it('uses InternalError code for 500-style ServiceErrors', () => {
             const err = new ServiceError('CUSTOM', 500, 'kaboom', { reason: 'overflow' });
             const wrapped = serviceErrorToResourceError(err);
 
@@ -1209,6 +1223,98 @@ describe('MCP Handler', () => {
 
             const content = result.content as any[];
             expect(content[0].type).toBe('text');
+        });
+
+        describe('identifier validation guards (tools and resources)', () => {
+            const invalidIds = ['abc', '1abc', 'true', '0', '-1', '2147483648', '99999999999'];
+
+            it.each(invalidIds)('getTemplate tool rejects invalid identifier %j with INVALID_IDENTIFIER', async (templateId) => {
+                const result = await client.callTool({
+                    name: 'getTemplate',
+                    arguments: { templateId },
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                expect(content[0].type).toBe('text');
+                const parsed = JSON.parse(content[0].text);
+                expect(parsed.error.code).toBe('INVALID_IDENTIFIER');
+                expect(parsed.error.message).toContain('Invalid Template identifier: expected an integer from 1 to 2147483647');
+                expect(parsed.error.details).toEqual({ identifier: templateId });
+                expect(mockDb.select).not.toHaveBeenCalled();
+            });
+
+            it.each(invalidIds)('getAgreement tool rejects invalid identifier %j with INVALID_IDENTIFIER', async (agreementId) => {
+                const result = await client.callTool({
+                    name: 'getAgreement',
+                    arguments: { agreementId },
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                expect(content[0].type).toBe('text');
+                const parsed = JSON.parse(content[0].text);
+                expect(parsed.error.code).toBe('INVALID_IDENTIFIER');
+                expect(parsed.error.message).toContain('Invalid Agreement identifier: expected an integer from 1 to 2147483647');
+                expect(parsed.error.details).toEqual({ identifier: agreementId });
+                expect(mockDb.select).not.toHaveBeenCalled();
+            });
+
+            it.each(invalidIds)('convert-agreement-to-format tool rejects invalid identifier %j with INVALID_IDENTIFIER', async (agreementId) => {
+                const result = await client.callTool({
+                    name: 'convert-agreement-to-format',
+                    arguments: { agreementId, format: 'html' },
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                const parsed = JSON.parse(content[0].text);
+                expect(parsed.error.code).toBe('INVALID_IDENTIFIER');
+                expect(parsed.error.details).toEqual({ identifier: agreementId });
+                expect(mockDb.select).not.toHaveBeenCalled();
+            });
+
+            it.each(invalidIds)('trigger-agreement tool rejects invalid identifier %j with INVALID_IDENTIFIER', async (agreementId) => {
+                const result = await client.callTool({
+                    name: 'trigger-agreement',
+                    arguments: { agreementId, payload: '{}' },
+                });
+
+                expect(result.isError).toBe(true);
+                const content = result.content as any[];
+                const parsed = JSON.parse(content[0].text);
+                expect(parsed.error.code).toBe('INVALID_IDENTIFIER');
+                expect(parsed.error.details).toEqual({ identifier: agreementId });
+                expect(mockDb.select).not.toHaveBeenCalled();
+            });
+
+            it.each(invalidIds)('apap://agreements/:id resource rejects invalid identifier %j with InvalidParams', async (agreementId) => {
+                const promise = client.readResource({ uri: `apap://agreements/${agreementId}` });
+                await expect(promise).rejects.toMatchObject({
+                    code: ProtocolErrorCode.InvalidParams,
+                });
+                try {
+                    await client.readResource({ uri: `apap://agreements/${agreementId}` });
+                } catch (err: any) {
+                    expect(err.data?.error?.code).toBe('INVALID_IDENTIFIER');
+                    expect(err.data?.error?.details?.identifier).toBe(agreementId);
+                }
+                expect(mockDb.select).not.toHaveBeenCalled();
+            });
+
+            it.each(invalidIds)('apap://templates/:id resource rejects invalid identifier %j with InvalidParams', async (templateId) => {
+                const promise = client.readResource({ uri: `apap://templates/${templateId}` });
+                await expect(promise).rejects.toMatchObject({
+                    code: ProtocolErrorCode.InvalidParams,
+                });
+                try {
+                    await client.readResource({ uri: `apap://templates/${templateId}` });
+                } catch (err: any) {
+                    expect(err.data?.error?.code).toBe('INVALID_IDENTIFIER');
+                    expect(err.data?.error?.details?.identifier).toBe(templateId);
+                }
+                expect(mockDb.select).not.toHaveBeenCalled();
+            });
         });
 
         // =====================================================================
