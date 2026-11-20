@@ -65,6 +65,29 @@ When reviewing a pull request here, check in particular that it:
    swaps the runner or disables the flag is an infrastructure change and
    needs maintainer escalation.
 
+9. **Parses integer ids with `parseIntegerId`.** Since #311, malformed ids
+   on `/:id` routes raise `InvalidIdentifierError` (400,
+   `INVALID_IDENTIFIER`, valid range 1 to 2147483647) before reaching the
+   database. A new route or test that expects a 404, or a 500 from the
+   database, for a malformed id is out of date. Check new `/:id` routes
+   and the invalid-identifier table in the handler tests.
+
+10. **Detects unique violations with `isUniqueViolation`.** Use the helper
+    in `server/db/errors.ts`, not a direct `err.code === '23505'` check.
+    Drizzle wraps driver failures in `DrizzleQueryError` with the Postgres
+    error on `.cause`, so a bare `.code` check misses them and the error
+    surfaces as a 500. A test for this path rejects with a
+    `DrizzleQueryError`, as `templateService.test.ts` does, not only a
+    bare `Error` carrying a code.
+
+11. **Leaves compiler strictness alone.** Keep strict null checks on: the
+    typed-error migration relies on them. Do not add `tsconfig.json`
+    flags that the pinned TypeScript version rejects (for example
+    `ignoreDeprecations: "6.0"` under TypeScript 5.8.3, which fails with
+    TS5103). A compiler flag change travels with the TypeScript upgrade
+    that needs it, and a PR that bundles the two with `strict: false` is
+    a cross-cutting change, not a fix.
+
 ## Commits and pull requests
 
 - Commit messages and PR titles use the
@@ -85,6 +108,9 @@ When reviewing a pull request here, check in particular that it:
   `server/db/schema.ts` after `npm run drizzle-gen`) belong in the same
   PR as the source change. Unrelated formatting, refactoring, or
   regenerated-only drift does not.
+- If a test fixture depends on the exact output format of a library (for
+  example the SQL text Drizzle generates), add a comment saying so, so a
+  library upgrade points back to the fixture.
 - If this is your first contribution, CI workflows wait for a maintainer
   to approve them. That is expected.
 - Say in the PR if an AI tool helped, per the Accord Project AI usage
