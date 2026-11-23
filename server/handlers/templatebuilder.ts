@@ -1,6 +1,8 @@
 import { Template as ApTemplate, TemplateLibrary } from '@accordproject/cicero-core';
 import AdmZip from "adm-zip";
+import { FileDownloader } from '@accordproject/concerto-util';
 import { Template } from '../db/schema';
+import { SecureFileLoader, getExternalImports } from './sharedmodels';
 
 interface ApModelFile {
     getNamespace?(): string;
@@ -138,7 +140,8 @@ export async function templateFromDatabase(db: typeof Template | any): Promise<A
 
     const buffer = zip.toBuffer();
     const template = await ApTemplate.fromArchive(buffer);
-    await template.getModelManager().updateExternalModels();
+    const fileDownloader = new FileDownloader(new SecureFileLoader(template.getModelManager() as any), getExternalImports);
+    await template.getModelManager().updateExternalModels({}, fileDownloader);
     return template;
 }
 

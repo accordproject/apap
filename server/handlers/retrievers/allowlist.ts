@@ -1,3 +1,5 @@
+import { HTTPFileLoader } from '@accordproject/concerto-util';
+
 export function assertAllowedUrl(uri: string): { host: string; pathname: string; search: string } {
     if (!uri.startsWith('https://')) {
         throw new Error(`Invalid URI scheme. Only https is allowed.`);
@@ -34,3 +36,13 @@ export function assertAllowedUrl(uri: string): { host: string; pathname: string;
 
     return { host: safeUrl.host, pathname: safeUrl.pathname, search: safeUrl.search };
 }
+
+// Enforce Invariant 3 on Concerto's default HTTP file loader:
+// prevent transitive model imports inside templates and archives from making
+// unconstrained outbound network calls (SSRF) without allowlist validation.
+const originalHttpFileLoaderLoad = HTTPFileLoader.prototype.load;
+HTTPFileLoader.prototype.load = async function(requestUrl: string, options: any) {
+    assertAllowedUrl(requestUrl);
+    return originalHttpFileLoaderLoad.call(this, requestUrl, options);
+};
+
