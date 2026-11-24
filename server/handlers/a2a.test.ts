@@ -80,7 +80,7 @@ describe('A2A Express integration', () => {
         expect(response.body.supportedInterfaces[0].url).toBe('https://apap.example.com/a2a');
         expect(JSON.stringify(response.body)).not.toContain('attacker.example');
         expect(response.body.capabilities.streaming).toBe(false);
-        expect(response.body.skills.map((skill: any) => skill.id)).not.toContain('create-agreement');
+        expect(response.body.skills.map((skill: any) => skill.id)).toContain('create-agreement');
         expect(response.body.skills.find((skill: any) => skill.id === 'get-template').tags)
             .toEqual(['apap', 'templates']);
     });
@@ -195,6 +195,37 @@ describe('A2A Express integration', () => {
             }),
             3,
             triggerInput.request,
+        );
+    });
+
+    test('passes create-agreement input and authenticated org context to the shared-service facade', async () => {
+        const createAgreement = jest.fn().mockResolvedValue({ id: 10, uri: 'apap://agreements/10' });
+        const service = new ApapA2AService({ createAgreement } as any);
+        const createMessage = structuredClone(sendMessage);
+        const agreementInput = {
+            agreement: {
+                uri: 'apap://agreements/10',
+                template: 'https://templates.accordproject.org/archives/latedeliveryandpenalty@0.1.0.cta',
+                data: { $class: 'org.example.Contract' },
+            },
+        };
+        createMessage.params.message.parts[0].data = {
+            skillId: 'create-agreement',
+            input: agreementInput,
+        };
+
+        const response = await request(buildApp(new JwtAdapter(jwt), service))
+            .post('/a2a')
+            .set('Authorization', await bearer('agent-9', 'org-9', 'apap:agreements:write'))
+            .set('A2A-Version', '1.0')
+            .send(createMessage);
+
+        expect(response.body.result.task.status.state).toBe('TASK_STATE_COMPLETED');
+        expect(createAgreement).toHaveBeenCalledWith(
+            expect.objectContaining({
+                principal: expect.objectContaining({ sub: 'agent-9', orgId: 'org-9' }),
+            }),
+            agreementInput.agreement,
         );
     });
 

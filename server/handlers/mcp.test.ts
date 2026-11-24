@@ -697,6 +697,7 @@ describe('MCP Handler', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        (global as any).fetch = originalFetch;
         mockDb = createMockDb();
 
         app = express();
@@ -706,6 +707,10 @@ describe('MCP Handler', () => {
             next();
         });
         app.use('/', mcpRouter);
+    });
+
+    afterEach(() => {
+        (global as any).fetch = originalFetch;
     });
 
     it('returns mcp-session-id header on initialization response', async () => {
@@ -1209,6 +1214,41 @@ describe('MCP Handler', () => {
 
             const content = result.content as any[];
             expect(content[0].type).toBe('text');
+        });
+
+        it('executes create-agreement tool correctly', async () => {
+            const mockAgreement = {
+                id: 10,
+                uri: 'apap://agreement/new',
+                agreementStatus: 'DRAFT',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#local-1',
+                data: {
+                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyContract',
+                    clauseId: 'c1',
+                },
+            };
+            mockDb._setReturn([mockAgreement]);
+
+            const result = await client.callTool({
+                name: 'create-agreement',
+                arguments: {
+                    agreement: {
+                        uri: 'apap://agreement/new',
+                        template: 'resource:org.accordproject.protocol@1.0.0.Template#local-1',
+                        agreementStatus: 'DRAFT',
+                        data: {
+                            $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyContract',
+                            clauseId: 'c1',
+                        },
+                    },
+                },
+            });
+
+            const content = result.content as any[];
+            expect(content[0].type).toBe('text');
+            const parsed = JSON.parse(content[0].text as string);
+            expect(parsed.uri).toBe('apap://agreement/new');
+            expect(parsed.$class).toBe('org.accordproject.protocol@1.0.0.Agreement');
         });
 
         // =====================================================================

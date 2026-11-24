@@ -134,6 +134,15 @@ export class AgreementNotFoundError extends ServiceError {
     }
 }
 
+export class AgreementDuplicateError extends ServiceError {
+    constructor(uri: string) {
+        super('AGREEMENT_DUPLICATE', 409, `Agreement with URI already exists: ${uri}`, {
+            uri,
+        });
+        this.name = 'AgreementDuplicateError';
+    }
+}
+
 /**
  * Raised when a PUT/PATCH attempts to change a field of an agreement that
  * is no longer allowed to change given its `agreementStatus`:
