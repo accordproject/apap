@@ -17,7 +17,7 @@ export class SecureFileLoader {
     }
 
     accepts(url: string): boolean {
-        return url.startsWith('https://');
+        return typeof url === 'string';
     }
 
     clear(): void {}

@@ -40,9 +40,26 @@ export function assertAllowedUrl(uri: string): { host: string; pathname: string;
 // Enforce Invariant 3 on Concerto's default HTTP file loader:
 // prevent transitive model imports inside templates and archives from making
 // unconstrained outbound network calls (SSRF) without allowlist validation.
-const originalHttpFileLoaderLoad = HTTPFileLoader.prototype.load;
-HTTPFileLoader.prototype.load = async function(requestUrl: string, options: any) {
-    assertAllowedUrl(requestUrl);
-    return originalHttpFileLoaderLoad.call(this, requestUrl, options);
-};
+// Specifically protects `Template.fromArchive()` in `@accordproject/cicero-core`,
+// which unconditionally invokes `this.modelManager.updateExternalModels()` using
+// the default HTTPFileLoader during archive extraction.
+export function installHttpFileLoaderGuard(): void {
+    const proto = HTTPFileLoader.prototype as any;
+    if (proto.__apap_allowlist_patched) {
+        return;
+    }
+    const originalLoad = proto.load;
+    proto.load = async function(this: any, ...args: any[]) {
+        const [requestUrl] = args;
+        if (typeof requestUrl === 'string') {
+            assertAllowedUrl(requestUrl);
+        }
+        return originalLoad.apply(this, args);
+    };
+    proto.__apap_allowlist_patched = true;
+}
+
+// Install idempotently on module initialization
+installHttpFileLoaderGuard();
+
 
