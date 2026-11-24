@@ -1,3 +1,8 @@
+// `npm test` runs Node with --no-compilation-cache. template-engine runs
+// TypeScript trigger logic through an eval'd import(), and V8 reuses that
+// compiled code across test files in the same Jest worker. Without the flag,
+// the second file to run a real trigger imports through the first file's
+// torn-down environment and fails with "Test environment has been torn down".
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
