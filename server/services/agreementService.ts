@@ -1,7 +1,8 @@
 import { eq, asc, gt, SQL, SQLWrapper, count } from 'drizzle-orm';
-import { Agreement, Template } from '../db/schema';
+import { Agreement, Template, AgreementInsertSchema } from '../db/schema';
 import {
     AgreementNotFoundError,
+    AgreementDuplicateError,
     AgreementConversionError,
     AgreementRecordImmutableError,
     AgreementTemplateBindingImmutableError,
@@ -9,10 +10,14 @@ import {
     AgreementTriggerError,
     InvalidPayloadError,
     ValidationError,
+    ServiceError,
 } from './errors';
+import { isUniqueViolation } from '../db/errors';
 import { TemplateArchiveProcessor } from '@accordproject/template-engine';
-import { templateFromDatabase } from '../handlers/templatebuilder';
+import { Template as CiceroTemplate } from '@accordproject/cicero-core';
+import { templateFromDatabase, extractTemplateForDatabase } from '../handlers/templatebuilder';
 import { concertoValidation } from '../handlers/concertovalidation';
+import { HttpTemplateRetriever } from '../handlers/retrievers/HttpTemplateRetriever';
 import type { ValidationResult } from '../handlers/crud';
 import { authorize, type PolicyContext } from './policy';
 
@@ -287,6 +292,90 @@ export async function validateAgreementBody(body: any): Promise<ValidationResult
     return concertoValidation('Agreement', body);
 }
 
+export interface CreateAgreementOptions {
+    organizationId?: number;
+}
+
+/**
+ * Creates a new agreement row.
+ *
+ * Enforces:
+ * 1. Policy authorization for 'agreements:create'
+ * 2. Zod schema validation (AgreementInsertSchema)
+ * 3. Concerto model validation (validateAgreementBody)
+ * 4. Resolves and caches template via matching retriever if applicable
+ * 5. Inserts agreement into DB and returns the created row
+ */
+export async function createAgreement(
+    context: PolicyContext,
+    rawBody: any,
+    options?: CreateAgreementOptions,
+): Promise<AgreementRow> {
+    await authorize(context, 'agreements:create', { type: 'agreement-collection' });
+    const { db } = context;
+
+    if (!rawBody || typeof rawBody !== 'object' || Array.isArray(rawBody)) {
+        throw new InvalidPayloadError('Agreement payload must be an object');
+    }
+
+    const zodValidation = (AgreementInsertSchema as any).safeParse(rawBody);
+    if (!zodValidation.success) {
+        throw new InvalidPayloadError('Schema validation failed', {
+            issues: zodValidation.error.issues,
+        });
+    }
+
+    const { success, error } = await validateAgreementBody(rawBody);
+    if (!success) {
+        throw new ValidationError('Invalid request body', {
+            errors: error?.errors ?? [],
+        });
+    }
+
+    const templateUri = templateUriFromReference(rawBody.template);
+    let currentHash: string | null = null;
+
+    const availableRetrievers = [
+        new HttpTemplateRetriever()
+    ];
+
+    if (templateUri) {
+        const matchingRetriever = availableRetrievers.find(r =>
+            r.getURISchemes().some(scheme => templateUri.startsWith(`${scheme}:`))
+        );
+
+        if (matchingRetriever) {
+            const buffer = await matchingRetriever.fetch(templateUri);
+            const apTemplate = await CiceroTemplate.fromArchive(buffer);
+            currentHash = apTemplate.getHash();
+
+            const existing = await db.select().from(Template).where(eq(Template.hash, currentHash)).limit(1);
+            if (existing.length === 0) {
+                const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
+                await db.insert(Template)
+                    .values(newDbTemplateRow)
+                    .onConflictDoNothing({ target: Template.hash });
+            }
+        }
+    }
+
+    const insertData = {
+        ...rawBody,
+        templateHash: currentHash,
+        organization: options?.organizationId !== undefined ? options.organizationId : rawBody.organization,
+    };
+
+    try {
+        const inserted = await db.insert(Agreement).values(insertData).returning();
+        return inserted[0];
+    } catch (err: unknown) {
+        if (!(err instanceof ServiceError) && isUniqueViolation(err)) {
+            throw new AgreementDuplicateError(String(rawBody.uri ?? rawBody.id));
+        }
+        throw err;
+    }
+}
+
 // Private helper. Both convertAgreement and triggerAgreement need the same
 // (agreement, template, apTemplate) triple. Mirrors the resolveAgreement
 // helper that used to live in handlers/agreements.ts.
@@ -353,7 +442,7 @@ export async function convertAgreement(
     try {
         return await processor.draft(agreement.data, format, {});
     } catch (err) {
-        const reason = err instanceof Error ? err.message : String(err);
+        const reason = err instanceof Error ? err.message : ((err as any)?.message || String(err));
         throw new AgreementConversionError(agreementId, format, reason);
     }
 }
@@ -421,7 +510,7 @@ export async function triggerAgreement(
         }
         triggerResult = await processor.trigger(agreement.data, requestBody, currentState);
     } catch (err) {
-        const reason = err instanceof Error ? err.message : String(err);
+        const reason = err instanceof Error ? err.message : ((err as any)?.message || String(err));
         throw new AgreementTriggerError(String(agreementId), reason);
     }
 

@@ -63,11 +63,26 @@ describe('ApapA2AService', () => {
         )).rejects.toMatchObject({ code: 'INVALID_PAYLOAD' });
         await expect(service.execute(
             context(['apap:templates:read']),
-            { skillId: 'create-agreement', input: {} },
+            { skillId: 'unknown-skill', input: {} },
         )).rejects.toMatchObject({
             code: 'INVALID_PAYLOAD',
-            details: { supportedSkills: expect.not.arrayContaining(['create-agreement']) },
+            details: { supportedSkills: expect.not.arrayContaining(['unknown-skill']) },
         });
+    });
+
+    test('maps create-agreement input to createAgreement service operation', async () => {
+        const createAgreement = jest.fn().mockResolvedValue({ id: 99 });
+        const service = new ApapA2AService({ createAgreement } as any);
+        const agreement = { uri: 'apap://test', template: 'https://test.cta', data: {} };
+
+        await expect(service.execute(
+            context(['apap:agreements:write']),
+            { skillId: 'create-agreement', input: { agreement } },
+        )).resolves.toEqual({ skillId: 'create-agreement', result: { id: 99 } });
+        expect(createAgreement).toHaveBeenCalledWith(
+            expect.objectContaining({ db, principal: expect.objectContaining({ sub: 'agent-1' }) }),
+            agreement,
+        );
     });
 
     test('maps trigger input without losing the request payload', async () => {

@@ -10,6 +10,7 @@ export type PolicyAction =
     | 'templates:delete'
     | 'agreements:list'
     | 'agreements:read'
+    | 'agreements:create'
     | 'agreements:convert'
     | 'agreements:trigger';
 
@@ -36,6 +37,7 @@ const REQUIRED_SCOPE: Readonly<Record<PolicyAction, string>> = {
     'templates:delete': 'apap:templates:write',
     'agreements:list': 'apap:agreements:read',
     'agreements:read': 'apap:agreements:read',
+    'agreements:create': 'apap:agreements:write',
     'agreements:convert': 'apap:agreements:read',
     'agreements:trigger': 'apap:trigger:invoke',
 };

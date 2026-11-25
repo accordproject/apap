@@ -30,6 +30,7 @@ import {
     getAgreementById,
     convertAgreement,
     triggerAgreement as triggerAgreementService,
+    createAgreement,
 } from '../services/agreementService';
 import { InvalidPayloadError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
@@ -715,6 +716,49 @@ Refer to the agreement's template model to determine which fields are required o
                     content: [{
                         type: "text",
                         text: JSON.stringify(agreementToConcerto(agreement))
+                    }]
+                };
+            } catch (err) {
+                if (err instanceof ServiceError) {
+                    return serviceErrorToCallToolResult(err);
+                }
+                throw err;
+            }
+        }
+    );
+
+    // register the create-agreement tool
+    server.registerTool(
+        'create-agreement',
+        {
+            description: 'Create and instantiate a new agreement from a template and deal terms data.',
+            inputSchema: {
+                agreement: z.union([z.string(), z.record(z.string(), z.any())]).describe('Agreement object or JSON string containing uri, template, data ($class), and optional agreementStatus.'),
+            } as any,
+            annotations: {
+                readOnlyHint: false,
+                destructiveHint: false,
+                idempotentHint: false,
+                openWorldHint: false,
+            },
+        },
+        async (args: { agreement: string | Record<string, any> }): Promise<CallToolResult> => {
+            let agreementPayload: any = args.agreement;
+            if (typeof agreementPayload === 'string') {
+                try {
+                    agreementPayload = JSON.parse(agreementPayload);
+                } catch {
+                    return serviceErrorToCallToolResult(
+                        new InvalidPayloadError('Agreement payload must be valid JSON'),
+                    );
+                }
+            }
+            try {
+                const created = await createAgreement(context, agreementPayload);
+                return {
+                    content: [{
+                        type: "text",
+                        text: JSON.stringify(agreementToConcerto(created))
                     }]
                 };
             } catch (err) {

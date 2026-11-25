@@ -1,10 +1,7 @@
 import express from 'express';
 import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
 import { buildCrudRouter, parseIntegerId } from './crud';
-import { extractTemplateForDatabase } from './templatebuilder';
 import { eq } from 'drizzle-orm';
-import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
-import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import {
     AgreementTriggerError,
     InvalidIdentifierError,
@@ -14,6 +11,7 @@ import {
 import {
     assertAgreementRecordMutable,
     convertAgreement,
+    createAgreement,
     listAgreementsPaged,
     triggerAgreement,
     templateUriFromReference,
@@ -34,61 +32,19 @@ const router = express.Router();
  * retriever, and finally inserts the agreement into the database.
  */
 router.post('/', asyncHandler(async (req, res) => {
-        const db = res.locals.db;
-        
-        // ponytail: cast schema to any due to zod v3 -> v4 upgrade depth-instantiation
-        // issue with drizzle-zod. Runtime unaffected.
-        const zodValidation = (AgreementInsertSchema as any).safeParse(req.body);
-        if (!zodValidation.success) {
-            return res.status(400).json({ error: 'Schema validation failed', details: zodValidation.error.issues });
+    try {
+        const context = res.locals.policyContext ?? createLegacyPolicyContext(res.locals.db);
+        const created = await createAgreement(context, req.body, { organizationId: res.locals.orgId });
+        res.json(created);
+    } catch (err: any) {
+        if (err instanceof InvalidPayloadError) {
+            return res.status(400).json({ error: err.message, details: err.details?.issues ?? err.details });
         }
-
-        const { success, error } = await validateAgreementBody(req.body);
-        if (!success) {
-            return res.status(400).json({ error: 'Invalid request body', details: error.errors });
+        if (err instanceof ValidationError) {
+            return res.status(400).json({ error: err.message, details: err.details?.errors ?? err.details });
         }
-
-        const templateUri = templateUriFromReference(req.body.template);
-
-        let currentHash = null;
-
-        const availableRetrievers = [
-            new HttpTemplateRetriever()
-        ];
-
-        if (templateUri) {
-            const matchingRetriever = availableRetrievers.find(r => 
-                r.getURISchemes().some(scheme => templateUri.startsWith(`${scheme}:`))
-            );
-
-            if (matchingRetriever) {
-                const buffer = await matchingRetriever.fetch(templateUri);
-                
-                const apTemplate = await CiceroTemplate.fromArchive(buffer);
-                currentHash = apTemplate.getHash();
-
-                const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
-                
-                if (existing.length === 0) {
-                    const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                    await db.insert(DbTemplate)
-                        .values(newDbTemplateRow)
-                        .onConflictDoNothing({ target: DbTemplate.hash });
-                }
-            }
-        }
-
-        // req.body.template keeps validateAgreementBody's encodeURIComponent spelling
-        // for bare URIs; PUT uses result.data's Concerto encodeURI spelling instead.
-        // Keep both forms covered by assertTemplateNotInUse and the frozen-record guard.
-        const insertData = {
-            ...req.body,
-            templateHash: currentHash,
-            organization: res.locals.orgId !== undefined ? res.locals.orgId : req.body.organization
-        };
-
-        const inserted = await db.insert(Agreement).values(insertData).returning();
-        res.json(inserted[0]);
+        throw err;
+    }
 }));
 
 const crudRouter = buildCrudRouter({

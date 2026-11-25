@@ -5,15 +5,19 @@ import {
     getAgreementById,
     getAgreementByUri,
     convertAgreement,
+    createAgreement,
     assertAgreementRecordMutable,
     templateUriFromReference,
     normalizeAgreementTemplateReference,
 } from './agreementService';
 import {
     AgreementNotFoundError,
+    AgreementDuplicateError,
     AgreementRecordImmutableError,
     AgreementTemplateBindingImmutableError,
     AgreementStatusTransitionError,
+    InvalidPayloadError,
+    ValidationError,
 } from './errors';
 import { DevelopmentPrincipal } from '../auth/types';
 import { createPolicyContext } from './policy';
@@ -23,6 +27,7 @@ import { createPolicyContext } from './policy';
 // Postgres or a real .cta archive.
 jest.mock('../handlers/templatebuilder', () => ({
     templateFromDatabase: jest.fn(),
+    extractTemplateForDatabase: jest.fn().mockReturnValue({}),
 }));
 jest.mock('@accordproject/template-engine', () => ({
     TemplateArchiveProcessor: jest.fn(),
@@ -41,6 +46,12 @@ function createMockDb() {
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         offset: jest.fn().mockReturnThis(),
+        insert: jest.fn().mockReturnThis(),
+        values: jest.fn().mockReturnThis(),
+        returning: jest.fn(function (this: any) {
+            return Promise.resolve(this._returnValue);
+        }),
+        onConflictDoNothing: jest.fn().mockReturnThis(),
     };
     mock.then = function (onFulfilled: any, onRejected: any) {
         return Promise.resolve(this._returnValue).then(onFulfilled, onRejected);
@@ -610,6 +621,71 @@ describe('agreementService', () => {
             db._setReturn([{ count: 42 }]);
             const result = await listAgreementsPaged(context(db), { limit: 10, offset: 0 });
             expect(result.total).toBe(42);
+        });
+    });
+
+    describe('createAgreement', () => {
+        const validAgreement = {
+            uri: 'apap://agreement-test-1',
+            template: 'resource:org.accordproject.protocol@1.0.0.Template#local-1',
+            agreementStatus: 'DRAFT',
+            data: {
+                $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyContract',
+                clauseId: 'c1',
+            },
+        };
+
+        it('rejects a non-object payload', async () => {
+            await expect(createAgreement(context(db), null)).rejects.toBeInstanceOf(InvalidPayloadError);
+            await expect(createAgreement(context(db), 'string')).rejects.toBeInstanceOf(InvalidPayloadError);
+            await expect(createAgreement(context(db), [])).rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        it('rejects an agreement when Zod validation fails', async () => {
+            const invalid = { uri: 12345 }; // uri must be string
+            await expect(createAgreement(context(db), invalid)).rejects.toBeInstanceOf(InvalidPayloadError);
+        });
+
+        it('rejects an agreement when Concerto validation fails', async () => {
+            const invalidConcerto = {
+                uri: 'apap://agreement-invalid',
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#local-1',
+                agreementStatus: 'DRAFT',
+                agreementParties: [{ invalidParty: true }],
+                data: {
+                    $class: 'io.clause.latedeliveryandpenalty@0.1.0.LateDeliveryAndPenaltyContract',
+                    clauseId: 'c1',
+                },
+            };
+            await expect(createAgreement(context(db), invalidConcerto)).rejects.toBeInstanceOf(ValidationError);
+        });
+
+        it('creates and returns the agreement on valid input', async () => {
+            const mockCreated = { id: 100, ...validAgreement };
+            db._setReturn([mockCreated]);
+
+            const created = await createAgreement(context(db), { ...validAgreement });
+            expect(db.insert).toHaveBeenCalled();
+            expect(created).toMatchObject({ id: 100, uri: 'apap://agreement-test-1' });
+        });
+
+        it('threads organizationId when provided in options', async () => {
+            const mockCreated = { id: 101, ...validAgreement, organization: 42 };
+            db._setReturn([mockCreated]);
+
+            await createAgreement(context(db), { ...validAgreement }, { organizationId: 42 });
+            expect(db.values).toHaveBeenCalledWith(expect.objectContaining({ organization: 42 }));
+        });
+
+        it('maps unique constraint violation to AgreementDuplicateError', async () => {
+            db.returning.mockImplementationOnce(() => {
+                const err: any = new Error('duplicate key value violates unique constraint');
+                err.code = '23505';
+                return Promise.reject(err);
+            });
+
+            await expect(createAgreement(context(db), { ...validAgreement }))
+                .rejects.toBeInstanceOf(AgreementDuplicateError);
         });
     });
 });

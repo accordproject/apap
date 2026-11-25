@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { getTemplateById, listTemplates } from './templateService';
-import { getAgreementById, listAgreements, triggerAgreement } from './agreementService';
+import { getAgreementById, listAgreements, triggerAgreement, createAgreement } from './agreementService';
 import { InvalidPayloadError } from './errors';
 import { authorize, type PolicyAction, type PolicyContext, type PolicyResource } from './policy';
 
@@ -40,6 +40,24 @@ export const A2A_SKILLS = [
         scope: 'apap:agreements:read',
         tags: ['apap', 'agreements'],
         example: { skillId: 'get-agreement', input: { id: 1 } },
+    },
+    {
+        id: 'create-agreement',
+        name: 'Create agreement',
+        action: 'agreements:create',
+        description: 'Instantiate a new APAP agreement from a template and deal terms.',
+        scope: 'apap:agreements:write',
+        tags: ['apap', 'agreements', 'lifecycle'],
+        example: {
+            skillId: 'create-agreement',
+            input: {
+                agreement: {
+                    uri: 'apap://agreements/example-1',
+                    template: 'https://templates.accordproject.org/archives/latedeliveryandpenalty@0.15.0.cta',
+                    data: { $class: 'org.example.AgreementData' },
+                },
+            },
+        },
     },
     {
         id: 'trigger-agreement',
@@ -85,12 +103,17 @@ const triggerSchema = z.object({
     request: z.record(z.string(), z.unknown()),
 }).strict();
 
+const createAgreementSchema = z.object({
+    agreement: z.record(z.string(), z.unknown()),
+}).strict();
+
 type Operations = {
     listTemplates: typeof listTemplates;
     getTemplateById: typeof getTemplateById;
     listAgreements: typeof listAgreements;
     getAgreementById: typeof getAgreementById;
     triggerAgreement: typeof triggerAgreement;
+    createAgreement: typeof createAgreement;
 };
 
 const defaultOperations: Operations = {
@@ -99,6 +122,7 @@ const defaultOperations: Operations = {
     listAgreements,
     getAgreementById,
     triggerAgreement,
+    createAgreement,
 };
 
 function parseInput<T>(schema: z.ZodType<T>, input: unknown, skillId: string): T {
@@ -155,6 +179,15 @@ function prepareSkill(skill: typeof A2A_SKILLS[number], rawInput: unknown): Prep
                 action: skill.action,
                 resource: { type: 'agreement', id: input.id },
                 invoke: (operations, context) => operations.getAgreementById(context, input.id),
+            };
+        }
+        case 'create-agreement': {
+            const input = parseInput(createAgreementSchema, rawInput, skill.id);
+            return {
+                skillId: skill.id,
+                action: skill.action,
+                resource: { type: 'agreement-collection' },
+                invoke: (operations, context) => operations.createAgreement(context, input.agreement),
             };
         }
         case 'trigger-agreement': {
