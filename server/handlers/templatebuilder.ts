@@ -1,6 +1,9 @@
 import { Template as ApTemplate, TemplateLibrary } from '@accordproject/cicero-core';
 import AdmZip from "adm-zip";
+import { ModelManager } from '@accordproject/concerto-core';
+import { FileDownloader } from '@accordproject/concerto-util';
 import { Template } from '../db/schema';
+import { SecureFileLoader, getExternalImports } from './sharedmodels';
 
 interface ApModelFile {
     getNamespace?(): string;
@@ -19,9 +22,8 @@ interface ApTemplateInstance {
         getPackageJson(): Record<string, any>;
     };
     getTemplate(): string | null;
-    getModelManager(): {
+    getModelManager(): ModelManager & {
         getModels(): ApModelFile[];
-        updateExternalModels?(): Promise<void>;
     };
     getScriptManager(): {
         getScripts(): ApScript[];
@@ -138,7 +140,9 @@ export async function templateFromDatabase(db: typeof Template | any): Promise<A
 
     const buffer = zip.toBuffer();
     const template = await ApTemplate.fromArchive(buffer);
-    await template.getModelManager().updateExternalModels();
+    const modelManager = template.getModelManager();
+    const fileDownloader = new FileDownloader(new SecureFileLoader(modelManager), getExternalImports);
+    await modelManager.updateExternalModels({}, fileDownloader);
     return template;
 }
 

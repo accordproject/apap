@@ -1,4 +1,4 @@
-import { extractTemplateForDatabase, templateNameFromUri } from './templatebuilder';
+import { extractTemplateForDatabase, templateNameFromUri, templateFromDatabase } from './templatebuilder';
 
 describe('Template Builder - extractTemplateForDatabase', () => {
     it('should perfectly extract ALL attributes from a template instance including logo and metadata', () => {
@@ -106,5 +106,65 @@ describe('Template Builder - templateNameFromUri', () => {
     it('falls back to a default name when the URI yields nothing usable', () => {
         expect(templateNameFromUri('')).toBe('dynamic-template');
         expect(templateNameFromUri('ap://@1.0.0')).toBe('dynamic-template');
+    });
+});
+
+describe('Template Builder - SSRF Prevention in templateFromDatabase', () => {
+    it('rejects external model imports targeting non-allowlisted domains', async () => {
+        const maliciousRow = {
+            uri: 'ap://malicious-template@1.0.0',
+            version: '1.0.0',
+            author: 'Attacker',
+            license: 'Apache-2.0',
+            metadata: { runtime: 'typescript', cicero: '^2.0.0' },
+            text: { templateText: 'The contract text.' },
+            templateModel: {
+                model: {
+                    $class: 'org.accordproject.protocol@1.0.0.CtoModel',
+                    ctoFiles: [{
+                        filename: 'model.cto',
+                        contents: `
+                            namespace org.test.model@1.0.0
+                            import org.evil@1.0.0.MaliciousAsset from https://evil-attacker.com/malicious.cto
+                            @template
+                            concept ContractData { o String value }
+                        `
+                    }]
+                }
+            }
+        };
+
+        await expect(templateFromDatabase(maliciousRow as any)).rejects.toThrow(
+            /SSRF Prevention: Domain not in allowlist/
+        );
+    });
+
+    it('rejects external model imports targeting http schemes or private IPs', async () => {
+        const loopbackRow = {
+            uri: 'ap://loopback-template@1.0.0',
+            version: '1.0.0',
+            author: 'Attacker',
+            license: 'Apache-2.0',
+            metadata: { runtime: 'typescript', cicero: '^2.0.0' },
+            text: { templateText: 'The contract text.' },
+            templateModel: {
+                model: {
+                    $class: 'org.accordproject.protocol@1.0.0.CtoModel',
+                    ctoFiles: [{
+                        filename: 'model.cto',
+                        contents: `
+                            namespace org.test.model@1.0.0
+                            import org.evil@1.0.0.LoopbackAsset from http://127.0.0.1:9999/malicious.cto
+                            @template
+                            concept ContractData { o String value }
+                        `
+                    }]
+                }
+            }
+        };
+
+        await expect(templateFromDatabase(loopbackRow as any)).rejects.toThrow(
+            /Invalid URI scheme. Only https is allowed/
+        );
     });
 });

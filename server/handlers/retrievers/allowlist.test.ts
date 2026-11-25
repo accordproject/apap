@@ -1,4 +1,5 @@
-import { assertAllowedUrl } from './allowlist';
+import { assertAllowedUrl, installHttpFileLoaderGuard } from './allowlist';
+import { HTTPFileLoader } from '@accordproject/concerto-util';
 
 describe('assertAllowedUrl SSRF guard', () => {
     it('accepts valid https URLs from models.accordproject.org', () => {
@@ -83,5 +84,26 @@ describe('assertAllowedUrl SSRF guard', () => {
     it('rejects raw.githubusercontent.com URLs outside the accordproject organization', () => {
         expect(() => assertAllowedUrl('https://raw.githubusercontent.com/malicious-user/repo/main/exploit.cta'))
             .toThrow('SSRF Prevention: Only official accordproject GitHub repositories are allowed.');
+    });
+});
+
+describe('installHttpFileLoaderGuard', () => {
+    it('is idempotent and marks prototype as patched', () => {
+        expect((HTTPFileLoader.prototype as any).__apap_allowlist_patched).toBe(true);
+        const originalFn = HTTPFileLoader.prototype.load;
+        installHttpFileLoaderGuard();
+        expect(HTTPFileLoader.prototype.load).toBe(originalFn);
+    });
+
+    it('intercepts HTTPFileLoader.load and rejects non-allowlisted domains', async () => {
+        const loader = new HTTPFileLoader((name, text) => text);
+        await expect(loader.load('https://attacker.example.com/model.cto', {}))
+            .rejects.toThrow('SSRF Prevention: Domain not in allowlist.');
+    });
+
+    it('intercepts HTTPFileLoader.load and rejects non-https schemes', async () => {
+        const loader = new HTTPFileLoader((name, text) => text);
+        await expect(loader.load('http://127.0.0.1:8080/model.cto', {}))
+            .rejects.toThrow('Invalid URI scheme. Only https is allowed.');
     });
 });

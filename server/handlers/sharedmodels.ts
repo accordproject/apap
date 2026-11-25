@@ -9,7 +9,7 @@ import { assertAllowedUrl } from './retrievers/allowlist';
 
 const router = express.Router();
 
-class SecureFileLoader {
+export class SecureFileLoader {
     private modelManager: ModelManager;
 
     constructor(modelManager: ModelManager) {
@@ -17,7 +17,7 @@ class SecureFileLoader {
     }
 
     accepts(url: string): boolean {
-        return url.startsWith('https://');
+        return typeof url === 'string';
     }
 
     clear(): void {}
@@ -33,7 +33,7 @@ class SecureFileLoader {
     }
 }
 
-const getExternalImports = (modelFile: any): Record<string, string> => {
+export const getExternalImports = (modelFile: any): Record<string, string> => {
     const ast = modelFile.getAst ? modelFile.getAst() : modelFile.ast;
     const imports: Record<string, string> = {};
     if (ast && ast.imports) {
