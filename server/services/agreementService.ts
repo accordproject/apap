@@ -442,7 +442,7 @@ export async function convertAgreement(
     try {
         return await processor.draft(agreement.data, format, {});
     } catch (err) {
-        const reason = err instanceof Error ? err.message : String(err);
+        const reason = err instanceof Error ? err.message : ((err as any)?.message || String(err));
         throw new AgreementConversionError(agreementId, format, reason);
     }
 }
@@ -510,7 +510,7 @@ export async function triggerAgreement(
         }
         triggerResult = await processor.trigger(agreement.data, requestBody, currentState);
     } catch (err) {
-        const reason = err instanceof Error ? err.message : String(err);
+        const reason = err instanceof Error ? err.message : ((err as any)?.message || String(err));
         throw new AgreementTriggerError(String(agreementId), reason);
     }
 
