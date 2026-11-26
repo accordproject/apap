@@ -2,7 +2,8 @@ import express from 'express';
 import { Agreement, AgreementInsertSchema, Template as DbTemplate } from '../db/schema';
 import { buildCrudRouter, parseIntegerId } from './crud';
 import { extractTemplateForDatabase } from './templatebuilder';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
+import { isUniqueViolation } from '../db/errors';
 import { HttpTemplateRetriever } from './retrievers/HttpTemplateRetriever';
 import { Template as CiceroTemplate } from '@accordproject/cicero-core';
 import {
@@ -67,13 +68,43 @@ router.post('/', asyncHandler(async (req, res) => {
                 const apTemplate = await CiceroTemplate.fromArchive(buffer);
                 currentHash = apTemplate.getHash();
 
-                const existing = await db.select().from(DbTemplate).where(eq(DbTemplate.hash, currentHash)).limit(1);
+                // Note on OR-lookup nondeterminism (LOW): If hash H matches row R1 and URI U matches row R2
+                // (both unique constraints match different rows), limit(1) returns one nondeterministically.
+                // This state is undefined and unreachable on normal data (only possible after legacy migrations
+                // that violated uniqueness prior to constraint enforcement). Operators requiring strict integrity
+                // could query limit(2) and assert length === 1.
+                const existing = await db
+                    .select()
+                    .from(DbTemplate)
+                    .where(or(eq(DbTemplate.hash, currentHash), eq(DbTemplate.uri, templateUri)))
+                    .limit(1);
                 
                 if (existing.length === 0) {
                     const newDbTemplateRow = extractTemplateForDatabase(apTemplate, templateUri, currentHash);
-                    await db.insert(DbTemplate)
-                        .values(newDbTemplateRow)
-                        .onConflictDoNothing({ target: DbTemplate.hash });
+                    try {
+                        await db.insert(DbTemplate)
+                            .values(newDbTemplateRow)
+                            .onConflictDoNothing({ target: DbTemplate.hash });
+                    } catch (err: unknown) {
+                        // Handle Postgres unique constraint violation (code 23505) directly or wrapped in DrizzleQueryError
+                        if (isUniqueViolation(err)) {
+                            const conflictRows = await db
+                                .select()
+                                .from(DbTemplate)
+                                .where(or(eq(DbTemplate.hash, currentHash), eq(DbTemplate.uri, templateUri)))
+                                .limit(1);
+                            if (conflictRows.length > 0 && conflictRows[0].hash) {
+                                currentHash = conflictRows[0].hash;
+                            }
+                        } else {
+                            throw err;
+                        }
+                    }
+                } else if (existing[0].hash) {
+                    // First-wins policy (MEDIUM): when a client uploads a .cta archive whose URI already exists
+                    // with a different hash, the agreement binds to the existing row's hash and the newly-fetched
+                    // bytes are discarded to maintain URL-identified archive immutability.
+                    currentHash = existing[0].hash;
                 }
             }
         }
