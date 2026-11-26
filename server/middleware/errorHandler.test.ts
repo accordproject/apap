@@ -3,8 +3,35 @@ import request from 'supertest';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { pgTable, serial, text } from 'drizzle-orm/pg-core';
-import { globalErrorHandler } from './errorHandler';
+import { asyncHandler, globalErrorHandler } from './errorHandler';
 import { ServiceError, TemplateDuplicateError } from '../services/errors';
+
+describe('asyncHandler', () => {
+    it.each([null, undefined, false, 0, '', 'route', 'router'])('converts rejected %p into an Error', async (value) => {
+        const next = jest.fn();
+        asyncHandler(() => Promise.reject(value))({} as any, {} as any, next);
+        await new Promise((resolve) => setImmediate(resolve));
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(next.mock.calls[0][0]).toBeInstanceOf(Error);
+    });
+
+    it.each(['synchronous throw', 'rejected promise'])('forwards the original Error on %s', async (kind) => {
+        const error = new Error('original');
+        const next = jest.fn();
+        asyncHandler(() => { if (kind === 'synchronous throw') throw error; return Promise.reject(error); })({} as any, {} as any, next);
+        await new Promise((resolve) => setImmediate(resolve));
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it('forwards non-Error objects unchanged', async () => {
+        const error = { code: '23505' };
+        const next = jest.fn();
+        asyncHandler(() => Promise.reject(error))({} as any, {} as any, next);
+        await new Promise((resolve) => setImmediate(resolve));
+        expect(next).toHaveBeenCalledWith(error);
+    });
+});
 
 describe('globalErrorHandler', () => {
     const query = 'insert into private_table';

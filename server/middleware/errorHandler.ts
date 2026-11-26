@@ -99,6 +99,9 @@ export function asyncHandler(
         => Promise<unknown>
 ) {
     return (req: Request, res: Response, next: NextFunction) => {
-        Promise.resolve(fn(req, res, next)).catch(next);
+        Promise.resolve().then(() => fn(req, res, next)).catch((error) => {
+            // Express treats falsy values and special strings as routing control flow.
+            next(!error || error === 'route' || error === 'router' ? new Error('Unexpected error') : error);
+        });
     };
 }
