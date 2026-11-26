@@ -1238,6 +1238,27 @@ describe('POST / - Agreement Creation with External Template', () => {
             },
         );
 
+        it.each(['SIGNING', 'COMPLETED'])('accepts reordered no-op terms in %s', async (agreementStatus) => {
+            useRealConcertoValidation();
+            const sent = { uri: 'apap://agreement-1', template: 'ap://template@1.0.0#abc', agreementStatus, data: { price: 10, quantity: 2 } };
+            mockDb.returning.mockResolvedValueOnce([{ id: 5 }]);
+            const created = await request(app).post('/agreements/').send(sent);
+            expect(created.status).toBe(200);
+            const inserted = mockDb.values.mock.calls[0][0];
+            putDb.limit.mockResolvedValueOnce([{ id: 5, ...inserted }]);
+            putDb.returning.mockResolvedValueOnce([{ id: 5, ...inserted }]);
+            const response = await request(putApp).put('/agreements/5').send({ ...sent, data: { quantity: 2, price: 10 } });
+            expect(response.status).toBe(200);
+            expect(putDb.update).toHaveBeenCalled();
+            const write = putDb.set.mock.calls[0][0];
+            expect(write.data).toBe(inserted.data);
+            expect(JSON.parse(write.data)).toEqual(JSON.parse(inserted.data));
+            expect(write).not.toHaveProperty('signatures');
+            expect(write).not.toHaveProperty('historyEntries');
+            if (agreementStatus === 'COMPLETED') expect(write.template).toBe(inserted.template);
+            expect(templateUriFromReference(write.template)).toBe(templateUriFromReference(inserted.template));
+        });
+
         it('still allows a signature to be added while SIGNING (only data is frozen)', async () => {
             const existing = { id: 7, agreementStatus: 'SIGNING', data: { price: 10 }, signatures: [] as any[] };
             putDb.limit.mockResolvedValueOnce([existing]);

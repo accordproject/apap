@@ -412,6 +412,126 @@ describe('agreementService', () => {
             ).not.toThrow();
         });
 
+        it.each(['SIGNING', 'COMPLETED', 'SUPERSEDED'])(
+            'compares serialized object data structurally while %s', (agreementStatus) => {
+                const existing = agreementRow(1, {
+                    agreementStatus,
+                    data: '{"price":10,"nested":{"a":1,"b":2},"items":[1,2]}',
+                });
+                expect(() => assertAgreementRecordMutable(existing, {
+                    data: '{"items":[1,2],"nested":{"b":2,"a":1},"price":10}',
+                })).not.toThrow();
+                expect(() => assertAgreementRecordMutable(existing, {
+                    data: '{"items":[2,1],"nested":{"b":2,"a":1},"price":10}',
+                })).toThrow(AgreementRecordImmutableError);
+                expect(() => assertAgreementRecordMutable(existing, {
+                    data: '{"price":11,"nested":{"a":1,"b":2},"items":[1,2]}',
+                })).toThrow(AgreementRecordImmutableError);
+                expect(() => assertAgreementRecordMutable(existing, {
+                    data: '{"price":10,"nested":{"a":1},"items":[1,2]}',
+                })).toThrow(AgreementRecordImmutableError);
+                expect(() => assertAgreementRecordMutable(existing, {
+                    data: '{"price":10,"nested":{"a":1,"b":2},"items":[1,2],"extra":true}',
+                })).toThrow(AgreementRecordImmutableError);
+                expect(() => assertAgreementRecordMutable(existing, { data: 'invalid JSON' }))
+                    .toThrow(AgreementRecordImmutableError);
+            },
+        );
+
+        it('rejects changes to large integer values in serialized agreement data', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'COMPLETED', data: '{"amount":9007199254740992}',
+            });
+            expect(() => assertAgreementRecordMutable(existing, {
+                data: '{"amount":9007199254740993}',
+            })).toThrow(AgreementRecordImmutableError);
+        });
+
+        it.each([
+            ['{"amount":9007199254740992}', '{"amount":9007199254740993}'],
+            ['{"n":0.12345678901234567,"x":1}', '{"x":1,"n":0.12345678901234568}'],
+            ['{"n":1e0,"x":1}', '{"x":1,"n":1}'],
+            ['{"n":1,"n":2,"x":3}', '{"x":3,"n":2}'],
+            ['{"x":1,"nested":{"a":1,"a":2}}', '{"nested":{"a":2},"x":1}'],
+            ['{"a":1, "b":2}', '{"b":2,"a":1}'],
+        ])('rejects uncertain serialized JSON equivalence', (before, after) => {
+            const existing = agreementRow(1, { agreementStatus: 'COMPLETED', data: before });
+            expect(() => assertAgreementRecordMutable(existing, { data: after }))
+                .toThrow(AgreementRecordImmutableError);
+        });
+
+        it('accepts canonical exponent notation without normalizing stored data', () => {
+            const before = '{"amount":1e+21,"nested":{"a":1,"b":2}}';
+            const updates: Record<string, unknown> = { data: '{"nested":{"b":2,"a":1},"amount":1e+21}' };
+            assertAgreementRecordMutable(agreementRow(1, { agreementStatus: 'SIGNING', data: before }), updates);
+            expect(updates.data).toBe(before);
+        });
+
+        it('preserves protected representations while permitting signing updates', () => {
+            const before = '{"price":10,"quantity":2}';
+            const updates: Record<string, unknown> = {
+                data: '{"quantity":2,"price":10}',
+                signatures: [{ signatory: 'party-1' }],
+            };
+            assertAgreementRecordMutable(agreementRow(1, { agreementStatus: 'SIGNING', data: before }), updates);
+            expect(updates.data).toBe(before);
+            expect(updates.signatures).toEqual([{ signatory: 'party-1' }]);
+        });
+
+        it('retains equivalent protected fields on a completed agreement', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'COMPLETED', data: '{"a":1,"b":2}',
+                signatures: [{ signatory: 'party-1', value: 'sig' }],
+                historyEntries: [{ event: 'signed', detail: 'ok' }],
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#ap%3A%2F%2Ftemplate',
+            });
+            const updates: Record<string, unknown> = {
+                data: '{"b":2,"a":1}',
+                signatures: [{ value: 'sig', signatory: 'party-1' }],
+                historyEntries: [{ detail: 'ok', event: 'signed' }],
+                template: 'resource:org.accordproject.protocol@1.0.0.Template#ap://template',
+                state: { step: 2 },
+            };
+            assertAgreementRecordMutable(existing, updates);
+            expect(updates.data).toBe(existing.data);
+            expect(updates.signatures).toBe(existing.signatures);
+            expect(updates.historyEntries).toBe(existing.historyEntries);
+            expect(updates.template).toBe(existing.template);
+            expect(updates.state).toEqual({ step: 2 });
+            expect(() => assertAgreementRecordMutable(existing, { signatures: [] }))
+                .toThrow(AgreementRecordImmutableError);
+        });
+
+        it('preserves serialized Concerto discriminators when comparing agreement data', () => {
+            const existing = agreementRow(1, {
+                agreementStatus: 'COMPLETED', data: '{"$class":"org.example@1.0.0.Terms","amount":1}',
+            });
+            expect(() => assertAgreementRecordMutable(existing, {
+                data: '{"amount":1,"$class":"org.example@1.0.0.Terms"}',
+            })).not.toThrow();
+            expect(() => assertAgreementRecordMutable(existing, {
+                data: '{"amount":1,"$class":"org.example@1.0.0.Other"}',
+            })).toThrow(AgreementRecordImmutableError);
+        });
+
+        it('compares serialized arrays in order', () => {
+            const existing = agreementRow(1, { agreementStatus: 'SIGNING', data: '[{"a":1,"b":2},3]' });
+            expect(() => assertAgreementRecordMutable(existing, { data: '[{"b":2,"a":1},3]' })).not.toThrow();
+            expect(() => assertAgreementRecordMutable(existing, { data: '[3,{"a":1,"b":2}]' }))
+                .toThrow(AgreementRecordImmutableError);
+        });
+
+        it.each([
+            ['not JSON', 'different'],
+            ['1', '1.0'],
+            ['"one"', '"two"'],
+        ])('still rejects changes to non-object serialized data', (before, after) => {
+            const existing = agreementRow(1, { agreementStatus: 'SIGNING', data: before });
+            expect(() => assertAgreementRecordMutable(existing, { data: before })).not.toThrow();
+            expect(() => assertAgreementRecordMutable(existing, { data: after }))
+                .toThrow(AgreementRecordImmutableError);
+        });
+
         it.each(['COMPLETED', 'SUPERSEDED'])(
             'rejects changing data once status is %s',
             (agreementStatus) => {
