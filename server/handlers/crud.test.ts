@@ -3,6 +3,8 @@ import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
 import templatesRouter from './templates';
+import agreementsRouter from './agreements';
+import sharedModelsRouter from './sharedmodels';
 import * as db from './templatebuilder';
 import * as validationModule from './concertovalidation';
 import { buildCrudRouter, parseQueryParams } from './crud';
@@ -621,6 +623,9 @@ describe('SQL injection prevention in defaultWhereClause', () => {
             next();
         });
         app.use('/templates', templatesRouter);
+        app.use('/agreements', agreementsRouter);
+        app.use('/sharedmodels', sharedModelsRouter);
+        app.use(globalErrorHandler);
     });
 
     it('rejects prototype pollution keys like toString', async () => {
@@ -725,6 +730,59 @@ describe('SQL injection prevention in defaultWhereClause', () => {
         expect(compiled.sql).toContain('ILIKE');
         expect(compiled.sql).toContain("ESCAPE '\\'");
         expect(compiled.params).toContain('Rob');
+    });
+
+    // #300: Express's extended query parser reads `uri[x]=a` as an object.
+    // parseQueryParams left the filter undefined but kept the key, so the
+    // default equality branch built `"uri" = ` with no operand and Postgres
+    // failed the query with a 500 that echoed the SQL.
+    describe('object-shaped filter values (#300)', () => {
+        it.each([
+            ['/templates', 'uri%5Bx%5D=a', 'uri'],
+            ['/agreements', 'uri%5Bx%5D=a', 'uri'],
+            ['/sharedmodels', 'uri%5Bx%5D=a', 'uri'],
+            ['/templates', 'id%5Bgt%5D=1', 'id'],
+            ['/templates', 'uri%5B0%5D%5Bx%5D=a', 'uri'],
+        ])('GET %s?%s returns a typed 400 before building SQL', async (path, query, parameter) => {
+            const res = await request(app).get(`${path}?${query}`);
+
+            expect(res.status).toBe(400);
+            expect(res.body).toEqual({
+                error: {
+                    code: 'INVALID_QUERY_PARAMETER',
+                    message: `Invalid value for query parameter "${parameter}": expected a string`,
+                    details: { parameter },
+                },
+            });
+            expect(capturedWhereClauses).toHaveLength(0);
+        });
+
+        it('still ignores an object-shaped value on a key that is not a column', async () => {
+            const res = await request(app).get('/templates?notAColumn%5Bx%5D=a');
+
+            expect(res.status).toBe(200);
+        });
+
+        it('still filters on the first value when a repeated filter mixes a string and an object', async () => {
+            // qs parses `uri=b&uri[x]=a` as ['b', { x: 'a' }]; the first value wins (#249).
+            const { PgDialect } = require('drizzle-orm/pg-core');
+            const res = await request(app).get('/templates?uri=b&uri%5Bx%5D=a');
+
+            expect(res.status).toBe(200);
+            const compiled = new PgDialect().sqlToQuery(capturedWhereClauses[0]);
+            expect(compiled.sql).toBe('"uri" = $1');
+            expect(compiled.params).toEqual(['b']);
+        });
+
+        it('still filters on a scalar value', async () => {
+            const { PgDialect } = require('drizzle-orm/pg-core');
+            const res = await request(app).get('/templates?uri=a');
+
+            expect(res.status).toBe(200);
+            const compiled = new PgDialect().sqlToQuery(capturedWhereClauses[0]);
+            expect(compiled.sql).toBe('"uri" = $1');
+            expect(compiled.params).toEqual(['a']);
+        });
     });
 });
 

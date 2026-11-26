@@ -236,6 +236,26 @@ export class InvalidIdentifierError extends ServiceError implements ClientSafeEr
     }
 }
 
+/**
+ * Raised when a collection filter names a real column but its value is not a
+ * string, e.g. `?uri[x]=a`, which Express's extended query parser reads as an
+ * object (#300). Rejected before SQL construction; otherwise the filter builds
+ * an equality with no operand and Postgres fails the query with a 500.
+ */
+export class InvalidQueryParameterError extends ServiceError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+
+    constructor(parameter: string) {
+        super(
+            'INVALID_QUERY_PARAMETER',
+            400,
+            `Invalid value for query parameter "${parameter}": expected a string`,
+            { parameter },
+        );
+        this.name = 'InvalidQueryParameterError';
+    }
+}
+
 export class ValidationError extends ServiceError {
     constructor(message: string, details?: Record<string, unknown>) {
         super('VALIDATION_ERROR', 422, message, details);
