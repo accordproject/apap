@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterAll, jest } from '@jest/globals';
 import { extractTemplateForDatabase, templateNameFromUri, templateFromDatabase } from './templatebuilder';
 
 describe('Template Builder - extractTemplateForDatabase', () => {
@@ -110,6 +111,17 @@ describe('Template Builder - templateNameFromUri', () => {
 });
 
 describe('Template Builder - SSRF Prevention in templateFromDatabase', () => {
+    const originalFetch = (global as any).fetch;
+
+    beforeEach(() => {
+        (global as any).fetch = originalFetch;
+    });
+
+    afterAll(() => {
+        (global as any).fetch = originalFetch;
+        jest.restoreAllMocks();
+    });
+
     it('rejects external model imports targeting non-allowlisted domains', async () => {
         const maliciousRow = {
             uri: 'ap://malicious-template@1.0.0',
@@ -166,5 +178,53 @@ describe('Template Builder - SSRF Prevention in templateFromDatabase', () => {
         await expect(templateFromDatabase(loopbackRow as any)).rejects.toThrow(
             /Invalid URI scheme. Only https is allowed/
         );
+    });
+
+    it('successfully loads a template with an external model import from an allowlisted host', async () => {
+        (global as any).fetch = jest.fn().mockImplementation(async (url: any, options: any): Promise<any> => {
+            if (url === 'https://models.accordproject.org/external.cto') {
+                return {
+                    ok: true,
+                    status: 200,
+                    text: async () => `
+                        namespace org.accordproject.external@1.0.0
+                        concept ExternalConcept {
+                            o String id
+                        }
+                    `,
+                    headers: { get: (_name: string): string | null => null }
+                };
+            }
+            return originalFetch(url, options);
+        });
+
+        const allowlistedRow = {
+            uri: 'ap://allowlisted-template@1.0.0',
+            version: '1.0.0',
+            author: 'Accord Project',
+            license: 'Apache-2.0',
+            metadata: { runtime: 'typescript', cicero: '^2.0.0' },
+            text: { templateText: 'The contract text.' },
+            templateModel: {
+                model: {
+                    $class: 'org.accordproject.protocol@1.0.0.CtoModel',
+                    ctoFiles: [{
+                        filename: 'model.cto',
+                        contents: `
+                            namespace org.test.model@1.0.0
+                            import org.accordproject.external@1.0.0.ExternalConcept from https://models.accordproject.org/external.cto
+                            @template
+                            concept ContractData { o String value }
+                        `
+                    }]
+                }
+            }
+        };
+
+        const template = await templateFromDatabase(allowlistedRow as any);
+        expect(template).toBeDefined();
+        const modelManager = template.getModelManager();
+        expect(modelManager.getNamespaces()).toContain('org.accordproject.external@1.0.0');
+        expect(modelManager.getModelFile('org.accordproject.external@1.0.0')).not.toBeNull();
     });
 });
