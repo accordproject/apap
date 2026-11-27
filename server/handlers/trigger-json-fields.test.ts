@@ -59,7 +59,8 @@ describe('trigger request fields and Agreement JSON normalization', () => {
         const input = { $class: 'org.test@1.0.0.MyRequest', data: 'hello', state: 'ready' };
         const agreement = { id: 1, template: 'local://test', data: { $class: 'org.test@1.0.0.TemplateModel', clauseId: 'c1', name: 'A' }, state: {} };
         let reads = 0;
-        const db: any = { select: jest.fn().mockReturnThis(), from: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), limit: jest.fn(async () => reads++ === 0 ? [agreement] : [{}]), update: jest.fn().mockReturnThis(), set: jest.fn().mockReturnThis() };
+        const db: any = { select: jest.fn().mockReturnThis(), from: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), for: jest.fn().mockReturnThis(), limit: jest.fn(async () => reads++ <= 2 ? [agreement] : [{}]), update: jest.fn().mockReturnThis(), set: jest.fn().mockReturnThis() };
+        db.transaction = jest.fn((callback: any) => callback(db));
         const builder = jest.spyOn(templateBuilder, 'templateFromDatabase').mockResolvedValueOnce(template);
         try {
             const result = await triggerAgreement(createLegacyPolicyContext(db), 1, input);
@@ -72,7 +73,8 @@ describe('trigger request fields and Agreement JSON normalization', () => {
     it('returns unchanged request Strings through authenticated A2A HTTP', async () => {
         const agreement = { id: 1, template: 'local://test', data: { $class: 'org.test@1.0.0.TemplateModel', clauseId: 'c1', name: 'A' }, state: {} };
         let reads = 0;
-        const db: any = { select: jest.fn().mockReturnThis(), from: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), limit: jest.fn(async () => reads++ === 0 ? [agreement] : [{}]), update: jest.fn().mockReturnThis(), set: jest.fn().mockReturnThis() };
+        const db: any = { select: jest.fn().mockReturnThis(), from: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), for: jest.fn().mockReturnThis(), limit: jest.fn(async () => reads++ <= 2 ? [agreement] : [{}]), update: jest.fn().mockReturnThis(), set: jest.fn().mockReturnThis() };
+        db.transaction = jest.fn((callback: any) => callback(db));
         const builder = jest.spyOn(templateBuilder, 'templateFromDatabase').mockResolvedValueOnce(template);
         const auth = { secret: 'local-test-secret-at-least-32-characters', issuer: 'https://issuer.example.com', audience: 'apap-test' };
         const config: any = { authAdapter: 'hs256', publicBaseUrl: 'https://example.com', hs256: auth, rateLimit: { windowMs: 60000, max: 100 }, trustProxy: false, isProduction: false };
