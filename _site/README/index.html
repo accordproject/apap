@@ -23,8 +23,25 @@
 <pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">cd</span> apap/server <span class="token operator">&amp;&amp;</span> npx drizzle-kit push</code></pre>
 <h3 id="deploy-on-railway">Deploy on Railway</h3>
 <p>Click the button below to provision the server and a managed Postgres instance in one click:</p>
-<p><a href="https://railway.com/deploy/QYiXk5?referralCode=Gx6QTA&amp;utm_medium=integration&amp;utm_source=template&amp;utm_campaign=generic"><img src="https://railway.com/button.svg" alt="Deploy on Railway"></a></p>
+<p><a href="https://railway.com/deploy/apap-sample?referralCode=Gx6QTA&amp;utm_medium=integration&amp;utm_source=template&amp;utm_campaign=generic"><img src="https://railway.com/button.svg" alt="Deploy on Railway"></a></p>
 <p>Once deployed, your server is available at the Railway-assigned URL (e.g. <code>https://my-apap.up.railway.app</code>). No database setup required — Postgres is provisioned and linked automatically. Important note: this deployment is a sample implementation and not hardened for a production implementation.</p>
 <h3 id="verify">Verify</h3>
 <pre class="language-bash"><code class="language-bash"><span class="token function">curl</span> http://localhost:9000/capabilities<br><span class="token comment"># or https://my-apap.up.railway.app/capabilities</span></code></pre>
+<h3 id="draft-your-first-agreement">Draft your first agreement</h3>
+<p>A new server starts with an empty database, so there is nothing to draft until a
+template is loaded. The shortest way in is to point an agreement straight at a
+Cicero Template Archive (<code>.cta</code>) hosted on
+<a href="https://templates.accordproject.org">templates.accordproject.org</a> — the server
+fetches and caches the template for you, so there is no separate deploy step.
+The shape of the request, with two placeholders to fill in:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">--request</span> POST <span class="token punctuation">\</span><br>  <span class="token parameter variable">--url</span> http://localhost:9000/agreements <span class="token punctuation">\</span><br>  <span class="token parameter variable">--header</span> <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span><br>  <span class="token parameter variable">--data</span> <span class="token string">'{<br>	"uri": "apap://agreement-ldp",<br>	"template": "&lt;URL of a .cta whose declared Cicero range this server supports>",<br>	"agreementStatus": "DRAFT",<br>	"data": { "&lt;an instance of that template model, Concerto-serialized>": "" }<br>}'</span><br><br><span class="token function">curl</span> http://localhost:9000/agreements/1/convert/html</code></pre>
+<p><code>template</code> and <code>data</code> go together — <code>data</code> has to validate against the model in
+the archive <code>template</code> points at — so the snippet above is a skeleton, not a
+runnable command. A bare <code>http(s)</code> URL in <code>template</code> is stored as the Concerto
+relationship <code>resource:org.accordproject.protocol@1.0.0.Template#</code> plus the
+percent-encoded URL. See
+<a href="./server/README.md#using-a-template-from-templatesaccordprojectorg">Using a Template from templates.accordproject.org</a>
+for a complete worked request, the Cicero version compatibility check, and
+<code>POST /templates/archive</code> — the explicit upload path for custom archives or
+servers without network egress.</p>
 <p>For full API documentation see <a href="https://docs.accordproject.org/docs/ref-apap">docs.accordproject.org/docs/ref-apap</a>.</p>

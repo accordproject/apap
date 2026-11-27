@@ -1,36 +1,38 @@
 {
   "paths": {
-    "/agreements/{agreementId}/convert/html": {
-      "summary": "Path used to convert an agreeement to HTML format.",
-      "description": "The REST endpoint/path used convert or render an `agreement` to HTML format.",
-      "post": {
-        "requestBody": {
-          "description": "HTML conversion options.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/org.accordproject.protocol@1.0.0.HtmlConversionOptions"
-              }
-            }
-          },
-          "required": true
-        },
+    "/agreements/{agreementId}/convert/{format}": {
+      "summary": "Path used to convert an agreement to a specific format.",
+      "description": "The REST endpoint/path used to convert or render an `agreement` draft into an output format (HTML or Markdown).",
+      "get": {
         "responses": {
-          "202": {
-            "description": "A HTML file",
-            "content" : {
-              "application/pdf:" : {
-                "schema" : {
-                  "type" : "string",
-                  "format": "binary"
+          "200": {
+            "description": "The converted agreement draft in the requested format.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
+          },
+          "400": {
+            "description": "The agreement identifier is invalid."
+          },
+          "404": {
+            "description": "No agreement exists with the given id."
+          },
+          "500": {
+            "description": "Agreement conversion failed or the template could not be resolved."
           }
         },
-        "operationId": "convertAgreementHtml",
-        "summary": "Convert agreement to HTML",
-        "description": "Converts an existing `agreement` to HTML.",
+        "operationId": "convertAgreement",
+        "summary": "Convert agreement to format",
+        "description": "Converts an existing `agreement` draft to the requested output format (HTML or Markdown).",
         "tags": ["agreements"]
       },
       "parameters": [
@@ -39,6 +41,19 @@
           "description": "A unique identifier for a `Agreement`.",
           "schema": {
             "type": "string"
+          },
+          "in": "path",
+          "required": true
+        },
+        {
+          "name": "format",
+          "description": "The output format to convert the agreement draft into.",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "html",
+              "markdown"
+            ]
           },
           "in": "path",
           "required": true
