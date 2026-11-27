@@ -49,8 +49,8 @@ const MUTABLE_FIELDS_ONCE_FULLY_FROZEN: ReadonlySet<string> = new Set(['agreemen
 // signatory has started signing (SIGNING), the terms they're signing
 // against must not move out from under them, even though the record as a
 // whole (more signatures arriving, parties, etc.) is still legitimately
-// changing. `data` therefore freezes from SIGNING onward, one status ahead
-// of every other field.
+// changing. `data` and the template binding therefore freeze from SIGNING
+// onward, ahead of the remaining record fields.
 const DATA_FROZEN_STATUS: string = 'SIGNING';
 
 // Every freeze above hinges on `agreementStatus` never moving backward --
@@ -102,9 +102,8 @@ function deepEqual(a: unknown, b: unknown): boolean {
  * - Once COMPLETED or SUPERSEDED, rejects a request that would change any
  *   recorded field — only `agreementStatus` and `state` may still be
  *   updated.
- * - While SIGNING, rejects a request that would change `data` alone; every
- *   other field (signatures arriving, parties, etc.) stays mutable, since
- *   that's the whole point of the SIGNING status.
+ * - While SIGNING, rejects changes to `data` or the effective template
+ *   binding; signatures and other signing-stage fields remain mutable.
  * - An agreement with a cached template (`templateHash` set) cannot change its
  *   decoded template identifier through PUT in any lifecycle status, including
  *   DRAFT.
@@ -153,6 +152,17 @@ export function assertAgreementRecordMutable(existing: AgreementRow, updates: Re
         !deepEqual(existing.data, updates.data)
     ) {
         throw new AgreementRecordImmutableError(existing.id, status, 'data');
+    }
+
+    // Uncached agreements resolve their template by URI at rendering time.
+    // A different binding would change terms even when `data` is unchanged.
+    if (
+        status === DATA_FROZEN_STATUS &&
+        existing.templateHash == null &&
+        updates.template !== undefined &&
+        templateUriFromReference(existing.template) !== templateUriFromReference(updates.template as string | null)
+    ) {
+        throw new AgreementRecordImmutableError(existing.id, status, 'template');
     }
 
     // Runtime resolves cached agreements by hash. PUT cannot rebind that hash.

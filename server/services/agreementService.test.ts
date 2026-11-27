@@ -358,6 +358,26 @@ describe('agreementService', () => {
                 .not.toThrow();
         });
 
+        it.each([null, undefined])('rejects changing an uncached SIGNING template with hash %s', (hash) => {
+            const existing = agreementRow(1, { agreementStatus: 'SIGNING', template, templateHash: hash as any });
+            expect(() => assertAgreementRecordMutable(existing, { template: `${prefix}test://templates/b` }))
+                .toThrow(AgreementRecordImmutableError);
+        });
+
+        it.each([
+            `${prefix}${encodeURIComponent('test://templates/a%2Fb')}`,
+            `${prefix}test://templates/a%252Fb`,
+        ])('allows equivalent SIGNING template reference %s', (reference) => {
+            const existing = agreementRow(1, { agreementStatus: 'SIGNING', template: `${prefix}${encodeURIComponent('test://templates/a%2Fb')}`, templateHash: null });
+            expect(() => assertAgreementRecordMutable(existing, { template: reference, signatures: [{ signatory: 'party-1' }] })).not.toThrow();
+        });
+
+        it('rejects a distinct URI escape when signing', () => {
+            const existing = agreementRow(1, { agreementStatus: 'SIGNING', template: `${prefix}${encodeURIComponent('test://templates/a%2Fb')}`, templateHash: null });
+            expect(() => assertAgreementRecordMutable(existing, { template: `${prefix}${encodeURIComponent('test://templates/a/b')}` }))
+                .toThrow(AgreementRecordImmutableError);
+        });
+
         it('allows changing data and signatures while status is DRAFT', () => {
             const existing = agreementRow(1, { agreementStatus: 'DRAFT', data: { price: 10 }, signatures: [] });
 
