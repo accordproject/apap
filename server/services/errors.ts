@@ -45,6 +45,21 @@ export class ServiceError extends Error {
     }
 }
 
+/** A duplicate reported by a CRUD router configured with a server-owned resource type. */
+export class DuplicateResourceError extends ServiceError implements ClientSafeError {
+    public readonly clientSafe = true as const;
+    public readonly cause: unknown;
+
+    constructor(resourceType: string, cause?: unknown) {
+        super('DUPLICATE_RESOURCE', 409,
+            `A resource with this unique identifier already exists for ${resourceType}.`,
+            { resourceType });
+        this.name = 'DuplicateResourceError';
+        // Database errors may contain SQL and parameters; retain them without serializing them.
+        Object.defineProperty(this, 'cause', { value: cause, enumerable: false });
+    }
+}
+
 // -- Template errors --
 
 export class TemplateNotFoundError extends ServiceError {

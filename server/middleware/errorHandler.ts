@@ -54,13 +54,9 @@ export function globalErrorHandler(
 
     // Handle Postgres unique constraint violation
     if (uniqueViolation) {
-        const resourceNames: Record<string, string> = { Agreement: 'Agreement', Template: 'Template', SharedModel: 'SharedModel' };
-        const typeName = (err as any).typeName;
-        const resourceName = typeof typeName === 'string' && Object.prototype.hasOwnProperty.call(resourceNames, typeName)
-            ? resourceNames[typeName] : undefined;
         res.status(409).json({
             error: 'Conflict',
-            details: `A resource with this unique identifier already exists${resourceName ? ` for ${resourceName}` : ''}.`
+            details: 'A resource with this unique identifier already exists.'
         });
         return;
     }

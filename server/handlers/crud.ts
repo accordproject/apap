@@ -12,7 +12,7 @@ import { count } from 'drizzle-orm';
 // import { getUserRoles } from '../auth0/client';
 import { asyncHandler } from '../middleware/errorHandler';
 import { isUniqueViolation } from '../db/errors';
-import { InvalidIdentifierError, InvalidQueryParameterError, ServiceError } from '../services/errors';
+import { DuplicateResourceError, InvalidIdentifierError, InvalidQueryParameterError, ServiceError } from '../services/errors';
 import type { PolicyContext } from '../services/policy';
 import { createLegacyPolicyContext } from '../services/policy';
 
@@ -568,13 +568,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                         .returning();
                 } catch (error: any) {
                     if (!(error instanceof ServiceError) && isUniqueViolation(error)) {
-                        const pgError = new Error('Unique constraint violation') as any;
-                        pgError.code = '23505';
-                        pgError.typeName = typeName;
-                        // Preserve the original DB error for debugging; the cause may contain
-                        // SQL and bound parameters, so monitoring integrations must not serialize it.
-                        pgError.cause = error;
-                        throw pgError;
+                        throw new DuplicateResourceError(typeName, error);
                     }
                     throw error;
                 }
@@ -723,13 +717,7 @@ export function buildCrudRouter<T extends PgTable<any> & TableWithId>({
                     }
                 } catch (error: any) {
                     if (!(error instanceof ServiceError) && isUniqueViolation(error)) {
-                        const pgError = new Error('Unique constraint violation') as any;
-                        pgError.code = '23505';
-                        pgError.typeName = typeName;
-                        // Preserve the original DB error for debugging; the cause may contain
-                        // SQL and bound parameters, so monitoring integrations must not serialize it.
-                        pgError.cause = error;
-                        throw pgError;
+                        throw new DuplicateResourceError(typeName, error);
                     }
                     throw error;
                 }
