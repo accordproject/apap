@@ -10,7 +10,7 @@ import * as validationModule from './concertovalidation';
 import { buildCrudRouter, parseQueryParams } from './crud';
 import { TemplateInsertSchema } from '../db/schema';
 import { globalErrorHandler } from '../middleware/errorHandler';
-import { ServiceError } from '../services/errors';
+import { DuplicateResourceError, ServiceError } from '../services/errors';
 import { DrizzleQueryError } from 'drizzle-orm';
 
 jest.mock('../db/schema');
@@ -275,7 +275,7 @@ describe('unique-violation compatibility', () => {
     });
     afterEach(() => log.mockRestore());
 
-    function failingApp(error: unknown) {
+    function failingApp(error: unknown, typeName = 'Template') {
         const db: any = {
             insert: jest.fn().mockReturnThis(), values: jest.fn().mockReturnThis(),
             update: jest.fn().mockReturnThis(), set: jest.fn().mockReturnThis(),
@@ -285,7 +285,7 @@ describe('unique-violation compatibility', () => {
         const app = express();
         app.use(express.json());
         app.use((_req, res, next) => { res.locals.db = db; next(); });
-        app.use('/test', buildCrudRouter({ table: require('../db/schema').Template, typeName: 'TestResource' }));
+        app.use('/test', buildCrudRouter({ table: require('../db/schema').Template, typeName }));
         app.use((err: unknown, _req: express.Request, _res: express.Response, next: express.NextFunction) => {
             forwarded(err);
             next(err);
@@ -294,17 +294,25 @@ describe('unique-violation compatibility', () => {
         return { app, forwarded };
     }
 
-    it.each(['post', 'put'] as const)('%s retains typeName and cause for bare and wrapped duplicates', async (method) => {
-        const driverError = Object.assign(new Error('private_constraint'), { code: '23505' });
+    it.each(['post', 'put'] as const)('%s retains the cause for bare and wrapped duplicates', async (method) => {
+        const driverError = Object.assign(new Error('private_constraint'), { code: '23505', typeName: 'private_injected_type' });
         for (const failure of [driverError, new DrizzleQueryError('private SQL', ['private parameter'], driverError)]) {
             const { app, forwarded } = failingApp(failure);
             const response = await request(app)[method](method === 'post' ? '/test' : '/test/1').send({ uri: 'urn:test' });
             expect(response.status).toBe(409);
-            expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists.' });
-            expect(forwarded.mock.calls[0][0]).toMatchObject({ code: '23505', typeName: 'TestResource' });
+            expect(response.body).toEqual({ error: { code: 'DUPLICATE_RESOURCE', message: 'A resource with this unique identifier already exists for Template.', details: { resourceType: 'Template' } } });
+            expect(forwarded.mock.calls[0][0]).toBeInstanceOf(DuplicateResourceError);
             expect((forwarded.mock.calls[0][0] as { cause: unknown }).cause).toBe(failure);
             expect(JSON.stringify({ response: response.body, logs: log.mock.calls })).not.toContain('private');
         }
+    });
+
+    it.each(['Agreement', 'Template', 'SharedModel'])('uses the router-configured %s type', async (typeName) => {
+        const failure = Object.assign(new Error('private constraint'), { code: '23505', typeName: 'untrusted' });
+        const { app } = failingApp(failure, typeName);
+        const response = await request(app).post('/test').send({ uri: 'urn:test' });
+        expect(response.status).toBe(409);
+        expect(response.body).toEqual({ error: { code: 'DUPLICATE_RESOURCE', message: `A resource with this unique identifier already exists for ${typeName}.`, details: { resourceType: typeName } } });
     });
 
     it.each(['post', 'put'] as const)('%s forwards unrelated failures and typed errors unchanged', async (method) => {

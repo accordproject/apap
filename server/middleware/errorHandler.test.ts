@@ -4,7 +4,7 @@ import { DrizzleQueryError } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { pgTable, serial, text } from 'drizzle-orm/pg-core';
 import { asyncHandler, globalErrorHandler } from './errorHandler';
-import { ServiceError, TemplateDuplicateError } from '../services/errors';
+import { DuplicateResourceError, ServiceError, TemplateDuplicateError } from '../services/errors';
 
 describe('asyncHandler', () => {
     it.each([null, undefined, false, 0, '', 'route', 'router'])('converts rejected %p into an Error', async (value) => {
@@ -82,28 +82,23 @@ describe('globalErrorHandler', () => {
         }
     });
 
-    it('preserves the bare PostgreSQL conflict body and typeName without logging driver details', async () => {
-        const error = Object.assign(new Error('duplicate private_constraint'), { code: '23505', typeName: 'Template' });
-        const response = await request(appFor(error)).get('/');
-        expect(response.status).toBe(409);
-        expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists for Template.' });
-        expect(JSON.stringify(log.mock.calls)).not.toContain('private_constraint');
-    });
-
-    it('does not expose an untrusted typeName in a unique violation', async () => {
-        const marker = 'SYNTHETIC_PRIVATE_TYPENAME_MARKER';
-        const error = Object.assign(new Error('duplicate'), { code: '23505', typeName: marker });
+    it.each(['Template', 'SYNTHETIC_PRIVATE_TYPENAME_MARKER', '__proto__'])('ignores raw error typeName %s', async (typeName) => {
+        const error = Object.assign(new Error('duplicate private_constraint'), { code: '23505', typeName });
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(409);
         expect(response.body).toEqual({ error: 'Conflict', details: 'A resource with this unique identifier already exists.' });
-        expect(JSON.stringify(response.body)).not.toContain(marker);
+        expect(JSON.stringify({ body: response.body, logs: log.mock.calls })).not.toContain('private_constraint');
     });
 
-    it.each(['Agreement', 'Template', 'SharedModel'])('preserves the known %s resource name', async (typeName) => {
-        const error = Object.assign(new Error('duplicate'), { code: '23505', typeName });
+    it.each(['Agreement', 'Template', 'SharedModel'])('serializes a typed %s conflict', async (typeName) => {
+        const cause = new DrizzleQueryError(query, [parameter], new Error('private_constraint'));
+        const error = new DuplicateResourceError(typeName, cause);
         const response = await request(appFor(error)).get('/');
         expect(response.status).toBe(409);
-        expect(response.body).toEqual({ error: 'Conflict', details: `A resource with this unique identifier already exists for ${typeName}.` });
+        expect(response.body).toEqual({ error: { code: 'DUPLICATE_RESOURCE', message: `A resource with this unique identifier already exists for ${typeName}.`, details: { resourceType: typeName } } });
+        expect(error.cause).toBe(cause);
+        expect(JSON.stringify({ body: response.body, error, logs: log.mock.calls })).not.toContain(parameter);
+        expect(JSON.stringify({ body: response.body, error, logs: log.mock.calls })).not.toContain('private_constraint');
     });
 
     it.each([
