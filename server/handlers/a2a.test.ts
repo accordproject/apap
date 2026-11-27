@@ -81,6 +81,7 @@ describe('A2A Express integration', () => {
         expect(JSON.stringify(response.body)).not.toContain('attacker.example');
         expect(response.body.capabilities.streaming).toBe(false);
         expect(response.body.skills.map((skill: any) => skill.id)).not.toContain('create-agreement');
+        expect(response.body.skills.map((skill: any) => skill.id)).toContain('convert-agreement');
         expect(response.body.skills.find((skill: any) => skill.id === 'get-template').tags)
             .toEqual(['apap', 'templates']);
     });

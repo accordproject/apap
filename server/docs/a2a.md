@@ -132,6 +132,7 @@ unauthenticated requests never enter JSON-RPC dispatch. It also requires
 | `get-template` | `{ id: positive integer or numeric string }` | `apap:templates:read` |
 | `list-agreements` | `{ limit?: 1..100, offset?: >=0 }` (integers or numeric strings) | `apap:agreements:read` |
 | `get-agreement` | `{ id: positive integer or numeric string }` | `apap:agreements:read` |
+| `convert-agreement` | `{ id: positive integer or numeric string, format: 'html' \| 'markdown' }` | `apap:agreements:read` |
 | `trigger-agreement` | `{ id: positive integer or numeric string, request: object }` | `apap:trigger:invoke` |
 
 `create-agreement` is deliberately not exposed over A2A in this release.
