@@ -11,10 +11,12 @@ export type PolicyAction =
     | 'agreements:list'
     | 'agreements:read'
     | 'agreements:convert'
-    | 'agreements:trigger';
+    | 'agreements:trigger'
+    | 'sharedmodels:list'
+    | 'sharedmodels:read';
 
 export interface PolicyResource {
-    readonly type: 'template' | 'template-collection' | 'agreement' | 'agreement-collection';
+    readonly type: 'template' | 'template-collection' | 'agreement' | 'agreement-collection' | 'sharedmodel' | 'sharedmodel-collection';
     readonly id?: string | number;
 }
 
@@ -38,6 +40,8 @@ const REQUIRED_SCOPE: Readonly<Record<PolicyAction, string>> = {
     'agreements:read': 'apap:agreements:read',
     'agreements:convert': 'apap:agreements:read',
     'agreements:trigger': 'apap:trigger:invoke',
+    'sharedmodels:list': 'apap:sharedmodels:read',
+    'sharedmodels:read': 'apap:sharedmodels:read',
 };
 
 /**

@@ -206,6 +206,17 @@ export class AgreementConversionError extends ServiceError {
     }
 }
 
+// -- SharedModel errors --
+
+export class SharedModelNotFoundError extends ServiceError {
+    constructor(identifier: string | number) {
+        super('SHARED_MODEL_NOT_FOUND', 404, `Shared model not found: ${identifier}`, {
+            identifier,
+        });
+        this.name = 'SharedModelNotFoundError';
+    }
+}
+
 // -- Generic input + validation errors --
 
 export class InvalidPayloadError extends ServiceError {

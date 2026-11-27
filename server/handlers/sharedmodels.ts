@@ -6,6 +6,7 @@ import { ModelManager } from '@accordproject/concerto-core';
 import { FileDownloader } from '@accordproject/concerto-util';
 import { HttpModelRetriever } from './retrievers/HttpModelRetriever';
 import { assertAllowedUrl } from './retrievers/allowlist';
+import { listSharedModelsPaged } from '../services/sharedModelService';
 
 const router = express.Router();
 
@@ -88,7 +89,8 @@ router.post('/', async (req, res, next) => {
 const crudRouter = buildCrudRouter({
     table: SharedModel,
     typeName: 'SharedModel',
-    validateBody: { schema: SharedModelInsertSchema as any, custom: (body) => concertoValidation('SharedModel', body) }
+    validateBody: { schema: SharedModelInsertSchema as any, custom: (body) => concertoValidation('SharedModel', body) },
+    listService: (context, opts) => listSharedModelsPaged(context, opts),
 });
 
 router.use('/', crudRouter);
