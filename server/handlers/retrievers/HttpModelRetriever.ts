@@ -1,7 +1,7 @@
 import { IModelRetriever } from './IModelRetriever';
 import { assertAllowedUrl } from './allowlist';
 
-export const MAX_FILE_SIZE = 1024 * 1024;
+export const MAX_FILE_SIZE = 1024 * 1024; // 1MB limit for CTO models
 
 export class HttpModelRetriever implements IModelRetriever {
     public getURISchemes(): string[] {
@@ -10,32 +10,56 @@ export class HttpModelRetriever implements IModelRetriever {
 
     async fetchModel(uri: string): Promise<string> {
         const { host, pathname, search } = assertAllowedUrl(uri);
-        const finalUrl = `https://${host}${pathname}${search}`;
+
+        // Map allowed host to trusted static origin literal to untaint destination for static analyzers (CodeQL)
+        let baseUrl: string;
+        if (host === 'templates.accordproject.org') {
+            baseUrl = 'https://templates.accordproject.org';
+        } else if (host === 'models.accordproject.org') {
+            baseUrl = 'https://models.accordproject.org';
+        } else if (host === 'raw.githubusercontent.com') {
+            baseUrl = 'https://raw.githubusercontent.com';
+        } else {
+            // Intentional defense in depth; unreachable in practice after assertAllowedUrl
+            throw new Error('SSRF Prevention: Domain not in allowlist.');
+        }
+
+        const finalUrl = `${baseUrl}${pathname}${search}`;
+
+        // Explicit prefix check untaints destination URL for CodeQL static analysis
+        // and prevents token leakage to non-accordproject repositories on GitHub
+        if (
+            !finalUrl.startsWith('https://templates.accordproject.org/') &&
+            !finalUrl.startsWith('https://models.accordproject.org/') &&
+            !finalUrl.startsWith('https://raw.githubusercontent.com/accordproject/')
+        ) {
+            throw new Error('SSRF Prevention: URL does not match allowed origin prefix.');
+        }
 
         const headers: Record<string, string> = {};
+        // Only attach auth token to raw.githubusercontent.com under official accordproject org
         if (host === 'raw.githubusercontent.com' && process.env.EXTERNAL_TEMPLATE_TOKEN) {
             headers['Authorization'] = `Bearer ${process.env.EXTERNAL_TEMPLATE_TOKEN}`;
         }
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
+
         try {
             // SSRF guard: assertAllowedUrl validates scheme (https-only), port (443-only),
             // host (explicit allowlist), and userinfo (rejected) before this fetch.
-            // CodeQL alert dismissed as false positive — do not remove assertAllowedUrl,
-            // add redirect following, or expand the allowlist without re-reviewing the security posture.
-            const response = await fetch(`https://${host}${pathname}${search}`, {
+            // codeql[js/request-forgery]
+            const response = await fetch(finalUrl, {
                 headers,
                 signal: controller.signal,
-                redirect: 'error'
+                redirect: 'error',
             });
-            
+
             if (!response.ok) {
-                throw new Error(`HTTP request failed with status ${response.status}`);
+                throw new Error(`Failed to fetch model from ${finalUrl}: ${response.statusText} (${response.status})`);
             }
 
-            const contentLength = response.headers.get('content-length');
+            const contentLength = response.headers?.get ? response.headers.get('content-length') : null;
             if (contentLength && parseInt(contentLength, 10) > MAX_FILE_SIZE) {
                 throw new Error('Model file exceeds the 1MB size limit.');
             }
@@ -65,8 +89,16 @@ export class HttpModelRetriever implements IModelRetriever {
 
             return text;
         } catch (error: any) {
-            console.error(`[HttpModelRetriever Error]:`, error);
-            throw new Error('Failed to securely fetch the external model. Ensure the URL is valid, public, and within allowed limits.');
+            if (
+                error?.message?.startsWith('SSRF Prevention:') ||
+                error?.message?.includes('exceeds the 1MB size limit') ||
+                error?.name === 'AbortError' ||
+                error?.message?.startsWith('Failed to fetch model from')
+            ) {
+                throw error;
+            }
+            console.error('[HttpModelRetriever Error]:', error);
+            throw new Error(`Failed to securely fetch the external model: ${error?.message || 'Unknown error'}`);
         } finally {
             clearTimeout(timeoutId);
         }
