@@ -9,6 +9,9 @@ on:
       - main
       - v4.0.0 # Temporary, while we prepare for merge to main
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Unit Tests
@@ -159,49 +162,3 @@ jobs:
           RESET ROLE;
           DROP TABLE _rls_smoke;
           SQL
-
-  publish:
-    needs:
-      - build
-    name: Publish to npm
-    # Soft-disabled: this job references `scripts/timestamp.js` and
-    # `scripts/bump_version.js` which do not exist in the repo (never have,
-    # per `git log --all`). It was previously blocked by the matrix failures
-    # #212 fixed, so its own missing-script failure never surfaced. Setting
-    # `if: false` keeps main green while the deployment story is figured out
-    # in a follow-up. To re-enable, restore the two scripts (or drop the
-    # timestamp + bump steps and rely on manual package.json versioning) and
-    # replace this line with the original guard, kept below for reference:
-    # if: ${{ success() && github.event_name == 'push' && github.repository_owner == 'accordproject' }}
-    if: false
-    runs-on: ubuntu-latest
-
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-      - name: git checkout
-        uses: actions/checkout@v4
-
-      - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24.x
-
-      - name: Install global tools for strict dependency linting
-        run: npm install -g lockfile-lint syncpack
-
-      - run: npm ci
-      - run: npm run build --if-present
-
-      - name: timestamp
-        id: timestamp
-        run: |
-          node ./scripts/timestamp.js
-
-      - name: build and publish
-        run: |
-          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          node ./scripts/bump_version.js ${{ steps.timestamp.outputs.stamp }}
-          npm version --workspaces --include-workspace-root --no-git-tag-version --yes --exact ${{ steps.timestamp.outputs.stamp }}
-          npm publish --workspaces --access public --tag=unstable 2>&1
