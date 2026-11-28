@@ -1,5 +1,26 @@
 import { HttpTemplateRetriever, MAX_TEMPLATE_FILE_SIZE } from './HttpTemplateRetriever';
 import { jest } from '@jest/globals';
+import { InvalidPayloadError } from '../../services/errors';
+
+// Builds a streaming response body from the given chunks and records how many
+// chunks the retriever actually pulled, so tests can check it stops early.
+function bodyOf(...chunks: Uint8Array[]) {
+    let pulled = 0;
+    let cancelled = false;
+    const stream = new ReadableStream<Uint8Array>({
+        pull(controller: ReadableStreamDefaultController<Uint8Array>) {
+            if (pulled < chunks.length) {
+                controller.enqueue(chunks[pulled++]);
+            } else {
+                controller.close();
+            }
+        },
+        cancel() {
+            cancelled = true;
+        }
+    });
+    return { stream, pulled: () => pulled, cancelled: () => cancelled };
+}
 
 describe('HttpTemplateRetriever', () => {
     let retriever: HttpTemplateRetriever;
@@ -44,12 +65,12 @@ describe('HttpTemplateRetriever', () => {
 
     it('fetches successfully from templates.accordproject.org', async () => {
         const textData = 'mock-cta-bytes';
-        const mockArrayBuffer = new TextEncoder().encode(textData).buffer;
+        const bytes = new TextEncoder().encode(textData);
         (globalThis as any).fetch = jest.fn<any>().mockResolvedValue({
             ok: true,
             status: 200,
-            headers: new Headers({ 'content-length': String(mockArrayBuffer.byteLength) }),
-            arrayBuffer: async () => mockArrayBuffer
+            headers: new Headers({ 'content-length': String(bytes.byteLength) }),
+            body: bodyOf(bytes).stream
         });
 
         const result = await retriever.fetch('https://templates.accordproject.org/sample.cta');
@@ -59,12 +80,12 @@ describe('HttpTemplateRetriever', () => {
 
     it('only attaches Authorization header for raw.githubusercontent.com', async () => {
         process.env.EXTERNAL_TEMPLATE_TOKEN = 'secret-token-123';
-        const fetchMock = jest.fn<any>().mockResolvedValue({
+        const fetchMock = jest.fn<any>().mockImplementation(async () => ({
             ok: true,
             status: 200,
             headers: new Headers(),
-            arrayBuffer: async () => Buffer.from('data').buffer
-        });
+            body: bodyOf(Buffer.from('data')).stream
+        }));
         (globalThis as any).fetch = fetchMock;
 
         // 1. templates.accordproject.org should NOT receive the token
@@ -83,24 +104,66 @@ describe('HttpTemplateRetriever', () => {
             ok: true,
             status: 200,
             headers: new Headers({ 'content-length': String(MAX_TEMPLATE_FILE_SIZE + 1) }),
-            arrayBuffer: async () => Buffer.from('too-large').buffer
+            body: bodyOf(Buffer.from('too-large')).stream
         });
 
         await expect(retriever.fetch('https://templates.accordproject.org/huge.cta'))
             .rejects.toThrow('Template file exceeds the 10MB size limit.');
     });
 
-    it('rejects templates exceeding the 10MB size limit via buffer length', async () => {
-        const largeBuffer = new Uint8Array(MAX_TEMPLATE_FILE_SIZE + 1);
+    it('rejects templates exceeding the 10MB size limit via streamed body length', async () => {
         (globalThis as any).fetch = jest.fn<any>().mockResolvedValue({
             ok: true,
             status: 200,
             headers: new Headers(),
-            arrayBuffer: async () => largeBuffer.buffer
+            body: bodyOf(new Uint8Array(MAX_TEMPLATE_FILE_SIZE + 1)).stream
         });
 
         await expect(retriever.fetch('https://templates.accordproject.org/huge.cta'))
             .rejects.toThrow('Template file exceeds the 10MB size limit.');
+    });
+
+    it('stops reading a chunked body without Content-Length once it passes the limit', async () => {
+        const oneMb = new Uint8Array(1024 * 1024);
+        const body = bodyOf(...Array.from({ length: 50 }, () => oneMb)); // 50MB total
+        (globalThis as any).fetch = jest.fn<any>().mockResolvedValue({
+            ok: true,
+            status: 200,
+            headers: new Headers(),
+            body: body.stream
+        });
+
+        const result = retriever.fetch('https://templates.accordproject.org/chunked.cta');
+        await expect(result).rejects.toThrow('Template file exceeds the 10MB size limit.');
+        await expect(result).rejects.toBeInstanceOf(InvalidPayloadError);
+
+        // 11 x 1MB is the first point past 10MB; the rest of the stream is never read.
+        expect(body.pulled()).toBeLessThanOrEqual(12);
+        expect(body.cancelled()).toBe(true);
+    });
+
+    it('accepts a body that is exactly at the size limit', async () => {
+        (globalThis as any).fetch = jest.fn<any>().mockResolvedValue({
+            ok: true,
+            status: 200,
+            headers: new Headers(),
+            body: bodyOf(new Uint8Array(MAX_TEMPLATE_FILE_SIZE)).stream
+        });
+
+        const result = await retriever.fetch('https://templates.accordproject.org/exact.cta');
+        expect(result.byteLength).toBe(MAX_TEMPLATE_FILE_SIZE);
+    });
+
+    it('returns an empty buffer when the response has no body', async () => {
+        (globalThis as any).fetch = jest.fn<any>().mockResolvedValue({
+            ok: true,
+            status: 200,
+            headers: new Headers(),
+            body: null
+        });
+
+        const result = await retriever.fetch('https://templates.accordproject.org/empty.cta');
+        expect(result.byteLength).toBe(0);
     });
 
     it('throws when HTTP response is not ok', async () => {
@@ -119,7 +182,7 @@ describe('HttpTemplateRetriever', () => {
             ok: true,
             status: 200,
             headers: new Headers(),
-            arrayBuffer: async () => Buffer.from('data').buffer
+            body: bodyOf(Buffer.from('data')).stream
         });
         (globalThis as any).fetch = fetchMock;
 

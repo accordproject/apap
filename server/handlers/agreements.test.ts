@@ -565,15 +565,7 @@ describe('POST / - Agreement Creation with External Template', () => {
                 const urlString = url.toString();
 
                 if (urlString.includes('.cta')) {
-                    return {
-                        ok: true,
-                        arrayBuffer: async () => {
-                            return templateBuffer.buffer.slice(
-                                templateBuffer.byteOffset, 
-                                templateBuffer.byteOffset + templateBuffer.byteLength
-                            );
-                        }
-                    };
+                    return new Response(templateBuffer, { status: 200 });
                 }
 
                 return originalFetch(url, options);
