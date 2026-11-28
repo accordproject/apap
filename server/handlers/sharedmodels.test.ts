@@ -3,6 +3,7 @@ import request from 'supertest';
 import express from 'express';
 import sharedModelsRouter from './sharedmodels';
 import { concertoValidation } from './concertovalidation';
+import { globalErrorHandler } from '../middleware/errorHandler';
 
 jest.mock('./crud', () => ({
     buildCrudRouter: jest.fn(() => {
@@ -17,6 +18,7 @@ jest.mock('./crud', () => ({
 const app = express();
 app.use(express.json());
 app.use('/sharedmodels', sharedModelsRouter);
+app.use(globalErrorHandler);
 
 describe('SharedModels SSRF Prevention and Retrieval', () => {
     const originalFetch = (global as any).fetch;
@@ -105,5 +107,35 @@ describe('SharedModels SSRF Prevention and Retrieval', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.error).toBe('Failed to fetch or parse external model safely.');
+    });
+
+    describe('non-string uri values', () => {
+        it.each([
+            ['a number', 123, 'number'],
+            ['an object', { href: 'https://models.accordproject.org/safe.cto' }, 'object'],
+            ['an array', ['https://models.accordproject.org/safe.cto'], 'array'],
+            ['a boolean', true, 'boolean'],
+        ])('rejects %s with a 400 instead of crashing', async (_label, uri, receivedType) => {
+            const fetchMock = jest.fn();
+            (global as any).fetch = fetchMock;
+
+            const response = await request(app)
+                .post('/sharedmodels')
+                .send({ uri });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error.code).toBe('INVALID_PAYLOAD');
+            expect(response.body.error.details).toEqual({ field: 'uri', receivedType });
+            expect(fetchMock).not.toHaveBeenCalled();
+        });
+
+        it('still passes a body without uri through to the CRUD router', async () => {
+            const response = await request(app)
+                .post('/sharedmodels')
+                .send({ model: { $class: 'org.accordproject.protocol@1.0.0.CtoModel', ctoFiles: [] } });
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+        });
     });
 });

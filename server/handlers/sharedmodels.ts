@@ -6,6 +6,8 @@ import { ModelManager } from '@accordproject/concerto-core';
 import { FileDownloader } from '@accordproject/concerto-util';
 import { HttpModelRetriever } from './retrievers/HttpModelRetriever';
 import { assertAllowedUrl } from './retrievers/allowlist';
+import { asyncHandler } from '../middleware/errorHandler';
+import { InvalidPayloadError } from '../services/errors';
 
 const router = express.Router();
 
@@ -46,11 +48,14 @@ export const getExternalImports = (modelFile: any): Record<string, string> => {
     return imports;
 };
 
-router.post('/', async (req, res, next) => {
-    const uri: string | undefined = req.body?.uri;
+router.post('/', asyncHandler(async (req, res, next) => {
+    const uri: unknown = req.body?.uri;
+    if (uri !== undefined && uri !== null && typeof uri !== 'string') {
+        throw new InvalidPayloadError('uri must be a string', { field: 'uri', receivedType: Array.isArray(uri) ? 'array' : typeof uri });
+    }
     const retriever = new HttpModelRetriever();
 
-    if (uri && retriever.getURISchemes().some((scheme) => uri.startsWith(`${scheme}://`))) {
+    if (typeof uri === 'string' && uri && retriever.getURISchemes().some((scheme) => uri.startsWith(`${scheme}://`))) {
         try {
             const ctoText = await retriever.fetchModel(uri);
 
@@ -83,7 +88,7 @@ router.post('/', async (req, res, next) => {
     }
 
     next();
-});
+}));
 
 const crudRouter = buildCrudRouter({
     table: SharedModel,
