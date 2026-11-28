@@ -1,5 +1,6 @@
 import { ITemplateRetriever } from './ITemplateRetriever';
 import { assertAllowedUrl } from './allowlist';
+import { InvalidPayloadError } from '../../services/errors';
 
 export const MAX_TEMPLATE_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit (matches POST /templates/archive)
 
@@ -66,17 +67,39 @@ export class HttpTemplateRetriever implements ITemplateRetriever {
 
             const contentLength = response.headers?.get ? response.headers.get('content-length') : null;
             if (contentLength && parseInt(contentLength, 10) > MAX_TEMPLATE_FILE_SIZE) {
-                throw new Error('Template file exceeds the 10MB size limit.');
+                throw templateTooLarge();
             }
 
-            const arrayBuffer = await response.arrayBuffer();
-            if (arrayBuffer.byteLength > MAX_TEMPLATE_FILE_SIZE) {
-                throw new Error('Template file exceeds the 10MB size limit.');
+            if (!response.body) {
+                return Buffer.alloc(0);
             }
 
-            return Buffer.from(arrayBuffer);
+            // Count bytes as they arrive so an oversized body (e.g. chunked, with no
+            // Content-Length) is cut off at the limit instead of being buffered in full.
+            const reader = response.body.getReader();
+            const chunks: Uint8Array[] = [];
+            let received = 0;
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                if (!value) continue;
+                received += value.byteLength;
+                if (received > MAX_TEMPLATE_FILE_SIZE) {
+                    await reader.cancel();
+                    throw templateTooLarge();
+                }
+                chunks.push(value);
+            }
+
+            return Buffer.concat(chunks);
         } finally {
             clearTimeout(timeoutId);
         }
     }
+}
+
+function templateTooLarge(): InvalidPayloadError {
+    return new InvalidPayloadError('Template file exceeds the 10MB size limit.', {
+        maxBytes: MAX_TEMPLATE_FILE_SIZE
+    });
 }
